@@ -9,7 +9,6 @@ const Header = () => {
         <Link href={'/'}>
           <Image src={logo} alt="beehive books" width="270" />
         </Link>
-
         <div className="flex flex-row justify-end md:mr-8">
           <h3 className="font-bold text-bee-yellow m-2 p-2 rounded-md">
             About
