@@ -2,7 +2,7 @@ import SignInForm from '@/components/sign-in-form';
 
 const SignInPage = () => {
   return (
-    <div className="flex justify-center items-center h-3/5">
+    <div className="flex justify-center items-center h-screen">
       <SignInForm />
     </div>
   );
