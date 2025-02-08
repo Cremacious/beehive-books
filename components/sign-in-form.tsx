@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { GiTreeBeehive } from 'react-icons/gi';
 import {
   Card,
   CardContent,
@@ -7,60 +9,42 @@ import {
   CardTitle,
 } from './ui/card';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 const SignInForm = () => {
   return (
-    <Card className="w-[350px] no-outline shadow-xl border-none bg-bee-dark ">
-      <CardHeader className='space-y-2'>
+    <Card className="w-[350px] no-outline shadow-xl border-white border-8 bg-bee-dark">
+      <CardHeader className="space-y-2">
+        <GiTreeBeehive className="text-bee-yellow text-6xl mx-auto m-2" />
         <CardTitle className="text-bee-yellow text-center">Sign in</CardTitle>
-        <CardDescription className='text-white text-center'>Sign in to your account.</CardDescription>
+        <CardDescription className="text-white text-center">
+          Sign in to your account.
+        </CardDescription>
       </CardHeader>
-      <CardContent className='space-y-4'>
-        <Input placeholder="Email"></Input>
-        <Input placeholder="Password"></Input>
+      <CardContent className="space-y-4">
+        <Input
+          className="hover:border-bee-yellow hover:border-4"
+          placeholder="Email"
+        ></Input>
+        <Input
+          className="hover:border-bee-yellow hover:border-4"
+          placeholder="Password"
+        ></Input>
       </CardContent>
-      <CardFooter>Cancel and deploy</CardFooter>
+      <CardFooter className="flex justify-center flex-col space-y-2">
+        <Button className="text-bee-dark bg-bee-yellow font-bold text-xl">
+          Sign In
+        </Button>
+        <div>
+          <p className="text-white">Don&apos;t have an account?</p>
+
+          <Link href="/register">
+            <p className="text-bee-yellow text-center">Click here!</p>
+          </Link>
+        </div>
+      </CardFooter>
     </Card>
   );
 };
 
 export default SignInForm;
-
-// export function CardWithForm() {
-//   return (
-//     <Card className="w-[350px]">
-//       <CardHeader>
-//         <CardTitle>Create project</CardTitle>
-//         <CardDescription>Deploy your new project in one-click.</CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         <form>
-//           <div className="grid w-full items-center gap-4">
-//             <div className="flex flex-col space-y-1.5">
-//               <Label htmlFor="name">Name</Label>
-//               <Input id="name" placeholder="Name of your project" />
-//             </div>
-//             <div className="flex flex-col space-y-1.5">
-//               <Label htmlFor="framework">Framework</Label>
-//               <Select>
-//                 <SelectTrigger id="framework">
-//                   <SelectValue placeholder="Select" />
-//                 </SelectTrigger>
-//                 <SelectContent position="popper">
-//                   <SelectItem value="next">Next.js</SelectItem>
-//                   <SelectItem value="sveltekit">SvelteKit</SelectItem>
-//                   <SelectItem value="astro">Astro</SelectItem>
-//                   <SelectItem value="nuxt">Nuxt.js</SelectItem>
-//                 </SelectContent>
-//               </Select>
-//             </div>
-//           </div>
-//         </form>
-//       </CardContent>
-//       <CardFooter className="flex justify-between">
-//         <Button variant="outline">Cancel</Button>
-//         <Button>Deploy</Button>
-//       </CardFooter>
-//     </Card>
-//   )
-// }
