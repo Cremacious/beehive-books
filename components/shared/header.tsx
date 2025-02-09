@@ -21,6 +21,11 @@ const Header = () => {
               Login
             </h3>
           </Link>
+          <Link href="/profile">
+            <h3 className="font-bold text-bee-yellow m-2 p-2 rounded-md">
+              Profile
+            </h3>
+          </Link>
         </div>
       </nav>
     </div>
