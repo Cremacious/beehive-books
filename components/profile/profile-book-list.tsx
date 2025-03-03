@@ -1,11 +1,13 @@
+import BookCard from '@/components/profile/book-card';
 const ProfileBookList = () => {
   return (
-    <div className="bg-bee-dark rounded-xl shadow-lg border-8 border-white p-8 ">
-      <h1 className="text-bee-yellow text-center m-2 text-2xl">Books</h1>
-      <div className="bg-bee-dark border-4 border-white rounded-xl m-2 p-2 text-bee-yellow text-center">
-        <p>Book 1</p>
-        <p>Book 2</p>
-        <p>Book 3</p>
+    <div className="mx-6 flex max-w-full justify-center">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <BookCard />
+        <BookCard />
+        <BookCard />
+        <BookCard />
+        <BookCard />
       </div>
     </div>
   );

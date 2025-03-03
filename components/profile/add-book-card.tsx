@@ -3,10 +3,10 @@ import { Button } from '../ui/button';
 
 const AddBookCard = () => {
   return (
-    <section className="flex items-center justify-center my-4">
-      <div className="bg-bee-dark border-8 border-white rounded-xl shadow-lg p-4">
+    <section className="my-4 flex items-center justify-center">
+      <div className="rounded-xl border-8 border-white bg-bee-dark p-4 shadow-lg">
         <Link href="/create-book">
-          <Button variant="yellow" className="font-bold text-xl m-2 " size="lg">
+          <Button variant="beeYellow" className="m-2 text-xl font-bold" size="lg">
             Add Book
           </Button>
         </Link>

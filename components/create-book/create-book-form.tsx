@@ -22,27 +22,27 @@ import { Textarea } from '@/components/ui/textarea';
 
 const CreateBookForm = () => {
   return (
-    <Card className="w-[350px] no-outline shadow-xl border-white border-8 bg-bee-dark">
+    <Card className="no-outline w-[350px] border-8 border-white bg-bee-dark shadow-xl">
       <CardHeader className="space-y-2">
-        <GiTreeBeehive className="text-bee-yellow text-6xl mx-auto m-2" />
-        <CardTitle className="text-bee-yellow text-center">
+        <GiTreeBeehive className="m-2 mx-auto text-6xl text-bee-yellow" />
+        <CardTitle className="text-center text-bee-yellow">
           Let&apos;s get buzzing!
         </CardTitle>
-        <CardDescription className="text-white text-center">
+        <CardDescription className="text-center text-white">
           Create a new book to add to your collection.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
-          className="hover:border-bee-yellow hover:border-4"
+          className="hover:border-4 hover:border-bee-yellow"
           placeholder="Title"
         ></Input>
         <Input
-          className="hover:border-bee-yellow hover:border-4"
+          className="hover:border-4 hover:border-bee-yellow"
           placeholder="Author Name"
         ></Input>
         <Select>
-          <SelectTrigger className="hover:border-bee-yellow hover:border-4">
+          <SelectTrigger className="hover:border-4 hover:border-bee-yellow">
             <SelectValue placeholder="Select Genre" />
           </SelectTrigger>
           <SelectContent>
@@ -58,8 +58,8 @@ const CreateBookForm = () => {
         </Select>
         <Textarea placeholder="Description..." />
       </CardContent>
-      <CardFooter className="flex justify-center flex-col space-y-2">
-        <Button variant="yellow" className="text-center font-bold text-xl">
+      <CardFooter className="flex flex-col justify-center space-y-2">
+        <Button variant="beeYellow" className="text-center text-xl font-bold">
           Create!
         </Button>
       </CardFooter>

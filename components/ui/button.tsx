@@ -18,8 +18,10 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        yellow: 'bg-[#fed136] text-[#212529] hover:bg-[#fed136]/90',
-        dark: 'bg-[#212529] text-[#fed136] hover:bg-[#212529]/90',
+        beeDark: 'bg-bee-dark text-white hover:bg-bee-dark/90',
+        beeYellow: 'bg-bee-yellow text-black hover:bg-bee-yellow/90',
+        beeYellowOutline:
+          'border border-bee-yellow text-bee-yellow hover:bg-bee-yellow hover:text-black',
       },
       size: {
         default: 'h-10 px-4 py-2',
