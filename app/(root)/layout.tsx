@@ -1,4 +1,4 @@
-import UserHeader from '@/components/shared/UserHeader';
+import UserHeader from '@/components/shared/Header/UserHeader';
 
 export default function RootLayout({
   children,
