@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import '@/assets/styles/globals.css';
-// import { ThemeProvider } from 'next-themes';
 
 import { APP_NAME } from '@/lib/constants';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
@@ -23,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased `}>{children}</body>
+      {children}
     </html>
   );
 }
