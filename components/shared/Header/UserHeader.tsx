@@ -14,7 +14,7 @@ const Header = () => {
   ];
 
   return (
-    <nav className="">
+    <nav className="mb-4">
       <div className="flex flex-row justify-between bg-beeDark p-2">
         <Link href={'/'}>
           <Image className="" src={logo} alt="beehive books" width="200" />
