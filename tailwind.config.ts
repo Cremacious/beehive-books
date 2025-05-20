@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'bee-dark': '#212529',
-        'bee-yellow': '#fed136',
+        'beeDark': '#212529',
+        'beeYellow': '#fed136',
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
