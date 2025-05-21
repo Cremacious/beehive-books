@@ -1,10 +1,10 @@
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import SignInForm from './sign-in-form';
+import SignUpForm from './sign-up-form';
 import hiveIcon from '@/assets/images/layout/hive.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const SignInPage = () => {
+const SignUpPage = () => {
   return (
     <>
       <div className="flex min-h-screen items-center justify-center">
@@ -19,14 +19,16 @@ const SignInPage = () => {
                   height={100}
                   className=""
                 />
-                <CardTitle className="text-beeYellow">Sign In</CardTitle>
+                <CardTitle className="text-beeYellow">
+                  Create an account!
+                </CardTitle>
               </div>
-              <SignInForm />
+              <SignUpForm />
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center">
-              <p className="text-white">Don&apos;t have an account?</p>
-              <Link href="/sign-up">
-                <p className="text-beeYellow font-bold">Sign Up</p>
+              <p className="text-white">Already have an account?</p>
+              <Link href="/sign-in">
+                <p className="text-beeYellow font-bold">Sign In</p>
               </Link>
             </CardFooter>
           </Card>
@@ -36,4 +38,4 @@ const SignInPage = () => {
   );
 };
 
-export default SignInPage;
+export default SignUpPage;

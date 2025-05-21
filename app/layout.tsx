@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import '@/assets/styles/globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 import { APP_NAME } from '@/lib/constants';
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>{children}</body>
+      <Toaster />
     </html>
   );
 }
