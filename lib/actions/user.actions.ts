@@ -1,5 +1,6 @@
 'use server';
-import { connectDB } from '../database';
+export const runtime = 'nodejs';
+import { connectDB } from '../config/database';
 import { signUpFormSchema } from '../validators/forms';
 import User from '../models/User';
 import z from 'zod';
