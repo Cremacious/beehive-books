@@ -26,6 +26,7 @@ const SignUpForm = () => {
   });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
     console.log(data);
    const response = await createUser(data);
@@ -34,6 +35,8 @@ const SignUpForm = () => {
     } else {
       toast.error(response.message);
 =======
+=======
+>>>>>>> parent of 89582df (Users created in database)
   function onSubmit(values: z.infer<typeof signUpFormSchema>) {
     try {
       console.log(values);
@@ -41,6 +44,9 @@ const SignUpForm = () => {
     } catch (error) {
       console.error('Form submission error', error);
       toast.error('Failed to submit the form. Please try again.');
+<<<<<<< HEAD
+>>>>>>> parent of 89582df (Users created in database)
+=======
 >>>>>>> parent of 89582df (Users created in database)
     }
   }
