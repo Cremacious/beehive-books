@@ -1,13 +1,11 @@
 'use client';
 
-'use client';
-
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { signUpFormSchema } from '@/lib/validators/forms';
-
+import { createUser } from '@/lib/actions/user.actions';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -25,13 +23,12 @@ const SignUpForm = () => {
     resolver: zodResolver(signUpFormSchema),
   });
 
-  function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    try {
-      console.log(values);
-      toast(`Form submitted successfully! ${JSON.stringify(values)}`);
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
+  async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
+   const response = await createUser(data);
+   if (response.success) {
+      toast.success('User created successfully');
+    } else {
+      toast.error(response.message);
     }
   }
 
