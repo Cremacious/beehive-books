@@ -19,35 +19,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { createUser } from '@/lib/actions/user.actions';
 
 const SignUpForm = () => {
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
   });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
     console.log(data);
-   const response = await createUser(data);
-   if (response.success) {
+    const response = await createUser(data);
+    if (response.success) {
       toast.success('User created successfully');
     } else {
       toast.error(response.message);
-=======
-=======
->>>>>>> parent of 89582df (Users created in database)
-  function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    try {
-      console.log(values);
-      toast(`Form submitted successfully! ${JSON.stringify(values)}`);
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
-<<<<<<< HEAD
->>>>>>> parent of 89582df (Users created in database)
-=======
->>>>>>> parent of 89582df (Users created in database)
     }
   }
 
