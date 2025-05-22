@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-// import { compareSync } from 'bcrypt-ts-edge';
+import { compareSync } from 'bcrypt-ts-edge';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import client from '@/lib/config/mongodb';
 import User from '@/lib/models/User';
@@ -24,9 +24,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (credentials == null) return null;
         const user = await User.findOne({ email: credentials?.email });
-        if (user && user.password === credentials?.password) {
-     
-          return { id: user._id, email: user.email, name: user.username };
+        if (user && user.password) {
+          const isMatch = compareSync(
+            credentials.password as string,
+            user.password
+          );
+          if (isMatch) {
+            return {
+              id: user._id,
+              name: user.username,
+              email: user.email,
+            };
+          }
         }
         return null;
       },
