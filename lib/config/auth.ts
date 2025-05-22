@@ -29,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials.password as string,
             user.password
           );
+          // console.log(user);
           if (isMatch) {
             return {
               id: user._id,
@@ -41,4 +42,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }: any) {
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.user.username = token.username;
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.username = user.name;
+      }
+      return token;
+    },
+  },
 });

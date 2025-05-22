@@ -25,7 +25,6 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
-    console.log(data);
     const response = await createUser(data);
     if (response.success) {
       toast.success('User created successfully');

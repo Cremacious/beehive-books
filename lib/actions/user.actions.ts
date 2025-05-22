@@ -3,13 +3,13 @@
 import connectDB from '@/lib/config/database';
 import {
   signUpFormSchema,
-  signInFormSchema,
 } from '../validators/accountCreation';
 import User from '../models/User';
 import z from 'zod';
 import { formatError } from '../utils';
 import { hashSync } from 'bcrypt-ts-edge';
 import { signIn, signOut } from '@/lib/config/auth';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 export async function createUser(data: z.infer<typeof signUpFormSchema>) {
   try {
@@ -29,28 +29,49 @@ export async function createUser(data: z.infer<typeof signUpFormSchema>) {
       password: hashedPassword,
     });
     await newUser.save();
-    await signIn('credentials', {
+    const signInResult = await signIn('credentials', {
       email: user.email,
       password: user.password,
-      redirect: true,
-      callbackUrl: '/dashboard',
+      redirect: false,
     });
+    if (signInResult && signInResult.error) {
+      return { success: false, message: signInResult.error };
+    }
     return { success: true, message: 'User created successfully' };
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     return { success: false, message: `${formatError(error)}` };
   }
 }
 
-export async function signInUser(data: z.infer<typeof signInFormSchema>) {
-  try {
-    await connectDB();
-    const user = signInFormSchema.parse(data);
-    await signIn('credentials', user);
-    return { success: true, message: 'User signed in successfully' };
-  } catch (error) {
-    return { success: false, message: `${formatError(error)}` };
-  }
-}
+// export async function signInUser(data: z.infer<typeof signInFormSchema>) {
+//   try {
+//     await connectDB();
+//     const user = signInFormSchema.parse(data);
+//     console.log(user);
+//     await signIn('credentials', user);
+//     return { success: true, message: 'User signed in successfully' };
+//   } catch (error) {
+//     console.log(error);
+//     if (isRedirectError(error)) {
+//       throw error;
+//     }
+//     return { success: false, message: `${formatError(error)}` };
+//   }
+// }
+
+// export async function signInUser(data: z.infer<typeof signInFormSchema>) {
+//   try {
+//     await connectDB();
+//     const user = signInFormSchema.parse(data);
+//     // Optionally check if user exists here, but do NOT call signIn
+//     return { success: true, message: 'User exists' };
+//   } catch (error) {
+//     return { success: false, message: `${formatError(error)}` };
+//   }
+// }
 
 export async function signOutUser() {
   await signOut();
