@@ -1,7 +1,9 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks';
 import { NextRequest } from 'next/server';
-import { connectDB } from '@/lib/config/database'; // Adjust path as needed
-import User from '@/lib/models/User'; // Your Mongoose User model
+import { connectDB } from '@/lib/config/database';
+import User from '@/lib/models/User';
+
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,15 +14,22 @@ export async function POST(req: NextRequest) {
       const email = email_addresses?.[0]?.email_address || '';
 
       await connectDB();
+      console.log('Connected to MongoDB');
 
       const existingUser = await User.findOne({ email });
+      console.log('Existing user:', existingUser);
+
       if (!existingUser) {
-        await User.create({
-          username, 
-          email,
-          password: '', 
-        });
-        console.log(`Created new user in MongoDB for Clerk user ID: ${id}`);
+        try {
+          await User.create({
+            username,
+            email,
+            // password: '', // Remove if not required
+          });
+          console.log(`Created new user in MongoDB for Clerk user ID: ${id}`);
+        } catch (err) {
+          console.error('Error creating user:', err);
+        }
       }
     }
 
