@@ -3,6 +3,7 @@ import '@/assets/styles/globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import Footer from '@/components/shared/Footer';
 import { APP_NAME } from '@/lib/constants';
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: {
@@ -20,9 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
-      <Toaster />
-      <Footer />
+      <ClerkProvider>
+        <body>{children}</body>
+        <Toaster />
+        <Footer />
+      </ClerkProvider>
     </html>
   );
 }
