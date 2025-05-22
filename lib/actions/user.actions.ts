@@ -1,38 +1,58 @@
 'use server';
-// import { useSession, signIn, signOut } from "next-auth/react";
-// import { connectDB } from '../config/database';
-// import { signUpFormSchema } from '../validators/accountCreation';
-// import User from '../models/User';
-// import z from 'zod';
-// import { formatError } from '../utils';
 
-// export async function createUser(data: z.infer<typeof signUpFormSchema>) {
-//   try {
-//     await connectDB();
-//     const user = signUpFormSchema.parse(data);
-//     const existingUser = await User.findOne({
-//       email: user.email,
-//     });
-//     if (existingUser) {
-//       throw new Error('User already exists');
-//     }
-//     const newUser = new User(user);
-//     await newUser.save();
-//     return { success: true, message: 'User created successfully' };
-//   } catch (error) {
-//     return { success: false, message: `${formatError(error)}` };
-//   }
-// }
+import connectDB from '@/lib/config/database';
+import {
+  signUpFormSchema,
+  signInFormSchema,
+} from '../validators/accountCreation';
+import User from '../models/User';
+import z from 'zod';
+import { formatError } from '../utils';
+import { hashSync } from 'bcrypt-ts-edge';
+import { signIn, signOut } from '@/lib/config/auth';
 
+export async function createUser(data: z.infer<typeof signUpFormSchema>) {
+  try {
+    await connectDB();
+    const user = signUpFormSchema.parse(data);
+    const existingUser = await User.findOne({
+      email: user.email,
+    });
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+    const plainPassword = user.password;
+    const hashedPassword = hashSync(plainPassword, 10);
+    const newUser = new User({
+      username: user.username,
+      email: user.email,
+      password: hashedPassword,
+    });
+    await newUser.save();
+    await signIn('credentials', {
+      email: user.email,
+      password: user.password,
+      redirect: true,
+      callbackUrl: '/dashboard',
+    });
+    return { success: true, message: 'User created successfully' };
+  } catch (error) {
+    return { success: false, message: `${formatError(error)}` };
+  }
+}
 
+export async function signInUser(data: z.infer<typeof signInFormSchema>) {
+  try {
+    await connectDB();
+    const user = signInFormSchema.parse(data);
+    await signIn('credentials', user);
+    return { success: true, message: 'User signed in successfully' };
+  } catch (error) {
+    return { success: false, message: `${formatError(error)}` };
+  }
+}
 
-//  },
-//       async authorize(credentials) {
-//         // Find user in MongoDB and verify password
-//         const user = await User.findOne({ email: credentials?.email });
-//         if (user && user.password === credentials?.password) {
-//           // In production, use hashed passwords!
-//           return { id: user._id, email: user.email, name: user.username };
-//         }
-//         return null;
-//       },
+export async function signOutUser() {
+  await signOut();
+  console.log('clicked sign out');
+}
