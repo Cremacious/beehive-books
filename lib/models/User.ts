@@ -22,6 +22,12 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  books: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Book',
+    },
+  ],
 });
 
 const User = models?.User || model('User', UserSchema);
