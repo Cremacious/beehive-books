@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +25,6 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
-    console.log(data);
     const response = await createUser(data);
     if (response.success) {
       toast.success('User created successfully');
@@ -40,14 +37,14 @@ const SignUpForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 max-w-3xl mx-auto"
+        className="mx-auto max-w-3xl space-y-4"
       >
         <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">
+              <FormLabel className="font-bold text-beeYellow">
                 Username
               </FormLabel>
               <FormControl>
@@ -66,7 +63,7 @@ const SignUpForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">Email</FormLabel>
+              <FormLabel className="font-bold text-beeYellow">Email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -80,7 +77,7 @@ const SignUpForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">
+              <FormLabel className="font-bold text-beeYellow">
                 Password
               </FormLabel>
               <FormControl>
@@ -96,7 +93,7 @@ const SignUpForm = () => {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">
+              <FormLabel className="font-bold text-beeYellow">
                 Confirm Password
               </FormLabel>
               <FormControl>

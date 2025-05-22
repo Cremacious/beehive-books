@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { signInFormSchema } from '@/lib/validators/forms';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -36,14 +35,14 @@ const SignInForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 max-w-3xl mx-auto"
+        className="mx-auto max-w-3xl space-y-4"
       >
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">Email</FormLabel>
+              <FormLabel className="font-bold text-beeYellow">Email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -57,7 +56,7 @@ const SignInForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-beeYellow font-bold">
+              <FormLabel className="font-bold text-beeYellow">
                 Password
               </FormLabel>
               <FormControl>
