@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import '@/assets/styles/globals.css';
 import { Toaster } from '@/components/ui/sonner';
-
+import Footer from '@/components/shared/Footer';
 import { APP_NAME } from '@/lib/constants';
 
 export const metadata: Metadata = {
@@ -20,10 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-
       <body>{children}</body>
       <Toaster />
-     
+      <Footer />
     </html>
   );
 }

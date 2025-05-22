@@ -1,5 +1,5 @@
 'use client';
-
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +50,7 @@ const AddBookForm = () => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel className="font-bold text-beeYellow">Title</FormLabel>
               <FormControl>
                 <Input placeholder="" type="" {...field} />
               </FormControl>
@@ -61,13 +61,15 @@ const AddBookForm = () => {
         />
 
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-4">
+          <div className="col-span-12 md:col-span-6">
             <FormField
               control={form.control}
               name="author"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Author</FormLabel>
+                  <FormLabel className="font-bold text-beeYellow">
+                    Author
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="" type="" {...field} />
                   </FormControl>
@@ -77,6 +79,53 @@ const AddBookForm = () => {
               )}
             />
           </div>
+          {/* <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="name_9895482311"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select File</FormLabel>
+                  <FormControl>
+                    <FileUploader
+                      value={files}
+                      onValueChange={setFiles}
+                      dropzoneOptions={dropZoneConfig}
+                      className="bg-background relative rounded-lg p-2"
+                    >
+                      <FileInput
+                        id="fileInput"
+                        className="outline-dashed outline-1 outline-slate-500"
+                      >
+                        <div className="flex w-full flex-col items-center justify-center p-8">
+                          <CloudUpload className='h-10 w-10 text-gray-500' />
+                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Click to upload</span>
+                            &nbsp; or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            SVG, PNG, JPG or GIF
+                          </p>
+                        </div>
+                      </FileInput>
+                      <FileUploaderContent>
+                        {files &&
+                          files.length > 0 &&
+                          files.map((file, i) => (
+                            <FileUploaderItem key={i} index={i}>
+                              <Paperclip className="h-4 w-4 stroke-current" />
+                              <span>{file.name}</span>
+                            </FileUploaderItem>
+                          ))}
+                      </FileUploaderContent>
+                    </FileUploader>
+                  </FormControl>
+                  <FormDescription>Select a file to upload.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div> */}
         </div>
 
         <div className="grid grid-cols-12 gap-4">
@@ -86,7 +135,9 @@ const AddBookForm = () => {
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel className="font-bold text-beeYellow">
+                    Category
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -119,7 +170,9 @@ const AddBookForm = () => {
               name="genre"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Genre</FormLabel>
+                  <FormLabel className="font-bold text-beeYellow">
+                    Genre
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -152,16 +205,22 @@ const AddBookForm = () => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel className="font-bold text-beeYellow">
+                Description
+              </FormLabel>
               <FormControl>
-                <Input placeholder="" type="" {...field} />
+                <Textarea placeholder="" className="resize-none" {...field} />
               </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <div className="flex justify-center">
+          <Button className="w-full md:w-1/2" type="submit">
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );
