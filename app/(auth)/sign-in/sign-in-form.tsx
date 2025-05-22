@@ -1,6 +1,6 @@
 'use client';
 
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,14 +21,15 @@ const SignInForm = () => {
     resolver: zodResolver(signInFormSchema),
   });
 
-  function onSubmit(values: z.infer<typeof signInFormSchema>) {
-    try {
-      console.log(values);
-      toast(`Form submitted successfully! ${JSON.stringify(values)}`);
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
-    }
+  function onSubmit(data: z.infer<typeof signInFormSchema>) {
+    console.log(data);
+    // try {
+    //   console.log(values);
+    //   toast(`Form submitted successfully! ${JSON.stringify(values)}`);
+    // } catch (error) {
+    //   console.error('Form submission error', error);
+    //   toast.error('Failed to submit the form. Please try again.');
+    // }
   }
 
   return (
