@@ -1,10 +1,9 @@
 'use server';
-export const runtime = 'nodejs';
 import { connectDB } from '../config/database';
 import { signUpFormSchema } from '../validators/forms';
 import User from '../models/User';
 import z from 'zod';
-// import { formatError } from '../utils';
+import { formatError } from '../utils';
 
 export async function createUser(data: z.infer<typeof signUpFormSchema>) {
   try {
@@ -22,8 +21,7 @@ export async function createUser(data: z.infer<typeof signUpFormSchema>) {
     return { success: true, message: 'User created successfully' };
   } catch (error) {
     // console.log(formatError(error));
-    return { success: false, message: `${(error)}` };
-    //  return { success: false, message: `${formatError(error)}` };
-    console.log(error);
+    return { success: false, message: `${error}` };
+    return { success: false, message: `${formatError(error)}` };
   }
 }
