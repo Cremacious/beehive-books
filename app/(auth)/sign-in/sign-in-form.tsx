@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { signInFormSchema } from '@/lib/validators/forms';
+import { signInFormSchema } from '@/lib/validators/accountCreation';
 import { Button } from '@/components/ui/button';
 import {
   Form,
