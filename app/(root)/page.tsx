@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { SignUpButton } from '@clerk/nextjs';
 
 export default function Home() {
   return (
@@ -12,7 +11,6 @@ export default function Home() {
       <Button asChild>
         <Link href="/sign-up">Sign Up</Link>
       </Button>
-      <SignUpButton />
     </div>
   );
 }
