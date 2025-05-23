@@ -1,11 +1,9 @@
 'use client';
-// import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { signUpFormSchema } from '@/lib/validators/accountCreation';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -18,6 +16,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { signUpUserWithCredentials } from '@/lib/actions/user.actions';
+import { signIn } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const SignUpForm = () => {
   const form = useForm<z.infer<typeof signUpFormSchema>>({
@@ -25,10 +25,19 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
-    console.log(data);
     const response = await signUpUserWithCredentials(data);
     if (response.success) {
       toast.success('User created successfully');
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+      if (result?.ok) {
+        redirect('/dashboard');
+      } else {
+        toast.error('Sign in failed');
+      }
     } else {
       toast.error(response.message);
     }

@@ -13,7 +13,7 @@ export const config = {
   },
   session: {
     strategy: 'jwt' as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -24,22 +24,16 @@ export const config = {
       },
       async authorize(credentials) {
         if (credentials == null) return null;
-
-        // Find user in database
         const user = await prisma.user.findFirst({
           where: {
             email: credentials.email as string,
           },
         });
-
-        // Check if user exists and if the password matches
         if (user && user.password) {
           const isMatch = await compareSync(
             credentials.password as string,
             user.password
           );
-
-          // If password is correct, return user
           if (isMatch) {
             return {
               id: user.id,
@@ -49,7 +43,6 @@ export const config = {
             };
           }
         }
-        // If user does not exist or password does not match return null
         return null;
       },
     }),
@@ -57,29 +50,21 @@ export const config = {
   callbacks: {
     ...authConfig.callbacks,
     async session({ session, user, trigger, token }: any) {
-      // Set the user ID from the token
       session.user.id = token.sub;
       session.user.role = token.role;
-      session.user.name = token.name;
-
-      // If there is an update, set the user name
+      session.user.username = token.username;
       if (trigger === 'update') {
         session.user.name = user.name;
       }
-
       return session;
     },
     async jwt({ token, user, trigger, session }: any) {
-      // Assign user fields to token
       if (user) {
         token.id = user.id;
         token.role = user.role;
 
-        // If user has no name then use the email
         if (user.username === 'NO_NAME') {
           token.username = user.email!.split('@')[0];
-
-          // Update database to reflect the token name
           await prisma.user.update({
             where: { id: user.id },
             data: { username: token.username },
