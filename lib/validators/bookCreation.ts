@@ -17,3 +17,10 @@ export const bookCreationFormSchema = z.object({
     message: 'Category is required',
   }),
 });
+
+export const chapterCreationFormSchema = z.object({
+  title: z.string().min(1, { message: 'Chapter title is required' }),
+  content: z.string().min(1, { message: 'Content is required' }),
+  order: z.number().int().min(1, { message: 'Order is required' }),
+  bookId: z.string().cuid(),
+});

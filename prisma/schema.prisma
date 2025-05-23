@@ -14,8 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
   id            String    @id @default(cuid())
 username        String?
@@ -26,11 +24,38 @@ username        String?
   createdAt     DateTime  @default(now()) @db.Timestamp(6)
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]  // Add this line for the relation
-  sessions      Session[]  // Add this line for the relation with Session
-
+  accounts      Account[]  
+  sessions      Session[]
+  books         Book[]   
   @@map("users")
 }
+
+model Book {
+  id          String    @id @default(cuid())
+  title       String
+  author      String
+  description String
+  genre       String
+  category    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  chapters    Chapter[]
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  order     Int    
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model Account {
   id                 String  @id @default(cuid())
