@@ -1,6 +1,12 @@
 import AddBookForm from './add-book-form';
+import { auth } from '@/lib/config/auth';
 
-const AddBookPage = () => {
+const AddBookPage = async () => {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    return <div>User not found</div>;
+  }
   return (
     <>
       <div className="flex max-h-screen justify-center">

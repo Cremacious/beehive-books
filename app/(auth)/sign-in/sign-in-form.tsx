@@ -1,6 +1,6 @@
 'use client';
 
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { signIn } from 'next-auth/react';
+// import { signIn } from 'next-auth/react';
 
 const SignInForm = () => {
   const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -23,15 +23,16 @@ const SignInForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof signInFormSchema>) {
-    const response = await signIn('credentials', {
-      redirect: false,
-      ...data,
-    });
-    if (response && response.ok) {
-      toast.success('User signed in successfully');
-    } else {
-      toast.error(response?.error || 'Sign in failed');
-    }
+    console.log(data);
+    // const response = await signIn('credentials', {
+    //   redirect: false,
+    //   ...data,
+    // });
+    // if (response && response.ok) {
+    //   toast.success('User signed in successfully');
+    // } else {
+    //   toast.error(response?.error || 'Sign in failed');
+    // }
   }
 
   return (

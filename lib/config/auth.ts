@@ -1,12 +1,14 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { compareSync } from 'bcrypt-ts-edge';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import client from '@/lib/config/mongodb';
-import User from '@/lib/models/User';
+// import { MongoDBAdapter } from '@auth/mongodb-adapter';
+// import client from '@/lib/config/mongodb';
+// import User from '@/lib/models/User';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import prisma from '@/lib/config/prisma';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: MongoDBAdapter(client),
+  adapter: PrismaAdapter(prisma),
   pages: {
     signIn: '/sign-in',
     error: '/',
@@ -23,7 +25,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (credentials == null) return null;
-        const user = await User.findOne({ email: credentials?.email });
+        // const user = await User.findOne({ email: credentials?.email });
+        const user = await prisma.user.findFirst({
+          where: {
+            email: credentials.email as string,
+          },
+        });
         if (user && user.password) {
           const isMatch = compareSync(
             credentials.password as string,
@@ -32,7 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           // console.log(user);
           if (isMatch) {
             return {
-              id: user._id,
+              id: user.id,
               name: user.username,
               email: user.email,
             };
