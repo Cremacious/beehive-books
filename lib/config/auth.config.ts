@@ -6,13 +6,8 @@ export const authConfig = {
   callbacks: {
     authorized({ request, auth }: any) {
       const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
         /\/dashboard/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
+        // /\/user\/(.*)/,
       ];
 
       const { pathname } = request.nextUrl;

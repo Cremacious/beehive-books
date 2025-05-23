@@ -42,7 +42,7 @@ model Book {
 
   chapters    Chapter[]
   userId      String?
-  user        User?     @relation(fields: [userId], references: [id])
+user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Chapter {
@@ -51,7 +51,7 @@ model Chapter {
   content   String
   order     Int    
   bookId    String
-  book      Book     @relation(fields: [bookId], references: [id])
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
