@@ -27,7 +27,6 @@ const SignUpForm = () => {
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
     const response = await signUpUserWithCredentials(data);
     if (response.success) {
-      toast.success('User created successfully');
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -115,7 +114,7 @@ const SignUpForm = () => {
         />
         <div className="flex justify-center">
           <Button className="w-full" type="submit">
-            Create Account
+            {form.formState.isSubmitting ? 'Creating...' : 'Create Account'}
           </Button>
         </div>
       </form>

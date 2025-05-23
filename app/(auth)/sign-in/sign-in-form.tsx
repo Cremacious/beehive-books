@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Link from 'next/link';
 import { useActionState } from 'react';
 import { signInWithCredentials } from '@/lib/actions/user.actions';
 import { useFormStatus } from 'react-dom';
@@ -17,7 +16,7 @@ const SignInForm = () => {
     const { pending } = useFormStatus();
     return (
       <Button disabled={pending} className="w-full font-bold" variant="default">
-        {pending ? 'Signing In...' : 'Sign In with credentials'}
+        {pending ? 'Signing In...' : 'Sign In'}
       </Button>
     );
   };
@@ -25,7 +24,7 @@ const SignInForm = () => {
     <form action={action}>
       <div className="space-y-6">
         <div>
-          <Label className="textOrange font-bold" htmlFor="email">
+          <Label className="text-beeYellow font-bold" htmlFor="email">
             Email
           </Label>
           <Input
@@ -39,7 +38,7 @@ const SignInForm = () => {
           />
         </div>
         <div>
-          <Label className="textOrange font-bold" htmlFor="password">
+          <Label className="text-beeYellow font-bold" htmlFor="password">
             Password
           </Label>
           <Input
@@ -57,19 +56,6 @@ const SignInForm = () => {
           {data && !data.success && (
             <div className="text-center text-destructive">{data.message}</div>
           )}
-        </div>
-
-        <div className="text-sm text-center text-white">
-          Don&apos;t have an account?{' '}
-          <span>
-            <Link
-              target="_self"
-              className="link textOrange font-bold"
-              href="/sign-up"
-            >
-              Sign Up
-            </Link>
-          </span>
         </div>
       </div>
     </form>

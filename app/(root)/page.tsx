@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import SessionCheck from './sessioncheck';
-import SignOutButton from './signoutButton';
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
       <Button asChild>
         <Link href="/sign-up">Sign Up</Link>
       </Button>
-      <SignOutButton />
       <SessionCheck />
     </div>
   );

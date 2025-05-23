@@ -55,7 +55,7 @@ export async function signUpUserWithCredentials(
         password: user.password,
       },
     });
-    return { success: true, message: 'User created successfully!' };
+    return { success: true, message: `Welcome to the hive, ${user.username}!` };
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;

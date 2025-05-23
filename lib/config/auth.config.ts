@@ -5,10 +5,7 @@ export const authConfig = {
   providers: [],
   callbacks: {
     authorized({ request, auth }: any) {
-      const protectedPaths = [
-        /\/dashboard/,
-        // /\/user\/(.*)/,
-      ];
+      const protectedPaths = [/\/dashboard/, /\/user\/(.*)/];
 
       const { pathname } = request.nextUrl;
       if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;

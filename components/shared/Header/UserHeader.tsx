@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import logo from '@/public/logo.png';
 import Link from 'next/link';
-import { Button } from '../../ui/button';
 import Sidebar from './Sidebar';
+import SignOutButton from './SignOutButton';
 
 const Header = () => {
   const links = [
@@ -19,8 +19,6 @@ const Header = () => {
         <Link href={'/'}>
           <Image className="" src={logo} alt="beehive books" width="200" />
         </Link>
-        {/* Desktop */}
-
         <div className="hidden flex-row items-center gap-4 md:flex">
           {links.map((link) => (
             <Link href={link.href} key={link.name}>
@@ -28,9 +26,8 @@ const Header = () => {
             </Link>
           ))}
         </div>
-
         <div className="hidden items-center md:flex">
-          <Button>Sign Out</Button>
+          <SignOutButton />
         </div>
         <div className="flex items-center md:hidden">
           <Sidebar links={links} />
