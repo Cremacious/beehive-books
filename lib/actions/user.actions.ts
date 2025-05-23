@@ -26,7 +26,10 @@ export async function signUpUserWithCredentials(
         password: user.password,
       },
     });
-    await signIn('credentials', user);
+    await signIn('credentials', {
+      email: user.email,
+      password: plainPassword,
+    });
     return { success: true, message: 'User created successfully!' };
   } catch (error) {
     if (isRedirectError(error)) {
