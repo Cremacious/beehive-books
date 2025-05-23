@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import { bookCreationFormSchema } from '@/lib/validators/bookCreation';
 // import { createBook } from '@/lib/actions/book.actions';
 
@@ -43,35 +44,20 @@ const AddBookForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-3xl space-y-8 py-10"
+        className="space-y-8 max-w-3xl mx-auto py-10"
       >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-bold text-beeYellow">Title</FormLabel>
-              <FormControl>
-                <Input placeholder="" type="" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 md:col-span-6">
+        <div className="grid md:grid-cols-12 gap-4">
+          <div className="col-span-6">
             <FormField
               control={form.control}
-              name="author"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-beeYellow">
-                    Author
+                  <FormLabel className="text-beeYellow font-bold">
+                    Title
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="" type="" {...field} />
+                    <Input placeholder="" type="text" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -79,28 +65,121 @@ const AddBookForm = () => {
               )}
             />
           </div>
-          {/* <div className="col-span-6">
+
+          <div className="col-span-6">
             <FormField
               control={form.control}
-              name="name_9895482311"
+              name="author"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select File</FormLabel>
+                  <FormLabel className="text-beeYellow font-bold">
+                    Author
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="" type="text" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-4">
+            <FormField
+              control={form.control}
+              name="genre"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-beeYellow font-bold">
+                    Genre
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="m@example.com">
+                        m@example.com
+                      </SelectItem>
+                      <SelectItem value="m@google.com">m@google.com</SelectItem>
+                      <SelectItem value="m@support.com">
+                        m@support.com
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="col-span-4">
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-beeYellow font-bold">
+                    Category
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="m@example.com">
+                        m@example.com
+                      </SelectItem>
+                      <SelectItem value="m@google.com">m@google.com</SelectItem>
+                      <SelectItem value="m@support.com">
+                        m@support.com
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="col-span-4">
+            {/* <FormField
+              control={form.control}
+              name="cover_image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cover</FormLabel>
                   <FormControl>
                     <FileUploader
                       value={files}
                       onValueChange={setFiles}
                       dropzoneOptions={dropZoneConfig}
-                      className="bg-background relative rounded-lg p-2"
+                      className="relative bg-background rounded-lg p-2"
                     >
                       <FileInput
                         id="fileInput"
                         className="outline-dashed outline-1 outline-slate-500"
                       >
-                        <div className="flex w-full flex-col items-center justify-center p-8">
-                          <CloudUpload className='h-10 w-10 text-gray-500' />
+                        <div className="flex items-center justify-center flex-col p-8 w-full ">
+                          <CloudUpload className="text-gray-500 w-10 h-10" />
                           <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">Click to upload</span>
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>
                             &nbsp; or drag and drop
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -120,83 +199,11 @@ const AddBookForm = () => {
                       </FileUploaderContent>
                     </FileUploader>
                   </FormControl>
-                  <FormDescription>Select a file to upload.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
-        </div>
-
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-bold text-beeYellow">
-                    Category
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
 
                   <FormMessage />
                 </FormItem>
               )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="genre"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-bold text-beeYellow">
-                    Genre
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            /> */}
           </div>
         </div>
 
@@ -205,7 +212,7 @@ const AddBookForm = () => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-beeYellow">
+              <FormLabel className="text-beeYellow font-bold">
                 Description
               </FormLabel>
               <FormControl>
