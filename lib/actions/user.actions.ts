@@ -10,6 +10,7 @@ import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import prisma from '../config/prisma';
 import { signIn, signOut } from '@/lib/config/auth';
+import { redirect } from 'next/navigation';
 
 export async function signInWithCredentials(
   prevState: unknown,
@@ -21,9 +22,16 @@ export async function signInWithCredentials(
       password: formData.get('password'),
     });
 
-    await signIn('credentials', user);
+    const result = await signIn('credentials', {
+      email: user.email,
+      password: user.password,
+      redirect: false,
+    });
+    if (result?.ok) {
+      redirect('/dashboard');
+    }
 
-    return { success: true, message: 'Signed in successfully' };
+    redirect('/dashboard');
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;
