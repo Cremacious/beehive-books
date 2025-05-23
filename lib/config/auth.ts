@@ -1,69 +1,98 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { compareSync } from 'bcrypt-ts-edge';
-// import { MongoDBAdapter } from '@auth/mongodb-adapter';
-// import client from '@/lib/config/mongodb';
-// import User from '@/lib/models/User';
+import { authConfig } from './auth.config';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import prisma from '@/lib/config/prisma';
+import { compareSync } from 'bcrypt-ts-edge';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+export const config = {
   pages: {
     signIn: '/sign-in',
-    error: '/',
+    error: '/sign-in',
   },
   session: {
     strategy: 'jwt' as const,
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  adapter: PrismaAdapter(prisma),
   providers: [
-    Credentials({
+    CredentialsProvider({
       credentials: {
         email: { type: 'email' },
         password: { type: 'password' },
       },
       async authorize(credentials) {
         if (credentials == null) return null;
+
+        // Find user in database
         const user = await prisma.user.findFirst({
           where: {
             email: credentials.email as string,
           },
         });
+
+        // Check if user exists and if the password matches
         if (user && user.password) {
-          const isMatch = compareSync(
+          const isMatch = await compareSync(
             credentials.password as string,
             user.password
           );
-          // console.log(user);
+
+          // If password is correct, return user
           if (isMatch) {
             return {
               id: user.id,
-              name: user.username,
+              username: user.username,
               email: user.email,
+              role: user.role,
             };
           }
         }
+        // If user does not exist or password does not match return null
         return null;
       },
     }),
   ],
   callbacks: {
-    async session({ session, token }: { session: import("next-auth").Session; token: import("next-auth/jwt").JWT }) {
-      (session.user as { id?: string; email?: string; username?: string }).id = token.id as string | undefined;
-      (session.user as { id?: string; email?: string; username?: string }).email = token.email as string | undefined;
-      (session.user as { id?: string; email?: string; username?: string }).username = token.username as string | undefined;
+    ...authConfig.callbacks,
+    async session({ session, user, trigger, token }: any) {
+      // Set the user ID from the token
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
+
+      // If there is an update, set the user name
+      if (trigger === 'update') {
+        session.user.name = user.name;
+      }
+
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }: any) {
+      // Assign user fields to token
       if (user) {
         token.id = user.id;
-        token.email = user.email;
-        token.username = user.name;
+        token.role = user.role;
+
+        // If user has no name then use the email
+        if (user.username === 'NO_NAME') {
+          token.username = user.email!.split('@')[0];
+
+          // Update database to reflect the token name
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { username: token.username },
+          });
+        }
       }
+      if (session?.user.name && trigger === 'update') {
+        token.name = session.user.name;
+      }
+
       return token;
     },
   },
-});
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
