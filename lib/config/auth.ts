@@ -7,6 +7,8 @@ import { compareSync } from 'bcrypt-ts-edge';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import prisma from '@/lib/config/prisma';
 
+
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   pages: {
@@ -25,7 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (credentials == null) return null;
-        // const user = await User.findOne({ email: credentials?.email });
         const user = await prisma.user.findFirst({
           where: {
             email: credentials.email as string,
@@ -50,10 +51,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token, user }: any) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.username = token.username;
+    async session({ session, token }: { session: import("next-auth").Session; token: import("next-auth/jwt").JWT }) {
+      (session.user as { id?: string; email?: string; username?: string }).id = token.id as string | undefined;
+      (session.user as { id?: string; email?: string; username?: string }).email = token.email as string | undefined;
+      (session.user as { id?: string; email?: string; username?: string }).username = token.username as string | undefined;
       return session;
     },
     async jwt({ token, user }) {
