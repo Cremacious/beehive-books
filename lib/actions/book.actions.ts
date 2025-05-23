@@ -9,7 +9,6 @@ export async function createNewBook(
   data: z.infer<typeof bookCreationFormSchema>
 ) {
   try {
-    console.log(data);
     const session = await auth();
     if (!session) {
       throw new Error('Session not found');
@@ -35,9 +34,38 @@ export async function createNewBook(
     });
     return {
       success: true,
-      message: 'Book created successfully',
+      message: `${bookData.title} created!`,
     };
   } catch (error) {
     return { success: false, message: `${formatError(error)}` };
+  }
+}
+
+export async function getAllUserBooks() {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error('Session not found');
+    }
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const existingUser = prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
+    const books = await prisma.book.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    return books;
+  } catch {
+    return [];
   }
 }

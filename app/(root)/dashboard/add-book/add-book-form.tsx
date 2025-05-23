@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createNewBook } from '@/lib/actions/book.actions';
-
+import { redirect } from 'next/navigation';
 import { bookCreationFormSchema } from '@/lib/validators/bookCreation';
 
 const AddBookForm = () => {
@@ -35,6 +35,7 @@ const AddBookForm = () => {
     const response = await createNewBook(values);
     if (response.success) {
       toast.success(response.message);
+      redirect('/dashboard');
     } else {
       toast.error(response.message);
     }

@@ -9,8 +9,8 @@ const AddBookPage = async () => {
   }
   return (
     <>
-      <div className="flex max-h-screen justify-center">
-        <div className="w-full max-w-7xl rounded-xl bg-white p-2 shadow-xl">
+      <div className="flex justify-center">
+        <div className="w-full max-w-4xl rounded-xl bg-white p-2 shadow-xl">
           <div className="rounded-xl bg-beeDark p-4">
             <AddBookForm />
           </div>
