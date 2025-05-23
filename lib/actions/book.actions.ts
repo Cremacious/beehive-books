@@ -1,3 +1,4 @@
+'use server';
 import { z } from 'zod';
 import { bookCreationFormSchema } from '../validators/bookCreation';
 import { formatError } from '../utils';
@@ -32,6 +33,10 @@ export async function createNewBook(
         userId: userId,
       },
     });
+    return {
+      success: true,
+      message: 'Book created successfully',
+    };
   } catch (error) {
     return { success: false, message: `${formatError(error)}` };
   }

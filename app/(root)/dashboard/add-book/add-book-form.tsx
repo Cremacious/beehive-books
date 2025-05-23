@@ -1,6 +1,6 @@
 'use client';
 import { Textarea } from '@/components/ui/textarea';
-// import { toast } from 'sonner';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-// import { createBook } from '@/lib/actions/book.actions';
+import { createNewBook } from '@/lib/actions/book.actions';
 
 import { bookCreationFormSchema } from '@/lib/validators/bookCreation';
 
@@ -32,12 +32,12 @@ const AddBookForm = () => {
 
   async function onSubmit(values: z.infer<typeof bookCreationFormSchema>) {
     console.log('values', values);
-    // const response = await createBook(userId, values);
-    // if (response.success) {
-    //   toast.success(response.message);
-    // } else {
-    //   toast.error(response.message);
-    // }
+    const response = await createNewBook(values);
+    if (response.success) {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
   }
 
   return (
