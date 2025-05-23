@@ -1,7 +1,10 @@
 'use server';
 
 // import connectDB from '@/lib/config/database';
-import { signUpFormSchema } from '../validators/accountCreation';
+import {
+  signInFormSchema,
+  signUpFormSchema,
+} from '../validators/accountCreation';
 // import User from '../models/User';
 import z from 'zod';
 import { formatError } from '../utils';
@@ -11,6 +14,28 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import prisma from '../config/prisma';
 // import { auth } from '../config/auth';
 import { signIn, signOut } from '@/lib/config/auth';
+
+export async function signInWithCredentials(
+  prevState: unknown,
+  formData: FormData
+) {
+  try {
+    const user = signInFormSchema.parse({
+      email: formData.get('email'),
+      password: formData.get('password'),
+    });
+
+    await signIn('credentials', user);
+
+    return { success: true, message: 'Signed in successfully' };
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    return { success: false, message: 'Invalid email or password' };
+  }
+}
 
 export async function signUpUserWithCredentials(
   data: z.infer<typeof signUpFormSchema>

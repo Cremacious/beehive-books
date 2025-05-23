@@ -1,83 +1,81 @@
 'use client';
-
-// import { toast } from 'sonner';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { signInFormSchema } from '@/lib/validators/accountCreation';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-// import { signIn } from 'next-auth/react';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
+import { useActionState } from 'react';
+import { signInWithCredentials } from '@/lib/actions/user.actions';
+import { useFormStatus } from 'react-dom';
 
 const SignInForm = () => {
-  const form = useForm<z.infer<typeof signInFormSchema>>({
-    resolver: zodResolver(signInFormSchema),
+  const [data, action] = useActionState(signInWithCredentials, {
+    message: '',
+    success: false,
   });
 
-  async function onSubmit(data: z.infer<typeof signInFormSchema>) {
-    console.log(data);
-    // const response = await signIn('credentials', {
-    //   redirect: false,
-    //   ...data,
-    // });
-    // if (response && response.ok) {
-    //   toast.success('User signed in successfully');
-    // } else {
-    //   toast.error(response?.error || 'Sign in failed');
-    // }
-  }
-
+  const SignInButton = () => {
+    const { pending } = useFormStatus();
+    return (
+      <Button disabled={pending} className="w-full font-bold" variant="default">
+        {pending ? 'Signing In...' : 'Sign In with credentials'}
+      </Button>
+    );
+  };
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-3xl space-y-4"
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-bold text-beeYellow">Email</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-bold text-beeYellow">
-                Password
-              </FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex justify-center">
-          <Button className="w-full" type="submit">
-            Sign In
-          </Button>
+    <form action={action}>
+      <div className="space-y-6">
+        <div>
+          <Label className="textOrange font-bold" htmlFor="email">
+            Email
+          </Label>
+          <Input
+            className="bg-white mt-2"
+            id="email"
+            name="email"
+            required
+            type="email"
+            // defaultValue={signInDefaultValues.email}
+            autoComplete="email"
+          />
         </div>
-      </form>
-    </Form>
+        <div>
+          <Label className="textOrange font-bold" htmlFor="password">
+            Password
+          </Label>
+          <Input
+            className="bg-white mt-2"
+            id="password"
+            name="password"
+            required
+            type="password"
+            // defaultValue={signInDefaultValues.password}
+            autoComplete="current-password"
+          />
+        </div>
+        <div>
+          <SignInButton />
+          {data && !data.success && (
+            <div className="text-center text-destructive">{data.message}</div>
+          )}
+        </div>
+
+        <div className="text-sm text-center text-white">
+          Don&apos;t have an account?{' '}
+          <span>
+            <Link
+              target="_self"
+              className="link textOrange font-bold"
+              href="/sign-up"
+            >
+              Sign Up
+            </Link>
+          </span>
+        </div>
+      </div>
+    </form>
   );
 };
 
 export default SignInForm;
+
+// mx-auto max-w-3xl space-y-4"
