@@ -1,15 +1,44 @@
-// 'use server';
+'use server';
 
 // import connectDB from '@/lib/config/database';
-// import {
-//   signUpFormSchema,
-// } from '../validators/accountCreation';
+import { signUpFormSchema } from '../validators/accountCreation';
 // import User from '../models/User';
-// import z from 'zod';
-// import { formatError } from '../utils';
-// import { hashSync } from 'bcrypt-ts-edge';
+import z from 'zod';
+import { formatError } from '../utils';
+import { hashSync } from 'bcrypt-ts-edge';
 // import { signIn, signOut } from '@/lib/config/auth';
-// import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import prisma from '../config/prisma';
+// import { auth } from '../config/auth';
+import { signIn, signOut } from '@/lib/config/auth';
+
+export async function signUpUserWithCredentials(
+  data: z.infer<typeof signUpFormSchema>
+) {
+  try {
+    const user = signUpFormSchema.parse(data);
+    const plainPassword = user.password;
+    user.password = hashSync(plainPassword, 10);
+    await prisma.user.create({
+      data: {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      },
+    });
+    await signIn('credentials', user);
+    return { success: true, message: 'User created successfully!' };
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+    return { success: false, message: `${formatError(error)}` };
+  }
+}
+
+export async function signOutUser() {
+  await signOut();
+}
 
 // export async function createUser(data: z.infer<typeof signUpFormSchema>) {
 //   try {
