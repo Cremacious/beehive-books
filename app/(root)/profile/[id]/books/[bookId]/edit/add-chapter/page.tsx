@@ -1,15 +1,21 @@
 import { getBookById } from '@/lib/actions/book.actions';
+import AddChapterForm from './add-chapter-form';
 
 const AddChapterPage = async (params: {
   params: Promise<{ id: string; bookId: string }>;
 }) => {
-  const { id, bookId } = await params.params;
+  const { bookId } = await params.params;
   const book = await getBookById(bookId);
   return (
     <>
-      Add Chapter Page
-      {book?.author}
-      {id}
+      <div className="flex justify-center">
+        <div className="w-full max-w-4xl rounded-xl bg-white p-2 shadow-xl">
+          <div className="rounded-xl bg-beeDark p-4">
+            {book?.title}
+            <AddChapterForm bookId={bookId} />
+          </div>
+        </div>
+      </div>
     </>
   );
 };
