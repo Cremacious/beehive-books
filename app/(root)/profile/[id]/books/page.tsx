@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getAllBooksByUserId } from '@/lib/actions/book.actions';
 
-const HivePage = async (params: { params: Promise<{ id: string }> }) => {
+const BooksPage = async (params: { params: Promise<{ id: string }> }) => {
   const { id } = await params.params;
   const books = await getAllBooksByUserId(id);
   return (
@@ -29,4 +29,4 @@ const HivePage = async (params: { params: Promise<{ id: string }> }) => {
   );
 };
 
-export default HivePage;
+export default BooksPage;
