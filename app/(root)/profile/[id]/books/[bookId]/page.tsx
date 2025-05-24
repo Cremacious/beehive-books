@@ -2,11 +2,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getBookById } from '@/lib/actions/book.actions';
 
-const BookPage = async ({
-  params,
-}: {
-  params: { id: string; bookId: string };
-}) => {
+const BookPage = async ({ params }: { params: { id: string; bookId: string } }) => {
   const { id, bookId } = params;
   const book = await getBookById(bookId);
 
@@ -21,26 +17,12 @@ const BookPage = async ({
   return (
     <div>
       <h1 className="text-3xl font-bold mb-2">{book.title}</h1>
-      <p>
-        <strong>Description:</strong> {book.description}
-      </p>
-      <p>
-        <strong>Author:</strong> {book.author}
-      </p>
-      <p>
-        <strong>Genre:</strong> {book.genre}
-      </p>
-      <p>
-        <strong>Category:</strong> {book.category}
-      </p>
-      <p>
-        <strong>Created:</strong>{' '}
-        {book.createdAt?.toLocaleString?.() ?? String(book.createdAt)}
-      </p>
-      <p>
-        <strong>Updated:</strong>{' '}
-        {book.updatedAt?.toLocaleString?.() ?? String(book.updatedAt)}
-      </p>
+      <p><strong>Description:</strong> {book.description}</p>
+      <p><strong>Author:</strong> {book.author}</p>
+      <p><strong>Genre:</strong> {book.genre}</p>
+      <p><strong>Category:</strong> {book.category}</p>
+      <p><strong>Created:</strong> {book.createdAt?.toLocaleString?.() ?? String(book.createdAt)}</p>
+      <p><strong>Updated:</strong> {book.updatedAt?.toLocaleString?.() ?? String(book.updatedAt)}</p>
       <Button variant="outline" asChild>
         <Link href={`/profile/${id}/books/${bookId}/edit`}>Edit Book</Link>
       </Button>
