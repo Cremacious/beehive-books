@@ -57,7 +57,7 @@ const BookPage = async ({
                 )}
                 <Button variant="outline" asChild className="ml-2">
                   <Link
-                    href={`/profile/${id}/books/${bookId}/edit/add-chapter/${chapter.id}`}
+                    href={`/profile/${id}/books/${bookId}/edit/edit-chapter/${chapter.id}`}
                   >
                     Edit Chapter
                   </Link>

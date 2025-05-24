@@ -7,7 +7,7 @@ import {
 import { formatError } from '../utils';
 import { auth } from '../config/auth';
 import prisma from '../config/prisma';
-
+import { revalidatePath } from 'next/cache';
 export async function createNewBook(
   data: z.infer<typeof bookCreationFormSchema>
 ) {
@@ -144,5 +144,58 @@ export async function addChapterToBook(
     };
   } catch (error) {
     return { success: false, message: `${formatError(error)}` };
+  }
+}
+
+export async function editChapter(
+  chapterId: string,
+  formData: z.infer<typeof chapterCreationFormSchema>
+) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error('Session not found');
+    }
+    const userId = session.user?.id;
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const existingUser = prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
+    const chapterData = chapterCreationFormSchema.parse(formData);
+    await prisma.chapter.update({
+      where: {
+        id: chapterId,
+      },
+      data: {
+        ...chapterData,
+      },
+    });
+    revalidatePath(`/books/${chapterId}`);
+    return {
+      success: true,
+      message: `Chapter ${chapterData.title} updated!`,
+    };
+  } catch (error) {
+    return { success: false, message: `${formatError(error)}` };
+  }
+}
+
+export async function getChapterById(chapterId: string) {
+  try {
+    const chapter = await prisma.chapter.findUnique({
+      where: {
+        id: chapterId,
+      },
+    });
+    return chapter;
+  } catch {
+    return null;
   }
 }
