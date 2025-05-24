@@ -3,14 +3,19 @@ import logo from '@/public/logo.png';
 import Link from 'next/link';
 import Sidebar from './Sidebar';
 import SignOutButton from './SignOutButton';
+import { auth } from '@/lib/config/auth';
 
-const Header = () => {
+const Header = async () => {
+  const session = await auth();
+  const userId = session?.user?.id;
+
   const links = [
     { href: '/', name: 'Home' },
     {
       href: '/dashboard',
       name: 'Dashboard',
     },
+    { href: `/profile/${userId}`, name: 'Profile' },
   ];
 
   return (

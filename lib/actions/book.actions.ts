@@ -69,3 +69,29 @@ export async function getAllUserBooks() {
     return [];
   }
 }
+
+export async function getAllBooksByUserId(userId: string) {
+  try {
+    const books = await prisma.book.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    return books;
+  } catch {
+    return [];
+  }
+}
+
+export async function getBookById(bookId: string) {
+  try {
+    const book = await prisma.book.findUnique({
+      where: {
+        id: bookId,
+      },
+    });
+    return book;
+  } catch {
+    return null;
+  }
+}
