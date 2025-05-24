@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-const ProfilePage = async (params: { params: Promise<{ id: string }> }) => {
-  const { id } = await params.params;
+const ProfilePage = async ({ params }: { params: { id: string } }) => {
+  const { id } = params;
   return (
     <>
       {id}

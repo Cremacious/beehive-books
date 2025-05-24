@@ -1,10 +1,12 @@
 import { getBookById } from '@/lib/actions/book.actions';
 import AddChapterForm from './add-chapter-form';
 
-const AddChapterPage = async (params: {
-  params: Promise<{ id: string; bookId: string }>;
+const AddChapterPage = async ({
+  params,
+}: {
+  params: { id: string; bookId: string };
 }) => {
-  const { bookId } = await params.params;
+  const { bookId } = params;
   const book = await getBookById(bookId);
   return (
     <>

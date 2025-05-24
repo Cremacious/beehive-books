@@ -1,10 +1,12 @@
 import { getBookById } from '@/lib/actions/book.actions';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-const EditPage = async (params: {
-  params: Promise<{ id: string; bookId: string }>;
+const EditPage = async ({
+  params,
+}: {
+  params: { id: string; bookId: string };
 }) => {
-  const { id, bookId } = await params.params;
+  const { id, bookId } = params;
   const book = await getBookById(bookId);
   return (
     <>
