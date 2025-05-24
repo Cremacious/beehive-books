@@ -47,6 +47,7 @@ user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 model Chapter {
   id        String   @id @default(cuid())
+  chapterId Int? 
   title     String
   content   String 
   bookId    String

@@ -92,6 +92,9 @@ export async function getBookById(bookId: string) {
       where: {
         id: bookId,
       },
+      include: {
+        chapters: true,
+      },
     });
     return book;
   } catch {
