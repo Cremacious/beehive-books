@@ -1,29 +1,64 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" version="27.0.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.0.9">
   <diagram name="Page-1" id="p6a_MJJC-GpZbaIJnbV3">
-    <mxGraphModel dx="3976" dy="1971" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3334" dy="2202" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="6-zMy_wvTMExowNVr2GS-2" value="Main" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1360" y="-1080" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-3" value="Dashboard" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1360" y="-800" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-4" value="Friends" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1640" y="-520" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-5" value="Add Book" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1360" y="-520" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-6" value="Messages" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1080" y="-520" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-7" value="View Profile" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-1080" y="-800" width="200" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="6-zMy_wvTMExowNVr2GS-8" value="Book Collection" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="6-zMy_wvTMExowNVr2GS-8" value="Book Collection" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-1920" y="-520" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="9XTfP5ERPya3eINa-_Ig-1" target="9XTfP5ERPya3eINa-_Ig-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-1" value="/profile/id/books" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1360" y="-240" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-16" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Books Page&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-1">
+          <mxGeometry x="40" y="80" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="9XTfP5ERPya3eINa-_Ig-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1320" y="-520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="9XTfP5ERPya3eINa-_Ig-2" target="9XTfP5ERPya3eINa-_Ig-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-2" value="/profile/id/books/id" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1360" y="-480" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-15" value="Book Page" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=25;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-2">
+          <mxGeometry x="25" y="80" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="9XTfP5ERPya3eINa-_Ig-6" target="9XTfP5ERPya3eINa-_Ig-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="9XTfP5ERPya3eINa-_Ig-6" target="9XTfP5ERPya3eINa-_Ig-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-6" value="/profile/id/books/i/edit" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1480" y="-720" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-18" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Edit Page&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-6">
+          <mxGeometry x="40" y="80" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-7" value="/profile/id/books/i/chapterid" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1240" y="-720" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-17" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Chapter Page&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-7">
+          <mxGeometry x="20" y="90" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-8" value="/profile/id/books/i/edit/edit-book" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1600" y="-960" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-20" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Edit Book Page&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-8">
+          <mxGeometry x="10" y="75" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-9" value="/profile/id/books/i/edit/add-chapter" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1360" y="-960" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="9XTfP5ERPya3eINa-_Ig-19" value="&lt;br&gt;&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Add Chapter&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(255, 255, 255); font-family: Helvetica; font-size: 25px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(27, 29, 30); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;Page&lt;/span&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="9XTfP5ERPya3eINa-_Ig-9">
+          <mxGeometry x="40" y="75" width="160" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
