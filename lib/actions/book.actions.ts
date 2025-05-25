@@ -8,6 +8,7 @@ import { formatError } from '../utils';
 import { auth } from '../config/auth';
 import prisma from '../config/prisma';
 import { revalidatePath } from 'next/cache';
+import { bookSelect } from '../constants';
 
 export async function createNewBook(
   data: z.infer<typeof bookCreationFormSchema>
@@ -67,7 +68,9 @@ export async function getAllUserBooks() {
       where: {
         userId: userId,
       },
+      select: bookSelect,
     });
+
     return books;
   } catch {
     return [];

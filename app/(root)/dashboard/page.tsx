@@ -2,18 +2,16 @@
 // import { Button } from '@/components/ui/button';
 import BookGallery from '@/components/shared/Books/BookGallery';
 import { getAllUserBooks } from '@/lib/actions/book.actions';
-import { Book} from '@/lib/types/Book';
 
 const DashboardPage = async () => {
-  const rawBooks = await getAllUserBooks();
-  console.log('books', rawBooks);
-  if (!rawBooks) {
-    return <div>No books found</div>;
+  const books = await getAllUserBooks();
+  if (!books) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold">No Books Found</h1>
+      </div>
+    );
   }
-  const books: Book[] = (rawBooks as Partial<Book>[]).map((book) => ({
-    ...book,
-    chapters: book.chapters ?? [],
-  })) as Book[];
 
   return (
     <>
