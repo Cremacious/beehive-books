@@ -1,37 +1,27 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { getAllUserBooks } from '@/lib/actions/book.actions';
-
+// import Link from 'next/link';
+// import { Button } from '@/components/ui/button';
+import BookCard from '@/components/shared/Books/BookCard';
 const DashboardPage = async () => {
-  const books = await getAllUserBooks();
-  if (!books) {
-    return (
-      <div className="container mx-auto rounded-2xl bg-white p-2 text-white shadow-xl">
-        <div className="rounded-2xl bg-beeDark p-4">No books found</div>
-      </div>
-    );
-  }
   return (
     <>
-      <section>
-        <div className="container mx-auto rounded-2xl bg-white p-2 text-white shadow-xl">
-          <div className="rounded-2xl bg-beeDark p-4">
-            Container
-            <Link href="/dashboard/add-book">
-              <Button className="">Add Book</Button>
-            </Link>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {books.map((book) => (
-                <div
-                  key={book.id}
-                  className="rounded-lg bg-beeYellow p-4 text-black"
-                >
-                  <h2 className="text-xl font-bold">{book.title}</h2>
-                  <p>{book.description}</p>
-                </div>
-              ))}
+      <section className="mb-4">
+        <div className="container justify-center mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-beeDark border-white border-8 rounded-xl p-8">
+              {' '}
+              Card
+            </div>
+            <div className="bg-beeDark border-white border-8 rounded-xl p-8">
+              {' '}
+              Card
             </div>
           </div>
+        </div>
+        <div className="flex-flex-col space-y-8 bg-beeDark p-8">
+          <BookCard />
+          <BookCard />
+          <BookCard />
+          <BookCard />
         </div>
       </section>
     </>

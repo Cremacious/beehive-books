@@ -1,9 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '@fontsource/caveat-brush';
+@import '@fontsource/gaegu';
+
+/* body {
+  font-family: Arial, Helvetica, sans-serif;
+} */
+
+/* body {
+  font-family: 'Caveat Brush', cursive;
+} */
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Gaegu', cursive;
 }
 
 @layer base {
@@ -83,5 +93,14 @@ body {
     background-image: url('./logo-bg.png');
     background-repeat: repeat;
     background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .roundShadow {
+    @apply shadow-xl rounded-xl;
+  }
+  .animationEffect {
+    @apply hover:scale-105 transition-transform cursor-pointer;
   }
 }

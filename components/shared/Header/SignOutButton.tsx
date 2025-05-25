@@ -11,7 +11,11 @@ const SignOutButton = () => {
     router.push('/');
   };
 
-  return <Button onClick={handleSignOut}>Sign Out</Button>;
+  return (
+    <Button className="text-lg" onClick={handleSignOut}>
+      Sign Out
+    </Button>
+  );
 };
 
 export default SignOutButton;
