@@ -9,20 +9,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Book } from '@/lib/types/Book';
 
-const BookCard = () => {
+const BookCard = ({ book }: { book: Book }) => {
+  if (!book) {
+    return (
+      <div className="bg-beeYellow p-4 roundShadow max-w-sm">
+        <div className="flex flex-row justify-around gap-4">
+          <div className="flex flex-col items-center ">
+            <div className="space-y-1 flex flex-col items-center ">
+              <div className="text-xl text-center font-bold line-clamp-3 break-words w-full">
+                No Book Found
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="bg-beeYellow p-4 roundShadow max-w-sm">
       <div className="flex flex-row justify-around gap-4">
         <div className="flex flex-col items-center ">
           <div className="space-y-1 flex flex-col items-center ">
             <div className="text-xl text-center font-bold line-clamp-3 break-words w-full">
-              The Hundred-Year-Old Man Who Climbed Out the Window and
-              Disappeared fdsf  fdsfsd fs fdfs 
+              {book.title}
             </div>
             <div className="text-center font-bold line-clamp-2 break-words">
-              Christopher Mackall Christopher Mackall Christopher Mackall
-              Christopher Mackall
+            {book.author}
             </div>
           </div>
         </div>

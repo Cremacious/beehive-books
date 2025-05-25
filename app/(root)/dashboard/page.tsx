@@ -1,7 +1,20 @@
 // import Link from 'next/link';
 // import { Button } from '@/components/ui/button';
-import BookCard from '@/components/shared/Books/BookCard';
+import BookGallery from '@/components/shared/Books/BookGallery';
+import { getAllUserBooks } from '@/lib/actions/book.actions';
+import { Book} from '@/lib/types/Book';
+
 const DashboardPage = async () => {
+  const rawBooks = await getAllUserBooks();
+  console.log('books', rawBooks);
+  if (!rawBooks) {
+    return <div>No books found</div>;
+  }
+  const books: Book[] = (rawBooks as Partial<Book>[]).map((book) => ({
+    ...book,
+    chapters: book.chapters ?? [],
+  })) as Book[];
+
   return (
     <>
       <section className="mb-4">
@@ -18,10 +31,7 @@ const DashboardPage = async () => {
           </div>
         </div>
         <div className="flex-flex-col space-y-8 bg-beeDark p-8">
-          <BookCard />
-          <BookCard />
-          <BookCard />
-          <BookCard />
+          <BookGallery books={books} />
         </div>
       </section>
     </>
