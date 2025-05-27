@@ -22,7 +22,12 @@ const ChapterPage = async (params: {
       </div>
 
       <div className="newCard p-8 max-w-7xl mx-auto">
-        <div className="text-2xl text-center text-white">{chapter.content}</div>
+        <div
+          className="text-2xl text-left text-white"
+          style={{ whiteSpace: 'pre-line' }}
+        >
+          {chapter.content}
+        </div>
       </div>
       <div className="newCard p-4 max-w-7xl mx-auto">
         <div className="text-2xl text-center text-beeYellow font-bold">

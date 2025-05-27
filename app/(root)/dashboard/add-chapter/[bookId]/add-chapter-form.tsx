@@ -64,9 +64,13 @@ const AddChapterForm = ({ bookId }: AddChapterFormProps) => {
             <FormItem>
               <FormLabel>Content</FormLabel>
               <FormControl>
-                <Input placeholder="" type="text" {...field} />
+                <textarea
+                  {...field}
+                  rows={10}
+                  className="w-full rounded border px-3 py-2"
+                  placeholder="Paste or type your chapter content here"
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
