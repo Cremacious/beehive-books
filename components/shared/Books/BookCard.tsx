@@ -16,7 +16,7 @@ import Link from 'next/link';
 const BookCard = ({ book }: { book: Book }) => {
   if (!book) {
     return (
-      <div className="bg-beeYellow p-4 roundShadow max-w-sm">
+      <div className="bg-beeYellow p-4 roundShadow max-w-sm mx-auto">
         <div className="flex flex-row justify-around gap-4">
           <div className="flex flex-col items-center ">
             <div className="space-y-1 flex flex-col items-center ">

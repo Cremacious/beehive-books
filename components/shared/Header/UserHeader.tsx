@@ -16,6 +16,9 @@ const Header = async () => {
       name: 'Dashboard',
     },
     { href: `/profile/${userId}`, name: 'Profile' },
+    { href: '/dashboard/my-books', name: 'My Books' },
+    { href: '/dashboard/my-books', name: 'Friends' },
+    { href: '/dashboard/my-books', name: 'Messages' },
   ];
 
   return (
