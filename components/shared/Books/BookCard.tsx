@@ -73,7 +73,12 @@ const BookCard = ({ book }: { book: Book }) => {
             <DropdownMenuItem>
               <Link href={`/dashboard/edit-book/${book.id}`}>Edit Book</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem>
+              {' '}
+              <Link href={`/dashboard/delete-book/${book.id}`}>
+                Delete Book
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="secondary" size="sm" className="text-lg">
