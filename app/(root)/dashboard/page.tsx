@@ -2,6 +2,7 @@
 // import { Button } from '@/components/ui/button';
 import BookGallery from '@/components/shared/Books/BookGallery';
 import { getAllUserBooks } from '@/lib/actions/book.actions';
+import AddBookButton from '@/components/shared/Books/AddBookButton';
 
 const DashboardPage = async () => {
   const books = await getAllUserBooks();
@@ -19,8 +20,7 @@ const DashboardPage = async () => {
         <div className="container justify-center mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-beeDark border-white border-8 rounded-xl p-8">
-              {' '}
-              Card
+              <AddBookButton />
             </div>
             <div className="bg-beeDark border-white border-8 rounded-xl p-8">
               {' '}

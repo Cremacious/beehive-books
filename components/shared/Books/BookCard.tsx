@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Book } from '@/lib/types/Book';
+import Link from 'next/link';
 
 const BookCard = ({ book }: { book: Book }) => {
   if (!book) {
@@ -36,7 +37,7 @@ const BookCard = ({ book }: { book: Book }) => {
               {book.title}
             </div>
             <div className="text-center font-bold line-clamp-2 break-words">
-            {book.author}
+              {book.author}
             </div>
           </div>
         </div>
@@ -58,12 +59,20 @@ const BookCard = ({ book }: { book: Book }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Options</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/dashboard/edit-book/${book.id}`}>View Book</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/dashboard/add-chapter/${book.id}`}>
+                Add Chapter
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/dashboard/edit-book/${book.id}`}>Edit Book</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="secondary" size="sm" className="text-lg">
