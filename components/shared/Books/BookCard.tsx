@@ -1,3 +1,4 @@
+'use client';
 import bookCoverImage from '@/assets/images/stock/bookCoverImage.jpg';
 import Image from 'next/image';
 import {
