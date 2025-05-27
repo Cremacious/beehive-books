@@ -1,7 +1,11 @@
 import DeleteChapterButton from './DeleteChapterButton';
 
-const DeleteBookPage = ({ params }: { params: { chapterId: string } }) => {
-  const { chapterId } = params;
+const DeleteBookPage = async ({
+  params,
+}: {
+  params: Promise<{ chapterId: string }>;
+}) => {
+  const { chapterId } = await params;
 
   return (
     <>
