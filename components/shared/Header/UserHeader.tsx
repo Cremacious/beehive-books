@@ -27,7 +27,7 @@ const Header = async () => {
         <Link href={'/'}>
           <Image className="" src={logo} alt="beehive books" width="200" />
         </Link>
-        <div className="hidden flex-row items-center gap-10 md:flex">
+        <div className="hidden flex-row items-center gap-8 md:flex">
           {links.map((link) => (
             <Link href={link.href} key={link.name}>
               <div className="font-bold text-2xl text-beeYellow">

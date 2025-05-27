@@ -103,4 +103,7 @@ body {
   .animationEffect {
     @apply hover:scale-105 transition-transform cursor-pointer;
   }
+  .newCard {
+    @apply bg-beeDark border-8 border-white shadow-xl rounded-xl;
+  }
 }

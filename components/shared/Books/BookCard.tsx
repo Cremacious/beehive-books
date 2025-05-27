@@ -81,8 +81,8 @@ const BookCard = ({ book }: { book: Book }) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="secondary" size="sm" className="text-lg">
-          Read Book
+        <Button asChild variant="secondary" size="sm" className="text-lg">
+          <Link href={`/book/${book.id}`}>View Book</Link>
         </Button>
       </div>
     </div>
