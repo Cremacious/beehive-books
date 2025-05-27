@@ -62,7 +62,7 @@ const BookCard = ({ book }: { book: Book }) => {
             <DropdownMenuLabel>Options</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/dashboard/edit-book/${book.id}`}>View Book</Link>
+              <Link href={`/book/${book.id}`}>View Book</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href={`/dashboard/add-chapter/${book.id}`}>
