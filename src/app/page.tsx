@@ -1,11 +1,9 @@
 import Link from 'next/link';
-import Navbar from '@/components/header/navbar';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-500 text-slate-900 dark:text-yellow-100">
+    <main className="min-h-screen flex flex-col items-center justify-between  text-slate-900 ">
       {/* Header */}
-      <Navbar />
 
       <section className="flex flex-col items-center gap-4 mt-12">
         <div className="flex gap-4">
@@ -21,6 +19,7 @@ export default function Home() {
           >
             Sign In
           </Link>
+          <Link href={'/dashboard'}>Dashboard</Link>
         </div>
       </section>
 
