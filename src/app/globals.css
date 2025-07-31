@@ -123,6 +123,6 @@
 
 @layer components {
   .whiteContainer {
-    @apply shadow-2xl rounded-2xl p-6 bg-white;
+    @apply shadow-lg rounded-2xl p-6 bg-white border-b-8 border-b-gray-200;
   }
 }
