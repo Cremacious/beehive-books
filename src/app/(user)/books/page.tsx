@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
 
-// Sample/mock data with more details
+
 const userBooks = [
   {
     id: '1',
@@ -51,7 +51,7 @@ const friendsBooks = [
 ];
 
 export default function BooksPage() {
-  // Community stats
+
   const totalBooks = userBooks.length;
   const totalFriendsBooks = friendsBooks.length;
   const totalChapters = userBooks.reduce((acc, b) => acc + b.chapters, 0);
@@ -189,7 +189,7 @@ export default function BooksPage() {
           ))}
         </div>
 
-        {/* Friends' Books Section */}
+      
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-slate-900 mb-6 font-['Caveat',cursive] flex items-center gap-2">
             Latest Books from Friends
