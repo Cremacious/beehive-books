@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
-
+import { Button } from '@/components/ui/button';
 
 const userBooks = [
   {
@@ -51,7 +51,6 @@ const friendsBooks = [
 ];
 
 export default function BooksPage() {
-
   const totalBooks = userBooks.length;
   const totalFriendsBooks = friendsBooks.length;
   const totalChapters = userBooks.reduce((acc, b) => acc + b.chapters, 0);
@@ -62,8 +61,6 @@ export default function BooksPage() {
   return (
     <div className="max-w-7xl mx-auto px-2">
       <div className="whiteContainer relative overflow-hidden">
-      
-
         <div className="relative mb-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
@@ -108,12 +105,14 @@ export default function BooksPage() {
           <h2 className="text-3xl font-bold text-slate-900 font-['Caveat',cursive] flex items-center gap-2">
             📖 My Books
           </h2>
-          <Link
-            href="/books/create"
+          {/* <Link
+            href="/books/create-book"
             className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-3 border-slate-900 text-center hover:scale-105 transform"
-          >
-            Create New Book
-          </Link>
+          > */}
+          <Button asChild>
+            <Link href="/books/create-book">Create New Book</Link>
+          </Button>
+          {/* </Link> */}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-16">
@@ -121,12 +120,8 @@ export default function BooksPage() {
             <div
               key={book.id}
               className="bg-slate-900 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 transition-all duration-300 hover:-translate-y-2"
-           
             >
-              <div
-                className="absolute inset-0 opacity-10 rounded-xl"
-             
-              />
+              <div className="absolute inset-0 opacity-10 rounded-xl" />
 
               <div className="relative z-10 flex flex-col items-center">
                 <Image
@@ -189,7 +184,6 @@ export default function BooksPage() {
           ))}
         </div>
 
-      
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-slate-900 mb-6 font-['Caveat',cursive] flex items-center gap-2">
             Latest Books from Friends
@@ -210,12 +204,8 @@ export default function BooksPage() {
                 <div
                   key={book.id}
                   className="bg-slate-900 rounded-xl shadow-lg p-5 flex flex-col items-center border-3 border-yellow-300 relative group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                
                 >
-                  <div
-                    className="absolute inset-0 opacity-10 rounded-xl"
-                 
-                  />
+                  <div className="absolute inset-0 opacity-10 rounded-xl" />
 
                   <div className="absolute top-3 right-3 text-yellow-400 opacity-70 group-hover:opacity-100 transition-opacity">
                     👥
