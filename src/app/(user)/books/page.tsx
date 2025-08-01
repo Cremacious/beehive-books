@@ -136,20 +136,21 @@ export default function BooksPage() {
                       style={{ aspectRatio: '7/10' }}
                       priority
                     />
-                    <h3 className="font-bold text-lg text-yellow-100 mb-1 text-center poppins line-clamp-2 min-h-[3.5rem]">
+                    <h3 className="font-bold text-lg text-yellow-100 mb-1 text-center poppins line-clamp-2">
                       {book.title}
                     </h3>
                     <p className="text-yellow-300 text-sm mb-2">
                       by {book.author}
                     </p>
-
-                    <div className="flex flex-wrap gap-1 mb-3 justify-center">
-                      <Badge variant={'wood'}>{book.genre}</Badge>
-                      <Badge variant={'wood'}>{book.privacy}</Badge>
-                    </div>
                   </div>
 
-                  <div className="flex gap-2 w-full justify-between items-center mt-auto">
+                  <div className="flex flex-wrap gap-1 mb-3 justify-center min-h-[2.5rem] items-start">
+                    <Badge variant={'wood'}>{book.genre}</Badge>
+                    <Badge variant={'wood'}>{book.privacy}</Badge>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 w-full justify-between items-center mt-auto">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
                         <Button variant={'secondary'}>Options</Button>
@@ -172,7 +173,6 @@ export default function BooksPage() {
                     <Button className="flex-1">Read</Button>
                   </div>
                 </div>
-              </div>
             ))}
           </div>
         </div>
