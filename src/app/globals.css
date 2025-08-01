@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@fontsource-variable/playwrite-br';
+@import '@fontsource/caveat-brush';
+@import '@fontsource-variable/playpen-sans';
+@import '@fontsource/poppins';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,7 +127,7 @@
 
 @layer components {
   .darkContainer {
-    @apply shadow-xl rounded-2xl p-6 bg-[#1b1b1b] border-b-8 border-b-[#0f0f0f];
+    @apply shadow-xl rounded-2xl md:px-6 px-2 py-6 bg-[#1b1b1b] border-b-8 border-b-[#0f0f0f];
   }
   .whiteContainer {
     @apply shadow-xl rounded-2xl p-6 bg-white border-b-8 border-b-yellow-400;
@@ -137,6 +141,21 @@
   .hoverAnimate2 {
     @apply transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer;
   }
+  .playwright {
+    font-family: 'Playwrite BR Variable', cursive;
+    font-weight: 400;
+  }
+  .caveatBrush {
+    font-family: 'Caveat Brush', cursive;
+    font-weight: 400;
+  }
+  .poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+body {
+  font-family: 'Playpen Sans Variable', cursive;
 }
 
 @layer utilities {

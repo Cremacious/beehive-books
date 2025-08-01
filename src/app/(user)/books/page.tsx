@@ -26,7 +26,7 @@ const userBooks = [
   },
   {
     id: '2',
-    title: 'Buzzing Stories',
+    title: 'Lord of the Rings: Fellowship of the Ring and More',
     author: 'Sam Bee',
     genre: 'Memoir',
     chapters: 8,
@@ -123,51 +123,54 @@ export default function BooksPage() {
             {userBooks.map((book) => (
               <div
                 key={book.id}
-                className="customDark2 hoverAnimate2 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative"
+                className="customDark2 hoverAnimate2 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative h-[400px]"
               >
-                <div className="flex flex-col items-center">
-                  <Image
-                    src={defaultCoverImage}
-                    alt={book.title}
-                    width={112}
-                    height={160}
-                    className="rounded-lg border-3 border-yellow-400 mb-3 object-cover shadow-lg group-hover:scale-105 transition-transform"
-                    style={{ aspectRatio: '7/10' }}
-                    priority
-                  />
-                  <h3 className="font-bold text-xl text-yellow-100 mb-1 text-center font-['Caveat',cursive]">
-                    {book.title}
-                  </h3>
-                  <p className="text-yellow-300 text-sm mb-2">
-                    by {book.author}
-                  </p>
+                <div className="flex flex-col items-center flex-1 justify-between">
+                  <div className="flex flex-col items-center">
+                    <Image
+                      src={defaultCoverImage}
+                      alt={book.title}
+                      width={112}
+                      height={160}
+                      className="rounded-lg border-3 border-yellow-400 mb-3 object-cover shadow-lg group-hover:scale-105 transition-transform"
+                      style={{ aspectRatio: '7/10' }}
+                      priority
+                    />
+                    <h3 className="font-bold text-lg text-yellow-100 mb-1 text-center poppins line-clamp-2 min-h-[3.5rem]">
+                      {book.title}
+                    </h3>
+                    <p className="text-yellow-300 text-sm mb-2">
+                      by {book.author}
+                    </p>
 
-                  <div className="flex flex-wrap gap-1 mb-3 justify-center">
-                    <Badge variant={'wood'}>{book.genre}</Badge>
-                    <Badge variant={'wood'}>{book.privacy}</Badge>
+                    <div className="flex flex-wrap gap-1 mb-3 justify-center">
+                      <Badge variant={'wood'}>{book.genre}</Badge>
+                      <Badge variant={'wood'}>{book.privacy}</Badge>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 w-full mt-3 justify-between items-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button variant={'secondary'}>Options</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/books/${book.id}`}>View</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/books/${book.id}/edit`}>Edit</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/books/${book.id}/share`}> Share</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <Button className="flex-1">Read</Button>
+
+                  <div className="flex gap-2 w-full justify-between items-center mt-auto">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button variant={'secondary'}>Options</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/books/${book.id}`}>View</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/books/${book.id}/edit`}>Edit</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/books/${book.id}/share`}> Share</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600">
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button className="flex-1">Read</Button>
+                  </div>
                 </div>
               </div>
             ))}

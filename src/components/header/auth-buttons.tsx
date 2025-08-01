@@ -13,18 +13,12 @@ export default function AuthButtons() {
   if (!session?.user) {
     return (
       <div className="flex gap-2">
-        <Link
-          href="/sign-in"
-          className="bg-black text-yellow-300 font-bold px-5 py-2 rounded-full border-2 border-yellow-400 hover:bg-slate-800 transition text-center"
-        >
-          Sign In
-        </Link>
-        <Link
-          href="/sign-up"
-          className="bg-yellow-400 text-slate-900 font-bold px-5 py-2 rounded-full shadow hover:bg-yellow-500 transition border-2 border-black text-center"
-        >
-          Sign Up
-        </Link>
+        <Button asChild variant="outline">
+          <Link href="/sign-in">Sign In</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/sign-up">Sign Up</Link>
+        </Button>
       </div>
     );
   }
