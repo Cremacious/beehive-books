@@ -131,11 +131,6 @@ export default function Home() {
           </p>
         </div>
       </section>
-
-      <footer className="w-full py-6 bg-black text-center text-yellow-400 text-sm border-t-4 border-yellow-400">
-        &copy; {new Date().getFullYear()} Beehive Books. Write, share, and grow
-        together.
-      </footer>
     </main>
   );
 }

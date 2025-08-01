@@ -6,6 +6,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import CreateBookButton from '@/components/buttons/create-book-button';
+import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
+import { Badge } from '@/components/ui/badge';
 
 const userBooks = [
   {
@@ -59,9 +63,9 @@ export default function BooksPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-2">
-      <div className="whiteContainer">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
+      <div className="darkContainer">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="whiteContainer">
             <h1 className="text-4xl font-bold text-yellow-700 mb-2 font-['Caveat',cursive] drop-shadow-sm">
               Your Bookshelf
             </h1>
@@ -71,113 +75,104 @@ export default function BooksPage() {
             </p>
           </div>
 
-          <div className="flex gap-4 flex-wrap">
-            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-              <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                {totalBooks}
+          <div className=" whiteContainer">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
+                <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+                  {totalBooks}
+                </div>
+                <div className="text-xs text-slate-600">My Books</div>
               </div>
-              <div className="text-xs text-slate-600">My Books</div>
+
+              <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
+                <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+                  {totalChapters}
+                </div>
+
+                <div className="text-xs text-slate-600">Chapters</div>
+              </div>
+
+              <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
+                <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+                  {totalComments}
+                </div>
+                <div className="text-xs text-slate-600">Comments</div>
+              </div>
+
+              <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
+                <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+                  {totalFriendsBooks}
+                </div>
+                <div className="text-xs text-slate-600">Friends Books</div>
+              </div>
             </div>
-            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-              <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                {totalChapters}
-              </div>
-              <div className="text-xs text-slate-600">Chapters</div>
-            </div>
-            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-              <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                {totalComments}
-              </div>
-              <div className="text-xs text-slate-600">Comments</div>
-            </div>
-            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-              <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                {totalFriendsBooks}
-              </div>
-              <div className="text-xs text-slate-600">Friends Books</div>
+            <div className="flex justify-center mt-4 w-full">
+              <CreateBookButton full={true} />
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-          <h2 className="text-3xl font-bold text-slate-900 font-['Caveat',cursive] flex items-center gap-2">
-            📖 My Books
-          </h2>
-          <Link
-            href="/books/create-book"
-            className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-3 border-slate-900 text-center hover:scale-105 transform"
-          >
-            Create New Books
-          </Link>
-        </div>
+        <div className="whiteContainer">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10 ">
+            <h2 className="text-3xl font-bold text-slate-900 font-['Caveat',cursive] flex items-center gap-2">
+              📖 My Books
+            </h2>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-16">
-          {userBooks.map((book) => (
-            <div
-              key={book.id}
-              className="bg-slate-900 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative"
-            >
-              <div className="flex flex-col items-center">
-                <Image
-                  src={book.cover}
-                  alt={book.title}
-                  width={112}
-                  height={160}
-                  className="rounded-lg border-3 border-yellow-400 mb-3 object-cover shadow-lg group-hover:scale-105 transition-transform"
-                  style={{ aspectRatio: '7/10' }}
-                  priority
-                />
-                <h3 className="font-bold text-xl text-yellow-100 mb-1 text-center font-['Caveat',cursive]">
-                  {book.title}
-                </h3>
-                <p className="text-yellow-300 text-sm mb-2">by {book.author}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-16">
+            {userBooks.map((book) => (
+              <div
+                key={book.id}
+                className="customDark2 hoverAnimate2 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative"
+              >
+                <div className="flex flex-col items-center">
+                  <Image
+                    src={defaultCoverImage}
+                    alt={book.title}
+                    width={112}
+                    height={160}
+                    className="rounded-lg border-3 border-yellow-400 mb-3 object-cover shadow-lg group-hover:scale-105 transition-transform"
+                    style={{ aspectRatio: '7/10' }}
+                    priority
+                  />
+                  <h3 className="font-bold text-xl text-yellow-100 mb-1 text-center font-['Caveat',cursive]">
+                    {book.title}
+                  </h3>
+                  <p className="text-yellow-300 text-sm mb-2">
+                    by {book.author}
+                  </p>
 
-                <div className="flex flex-wrap gap-1 mb-3 justify-center">
-                  <span className="bg-yellow-600/30 text-yellow-200 text-xs px-2 py-1 rounded-full border border-yellow-400/50">
-                    {book.genre}
-                  </span>
-                  <span className="bg-yellow-600/30 text-yellow-200 text-xs px-2 py-1 rounded-full border border-yellow-400/50">
-                    {book.chapters} chapters
-                  </span>
-                  <span className="bg-yellow-600/30 text-yellow-200 text-xs px-2 py-1 rounded-full border border-yellow-400/50">
-                    {book.privacy}
-                  </span>
+                  <div className="flex flex-wrap gap-1 mb-3 justify-center">
+                    <Badge variant={'wood'}>{book.genre}</Badge>
+                    <Badge variant={'wood'}>{book.privacy}</Badge>
+                  </div>
                 </div>
-
-                <div className="text-xs text-yellow-400 mb-1 text-center">
-                  {book.comments} comments
+                <div className="flex gap-2 w-full mt-3 justify-between items-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Button variant={'secondary'}>Options</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}`}>View</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}/edit`}>Edit</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}/share`}> Share</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600">
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button className="flex-1">Read</Button>
                 </div>
-                <div className="text-xs text-yellow-400 mb-1 text-center">
-                  Last edited by {book.lastEditedBy}
-                </div>
-                <span className="text-xs text-yellow-400 mb-3 text-center">
-                  Updated {book.updatedAt}
-                </span>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="bg-yellow-400 text-slate-900 font-semibold px-4 py-2 rounded-full border-2 border-slate-900 hover:bg-yellow-500 transition hover:scale-105 transform">
-                    Actions
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/books/${book.id}`}>View</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/books/${book.id}/edit`}>Edit</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/books/${book.id}/share`}> Share</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-slate-900 mb-6 font-['Caveat',cursive] flex items-center gap-2">
             Latest Books from Friends

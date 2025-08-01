@@ -1,14 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import defaultBookCover from '@/assets/stock/defaultBook.jpg';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
-// Mock data - replace with actual data fetching
 const mockBook = {
   id: '1',
   title: 'The Honey Trail',
@@ -79,17 +72,13 @@ export default async function BookPage({
 }) {
   const bookId = (await params).bookId;
 
-  // In a real app, you'd fetch the book data based on bookId
-  // const book = await getBookById(bookId);
   console.log('Loading book with ID:', bookId);
-
   const book = mockBook;
   const chapters = mockChapters;
 
   return (
     <div className="max-w-7xl mx-auto px-2">
-      <div className="whiteContainer">
-        {/* Back Button */}
+      <div className="darkContainer">
         <div className="mb-6">
           <Link
             href="/books"
@@ -99,9 +88,7 @@ export default async function BookPage({
           </Link>
         </div>
 
-        {/* Book Header Section */}
-        <div className="flex flex-col lg:flex-row gap-8 mb-10">
-          {/* Book Cover - Left Side */}
+        <div className="flex flex-col lg:flex-row gap-8 mb-10 whiteContainer">
           <div className="flex-shrink-0">
             <div className="relative">
               <Image
@@ -109,14 +96,13 @@ export default async function BookPage({
                 alt={book.title}
                 width={280}
                 height={400}
-                className="rounded-2xl border-4 border-yellow-400 shadow-2xl object-cover"
+                className="rounded-2xl shadow-2xl object-cover"
                 style={{ aspectRatio: '7/10' }}
                 priority
               />
             </div>
           </div>
 
-          {/* Book Details - Right Side */}
           <div className="flex-1">
             <div className="flex flex-col h-full">
               <div className="flex-1">
@@ -143,27 +129,26 @@ export default async function BookPage({
                   {book.description}
                 </p>
 
-                {/* Book Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center">
+                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
                       {book.chapters}
                     </div>
                     <div className="text-xs text-slate-600">Chapters</div>
                   </div>
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center">
+                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
                       {book.totalWords.toLocaleString()}
                     </div>
                     <div className="text-xs text-slate-600">Words</div>
                   </div>
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center">
+                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
                       {book.comments}
                     </div>
                     <div className="text-xs text-slate-600">Comments</div>
                   </div>
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center">
+                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
                       {book.likes}
                     </div>
@@ -171,24 +156,6 @@ export default async function BookPage({
                   </div>
                 </div>
 
-                {/* Tags */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                    Tags
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {book.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="bg-yellow-600/20 text-yellow-800 text-sm px-3 py-1 rounded-full border border-yellow-400/50"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Collaborators */}
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-slate-700 mb-2">
                     Collaborators
@@ -197,7 +164,7 @@ export default async function BookPage({
                     {book.collaborators.map((collaborator) => (
                       <span
                         key={collaborator}
-                        className="bg-slate-100 border-2 border-slate-200 text-slate-700 text-sm px-3 py-1 rounded-full"
+                        className="bg-yellow-100 border-b-2 border-b-yellow-400 text-slate-800 text-sm px-3 py-1 rounded-full"
                       >
                         👤 {collaborator}
                       </span>
@@ -232,8 +199,7 @@ export default async function BookPage({
           </div>
         </div>
 
-        {/* Chapters Section */}
-        <div className="border-t-4 border-yellow-200 pt-10 max-w-5xl mx-auto">
+        <div className="pt-10 max-w-5xl mx-auto p-6 whiteContainer">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <h2 className="text-3xl font-bold text-slate-900 font-['Caveat',cursive] flex items-center gap-2">
               Chapters
@@ -247,7 +213,7 @@ export default async function BookPage({
             {chapters.map((chapter, index) => (
               <div
                 key={chapter.id}
-                className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-all hover:border-yellow-300 group"
+                className="bg-yellow-50  border-b-4 border-b-yellow-400 border-yellow-200 rounded-2xl p-6 hover:shadow-lg transition-all hover:border-yellow-400 group"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
@@ -272,11 +238,11 @@ export default async function BookPage({
                       {chapter.title}
                     </h3>
 
-                    <p className="text-slate-600 mb-3 leading-relaxed">
+                    <p className="text-slate-800 mb-3 leading-relaxed">
                       {chapter.excerpt}
                     </p>
 
-                    <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+                    <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
                       <span> {chapter.wordCount.toLocaleString()} words</span>
                       <span>{chapter.comments} comments</span>
                       <span>Updated {chapter.updatedAt}</span>
@@ -296,17 +262,16 @@ export default async function BookPage({
             ))}
           </div>
 
-          {/* Add Chapter Prompt */}
           <div className="mt-8 text-center py-12 bg-yellow-50 rounded-2xl border-2 border-yellow-200 border-dashed">
             <div className="text-4xl mb-3">🐝</div>
-            <h3 className="text-xl font-bold text-yellow-700 mb-2 font-['Caveat',cursive]">
+            <h3 className="text-xl font-bold text-slate-800 mb-2 font-['Caveat',cursive]">
               Ready to add more chapters?
             </h3>
-            <p className="text-slate-600 mb-4">
+            <p className="text-slate-700 mb-4">
               Keep your story buzzing with new adventures!
             </p>
             <button className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-2 border-slate-900 hover:scale-105 transform">
-              ➕ Create New Chapter
+              Create New Chapter
             </button>
           </div>
         </div>

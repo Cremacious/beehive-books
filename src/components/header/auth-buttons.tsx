@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useSession, signOut } from '../../lib/auth-client';
 import Image from 'next/image';
 import defaultProfileImage from '@/assets/stock/stockProfile.png';
+import { Button } from '../ui/button';
 
 export default function AuthButtons() {
   const { data: session } = useSession();
@@ -48,12 +49,7 @@ export default function AuthButtons() {
           )}
         </Link>
       </div>
-      <button
-        onClick={() => signOut()}
-        className="bg-yellow-400 text-slate-900 font-bold px-5 py-2 rounded-full border-2 border-black hover:bg-yellow-500 transition"
-      >
-        Sign Out
-      </button>
+      <Button onClick={() => signOut()}>Sign Out</Button>
     </div>
   );
 }

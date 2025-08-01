@@ -122,7 +122,36 @@
 }
 
 @layer components {
-  .whiteContainer {
-    @apply shadow-lg rounded-2xl p-6 bg-white border-b-8 border-b-gray-200;
+  .darkContainer {
+    @apply shadow-xl rounded-2xl p-6 bg-[#1b1b1b] border-b-8 border-b-[#0f0f0f];
   }
+  .whiteContainer {
+    @apply shadow-xl rounded-2xl p-6 bg-white border-b-8 border-b-yellow-400;
+  }
+  .hoverAnimateTiny {
+    @apply transition-all duration-300 hover:-translate-y-0.25 hover:cursor-pointer;
+  }
+  .hoverAnimate1 {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer;
+  }
+  .hoverAnimate2 {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer;
+  }
+}
+
+@layer utilities {
+  .customDark {
+    background-color: #1b1b1b;
+  }
+  .customDark2 {
+    background-color: #252525;
+  }
+  .customCyan {
+    background-color: #3e9495;
+  }
+}
+
+.textOrange {
+  --custom-orange: #f7c062;
+  color: var(--custom-orange);
 }

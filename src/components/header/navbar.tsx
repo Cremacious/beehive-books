@@ -3,7 +3,7 @@ import AuthButtons from './auth-buttons';
 
 export default async function Navbar() {
   return (
-    <nav className="w-full px-6 py-4 bg-slate-900 border-b-4 border-slate-700 shadow-md">
+    <nav className="w-full px-6 py-4 customDark  shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center min-w-[180px]">
           <Link
@@ -18,19 +18,19 @@ export default async function Navbar() {
           <div className="flex gap-8 text-yellow-100 font-medium">
             <Link
               href="/dashboard"
-              className="hover:text-yellow-400 transition"
+              className="hover:text-yellow-400 hoverAnimateTiny"
             >
               Dashboard
             </Link>
-            <Link href="/books" className="hover:text-yellow-400 transition">
+            <Link href="/books" className="hover:text-yellow-400 hoverAnimateTiny">
               Books
             </Link>
-            <Link href="/friends" className="hover:text-yellow-400 transition">
+            <Link href="/friends" className="hover:text-yellow-400 hoverAnimateTiny">
               Friends
             </Link>
             <Link
               href="/notifications"
-              className="hover:text-yellow-400 transition"
+              className="hover:text-yellow-400 hoverAnimateTiny"
             >
               Messages
             </Link>
