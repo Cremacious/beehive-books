@@ -2,9 +2,14 @@ import CreateBookForm from '@/components/forms/create-book-form';
 
 export default function CreateBookPage({}) {
   return (
-    <div className="max-w-7xl mx-auto whiteContainer">
-      new book
-      <CreateBookForm />
+    <div className="max-w-5xl mx-auto p-2">
+      <div className="darkContainer">
+        <div className="whiteContainer">
+          <div className="md:p-6">
+            <CreateBookForm />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import AuthButtons from './auth-buttons';
-import hiveIcon from '@/assets/hive-icon2.png';
+import hiveIcon from '@/assets/hive-icon3.png';
 import { Sidebar } from './sidebar';
 export default async function Navbar() {
   return (

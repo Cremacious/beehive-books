@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-yellow-300 text-slate-800 font-bold rounded-xl border-b-4 border-b-yellow-400 hover:bg-yellow-400 hover:border-b-yellow-500 hover:text-slate-900 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer caveatBrush text-xl',
+          'bg-yellow-300 text-slate-800 font-bold rounded-xl border-b-4 border-b-yellow-400 hover:bg-yellow-400 hover:border-b-yellow-500 hover:text-slate-900 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer  text-xl',
         destructive:
           'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
-          'bg-[#181818] text-yellow-300 font-bold rounded-xl border-b-4 border-t-2 border-r-2 border-l-2 border-b-yellow-500 border-t-yellow-400 border-r-yellow-400  border-l-yellow-400 hover:bg-[#121212] hover:border-b-yellow-500 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer caveatBrush text-xl',
+          'bg-[#181818] text-yellow-300 font-bold rounded-xl border-b-4 border-t-2 border-r-2 border-l-2 border-b-yellow-500 border-t-yellow-400 border-r-yellow-400  border-l-yellow-400 hover:bg-[#121212] hover:border-b-yellow-500 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer text-xl',
         secondary:
-          'bg-white text-slate-800 font-bold rounded-xl border-b-4 border-b-slate-400 hover:bg-gray-200 hover:border-b-slate-500 hover:text-slate-900 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer caveatBrush text-xl',
+          'bg-white text-slate-800 font-bold rounded-xl border-b-4 border-b-slate-400 hover:bg-gray-200 hover:border-b-slate-500 hover:text-slate-900 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer text-xl',
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',

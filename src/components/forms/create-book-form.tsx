@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,34 +16,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { CloudUpload, Paperclip } from 'lucide-react';
-// import {
-//   FileInput,
-//   FileUploader,
-//   FileUploaderContent,
-//   FileUploaderItem,
-// } from '@/components/ui/fileUpload';
+
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
   title: z.string().min(1),
   author: z.string().min(1),
   category: z.string().min(1).optional(),
   genre: z.string().min(1),
-//   name_5929124379: z.string(),
+  //   name_5929124379: z.string(),
   description: z.string().optional(),
-//   isPrivate: z.unknown(),
+  //   isPrivate: z.unknown(),
 });
 
 export default function CreateBookForm() {
-  const [files, setFiles] = useState<File[] | null>(null);
-
-  const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
-  };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -65,126 +51,85 @@ export default function CreateBookForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="author"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Author</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+        <div className="flex flex-col gap-2">
+          <FormLabel className="font-semibold text-slate-700">
+            Book Cover
+          </FormLabel>
+          <input
+            type="file"
+            accept="image/*"
+            className="block w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-100 file:text-yellow-700 hover:file:bg-yellow-200 transition"
+            // TODO: Add onChange logic to handle file upload
+          />
+          <FormDescription>
+            Upload a cover image for your book (optional).
+          </FormDescription>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-4">
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" type="text" {...field} />
-                  </FormControl>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Book Title" type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="author"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Author</FormLabel>
+                <FormControl>
+                  <Input placeholder="Author Name" type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-4">
-            <FormField
-              control={form.control}
-              name="genre"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Genre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* <div className="col-span-4">
-            <FormField
-              control={form.control}
-              name="name_5929124379"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select File</FormLabel>
-                  <FormControl>
-                    <FileUploader
-                      value={files}
-                      onValueChange={setFiles}
-                      dropzoneOptions={dropZoneConfig}
-                      className="relative bg-background rounded-lg p-2"
-                    >
-                      <FileInput
-                        id="fileInput"
-                        className="outline-dashed outline-1 outline-slate-500"
-                      >
-                        <div className="flex items-center justify-center flex-col p-8 w-full ">
-                          <CloudUpload className="text-gray-500 w-10 h-10" />
-                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">
-                              Click to upload
-                            </span>
-                            &nbsp; or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            SVG, PNG, JPG or GIF
-                          </p>
-                        </div>
-                      </FileInput>
-                      <FileUploaderContent>
-                        {files &&
-                          files.length > 0 &&
-                          files.map((file, i) => (
-                            <FileUploaderItem key={i} index={i}>
-                              <Paperclip className="h-4 w-4 stroke-current" />
-                              <span>{file.name}</span>
-                            </FileUploaderItem>
-                          ))}
-                      </FileUploaderContent>
-                    </FileUploader>
-                  </FormControl>
-                  <FormDescription>Select a file to upload.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g. Fiction, Non-fiction"
+                    type="text"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="genre"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Genre</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g. Fantasy, Memoir"
+                    type="text"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
@@ -194,35 +139,20 @@ export default function CreateBookForm() {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="" className="resize-none" {...field} />
+                <Textarea
+                  placeholder="Brief description of your book..."
+                  className="resize-none min-h-[100px]"
+                  {...field}
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
-        {/* <FormField
-          control={form.control}
-          name="isPrivate"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Make Book Private?</FormLabel>
-                <FormDescription>
-                  Setting to private makes the book only visible to friends
-                </FormDescription>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        /> */}
-        <Button type="submit">Submit</Button>
+
+        <div className="flex justify-end">
+          <Button type="submit">Create Book</Button>
+        </div>
       </form>
     </Form>
   );

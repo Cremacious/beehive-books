@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import defaultBookCover from '@/assets/stock/defaultBook.jpg';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import CreateChapterButton from '@/components/buttons/create-chapter-button';
 
 const mockBook = {
   id: '1',
@@ -10,7 +13,7 @@ const mockBook = {
   description:
     'A thrilling adventure through the mystical honey trails of the ancient forest. Follow our hero as they discover the secrets of the golden nectar and the wisdom of the ancient bee kingdom.',
   privacy: 'Public',
-  status: 'In Progress',
+  status: 'inProgress',
   chapters: 12,
   totalWords: 45230,
   comments: 8,
@@ -29,7 +32,7 @@ const mockChapters = [
     excerpt:
       'It was a golden morning when Maya first stumbled upon the hidden path...',
     wordCount: 3250,
-    status: 'Published',
+    status: 'completed',
     comments: 2,
     updatedAt: '2025-07-30',
   },
@@ -39,7 +42,7 @@ const mockChapters = [
     excerpt:
       'The trees whispered secrets as Maya ventured deeper into the forest...',
     wordCount: 4100,
-    status: 'Published',
+    status: 'completed',
     comments: 3,
     updatedAt: '2025-07-28',
   },
@@ -49,7 +52,7 @@ const mockChapters = [
     excerpt:
       'A massive golden bee emerged from the shadows, its wings shimmering...',
     wordCount: 3850,
-    status: 'Draft',
+    status: 'inProgress',
     comments: 1,
     updatedAt: '2025-07-25',
   },
@@ -59,7 +62,7 @@ const mockChapters = [
     excerpt:
       'Three challenges awaited Maya, each more difficult than the last...',
     wordCount: 0,
-    status: 'Outline',
+    status: 'inProgress',
     comments: 0,
     updatedAt: '2025-07-20',
   },
@@ -106,23 +109,23 @@ export default async function BookPage({
           <div className="flex-1">
             <div className="flex flex-col h-full">
               <div className="flex-1">
-                <h1 className="text-5xl font-bold text-yellow-700 mb-3 font-['Caveat',cursive] drop-shadow-sm">
+                <h1 className="text-5xl font-bold text-yellow-700 mb-3 poppins drop-shadow-sm">
                   {book.title}
                 </h1>
-                <p className="text-2xl text-slate-600 mb-4 font-['Caveat',cursive]">
+                <p className="text-2xl text-slate-600 mb-4 poppins">
                   by {book.author}
                 </p>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="bg-yellow-100 border-2 border-yellow-300 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                  <Badge className="" variant={'wood'}>
                     {book.genre}
-                  </span>
-                  <span className="bg-slate-100 border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full text-sm font-semibold">
+                  </Badge>
+                  <Badge className="" variant={'public'}>
                     {book.privacy}
-                  </span>
-                  <span className="bg-green-100 border-2 border-green-300 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                  </Badge>
+                  <Badge className="" variant={'inProgress'}>
                     {book.status}
-                  </span>
+                  </Badge>
                 </div>
 
                 <p className="text-slate-700 text-lg leading-relaxed mb-6">
@@ -204,9 +207,7 @@ export default async function BookPage({
             <h2 className="text-3xl font-bold text-slate-900 font-['Caveat',cursive] flex items-center gap-2">
               Chapters
             </h2>
-            <button className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-2 border-slate-900 hover:scale-105 transform w-fit">
-              Add Chapter
-            </button>
+            <Button className="">Add Chapter</Button>
           </div>
 
           <div className="space-y-4">
@@ -218,23 +219,17 @@ export default async function BookPage({
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="bg-yellow-400 text-slate-900 font-bold px-3 py-1 rounded-full text-sm border-2 border-slate-900">
-                        Chapter {index + 1}
-                      </span>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold border-2 ${
-                          chapter.status === 'Published'
-                            ? 'bg-green-100 text-green-800 border-green-300'
-                            : chapter.status === 'Draft'
-                            ? 'bg-blue-100 text-blue-800 border-blue-300'
-                            : 'bg-gray-100 text-gray-800 border-gray-300'
-                        }`}
-                      >
-                        {chapter.status}
-                      </span>
+                      <Badge variant={'chapter'}>Chapter {index + 1}</Badge>
+                      {chapter.status === 'completed' ? (
+                        <Badge variant={'completed'}>Completed</Badge>
+                      ) : chapter.status === 'inProgress' ? (
+                        <Badge variant={'inProgress'}>In Progress</Badge>
+                      ) : (
+                        <Badge variant={'wood'}>Draft</Badge>
+                      )}
                     </div>
 
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2 font-['Caveat',cursive] group-hover:text-yellow-700 transition-colors">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2 poppins group-hover:text-yellow-700 transition-colors">
                       {chapter.title}
                     </h3>
 
@@ -250,12 +245,8 @@ export default async function BookPage({
                   </div>
 
                   <div className="flex gap-2 flex-shrink-0">
-                    <button className="bg-yellow-400 text-slate-900 font-semibold px-4 py-2 rounded-full border-2 border-slate-900 hover:bg-yellow-500 transition hover:scale-105 transform">
-                      📖 Read
-                    </button>
-                    <button className="bg-white text-slate-700 font-semibold px-4 py-2 rounded-full border-2 border-slate-300 hover:border-yellow-400 transition hover:scale-105 transform">
-                      ✏️ Edit
-                    </button>
+                    <Button>Read</Button>
+                    <Button variant={'secondary'}>Edit</Button>
                   </div>
                 </div>
               </div>
@@ -270,9 +261,7 @@ export default async function BookPage({
             <p className="text-slate-700 mb-4">
               Keep your story buzzing with new adventures!
             </p>
-            <button className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-2 border-slate-900 hover:scale-105 transform">
-              Create New Chapter
-            </button>
+            <CreateChapterButton />
           </div>
         </div>
       </div>

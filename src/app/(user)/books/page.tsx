@@ -151,28 +151,28 @@ export default function BooksPage() {
                 </div>
 
                 <div className="flex gap-2 w-full justify-between items-center mt-auto">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button variant={'secondary'}>Options</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/books/${book.id}`}>View</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/books/${book.id}/edit`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/books/${book.id}/share`}> Share</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button className="flex-1">Read</Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Button variant={'secondary'}>Options</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}`}>View</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}/edit`}>Edit</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/books/${book.id}/share`}> Share</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600">
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button className="flex-1">Read</Button>
                 </div>
+              </div>
             ))}
           </div>
         </div>
