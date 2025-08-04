@@ -3,6 +3,7 @@ import Image from 'next/image';
 import AuthButtons from './auth-buttons';
 import hiveIcon from '@/assets/hive-icon3.png';
 import { Sidebar } from './sidebar';
+import { ROUTES } from '@/lib/constants';
 export default async function Navbar() {
   return (
     <nav className="w-full px-6 py-4 customDark  shadow-lg">
@@ -23,37 +24,22 @@ export default async function Navbar() {
 
         <div className="flex-1 md:flex hidden justify-center">
           <div className="flex gap-8 text-yellow-100 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/books"
-              className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
-            >
-              Books
-            </Link>
-            <Link
-              href="/friends"
-              className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
-            >
-              Friends
-            </Link>
-            <Link
-              href="/notifications"
-              className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
-            >
-              Messages
-            </Link>
+            {ROUTES.map((route) => (
+              <Link
+                key={route.path}
+                href={route.path}
+                className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
+              >
+                {route.name}
+              </Link>
+            ))}
           </div>
         </div>
 
         <div className="hidden md:flex items-center min-w-[180px] justify-end ">
           <AuthButtons />
         </div>
-        <div className='md:hidden'>
+        <div className="md:hidden">
           <Sidebar />
         </div>
       </div>
