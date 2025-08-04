@@ -170,7 +170,9 @@ export default function BooksPage() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <Button className="flex-1">Read</Button>
+                  <Button asChild className="flex-1">
+                    <Link href={`/books/book/${book.id}`}>Read</Link>
+                  </Button>
                 </div>
               </div>
             ))}

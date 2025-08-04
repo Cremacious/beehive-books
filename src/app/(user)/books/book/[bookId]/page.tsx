@@ -245,7 +245,9 @@ export default async function BookPage({
                   </div>
 
                   <div className="flex gap-2 flex-shrink-0">
-                    <Button>Read</Button>
+                    <Button asChild>
+                      <Link href={`/books/book/${book.id}/chapter/${chapter.id}`}>Read</Link>
+                    </Button>
                     <Button variant={'secondary'}>Edit</Button>
                   </div>
                 </div>
