@@ -52,7 +52,7 @@ const mockMessages = [
   // ...add more for pagination
 ];
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 15;
 
 export default function MessagesPage() {
   const [page, setPage] = useState(1);
