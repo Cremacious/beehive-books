@@ -246,7 +246,9 @@ export default async function BookPage({
 
                   <div className="flex gap-2 flex-shrink-0">
                     <Button asChild>
-                      <Link href={`/books/book/${book.id}/chapter/${chapter.id}`}>Read</Link>
+                      <Link href={`/books/${book.id}/chapters/${chapter.id}`}>
+                        Read
+                      </Link>
                     </Button>
                     <Button variant={'secondary'}>Edit</Button>
                   </div>
@@ -254,6 +256,7 @@ export default async function BookPage({
               </div>
             ))}
           </div>
+          <Link href={`/books/33/chapters/create`}>Create New Chapter</Link>
 
           <div className="mt-8 text-center py-12 bg-yellow-50 rounded-2xl border-2 border-yellow-200 border-dashed">
             <div className="text-4xl mb-3">🐝</div>

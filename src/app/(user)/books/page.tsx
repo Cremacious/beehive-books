@@ -171,7 +171,7 @@ export default function BooksPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button asChild className="flex-1">
-                    <Link href={`/books/book/${book.id}`}>Read</Link>
+                    <Link href={`/books/${book.id}`}>Read</Link>
                   </Button>
                 </div>
               </div>
