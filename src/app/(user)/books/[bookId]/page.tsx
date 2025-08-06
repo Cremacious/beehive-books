@@ -4,6 +4,7 @@ import defaultBookCover from '@/assets/stock/defaultBook.jpg';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import CreateChapterButton from '@/components/buttons/create-chapter-button';
+import BookDetailsHero from '@/components/books/book-details-hero';
 
 const mockBook = {
   id: '1',
@@ -91,116 +92,7 @@ export default async function BookPage({
           </Link>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 mb-10 whiteContainer">
-          <div className="flex-shrink-0">
-            <div className="relative">
-              <Image
-                src={book.cover}
-                alt={book.title}
-                width={280}
-                height={400}
-                className="rounded-2xl shadow-2xl object-cover"
-                style={{ aspectRatio: '7/10' }}
-                priority
-              />
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="flex flex-col h-full">
-              <div className="flex-1">
-                <h1 className="text-5xl font-bold text-yellow-700 mb-3 poppins drop-shadow-sm">
-                  {book.title}
-                </h1>
-                <p className="text-2xl text-slate-600 mb-4 poppins">
-                  by {book.author}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="" variant={'wood'}>
-                    {book.genre}
-                  </Badge>
-                  <Badge className="" variant={'public'}>
-                    {book.privacy}
-                  </Badge>
-                  <Badge className="" variant={'inProgress'}>
-                    {book.status}
-                  </Badge>
-                </div>
-
-                <p className="text-slate-700 text-lg leading-relaxed mb-6">
-                  {book.description}
-                </p>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                      {book.chapters}
-                    </div>
-                    <div className="text-xs text-slate-600">Chapters</div>
-                  </div>
-                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                      {book.totalWords.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-slate-600">Words</div>
-                  </div>
-                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                      {book.comments}
-                    </div>
-                    <div className="text-xs text-slate-600">Comments</div>
-                  </div>
-                  <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                      {book.likes}
-                    </div>
-                    <div className="text-xs text-slate-600">Likes</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                    Collaborators
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {book.collaborators.map((collaborator) => (
-                      <span
-                        key={collaborator}
-                        className="bg-yellow-100 border-b-2 border-b-yellow-400 text-slate-800 text-sm px-3 py-1 rounded-full"
-                      >
-                        👤 {collaborator}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              {/* <div className="flex flex-wrap gap-3 mt-6">
-                <button className="bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition border-2 border-slate-900 hover:scale-105 transform">
-                  📖 Start Reading
-                </button>
-                <button className="bg-slate-900 text-yellow-100 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-slate-800 transition border-2 border-yellow-400 hover:scale-105 transform">
-                  ✏️ Edit Book
-                </button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="bg-white text-slate-700 font-semibold px-6 py-3 rounded-full border-2 border-slate-300 hover:border-slate-400 transition hover:scale-105 transform">
-                    More Actions
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>🔗 Share Book</DropdownMenuItem>
-                    <DropdownMenuItem>💾 Download</DropdownMenuItem>
-                    <DropdownMenuItem>📊 Analytics</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      🗑️ Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div> */}
-            </div>
-          </div>
-        </div>
+        <BookDetailsHero book={book} />
 
         <div className="pt-10 max-w-5xl mx-auto p-6 whiteContainer">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
