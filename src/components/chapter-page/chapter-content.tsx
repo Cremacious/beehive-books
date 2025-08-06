@@ -62,10 +62,12 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
         </Select>
         <div className="flex gap-2 items-center">
           <label className="font-semibold text-slate-700">Dark Mode:</label>
+
           <Button
+            size={'sm'}
             type="button"
-            variant={dark ? 'default' : 'secondary'}
-            className={dark ? 'bg-yellow-700 text-white' : ''}
+            variant={dark ? 'darkMode' : 'lightMode'}
+         
             onClick={() => setDark((d) => !d)}
           >
             {dark ? 'On' : 'Off'}

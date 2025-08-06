@@ -1,6 +1,6 @@
+'use client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import {
   Sheet,
   SheetClose,
@@ -13,9 +13,19 @@ import {
 } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
-import Link from 'next/link';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleButtonClick = (path: string) => {
+    setIsOpen(!isOpen);
+    router.push(path);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -25,28 +35,28 @@ export function Sidebar() {
       </SheetTrigger>
       <SheetContent className="bg-[#202020] text-yellow-300 border-0">
         <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </SheetDescription>
+          <SheetTitle className="text-xl font-extrabold tracking-tight text-yellow-300 playwright">
+            Beehive Books
+          </SheetTitle>
         </SheetHeader>
-        {ROUTES.map((route) => (
-          <div key={route.path}>
-            <Button className="">
-              <Link
-                href={route.path}
-             
-              >
-               {route.name}
-              </Link>
+        <div className="space-y-4 mx-2 mt-6">
+          {ROUTES.map((route) => (
+            <Button
+              key={route.name}
+              variant="ghost"
+              onClick={() => handleButtonClick(route.path)}
+              className="text-xl font-bold w-full text-center px-4 py-6 text-yellow-300  relative overflow-hidden rounded-lg transition-all duration-300 group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+
+              <div className="absolute inset-0 backdrop-blur-sm border border-white/20 group-hover:border-white/40 rounded-lg transition-all duration-300"></div>
+
+              <span className="relative z-10">{route.name}</span>
             </Button>
-          </div>
-        ))}
+          ))}
+        </div>
         <SheetFooter>
-          <Button type="submit">Save changes</Button>
-          <SheetClose asChild>
-            <Button variant="outline">Close</Button>
-          </SheetClose>
+          <Button type="submit">Sign Out</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
