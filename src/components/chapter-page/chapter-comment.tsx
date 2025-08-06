@@ -15,7 +15,7 @@ export default function ChapterComment({ comment }: { comment: CommentType }) {
         </div>
       </div>
       {comment.replies.length === 0 ? null : (
-        <div className="mt-4 pl-4 border-l-2 border-slate-700">
+        <div className="mt-4 pl-4 border-l-2 border-slate-200">
           {comment.replies.map((reply) => (
             <div
               key={reply.id}
