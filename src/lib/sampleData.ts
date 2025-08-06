@@ -31,11 +31,80 @@ export const userBooks: BookType[] = [
         comments: [
           {
             id: 1,
+            authorId: 1,
             content: 'Great start!',
             createdAt: '2025-07-01T13:00:00Z',
             chapterId: 1,
             author: { id: 2, name: 'Alex Friend' },
-            replies: [],
+            replies: [
+              {
+                id: 1,
+                authorId: 2,
+                content: 'I agree, very engaging!',
+                createdAt: '2025-07-01T14:00:00Z',
+                chapterId: 1,
+                author: { id: 2, name: 'Alex Friend' },
+                replies: [
+                  {
+                    id: 1,
+                    authorId: 3,
+                    content: 'Looking forward to more!',
+                    createdAt: '2025-07-01T15:00:00Z',
+                    chapterId: 1,
+                    author: { id: 3, name: 'Sam Bee' },
+                    replies: [],
+                  },
+                ],
+              },
+              {
+                id: 5,
+                authorId: 2,
+                content: 'I agree, very engaging!',
+                createdAt: '2025-07-01T14:00:00Z',
+                chapterId: 1,
+                author: { id: 2, name: 'Alex Friend' },
+                replies: [
+                  {
+                    id: 1,
+                    authorId: 3,
+                    content: 'Looking forward to more!',
+                    createdAt: '2025-07-01T15:00:00Z',
+                    chapterId: 1,
+                    author: { id: 3, name: 'Sam Bee' },
+                    replies: [],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 2,
+            authorId: 1,
+            content: 'Great start! add more of something',
+            createdAt: '2025-07-01T13:00:00Z',
+            chapterId: 1,
+            author: { id: 2, name: 'Alex Friend' },
+            replies: [
+              {
+                id: 1,
+                authorId: 2,
+                content: 'I agree, very engaging!',
+                createdAt: '2025-07-01T14:00:00Z',
+                chapterId: 1,
+                author: { id: 2, name: 'Alex Friend' },
+                replies: [
+                  {
+                    id: 1,
+                    authorId: 3,
+                    content: 'Looking forward to more!',
+                    createdAt: '2025-07-01T15:00:00Z',
+                    chapterId: 1,
+                    author: { id: 3, name: 'Sam Bee' },
+                    replies: [],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -53,6 +122,7 @@ export const userBooks: BookType[] = [
         comments: [
           {
             id: 1,
+            authorId: 2,
             content: 'Great start!',
             createdAt: '2025-07-01T13:00:00Z',
             chapterId: 1,
@@ -65,6 +135,7 @@ export const userBooks: BookType[] = [
     comments: [
       {
         id: 2,
+        authorId: 2,
         content: 'Love this book!',
         createdAt: '2025-07-02T09:00:00Z',
         chapterId: 1,
@@ -130,6 +201,7 @@ export const friendsBooks: BookType[] = [
     comments: [
       {
         id: 3,
+        authorId: 1,
         content: 'Fascinating concept!',
         createdAt: '2025-07-16T11:00:00Z',
         chapterId: 2,

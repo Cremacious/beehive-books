@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { userBooks } from '@/lib/sampleData';
 import Link from 'next/link';
 
+
 export default function ChapterPage() {
   const chapter = userBooks[0].chapters[0];
 
@@ -42,7 +43,7 @@ export default function ChapterPage() {
         </div>
         <ChapterContent chapter={chapter} />
 
-        <CommentSection />
+        <CommentSection comments={chapter.comments} />
       </div>
     </div>
   );

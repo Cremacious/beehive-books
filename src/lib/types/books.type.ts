@@ -20,7 +20,7 @@ export type BookType = {
 
 export type ChapterType = {
   id: number;
-  author: string,
+  author: string;
   title: string;
   notes?: string;
   content: string;
@@ -34,6 +34,7 @@ export type ChapterType = {
 
 export type CommentType = {
   id: number;
+  authorId: number;
   content: string;
   createdAt: string;
   chapterId: number;

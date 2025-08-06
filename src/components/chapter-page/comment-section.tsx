@@ -1,6 +1,12 @@
 import { Button } from '../ui/button';
+import { CommentType } from '@/lib/types/books.type';
+import ChapterComment from './chapter-comment';
 
-export default function CommentSection() {
+export default function CommentSection({
+  comments,
+}: {
+  comments: CommentType[];
+}) {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="whiteContainer">
@@ -8,14 +14,13 @@ export default function CommentSection() {
           💬 Comments
         </h2>
         <div className="space-y-4 mb-6">
-          {/* Example comment */}
-          <div className="bg-yellow-100 rounded-lg p-4 border-l-4 border-yellow-400">
-            <div className="font-semibold text-yellow-800 mb-1">Sam Reader</div>
-            <div className="text-slate-800">
-              Loved this chapter! The world feels so alive 🐝
-            </div>
-            <div className="text-xs text-slate-500 mt-1">2025-07-31</div>
-          </div>
+          {comments.length === 0 ? (
+            <div>No comments yet</div>
+          ) : (
+            comments.map((comment) => (
+              <ChapterComment key={comment.id} comment={comment} />
+            ))
+          )}
         </div>
         <form className="flex flex-col gap-2">
           <textarea
