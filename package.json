@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@fontsource-variable/eb-garamond": "^5.2.6",
     "@fontsource-variable/playpen-sans": "^5.2.7",
     "@fontsource-variable/playwrite-br": "^5.2.8",
     "@fontsource/caveat-brush": "^5.2.6",

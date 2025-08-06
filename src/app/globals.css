@@ -4,6 +4,7 @@
 @import '@fontsource/caveat-brush';
 @import '@fontsource-variable/playpen-sans';
 @import '@fontsource/poppins';
+@import '@fontsource-variable/eb-garamond';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -151,6 +152,9 @@
   }
   .poppins {
     font-family: 'Poppins', sans-serif;
+  }
+  .garamond {
+    font-family: 'EB Garamond Variable', serif;
   }
 }
 

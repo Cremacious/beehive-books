@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { BookType } from '@/lib/types/books.type';
+import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 
 export default function BookDetailsHero({ book }: { book: BookType }) {
   return (
@@ -8,7 +9,7 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
       <div className="flex-shrink-0">
         <div className="relative">
           <Image
-            src={book.cover ?? '/placeholder-cover.jpg'}
+            src={book.cover && book.cover !== '' ? book.cover : defaultCoverImage}
             alt={book.title}
             width={280}
             height={400}
@@ -42,7 +43,7 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
             </div>
 
             <p className="text-slate-700 text-lg leading-relaxed mb-6">
-              {book.description}
+              {book.description !== '' ? book.description : 'No description'}
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

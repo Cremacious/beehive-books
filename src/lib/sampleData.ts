@@ -8,8 +8,9 @@ export const userBooks: BookType[] = [
     genre: 'Adventure',
     category: 'Fiction',
     privacy: 'Public',
-    cover: '/default-book-cover.png',
+    cover: '',
     lastEditedBy: 1,
+    description: 'A book about the thing that went and did the other thing.',
     createdAt: '2025-07-01T10:00:00Z',
     publishedAt: '2025-07-10T10:00:00Z',
     updatedAt: '2025-07-30T12:00:00Z',
@@ -19,6 +20,29 @@ export const userBooks: BookType[] = [
       {
         id: 1,
         title: 'A New Hive',
+        author: 'John Doe',
+        notes: 'Intro to the world',
+        content: 'Once upon a time...',
+        privacy: 'Public',
+        createdAt: '2025-07-01T10:00:00Z',
+        updatedAt: '2025-07-01T12:00:00Z',
+        status: 'In Progress',
+        wordCount: 2500,
+        comments: [
+          {
+            id: 1,
+            content: 'Great start!',
+            createdAt: '2025-07-01T13:00:00Z',
+            chapterId: 1,
+            author: { id: 2, name: 'Alex Friend' },
+            replies: [],
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Chapter 2',
+        author: 'John Doe',
         notes: 'Intro to the world',
         content: 'Once upon a time...',
         privacy: 'Public',
@@ -91,6 +115,7 @@ export const friendsBooks: BookType[] = [
     chapters: [
       {
         id: 2,
+        author: 'John Doe',
         title: 'The Swarm',
         notes: '',
         content: 'The bees gathered...',

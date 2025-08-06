@@ -20,6 +20,7 @@ export type BookType = {
 
 export type ChapterType = {
   id: number;
+  author: string,
   title: string;
   notes?: string;
   content: string;
