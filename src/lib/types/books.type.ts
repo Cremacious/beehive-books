@@ -4,17 +4,18 @@ export type BookType = {
   author: string;
   genre?: string;
   category?: string;
+  description?: string;
   privacy: string;
   cover?: string;
-  lastEditedBy?: number; 
+  lastEditedBy?: number;
   createdAt: string;
   publishedAt?: string;
   updatedAt: string;
-  status: string; 
+  status: string;
   wordCount: number;
   chapters: ChapterType[];
   comments: CommentType[];
-  collaborators: UserType[]; 
+  collaborators: BookUserType[];
 };
 
 export type ChapterType = {

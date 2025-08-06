@@ -1,73 +1,12 @@
-import Image from 'next/image';
+
 import Link from 'next/link';
-import defaultBookCover from '@/assets/stock/defaultBook.jpg';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import CreateChapterButton from '@/components/buttons/create-chapter-button';
 import BookDetailsHero from '@/components/books/book-details-hero';
+import { userBooks } from '@/lib/sampleData';
 
-const mockBook = {
-  id: '1',
-  title: 'The Honey Trail',
-  author: 'Jane Writer',
-  genre: 'Adventure',
-  description:
-    'A thrilling adventure through the mystical honey trails of the ancient forest. Follow our hero as they discover the secrets of the golden nectar and the wisdom of the ancient bee kingdom.',
-  privacy: 'Public',
-  status: 'inProgress',
-  chapters: 12,
-  totalWords: 45230,
-  comments: 8,
-  likes: 23,
-  cover: defaultBookCover,
-  createdAt: '2025-07-15',
-  updatedAt: '2025-07-30',
-  tags: ['Adventure', 'Fantasy', 'Nature'],
-  collaborators: ['Jane Writer', 'Sam Editor'],
-};
 
-const mockChapters = [
-  {
-    id: '1',
-    title: 'The Discovery',
-    excerpt:
-      'It was a golden morning when Maya first stumbled upon the hidden path...',
-    wordCount: 3250,
-    status: 'completed',
-    comments: 2,
-    updatedAt: '2025-07-30',
-  },
-  {
-    id: '2',
-    title: 'The Ancient Grove',
-    excerpt:
-      'The trees whispered secrets as Maya ventured deeper into the forest...',
-    wordCount: 4100,
-    status: 'completed',
-    comments: 3,
-    updatedAt: '2025-07-28',
-  },
-  {
-    id: '3',
-    title: 'Meeting the Guardian',
-    excerpt:
-      'A massive golden bee emerged from the shadows, its wings shimmering...',
-    wordCount: 3850,
-    status: 'inProgress',
-    comments: 1,
-    updatedAt: '2025-07-25',
-  },
-  {
-    id: '4',
-    title: 'The Honey Trials',
-    excerpt:
-      'Three challenges awaited Maya, each more difficult than the last...',
-    wordCount: 0,
-    status: 'inProgress',
-    comments: 0,
-    updatedAt: '2025-07-20',
-  },
-];
 
 export default async function BookPage({
   params,
@@ -77,8 +16,8 @@ export default async function BookPage({
   const bookId = (await params).bookId;
 
   console.log('Loading book with ID:', bookId);
-  const book = mockBook;
-  const chapters = mockChapters;
+  const book = userBooks[0]
+  const chapters = book ? book.chapters : [];
 
   return (
     <div className="max-w-7xl mx-auto px-2">
@@ -126,12 +65,12 @@ export default async function BookPage({
                     </h3>
 
                     <p className="text-slate-800 mb-3 leading-relaxed">
-                      {chapter.excerpt}
+                      {chapter.content}
                     </p>
 
                     <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
                       <span> {chapter.wordCount.toLocaleString()} words</span>
-                      <span>{chapter.comments} comments</span>
+                      <span>{chapter.comments.length} comments</span>
                       <span>Updated {chapter.updatedAt}</span>
                     </div>
                   </div>

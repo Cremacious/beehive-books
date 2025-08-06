@@ -8,7 +8,7 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
       <div className="flex-shrink-0">
         <div className="relative">
           <Image
-            src={book.cover}
+            src={book.cover ?? '/placeholder-cover.jpg'}
             alt={book.title}
             width={280}
             height={400}
@@ -48,28 +48,28 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                 <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                  {book.chapters}
+                  {book.chapters.length}
                 </div>
                 <div className="text-xs text-slate-600">Chapters</div>
               </div>
               <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                 <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                  {book.totalWords.toLocaleString()}
+                  {book.wordCount}
                 </div>
                 <div className="text-xs text-slate-600">Words</div>
               </div>
               <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                 <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-                  {book.comments}
+                  {book.comments.length}
                 </div>
                 <div className="text-xs text-slate-600">Comments</div>
               </div>
-              <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
+              {/* <div className="bg-yellow-50 border-b-2 border-b-yellow-400 rounded-xl p-4 text-center">
                 <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
                   {book.likes}
                 </div>
                 <div className="text-xs text-slate-600">Likes</div>
-              </div>
+              </div> */}
             </div>
 
             <div className="mb-6">
@@ -79,10 +79,10 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
               <div className="flex flex-wrap gap-2">
                 {book.collaborators.map((collaborator) => (
                   <span
-                    key={collaborator}
+                    key={collaborator.id ?? collaborator.name ?? Math.random()}
                     className="bg-yellow-100 border-b-2 border-b-yellow-400 text-slate-800 text-sm px-3 py-1 rounded-full"
                   >
-                    👤 {collaborator}
+                    👤 {collaborator.name ?? String(collaborator)}
                   </span>
                 ))}
               </div>
