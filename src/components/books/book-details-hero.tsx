@@ -44,22 +44,22 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="yellowAccent text-center">
-            <div className="text-2xl font-bold text-yellow-700">
+            <div className="text-2xl font-bold text-yellow-800">
               {book.chapters.length}
             </div>
-            <div className="text-slate-700 font-bold">Chapters</div>
+            <div className="text-yellow-800 font-bold">Chapters</div>
           </div>
           <div className="yellowAccent text-center">
-            <div className="text-2xl font-bold text-yellow-700">
+            <div className="text-2xl font-bold text-yellow-800">
               {book.wordCount}
             </div>
-            <div className="text-slate-700 font-bold">Words</div>
+            <div className="text-yellow-800 font-bold">Words</div>
           </div>
           <div className="yellowAccent text-center">
-            <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+            <div className="text-2xl font-bold text-yellow-800 font-['Caveat',cursive]">
               {book.comments.length}
             </div>
-            <div className="text-slate-700 font-bold">Comments</div>
+            <div className="text-yellow-800 font-bold">Comments</div>
           </div>
         </div>
         <div className="mb-6">
