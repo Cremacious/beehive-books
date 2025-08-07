@@ -15,14 +15,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '../ui/textarea';
+
+import TextEditor from '../chapter-page/text-editor';
 
 const formSchema = z.object({
   title: z.string().min(1),
   notes: z.string().min(1).optional(),
   content: z.string().min(1),
-  progress: z.boolean(),
+  // progress: z.boolean(),
 });
 
 export default function MyForm() {
@@ -87,7 +87,7 @@ export default function MyForm() {
             <FormItem>
               <FormLabel>Content</FormLabel>
               <FormControl>
-                <Textarea placeholder="" className="resize-none" {...field} />
+                <TextEditor {...field} />
               </FormControl>
 
               <FormMessage />
@@ -95,25 +95,6 @@ export default function MyForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="progress"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel>Completed?</FormLabel>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled
-                  aria-readonly
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
