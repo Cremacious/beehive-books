@@ -57,7 +57,6 @@ const Tiptap = ({ value, onChange, onBlur, name }: TextEditorProps) => {
     <div className="bg-white border rounded-xl shadow-xl p-4">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-2 mb-4 items-center">
-    
         <select
           className="border rounded px-2 py-1"
           onChange={(e) =>
@@ -90,7 +89,7 @@ const Tiptap = ({ value, onChange, onBlur, name }: TextEditorProps) => {
             editor && editor.chain().focus().setColor(e.target.value).run()
           }
         />
-       
+
         <button
           className={`px-2 py-1 rounded border ${
             editor?.isActive('bold') ? 'bg-yellow-200' : ''
@@ -215,12 +214,10 @@ const Tiptap = ({ value, onChange, onBlur, name }: TextEditorProps) => {
       </div>
       <EditorContent
         editor={editor}
-        className="min-h-[350px] p-4 border rounded-xl bg-white shadow-inner"
+        className="min-h-[600px] p-4 border rounded-xl bg-white shadow-inner"
       />
     </div>
   );
 };
 
 export default Tiptap;
-
-

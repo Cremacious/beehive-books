@@ -12,38 +12,36 @@ export default function BooksStats({
   totalFriendsBooks: number;
 }) {
   return (
-    <div className=" whiteContainer">
+    <div className=" lightContainer flex flex-col justify-between">
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-          <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
-            {totalBooks}
-          </div>
-          <div className="text-xs text-slate-600">My Books</div>
+        <div className="text-center yellowAccent">
+          <div className="text-2xl font-bold text-yellow-700">{totalBooks}</div>
+          <div className=" text-slate-700 font-bold">My Book Count</div>
         </div>
 
-        <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-          <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+        <div className="text-center yellowAccent">
+          <div className="text-2xl font-bold text-yellow-700 ">
             {totalChapters}
           </div>
 
-          <div className="text-xs text-slate-600">Chapters</div>
+          <div className="text-slate-700 font-bold">Chapters</div>
         </div>
 
-        <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-          <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+        <div className="text-center yellowAccent">
+          <div className="text-2xl font-bold text-yellow-700 ">
             {totalComments}
           </div>
-          <div className="text-xs text-slate-600">Comments</div>
+          <div className="text-slate-700 font-bold">Comments</div>
         </div>
 
-        <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl px-4 py-3 text-center shadow-sm">
-          <div className="text-2xl font-bold text-yellow-700 font-['Caveat',cursive]">
+        <div className="text-center yellowAccent">
+          <div className="text-2xl font-bold text-yellow-700 ">
             {totalFriendsBooks}
           </div>
-          <div className="text-xs text-slate-600">Friends Books</div>
+          <div className="text-slate-700 font-bold">Friends Books</div>
         </div>
       </div>
-      <div className="flex justify-center mt-4 w-full">
+      <div className="flex justify-center my-4 w-full">
         <CreateBookButton full={true} />
       </div>
     </div>

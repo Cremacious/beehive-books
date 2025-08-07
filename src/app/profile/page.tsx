@@ -1,8 +1,10 @@
+'use client';
 import { userBooks } from '@/lib/sampleData';
 import BookCard from '@/components/books/book-card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Share2 } from 'lucide-react';
 
 // Mock user data
 const user = {
@@ -17,11 +19,18 @@ const user = {
     twitter: 'janewrites',
     website: 'janewriter.com',
   },
+  favoriteBooks: [userBooks[0]],
+  favoriteGenres: ['Adventure', 'Memoir', 'Fantasy'],
 };
 
 export default function ProfilePage() {
+  function handleShare(platform: string) {
+    // Replace with actual share logic
+    alert(`Share profile on ${platform}`);
+  }
+
   return (
-    <div className="mx-auto max-w-5xl px-2">
+    <div className="mx-auto max-w-6xl px-1">
       <div className="darkContainer">
         <div className="whiteContainer p-6 md:p-10 mb-10">
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
@@ -42,6 +51,33 @@ export default function ProfilePage() {
               >
                 {user.isFriend ? 'Friends ✓' : 'Add to Friends'}
               </Button>
+              {/* Share Buttons */}
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Share on Twitter"
+                  onClick={() => handleShare('Twitter')}
+                >
+                  <Share2 className="w-5 h-5 text-blue-400" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Share on Facebook"
+                  onClick={() => handleShare('Facebook')}
+                >
+                  <Share2 className="w-5 h-5 text-blue-700" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Copy Link"
+                  onClick={() => handleShare('Copy Link')}
+                >
+                  <Share2 className="w-5 h-5 text-slate-700" />
+                </Button>
+              </div>
             </div>
             {/* User Info */}
             <div className="flex-1">
@@ -61,7 +97,7 @@ export default function ProfilePage() {
                 <Badge variant="wood">{user.friendsCount} Friends</Badge>
               </div>
               <p className="text-slate-700 mb-4 text-lg">{user.bio}</p>
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 items-center mb-4">
                 {user.social.twitter && (
                   <a
                     href={`https://twitter.com/${user.social.twitter}`}
@@ -83,6 +119,20 @@ export default function ProfilePage() {
                   </a>
                 )}
               </div>
+              {/* Favorite Genres */}
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-yellow-700 mb-2 font-['Caveat',cursive]">
+                  Favorite Genres
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {user.favoriteGenres.map((genre) => (
+                    <Badge key={genre} variant="wood" className="text-base">
+                      {genre}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              {/* Favorite Books */}
             </div>
           </div>
         </div>

@@ -94,10 +94,10 @@
 
 @layer components {
   .darkContainer {
-    @apply shadow-xl rounded-2xl md:px-6 px-2 py-6 mx-2 bg-[#202020] border-b-8 border-b-[#0f0f0f];
+    @apply shadow-xl rounded-2xl p-2 md:p-6 bg-[#202020] border-b-8 border-b-[#444343];
   }
-  .whiteContainer {
-    @apply shadow-xl rounded-2xl p-6 bg-white border-b-8 border-b-yellow-400;
+  .lightContainer {
+    @apply shadow-xl rounded-2xl p-2 md:p-6 bg-[#383838] border-b-8 border-b-yellow-400;
   }
   .hoverAnimateTiny {
     @apply transition-all duration-300 hover:-translate-y-0.25 hover:cursor-pointer;
@@ -107,6 +107,9 @@
   }
   .hoverAnimate2 {
     @apply transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer;
+  }
+  .yellowAccent {
+    @apply bg-yellow-100  border-0 border-b-4 border-b-yellow-300 rounded-xl px-4 py-3;
   }
   .playwright {
     font-family: 'Playwrite BR Variable', cursive;
