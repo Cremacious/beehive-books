@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Eye, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import beeMailbox from '@/assets/site/mailbox.png';
+import Image from 'next/image';
 
 const mockMessages = [
   {
@@ -71,16 +73,22 @@ export default function MessagesPage() {
     <div className="mx-auto max-w-5xl px-2">
       <div className="darkContainer ">
         <div className="lightContainer">
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">
+          <div className="flex flex-col items-center  mb-8 md:mb-12 px-2 md:px-6 pt-6">
+            <div>
+              <Image
+                src={beeMailbox}
+                alt="Bee Mailbox"
+                width={200}
+                height={100}
+              />
+            </div>
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl text-center md:text-4xl font-bold text-yellow-400 playWright drop-shadow-sm mb-1">
                 Messages & Notifications
               </h1>
             </div>
           </div>
-          <div className="border-b-2 border-yellow-200 mb-8" />
-
-          <div className="w-full overflow-x-auto rounded-lg">
+          <div className="w-full overflow-x-auto rounded-lg border-b-6 border-b-yellow-400 shadow-lg mb-6">
             <div className="min-w-[600px]">
               <div className="flex bg-yellow-100 font-bold text-yellow-900 rounded-t-lg border-b-2 border-yellow-200">
                 <div className="w-32 px-4 py-3">Type</div>
