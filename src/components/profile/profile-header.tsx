@@ -3,13 +3,12 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import { Share2 } from 'lucide-react';
-import { Badge } from '../ui/badge';
 
 export default function ProfileHeader({ user }: { user: UserType }) {
   return (
-    <div className="darkContainer">
-      <div className="lightContainer">
-        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+    <div className="darkContainer ">
+      <div className="grid grid-cols-1 md:grid-cols-3 md:space-x-6 space-y-4 md:space-y-0">
+        <div className="lightContainer">
           <div className="flex flex-col items-center gap-4">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-300 shadow-lg">
               <Image
@@ -26,8 +25,27 @@ export default function ProfileHeader({ user }: { user: UserType }) {
             >
               {user.isFriend ? 'Friends ✓' : 'Add to Friends'}
             </Button>
-            {/* Share Buttons */}
-            <div className="flex gap-2 mt-2">
+            <div className="text-white">
+              Joined{' '}
+              {new Date(user.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </div>
+          </div>
+        </div>
+        <div className="lightContainer col-span-2">
+          <div className="flex flex-col justify-between h-full">
+            <div>
+              <div className="text-3xl mt-4 font-bold text-yellow-400 mb-2 playWright text-center">
+                {user.name}
+              </div>
+              <div className="text-white mb-4 text-lg text-center mt-4">
+                {user.bio}
+              </div>
+            </div>
+            <div className="flex gap-2 mt-2 justify-center">
               <Button
                 variant="outline"
                 size="icon"
@@ -53,40 +71,6 @@ export default function ProfileHeader({ user }: { user: UserType }) {
                 <Share2 className="w-5 h-5 text-slate-700" />
               </Button>
             </div>
-          </div>
-          {/* User Info */}
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-yellow-700 mb-2 font-['Caveat',cursive]">
-              {user.name}
-            </h1>
-            <div className="flex flex-wrap gap-2 items-center mb-2">
-              <Badge variant="wood">
-                Joined{' '}
-                {new Date(user.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </Badge>
-              <Badge variant="wood"># Books</Badge>
-              <Badge variant="wood"># Friends</Badge>
-            </div>
-            <p className="text-slate-700 mb-4 text-lg">BIO HERE</p>
-
-            {/* Favorite Genres */}
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-yellow-700 mb-2 font-['Caveat',cursive]">
-                Favorite Genres
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {/* {user.favoriteGenres.map((genre) => (
-                <Badge key={genre} variant="wood" className="text-base">
-                  {genre}
-                </Badge>
-              ))} */}
-              </div>
-            </div>
-            {/* Favorite Books */}
           </div>
         </div>
       </div>
