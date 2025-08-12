@@ -55,9 +55,9 @@ export default function MyForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel className="text-yellow-400 text-lg">Title</FormLabel>
               <FormControl>
-                <Input placeholder="" type="" {...field} />
+                <Input className="bg-white" placeholder="" type="" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -70,9 +70,11 @@ export default function MyForm() {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Author&apos;s Notes</FormLabel>
+              <FormLabel className="text-yellow-400 text-lg">
+                Author&apos;s Notes
+              </FormLabel>
               <FormControl>
-                <Input placeholder="" type="" {...field} />
+                <Input className="bg-white" placeholder="" type="" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -85,7 +87,7 @@ export default function MyForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel className="text-yellow-400 text-lg">Content</FormLabel>
               <FormControl>
                 <TextEditor {...field} />
               </FormControl>

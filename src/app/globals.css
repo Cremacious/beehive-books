@@ -111,6 +111,9 @@
   .yellowAccent {
     @apply bg-yellow-100  border-0 border-b-4 border-b-yellow-300 rounded-xl px-4 py-3;
   }
+  .darkColor {
+    @apply bg-[#444343];
+  }
   .playwright {
     font-family: 'Playwrite BR Variable', cursive;
     font-weight: 400;
