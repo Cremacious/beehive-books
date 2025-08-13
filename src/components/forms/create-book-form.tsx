@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,47 +16,76 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
+import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
-
-const formSchema = z.object({
-  title: z.string().min(1),
-  author: z.string().min(1),
-  category: z.string().min(1).optional(),
-  genre: z.string().min(1),
-  //   name_5929124379: z.string(),
-  description: z.string().optional(),
-  //   isPrivate: z.unknown(),
-});
+import { bookSchema } from '@/lib/validators/book.validators';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { createBook } from '@/lib/actions/book.actions';
 
 export default function CreateBookForm() {
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof bookSchema>>({
+    resolver: zodResolver(bookSchema),
   });
 
   function onCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
+      setCoverFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setCoverPreview(reader.result as string);
       reader.readAsDataURL(file);
     } else {
       setCoverPreview(null);
+      setCoverFile(null);
     }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function uploadToCloudinary(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'YOUR_UPLOAD_PRESET');
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+    const data = await res.json();
+    return data.secure_url;
+  }
+
+  async function onSubmit(values: z.infer<typeof bookSchema>) {
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      setUploading(true);
+      let coverUrl = '';
+      if (coverFile) {
+        coverUrl = await uploadToCloudinary(coverFile);
+      }
+      const response = await createBook({
+        ...values,
+        coverUrl,
+      });
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
     } catch (error) {
-      console.error('Form submission error', error);
+      console.log('Error creating book:', error);
       toast.error('Failed to submit the form. Please try again.');
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -72,10 +100,12 @@ export default function CreateBookForm() {
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="w-32 h-44 rounded-xl border-4 border-yellow-200 bg-yellow-50 flex items-center justify-center overflow-hidden shadow-md">
               {coverPreview ? (
-                <img
+                <Image
                   src={coverPreview}
                   alt="Book cover preview"
                   className="object-cover w-full h-full"
+                  width={128}
+                  height={176}
                 />
               ) : (
                 <span className="text-yellow-800 text-5xl">📖</span>
@@ -97,7 +127,7 @@ export default function CreateBookForm() {
             </div>
           </div>
         </div>
-
+        
         {/* Section: Book Details */}
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -213,6 +243,30 @@ export default function CreateBookForm() {
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name="privacy"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Privacy</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="public">Public</SelectItem>
+                  <SelectItem value="private">Private</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Make the book public or only availible for friends
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {/* Submit Button */}
         <div className="flex justify-end pt-4">
           <Button type="submit">Create Book</Button>
