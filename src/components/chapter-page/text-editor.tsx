@@ -10,7 +10,7 @@ import {
   Text,
   BaseEditor,
 } from 'slate';
-import { Slate, Editable, withReact, useSlate } from 'slate-react';
+import { Slate, Editable, withReact, useSlate, ReactEditor } from 'slate-react';
 import { withHistory } from 'slate-history';
 
 interface TextEditorProps {
@@ -33,6 +33,7 @@ type CustomText = {
   color?: string;
   backgroundColor?: string;
   sub?: boolean;
+  [key: string]: any; 
 };
 
 declare module 'slate' {
@@ -278,7 +279,6 @@ export default function SlateEditor({
   const parsedValue: Descendant[] = useMemo(() => {
     try {
       const parsed = value ? JSON.parse(value) : initialValue;
-      // Ensure parsed is a non-empty array of objects with 'type' and 'children'
       if (
         Array.isArray(parsed) &&
         parsed.length > 0 &&
