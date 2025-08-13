@@ -164,20 +164,32 @@ const FontSizeDropdown = () => {
   );
 };
 
-const ColorPicker = ({ format }: { format: 'color' | 'backgroundColor' }) => {
+const ColorPicker = ({
+  format,
+  label,
+}: {
+  format: 'color' | 'backgroundColor';
+  label: string;
+}) => {
   const editor = useSlate();
+  // Default color: font color = black, highlight = none (transparent)
+  const defaultColor = format === 'color' ? '#000000' : '';
   return (
-    <input
-      type="color"
-      className="border rounded w-8 h-8 p-0 mr-1 mb-1"
-      onChange={(e) => {
-        Transforms.setNodes(
-          editor,
-          { [format]: e.target.value },
-          { match: (n) => Text.isText(n), split: true }
-        );
-      }}
-    />
+    <label className="flex items-center gap-1 mr-2 mb-1">
+      <input
+        type="color"
+        className="border rounded w-8 h-8 p-0"
+        onChange={(e) => {
+          Transforms.setNodes(
+            editor,
+            { [format]: e.target.value },
+            { match: (n) => Text.isText(n), split: true }
+          );
+        }}
+        defaultValue={defaultColor}
+        style={format === 'backgroundColor' ? { background: 'none' } : {}}
+      />
+    </label>
   );
 };
 
@@ -236,7 +248,7 @@ const isBlockActive = (editor: Editor, format: string) => {
       !Editor.isEditor(n) &&
       SlateElement.isElement(n) &&
       (n as SlateElement & { type?: string }).type === format,
-    mode: 'all', 
+    mode: 'all',
   });
   return !!match;
 };
@@ -254,7 +266,6 @@ const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
 
-
   Transforms.unwrapNodes(editor, {
     match: (n) =>
       !Editor.isEditor(n) &&
@@ -262,7 +273,6 @@ const toggleBlock = (editor: Editor, format: string) => {
       LIST_TYPES.includes((n as CustomElement).type),
     split: true,
   });
-
 
   Transforms.setNodes(
     editor,
@@ -272,7 +282,6 @@ const toggleBlock = (editor: Editor, format: string) => {
         SlateElement.isElement(n) && Editor.isBlock(editor, n as SlateElement),
     }
   );
-
 
   if (!isActive && isList) {
     const block: CustomElement = { type: format, children: [] };
@@ -325,28 +334,45 @@ export default function SlateEditor({
   return (
     <div className="bg-white border rounded-xl shadow-xl p-4">
       <Slate editor={editor} initialValue={parsedValue} onChange={handleChange}>
-        <div className="flex flex-wrap gap-2 mb-4 items-center">
-          <FontSizeDropdown />
-          <MarkButton format="bold" icon={<b>B</b>} />
-          <MarkButton format="italic" icon={<i>I</i>} />
-          <MarkButton format="underline" icon={<u>U</u>} />
-          <MarkButton format="sub" icon={<sub>sub</sub>} />
-          <ColorPicker format="color" />
-          <ColorPicker format="backgroundColor" />
-          {/* <BlockButton format="numbered-list" icon={<span>1. List</span>} /> */}
-          <BlockButton format="align-left" icon={<span>Left</span>} />
-          <BlockButton format="align-center" icon={<span>Center</span>} />
-          <BlockButton format="align-right" icon={<span>Right</span>} />
-          <BlockButton format="align-justify" icon={<span>Justify</span>} />
+        <div
+          className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-2 py-3 bg-gray-50 rounded-lg border border-gray-200"
+          style={{ fontFamily: 'Arial, sans-serif' }}
+        >
+          <div className="flex flex-col items-start min-w-[120px]">
+            <span className="text-xs text-gray-500 mb-1">Font Size</span>
+            <FontSizeDropdown />
+          </div>
+          <div className="flex flex-col items-start min-w-[120px]">
+            <span className="text-xs text-gray-500 mb-1">Font Color</span>
+            <ColorPicker format="color" label="" />
+          </div>
+          <div className="flex flex-col items-start min-w-[120px]">
+            <span className="text-xs text-gray-500 mb-1">Highlight</span>
+            <ColorPicker format="backgroundColor" label="" />
+          </div>
+          <div className="flex flex-row flex-wrap gap-1 items-center">
+            <MarkButton format="bold" icon={<b>B</b>} />
+            <MarkButton format="italic" icon={<i>I</i>} />
+            <MarkButton format="underline" icon={<u>U</u>} />
+            <MarkButton format="sub" icon={<sub>sub</sub>} />
+          </div>
+          <div className="flex flex-row flex-wrap gap-1 items-center">
+            {/* <BlockButton format="numbered-list" icon={<span>1. List</span>} /> */}
+            <BlockButton format="align-left" icon={<span>Left</span>} />
+            <BlockButton format="align-center" icon={<span>Center</span>} />
+            <BlockButton format="align-right" icon={<span>Right</span>} />
+            {/* <BlockButton format="align-justify" icon={<span>Justify</span>} /> */}
+          </div>
         </div>
         <Editable
           renderElement={(props) => <Element {...props} />}
           renderLeaf={(props) => <Leaf {...props} />}
-          placeholder="Type your content..."
+          placeholder=""
           spellCheck
           autoFocus
           onBlur={onBlur}
-          className="min-h-[800px] p-4 border rounded-xl bg-white shadow-inner"
+          className="h-[800px] min-h-[800px] max-h-[800px] p-4 border rounded-xl bg-white shadow-inner overflow-auto"
+          style={{ fontFamily: 'Arial, sans-serif' }}
         />
       </Slate>
     </div>
