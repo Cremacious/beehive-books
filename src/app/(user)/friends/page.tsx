@@ -3,6 +3,7 @@ import Image from 'next/image';
 import defaultProfileImage from '../../../assets/stock/stockProfile.png';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import friendImage from '../../../assets/site/friends.png';
 
 const mockFriends = [
   {
@@ -96,7 +97,6 @@ export default function FriendsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const friendsPerPage = 12;
 
-  // Filter and sort logic
   let filteredFriends = mockFriends.filter((f) =>
     f.name.toLowerCase().includes(filterName.toLowerCase())
   );
@@ -113,7 +113,6 @@ export default function FriendsPage() {
         currentPage * friendsPerPage
       );
 
-  // Mock friend requests
   const mockFriendRequests = [
     { id: 101, name: 'Bee Curious', email: 'bee.curious@hive.com' },
     { id: 102, name: 'Honey Helper', email: 'honey.helper@hive.com' },
@@ -124,7 +123,6 @@ export default function FriendsPage() {
       <div className="max-w-6xl mx-auto p-2">
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
-            {/* Friend Requests Button - Top Right Floating */}
             <div className="absolute top-4 right-4 z-10">
               <Button
                 size={'sm'}
@@ -147,6 +145,14 @@ export default function FriendsPage() {
 
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">
               <div className="flex-1 text-center md:text-left ">
+                <div className="flex justify-center">
+                  <Image
+                    height={250}
+                    width={250}
+                    src={friendImage}
+                    alt="Your Friends"
+                  />
+                </div>
                 <div className="text-3xl md:text-4xl text-center font-bold text-yellow-400 playWright drop-shadow-sm mb-4">
                   Your Friends
                 </div>
@@ -157,10 +163,8 @@ export default function FriendsPage() {
               </div>
             </div>
 
-            {/* Controls - Search by name and find by email on same row with divider */}
             <div className="flex flex-col gap-6 mb-6 px-2 md:px-6">
               <div className="flex flex-col md:flex-row items-stretch gap-6 w-full">
-                {/* Search by Name and Sort Button */}
                 <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2">
                   <div className="flex flex-col w-full">
                     <label className="text-sm font-semibold text-yellow-700 mb-1">
@@ -183,11 +187,11 @@ export default function FriendsPage() {
                     Sort A-Z
                   </Button>
                 </div>
-                {/* Divider for desktop */}
+
                 <div className="hidden md:flex items-center justify-center">
                   <div className="h-12 w-px bg-yellow-300 mx-2" />
                 </div>
-                {/* Find by Email */}
+
                 <div className="flex-1 flex flex-col justify-center">
                   <label className="text-sm font-semibold text-yellow-700 mb-1">
                     Find Friends by Email
@@ -221,7 +225,6 @@ export default function FriendsPage() {
 
             <div className="border-b-2 border-yellow-200 mb-8" />
 
-            {/* Friends Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:p-6">
               {paginatedFriends.map((friend) => (
                 <div
@@ -248,7 +251,6 @@ export default function FriendsPage() {
               ))}
             </div>
 
-            {/* Pagination */}
             {!mockFriends && totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-8">
                 <button

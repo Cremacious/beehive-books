@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, Settings } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 
 import { useState } from 'react';
@@ -36,6 +36,15 @@ export function Sidebar() {
           <SheetTitle className="text-xl font-extrabold tracking-tight text-yellow-300 playwright">
             Beehive Books
           </SheetTitle>
+          <div className="flex flex-row gap-4">
+            <div>Image</div>
+            <div>
+              <Settings
+                size={35}
+                className="text-yellow-400 hover:text-yellow-500 hoverAnimateTiny"
+              />
+            </div>
+          </div>
         </SheetHeader>
         <div className="space-y-4 mx-2 mt-6">
           {ROUTES.map((route) => (

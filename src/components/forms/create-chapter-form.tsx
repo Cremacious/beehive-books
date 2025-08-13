@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import TextEditor from '../chapter-page/text-editor';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -55,9 +56,16 @@ export default function MyForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-yellow-400 text-lg">Title</FormLabel>
+              <FormLabel className="text-yellow-400 mx-auto text-lg text-center">
+                Chapter Title
+              </FormLabel>
               <FormControl>
-                <Input className="bg-white" placeholder="" type="" {...field} />
+                <Input
+                  className="bg-white w-full md:w-1/2 mx-auto"
+                  placeholder=""
+                  type=""
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -74,7 +82,7 @@ export default function MyForm() {
                 Author&apos;s Notes
               </FormLabel>
               <FormControl>
-                <Input className="bg-white" placeholder="" type="" {...field} />
+                <Textarea placeholder="" className="bg-white" {...field} />
               </FormControl>
 
               <FormMessage />

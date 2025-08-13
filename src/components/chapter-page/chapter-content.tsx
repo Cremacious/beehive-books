@@ -18,9 +18,8 @@ const fontOptions = [
   { label: 'Garamond', value: 'Garamond, serif' },
 ];
 
-const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i); // 8px to 72px
+const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i); 
 
-// Custom Leaf and Element renderers (copy from editor)
 const Element = (props: any) => {
   const { attributes, children, element } = props;
   switch (element.type) {
@@ -93,7 +92,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
   const [dark, setDark] = useState(false);
   const [fontSize, setFontSize] = useState('16');
 
-  // Parse Slate JSON content
+  
   const value: Descendant[] = useMemo(() => {
     try {
       return chapter.content
@@ -111,7 +110,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
     <div className="darkContainer">
       <div className="shadow-xl rounded-2xl md:p-6 p-1 darkColor border-b-8 border-b-yellow-400 mb-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 my-4">
-          {/* Font */}
+      
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Font:</label>
             <select
@@ -130,7 +129,6 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
               ))}
             </select>
           </div>
-          {/* Font Size */}
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Font Size:</label>
             <select
@@ -145,7 +143,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
               ))}
             </select>
           </div>
-          {/* Dark Mode */}
+    
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Dark Mode:</label>
             <Button

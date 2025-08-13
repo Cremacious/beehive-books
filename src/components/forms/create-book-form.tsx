@@ -203,8 +203,8 @@ export default function CreateBookForm() {
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Brief description of your book..."
-                    className="resize-none min-h-[100px] bg-white"
+                    placeholder=""
+                    className="min-h-[100px] bg-white"
                     {...field}
                   />
                 </FormControl>

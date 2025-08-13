@@ -4,11 +4,13 @@ import { useSession, signOut } from '../../lib/auth-client';
 import Image from 'next/image';
 import defaultProfileImage from '@/assets/stock/stockProfile.png';
 import { Button } from '../ui/button';
+import { Settings } from 'lucide-react';
+import { Badge } from '../ui/badge';
 
 export default function AuthButtons() {
   const { data: session } = useSession();
 
-  const notificationCount = 4;
+  const notificationCount = 14;
 
   if (!session?.user) {
     return (
@@ -25,23 +27,27 @@ export default function AuthButtons() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="relative flex items-center">
-        <Link href="/profile">
-          <Image
-            src={session.user.image || defaultProfileImage}
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full border-2 border-yellow-400 object-cover"
-            style={{ aspectRatio: '1 / 1' }}
-            priority
-          />
-          {notificationCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full px-2 py-0.5 border-2 border-black">
-              {notificationCount}
-            </span>
-          )}
-        </Link>
+      <div className="relative flex items-center space-x-4">
+        <div className="relative">
+          <Link href="/profile">
+            <Image
+              src={session.user.image || defaultProfileImage}
+              alt="Profile"
+              width={40}
+              height={40}
+              className="rounded-full border-2 border-yellow-400 object-cover"
+              style={{ aspectRatio: '1 / 1' }}
+              priority
+            />
+            {notificationCount > 0 && (
+              <Badge variant={'notification'}>{notificationCount}</Badge>
+            )}
+          </Link>
+        </div>
+        <Settings
+          size={35}
+          className="text-yellow-400 hover:text-yellow-500 hoverAnimateTiny"
+        />
       </div>
       <Button onClick={() => signOut()}>Sign Out</Button>
     </div>
