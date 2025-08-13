@@ -33,7 +33,7 @@ type CustomText = {
   color?: string;
   backgroundColor?: string;
   sub?: boolean;
-  [key: string]: any; 
+  [key: string]: any;
 };
 
 declare module 'slate' {
@@ -44,7 +44,7 @@ declare module 'slate' {
   }
 }
 
-const LIST_TYPES = ['numbered-list', 'bulleted-list'];
+const LIST_TYPES = ['numbered-list'];
 
 const Element = (props: {
   attributes: any;
@@ -142,22 +142,24 @@ const ToolbarButton = ({
 
 const FontSizeDropdown = () => {
   const editor = useSlate();
+  const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i);
   return (
     <select
       className="border rounded px-2 py-1 mr-1 mb-1"
       onChange={(e) => {
         Transforms.setNodes(
           editor,
-          { fontSize: e.target.value },
+          { fontSize: e.target.value + 'px' },
           { match: (n) => Text.isText(n), split: true }
         );
       }}
-      defaultValue="16px"
+      defaultValue="16"
     >
-      <option value="12px">Small</option>
-      <option value="16px">Normal</option>
-      <option value="20px">Large</option>
-      <option value="28px">Extra Large</option>
+      {fontSizes.map((size) => (
+        <option key={size} value={size}>
+          {size}px
+        </option>
+      ))}
     </select>
   );
 };
@@ -231,7 +233,10 @@ const isMarkActive = (editor: Editor, format: string) => {
 const isBlockActive = (editor: Editor, format: string) => {
   const [match] = Editor.nodes(editor, {
     match: (n) =>
-      !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format,
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      (n as SlateElement & { type?: string }).type === format,
+    mode: 'all', 
   });
   return !!match;
 };
@@ -248,6 +253,8 @@ const toggleMark = (editor: Editor, format: string) => {
 const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
+
+
   Transforms.unwrapNodes(editor, {
     match: (n) =>
       !Editor.isEditor(n) &&
@@ -255,11 +262,24 @@ const toggleBlock = (editor: Editor, format: string) => {
       LIST_TYPES.includes((n as CustomElement).type),
     split: true,
   });
-  const newType = isActive ? 'paragraph' : format;
-  Transforms.setNodes(editor, { type: newType });
+
+
+  Transforms.setNodes(
+    editor,
+    { type: isActive ? 'paragraph' : isList ? 'list-item' : format },
+    {
+      match: (n) =>
+        SlateElement.isElement(n) && Editor.isBlock(editor, n as SlateElement),
+    }
+  );
+
+
   if (!isActive && isList) {
     const block: CustomElement = { type: format, children: [] };
-    Transforms.wrapNodes(editor, block);
+    Transforms.wrapNodes(editor, block, {
+      match: (n) =>
+        SlateElement.isElement(n) && (n as CustomElement).type === 'list-item',
+    });
   }
 };
 
@@ -313,8 +333,7 @@ export default function SlateEditor({
           <MarkButton format="sub" icon={<sub>sub</sub>} />
           <ColorPicker format="color" />
           <ColorPicker format="backgroundColor" />
-          <BlockButton format="numbered-list" icon={<span>1. List</span>} />
-          <BlockButton format="bulleted-list" icon={<span>• List</span>} />
+          {/* <BlockButton format="numbered-list" icon={<span>1. List</span>} /> */}
           <BlockButton format="align-left" icon={<span>Left</span>} />
           <BlockButton format="align-center" icon={<span>Center</span>} />
           <BlockButton format="align-right" icon={<span>Right</span>} />
@@ -327,7 +346,7 @@ export default function SlateEditor({
           spellCheck
           autoFocus
           onBlur={onBlur}
-          className="min-h-[400px] p-4 border rounded-xl bg-white shadow-inner"
+          className="min-h-[800px] p-4 border rounded-xl bg-white shadow-inner"
         />
       </Slate>
     </div>
