@@ -33,6 +33,7 @@ type CustomText = {
   color?: string;
   backgroundColor?: string;
   sub?: boolean;
+  fontFamily?: string;
   [key: string]: any;
 };
 
@@ -99,6 +100,7 @@ const Leaf = (props: { attributes: any; children: any; leaf: CustomText }) => {
     fontSize: props.leaf.fontSize,
     color: props.leaf.color,
     backgroundColor: props.leaf.backgroundColor,
+    fontFamily: props.leaf.fontFamily,
   };
   if (props.leaf.sub) style.fontSize = '0.7em';
   return (
@@ -139,6 +141,45 @@ const ToolbarButton = ({
     {icon}
   </button>
 );
+
+const FONT_FAMILIES = [
+  { label: 'Arial', value: 'Arial, sans-serif' },
+  { label: 'Times New Roman', value: 'Times New Roman, serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Calibri', value: 'Calibri, sans-serif' },
+  { label: 'Verdana', value: 'Verdana, sans-serif' },
+  { label: 'Tahoma', value: 'Tahoma, sans-serif' },
+  { label: 'Courier New', value: 'Courier New, monospace' },
+  { label: 'Trebuchet MS', value: 'Trebuchet MS, sans-serif' },
+  { label: 'Garamond', value: 'Garamond, serif' },
+];
+
+const FontFamilyDropdown = () => {
+  const editor = useSlate();
+  return (
+    <select
+      className="border rounded px-2 py-1 mr-1 mb-1"
+      onChange={(e) => {
+        Transforms.setNodes(
+          editor,
+          { fontFamily: e.target.value },
+          { match: (n) => Text.isText(n), split: true }
+        );
+      }}
+      defaultValue={FONT_FAMILIES[0].value}
+    >
+      {FONT_FAMILIES.map((font) => (
+        <option
+          key={font.value}
+          value={font.value}
+          style={{ fontFamily: font.value }}
+        >
+          {font.label}
+        </option>
+      ))}
+    </select>
+  );
+};
 
 const FontSizeDropdown = () => {
   const editor = useSlate();
@@ -338,6 +379,10 @@ export default function SlateEditor({
           className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-2 py-3 bg-gray-50 rounded-lg border border-gray-200"
           style={{ fontFamily: 'Arial, sans-serif' }}
         >
+          <div className="flex flex-col items-start min-w-[160px]">
+            <span className="text-xs text-gray-500 mb-1">Font</span>
+            <FontFamilyDropdown />
+          </div>
           <div className="flex flex-col items-start min-w-[120px]">
             <span className="text-xs text-gray-500 mb-1">Font Size</span>
             <FontSizeDropdown />

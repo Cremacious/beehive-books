@@ -1,33 +1,111 @@
 'use client';
+import React, { useMemo } from 'react';
+import { Slate, Editable, withReact } from 'slate-react';
+import { createEditor, Descendant } from 'slate';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { ChapterType } from '@/lib/types/books.type';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 const fontOptions = [
-  { label: 'Serif', value: 'serif' },
-  { label: 'Garamond', value: 'garamond' },
-  { label: 'Sans', value: 'sans-serif' },
-  { label: 'Mono', value: 'monospace' },
+  { label: 'Arial', value: 'Arial, sans-serif' },
+  { label: 'Times New Roman', value: 'Times New Roman, serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Calibri', value: 'Calibri, sans-serif' },
+  { label: 'Verdana', value: 'Verdana, sans-serif' },
+  { label: 'Tahoma', value: 'Tahoma, sans-serif' },
+  { label: 'Courier New', value: 'Courier New, monospace' },
+  { label: 'Trebuchet MS', value: 'Trebuchet MS, sans-serif' },
+  { label: 'Garamond', value: 'Garamond, serif' },
 ];
 
-const fontMap: Record<string, string> = {
-  serif: 'serif',
-  garamond: "'EB Garamond Variable', serif",
-  'sans-serif': 'sans-serif',
-  monospace: 'monospace',
+const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i); // 8px to 72px
+
+// Custom Leaf and Element renderers (copy from editor)
+const Element = (props: any) => {
+  const { attributes, children, element } = props;
+  switch (element.type) {
+    case 'block-quote':
+      return <blockquote {...attributes}>{children}</blockquote>;
+    case 'bulleted-list':
+      return <ul {...attributes}>{children}</ul>;
+    case 'heading-one':
+      return <h1 {...attributes}>{children}</h1>;
+    case 'heading-two':
+      return <h2 {...attributes}>{children}</h2>;
+    case 'list-item':
+      return <li {...attributes}>{children}</li>;
+    case 'numbered-list':
+      return <ol {...attributes}>{children}</ol>;
+    case 'align-left':
+      return (
+        <div style={{ textAlign: 'left' }} {...attributes}>
+          {children}
+        </div>
+      );
+    case 'align-center':
+      return (
+        <div style={{ textAlign: 'center' }} {...attributes}>
+          {children}
+        </div>
+      );
+    case 'align-right':
+      return (
+        <div style={{ textAlign: 'right' }} {...attributes}>
+          {children}
+        </div>
+      );
+    case 'align-justify':
+      return (
+        <div style={{ textAlign: 'justify' }} {...attributes}>
+          {children}
+        </div>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+const Leaf = (props: any) => {
+  const style: React.CSSProperties = {
+    fontSize: props.leaf.fontSize,
+    color: props.leaf.color,
+    backgroundColor: props.leaf.backgroundColor,
+    fontFamily: props.leaf.fontFamily,
+  };
+  if (props.leaf.sub) style.fontSize = '0.7em';
+  return (
+    <span
+      {...props.attributes}
+      style={style}
+      className={[
+        props.leaf.bold ? 'font-bold' : '',
+        props.leaf.italic ? 'italic' : '',
+        props.leaf.underline ? 'underline' : '',
+        props.leaf.highlight ? 'bg-yellow-200' : '',
+      ].join(' ')}
+    >
+      {props.children}
+    </span>
+  );
 };
 
 export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
   const [font, setFont] = useState(fontOptions[0].value);
   const [dark, setDark] = useState(false);
-  const [fontSize, setFontSize] = useState('Medium');
+  const [fontSize, setFontSize] = useState('16');
+
+  // Parse Slate JSON content
+  const value: Descendant[] = useMemo(() => {
+    try {
+      return chapter.content
+        ? JSON.parse(chapter.content)
+        : [{ type: 'paragraph', children: [{ text: '' }] }];
+    } catch {
+      return [{ type: 'paragraph', children: [{ text: '' }] }];
+    }
+  }, [chapter.content]);
+  const editor = useMemo(() => withReact(createEditor()), []);
+
+  console.log(chapter.content);
 
   return (
     <div className="darkContainer">
@@ -42,36 +120,34 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
               onChange={(e) => setFont(e.target.value)}
             >
               {fontOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <option
+                  key={opt.value}
+                  value={opt.value}
+                  style={{ fontFamily: opt.value }}
+                >
                   {opt.label}
                 </option>
               ))}
             </select>
           </div>
-
           {/* Font Size */}
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Font Size:</label>
-            <Select
-              onValueChange={(value) => setFontSize(value)}
-              defaultValue="Medium"
+            <select
+              className="rounded-md border bg-white border-yellow-200 px-2 py-1 text-slate-800 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+              value={fontSize}
+              onChange={(e) => setFontSize(e.target.value)}
             >
-              <SelectTrigger className="w-[180px] text-slate-800 bg-white">
-                <SelectValue placeholder="Select Font Size" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Medium">Medium</SelectItem>
-                <SelectItem value="Large">Large</SelectItem>
-                <SelectItem value="Extra Large">Extra Large</SelectItem>
-                <SelectItem value="Super Large">Super Large</SelectItem>
-              </SelectContent>
-            </Select>
+              {fontSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}px
+                </option>
+              ))}
+            </select>
           </div>
-
           {/* Dark Mode */}
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Dark Mode:</label>
-
             <Button
               size={'sm'}
               type="button"
@@ -82,26 +158,29 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
             </Button>
           </div>
         </div>
-
         <div
           className={`prose prose-lg max-w-none ${
             dark ? 'bg-[#202020] text-white' : 'bg-white text-slate-800'
-          } font-bold ${
-            fontSize === 'Medium'
-              ? 'text-md'
-              : fontSize === 'Large'
-              ? 'text-lg'
-              : fontSize === 'Extra Large'
-              ? 'text-xl'
-              : 'text-2xl'
-          } rounded-xl mb-4 border-2 p-2 md:p-6 shadow-inner min-h-[800px] transition-colors`}
-          style={{ fontFamily: fontMap[font] }}
+          } font-bold rounded-xl mb-4 border-2 p-2 md:p-6 shadow-inner min-h-[800px] transition-colors`}
+          style={{ fontFamily: font, fontSize: fontSize + 'px' }}
         >
-          {chapter.content.split('\n').map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
+          <Slate editor={editor} initialValue={value} onChange={() => {}}>
+            <Editable
+              readOnly
+              renderElement={Element}
+              renderLeaf={Leaf}
+              style={{
+                minHeight: 800,
+                fontFamily: font,
+                fontSize: fontSize + 'px',
+                background: dark ? '#202020' : 'white',
+                color: dark ? 'white' : '#222',
+              }}
+              className="outline-none border-none bg-transparent shadow-none p-0 m-0 min-h-[800px] max-h-[800px] h-[800px]"
+            />
+          </Slate>
         </div>
-      </div>{' '}
+      </div>
     </div>
   );
 }
