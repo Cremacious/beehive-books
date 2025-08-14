@@ -1,19 +1,22 @@
 import BooksStats from '@/components/books/books-stats';
-import { userBooks, friendsBooks } from '@/lib/sampleData';
+import { mockUser } from '@/lib/sampleData';
 import beeBookshelf from '@/assets/site/beeBookshelf.png';
 import Image from 'next/image';
 import BookShelf from '@/components/books/bookshelf';
 
 export default function BooksPage() {
+
+const userBooks = mockUser.books
+
   const totalBooks = userBooks.length;
-  const totalFriendsBooks = friendsBooks.length;
+  // const totalFriendsBooks = friendsBooks.length;
   const totalChapters = userBooks.reduce(
     (acc, b) => acc + b.chapters.length,
     0
   );
-  const totalComments =
-    userBooks.reduce((acc, b) => acc + b.comments.length, 0) +
-    friendsBooks.reduce((acc, b) => acc + b.comments.length, 0);
+  // const totalComments =
+  //   userBooks.reduce((acc, b) => acc + b.comments.length, 0) +
+  //   friendsBooks.reduce((acc, b) => acc + b.comments.length, 0);
 
   return (
     <div className="max-w-7xl mx-auto px-2">
@@ -40,14 +43,14 @@ export default function BooksPage() {
             <BooksStats
               totalBooks={totalBooks}
               totalChapters={totalChapters}
-              totalComments={totalComments}
-              totalFriendsBooks={totalFriendsBooks}
+              totalComments={10}
+              totalFriendsBooks={5}
             />
           </div>
         </div>
         <div className="darkContainer space-y-6">
           <BookShelf books={userBooks} owner={'Your'} />
-          <BookShelf books={friendsBooks} owner={"Friend's"} />
+          {/* <BookShelf books={friendsBooks} owner={"Friend's"} /> */}
         </div>
       </div>
     </div>

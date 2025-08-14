@@ -1,11 +1,11 @@
 import ChapterContent from '@/components/chapter-page/chapter-content';
 import CommentSection from '@/components/chapter-page/comment-section';
 import { Button } from '@/components/ui/button';
-import { userBooks } from '@/lib/sampleData';
+import { mockUser } from '@/lib/sampleData';
 import Link from 'next/link';
 
 export default function ChapterPage() {
-  const chapter = userBooks[0].chapters[0];
+  const chapter = mockUser.books[0].chapters[0];
 
   return (
     <div className="max-w-7xl mx-auto px-1">

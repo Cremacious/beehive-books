@@ -19,6 +19,7 @@ model User {
   email         String
   emailVerified Boolean
   image         String?
+  bio  String?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
@@ -81,6 +82,7 @@ model Book {
 
 model Chapter {
   id         Int        @id @default(autoincrement())
+  author    String
   title      String
   notes      String?
   content    String

@@ -1,14 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { MessageType } from '@/lib/types/message.type';
+import { NotificationType } from '@/lib/types/message.type';
 import { Button } from '../ui/button';
 import { Eye, Trash2 } from 'lucide-react';
 
 export default function MessagesTable({
   userMessages,
 }: {
-  userMessages: MessageType[];
+  userMessages: NotificationType[];
 }) {
   const PAGE_SIZE = 20;
 

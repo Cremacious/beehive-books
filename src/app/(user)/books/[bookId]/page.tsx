@@ -2,20 +2,14 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import CreateChapterButton from '@/components/buttons/create-chapter-button';
 import BookDetailsHero from '@/components/books/book-details-hero';
-import { userBooks } from '@/lib/sampleData';
+import { mockUser } from '@/lib/sampleData';
 import ChapterCard from '@/components/books/chapter-card';
 import Image from 'next/image';
 import beeWriting from '@/assets/site/beeWriting.png';
 import { MoveLeft } from 'lucide-react';
-export default async function BookPage({
-  params,
-}: {
-  params: Promise<{ bookId: string }>;
-}) {
-  const bookId = (await params).bookId;
 
-  console.log('Loading book with ID:', bookId);
-  const book = userBooks[0];
+export default async function BookPage() {
+  const book = mockUser.books[0];
   const chapters = book ? book.chapters : [];
 
   return (
