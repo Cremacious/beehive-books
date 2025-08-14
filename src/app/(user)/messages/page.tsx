@@ -1,11 +1,6 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { Eye, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import beeMailbox from '@/assets/site/mailbox.png';
 import Image from 'next/image';
+import MessagesTable from '@/components/messages/messages-table';
 
 const mockMessages = [
   {
@@ -45,30 +40,7 @@ const mockMessages = [
   },
 ];
 
-const PAGE_SIZE = 10;
-
 export default function MessagesPage() {
-  const [page, setPage] = useState(1);
-  const [messages, setMessages] = useState(mockMessages);
-  const router = useRouter();
-
-  const totalPages = Math.ceil(messages.length / PAGE_SIZE);
-  const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  function handleDelete(id: number) {
-    setMessages(messages.filter((msg) => msg.id !== id));
-  }
-
-  function handleView(id: number) {
-    setMessages(
-      messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
-    );
-  }
-
-  function handleRowClick(id: number) {
-    router.push(`/messages/${id}`);
-  }
-
   return (
     <div className="mx-auto max-w-5xl px-2">
       <div className="darkContainer ">
@@ -88,7 +60,9 @@ export default function MessagesPage() {
               </h1>
             </div>
           </div>
-          <div className="w-full overflow-x-auto rounded-lg border-b-6 border-b-yellow-400 shadow-lg mb-6">
+          <MessagesTable userMessages={mockMessages} />
+
+          {/* <div className="w-full overflow-x-auto rounded-lg border-b-6 border-b-yellow-400 shadow-lg mb-6">
             <div className="min-w-[600px]">
               <div className="flex bg-yellow-100 font-bold text-yellow-900 rounded-t-lg border-b-2 border-yellow-200">
                 <div className="w-32 px-4 py-3">Type</div>
@@ -171,7 +145,7 @@ export default function MessagesPage() {
             >
               Next
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
