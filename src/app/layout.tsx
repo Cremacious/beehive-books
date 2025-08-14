@@ -1,19 +1,9 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/header/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import Footer from '@/components/footer';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+import NotificationInitializer from '@/lib/providers/notificationProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -27,10 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`antialiased`}>
         <div className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-500 min-h-screen">
+          <NotificationInitializer />
           <Navbar />
           <div className="mb-4"></div>
           {children}

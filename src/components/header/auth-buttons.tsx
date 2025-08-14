@@ -10,6 +10,7 @@ import { useNotificationStore } from '@/store/notifications.store';
 
 export default function AuthButtons() {
   const notificationCount = useNotificationStore((s) => s.unreadCount());
+
   const { data: session } = useSession();
 
   // const notificationCount = 14;

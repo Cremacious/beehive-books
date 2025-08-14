@@ -1,9 +1,8 @@
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import friendImage from '../../../assets/site/friends.png';
 import FriendsTable from '@/components/friends/friends-table';
 import { mockUser } from '@/lib/sampleData';
-
+import ViewFriendRequestsButton from '@/components/friends/view-friends-button';
 
 const friends = mockUser.friends.map((friend: any) => ({
   ...friend,
@@ -78,30 +77,13 @@ const friends = mockUser.friends.map((friend: any) => ({
 // ];
 
 export default function FriendsPage() {
- 
   return (
     <div className="">
       <div className="max-w-6xl mx-auto p-2">
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
             <div className="absolute top-4 right-4 z-10">
-              <Button
-                size={'sm'}
-                className="relative pr-8 shadow-md bg-yellow-100 text-yellow-700 font-semibold hover:bg-yellow-200 transition text-sm"
-                // onClick={() =>
-                //   alert(
-                //     'Friend Requests: ' +
-                //       mockFriendRequests
-                //         .map((r) => r.name + ' (' + r.email + ')')
-                //         .join(', ')
-                //   )
-                // }
-              >
-                View All Friend Requests
-                <span className="absolute top-0 right-2 -translate-y-1/2 bg-yellow-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md">
-                  {/* {mockFriendRequests.length + friendRequests.length} */} 7
-                </span>
-              </Button>
+              <ViewFriendRequestsButton />
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">
