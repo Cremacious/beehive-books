@@ -10,7 +10,6 @@ const friends = mockUser.friends.map((friend: any) => ({
   avatar: friend.avatar ?? 'https://randomuser.me/api/portraits/lego/1.jpg',
 }));
 
-// const mockFriends = [
 //   {
 //     id: 1,
 //     name: 'Maya Honeywell',
@@ -79,11 +78,7 @@ const friends = mockUser.friends.map((friend: any) => ({
 // ];
 
 export default function FriendsPage() {
-  // const mockFriendRequests = [
-  //   { id: 101, name: 'Bee Curious', email: 'bee.curious@hive.com' },
-  //   { id: 102, name: 'Honey Helper', email: 'honey.helper@hive.com' },
-  // ];
-
+ 
   return (
     <div className="">
       <div className="max-w-6xl mx-auto p-2">

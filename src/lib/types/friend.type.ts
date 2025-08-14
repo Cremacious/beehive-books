@@ -1,6 +1,10 @@
 export type FriendType = {
-    id: number
-    name: string
-    avatar: string
+  id: number;
+  name: string;
+  avatar: string;
+};
 
-}
+export type FriendRequestType = {
+  id: string;
+  status: string;
+};

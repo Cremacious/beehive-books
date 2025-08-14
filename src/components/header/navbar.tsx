@@ -4,6 +4,7 @@ import AuthButtons from './auth-buttons';
 import hiveIcon from '@/assets/hive-icon3.png';
 import { Sidebar } from './sidebar';
 import { ROUTES } from '@/lib/constants';
+
 export default async function Navbar() {
   return (
     <nav className="w-full px-6 py-4 customDark  shadow-lg">
