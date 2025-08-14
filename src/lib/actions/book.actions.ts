@@ -19,10 +19,24 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
 
     const parsedData = bookSchema.parse(data);
 
+    let coverBuffer: Buffer | undefined = undefined;
+    if (parsedData.coverImageBase64) {
+      const base64Part = parsedData.coverImageBase64.includes(',')
+        ? parsedData.coverImageBase64.split(',')[1]
+        : parsedData.coverImageBase64;
+      coverBuffer = Buffer.from(base64Part, 'base64');
+    }
+
     await prisma.book.create({
       data: {
-        ...parsedData,
+        title: parsedData.title,
+        author: parsedData.author,
+        genre: parsedData.genre ?? undefined,
+        category: parsedData.category ?? undefined,
+        description: parsedData.description ?? undefined,
+        privacy: parsedData.privacy,
         userId: existingUser.id,
+        coverImage: coverBuffer,
       },
     });
 
@@ -31,5 +45,17 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
   } catch (error) {
     console.error('Error creating book:', error);
     return { success: false, message: 'Failed to create book' };
+  }
+}
+
+export async function getUserBooksById(userId: string) {
+  try {
+    const books = await prisma.book.findMany({
+      where: { userId },
+    });
+    return books;
+  } catch (error) {
+    console.error('Error fetching user books:', error);
+    return [];
   }
 }

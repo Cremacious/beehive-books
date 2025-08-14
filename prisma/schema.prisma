@@ -64,7 +64,7 @@ model Book {
   genre         String?    
   category      String?
   description   String?
-  coverImage    String?    @default("https://example.com/default-cover.jpg")    
+  coverImage    Bytes?
   privacy       String
   lastEditedBy  String?
   lastEditor    User?      @relation("LastEditedBy", fields: [lastEditedBy], references: [id])

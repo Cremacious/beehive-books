@@ -50,34 +50,91 @@ export default function CreateBookForm() {
     }
   }
 
-  async function uploadToCloudinary(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'YOUR_UPLOAD_PRESET');
-    const res = await fetch(
-      'https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload',
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
-    const data = await res.json();
-    return data.secure_url;
+  async function resizeAndConvertToBase64(
+    file: File,
+    maxWidth = 1600,
+    maxBytes = 700 * 1024
+  ) {
+    if (file.size <= maxBytes) {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = (e) => reject(e);
+      r.readAsDataURL(file);
+    });
+
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = document.createElement('img') as HTMLImageElement;
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Image failed to load'));
+      image.src = dataUrl;
+    });
+
+    const ratio = Math.min(1, maxWidth / img.width);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.width * ratio);
+    canvas.height = Math.round(img.height * ratio);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Failed to get canvas context');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    let quality = 0.9;
+    let blob: Blob | null = null;
+    while (quality >= 0.35) {
+      blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((b) => resolve(b), 'image/jpeg', quality)
+      );
+      if (!blob) break;
+      if (blob.size <= maxBytes) break;
+      quality -= 0.1;
+    }
+
+    if (!blob) throw new Error('Image compression failed');
+
+    return new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = (e) => reject(e);
+      r.readAsDataURL(blob as Blob);
+    });
   }
 
   async function onSubmit(values: z.infer<typeof bookSchema>) {
     try {
       setUploading(true);
-      let coverUrl = '';
-      if (coverFile) {
-        coverUrl = await uploadToCloudinary(coverFile);
+
+      if (coverFile && coverFile.size > 12 * 1024 * 1024) {
+        toast.error('Cover image is too large (max 12MB).');
+        setUploading(false);
+        return;
       }
+
+      let coverImageBase64: string | undefined = undefined;
+      if (coverFile) {
+        coverImageBase64 = await resizeAndConvertToBase64(
+          coverFile,
+          1600,
+          700 * 1024
+        );
+      }
+
       const response = await createBook({
         ...values,
-        coverUrl,
+        coverImageBase64,
       });
       if (response.success) {
         toast.success(response.message);
+        form.reset();
+        setCoverFile(null);
+        setCoverPreview(null);
       } else {
         toast.error(response.message);
       }
@@ -127,7 +184,7 @@ export default function CreateBookForm() {
             </div>
           </div>
         </div>
-        
+
         {/* Section: Book Details */}
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

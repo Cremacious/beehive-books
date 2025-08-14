@@ -7,5 +7,6 @@ export const bookSchema = z.object({
   genre: z.string().min(1),
   description: z.string().optional(),
   coverUrl: z.string().optional(),
+  coverImageBase64: z.string().optional(),
   privacy: z.enum(['public', 'private']),
 });
