@@ -99,25 +99,39 @@ export default function MessagesTable({
       </div>
 
       <div className="flex flex-col sm:flex-row justify-end items-center gap-2 mt-6">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          Previous
-        </Button>
+        {page !== 1 && (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </Button>
+        )}
+
         <span className="text-white mx-2">
           Page {page} of {totalPages}
         </span>
-        <Button
+
+        {page !== totalPages && (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </Button>
+        )}
+        {/* <Button
           variant="outline"
           size="sm"
           disabled={page === totalPages}
           onClick={() => setPage(page + 1)}
         >
           Next
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
