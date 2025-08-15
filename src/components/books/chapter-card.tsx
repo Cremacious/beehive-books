@@ -37,8 +37,8 @@ export default function ChapterCard({
 
           <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
             <span> {chapter.wordCount.toLocaleString()} words</span>
-            <span>{chapter.comments.length} comments</span>
-            <span>Updated {chapter.updatedAt}</span>
+            <span>{(chapter.comments?.length ?? 0)} comments</span>
+            {/* <span>Updated {chapter.updatedAt}</span> */}
           </div>
         </div>
 

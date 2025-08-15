@@ -30,7 +30,7 @@ import { createBook } from '@/lib/actions/book.actions';
 
 export default function CreateBookForm() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
+
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const form = useForm<z.infer<typeof bookSchema>>({
@@ -109,11 +109,11 @@ export default function CreateBookForm() {
 
   async function onSubmit(values: z.infer<typeof bookSchema>) {
     try {
-      setUploading(true);
+
 
       if (coverFile && coverFile.size > 12 * 1024 * 1024) {
         toast.error('Cover image is too large (max 12MB).');
-        setUploading(false);
+
         return;
       }
 
@@ -141,9 +141,7 @@ export default function CreateBookForm() {
     } catch (error) {
       console.log('Error creating book:', error);
       toast.error('Failed to submit the form. Please try again.');
-    } finally {
-      setUploading(false);
-    }
+    } 
   }
 
   return (
@@ -185,7 +183,7 @@ export default function CreateBookForm() {
           </div>
         </div>
 
-        {/* Section: Book Details */}
+    
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
@@ -231,7 +229,7 @@ export default function CreateBookForm() {
           </div>
         </div>
 
-        {/* Section: Category & Genre */}
+ 
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField

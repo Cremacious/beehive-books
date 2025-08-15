@@ -15,30 +15,24 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
+import { chapterSchema } from '@/lib/validators/book.validators';
 import TextEditor from '../chapter-page/text-editor';
 import { Textarea } from '../ui/textarea';
+import { createChapter } from '@/lib/actions/book.actions';
 
-const formSchema = z.object({
-  title: z.string().min(1),
-  notes: z.string().min(1).optional(),
-  content: z.string().min(1),
-  // progress: z.boolean(),
-});
-
-export default function MyForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export default function MyForm({ bookId }: { bookId: string }) {
+  const form = useForm<z.infer<typeof chapterSchema>>({
+    resolver: zodResolver(chapterSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof chapterSchema>) {
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      const response = await createChapter(bookId, values);
+      if (response.success) {
+        toast.success('Chapter created successfully!');
+      } else {
+        toast.error('Failed to create chapter.');
+      }
     } catch (error) {
       console.error('Form submission error', error);
       toast.error('Failed to submit the form. Please try again.');
@@ -72,7 +66,7 @@ export default function MyForm() {
             </FormItem>
           )}
         />
-
+        {bookId}
         <FormField
           control={form.control}
           name="notes"

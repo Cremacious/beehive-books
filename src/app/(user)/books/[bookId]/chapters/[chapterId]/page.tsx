@@ -1,11 +1,24 @@
 import ChapterContent from '@/components/chapter-page/chapter-content';
 import CommentSection from '@/components/chapter-page/comment-section';
 import { Button } from '@/components/ui/button';
-import { mockUser } from '@/lib/sampleData';
+// import { mockUser } from '@/lib/sampleData';
 import Link from 'next/link';
+import { getChapterById } from '@/lib/actions/book.actions';
 
-export default function ChapterPage() {
-  const chapter = mockUser.books[0].chapters[0];
+export default async function ChapterPage({
+  params,
+}: {
+  params: Promise<{ chapterId: string }>;
+}) {
+  // const chapter = mockUser.books[0].chapters[0];
+
+  const { chapterId } = await params;
+ 
+  const chapter = await getChapterById({ chapterId });
+
+  if (!chapter) {
+    return <div className="text-red-500">Chapter not found</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-1">
@@ -26,7 +39,7 @@ export default function ChapterPage() {
                       </span>
                     </span>
                     <span>·</span>
-                    <span>Updated {chapter.updatedAt}</span>
+                    {/* <span>Updated {chapter.updatedAt}</span> */}
                     <span>·</span>
                     <span>{chapter.wordCount} words</span>
                     <span>·</span>
@@ -42,11 +55,10 @@ export default function ChapterPage() {
             </div>{' '}
           </div>
         </div>
-        
-          <ChapterContent chapter={chapter} />
-       
 
-        <CommentSection comments={chapter.comments} />
+        <ChapterContent chapter={chapter} />
+
+        {/* <CommentSection comments={chapter.comments} /> */}
       </div>
     </div>
   );

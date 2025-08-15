@@ -2,15 +2,22 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import CreateChapterButton from '@/components/buttons/create-chapter-button';
 import BookDetailsHero from '@/components/books/book-details-hero';
-import { mockUser } from '@/lib/sampleData';
+// import { mockUser } from '@/lib/sampleData';
 import ChapterCard from '@/components/books/chapter-card';
 import Image from 'next/image';
 import beeWriting from '@/assets/site/beeWriting.png';
 import { MoveLeft } from 'lucide-react';
+import { getBookById } from '@/lib/actions/book.actions';
+import { ChapterType } from '@/lib/types/books.type';
 
-export default async function BookPage() {
-  const book = mockUser.books[0];
-  const chapters = book ? book.chapters : [];
+export default async function BookPage({ params }: { params: { bookId: string } }) {
+  // const book = mockUser.books[0];
+  // const chapters = book ? book.chapters : [];
+
+  const { bookId } = params;
+  const book = await getBookById(bookId);
+  const chapters = book?.chapters ?? [];
+ 
 
   return (
     <div className="max-w-6xl mx-auto px-2">
@@ -33,19 +40,19 @@ export default async function BookPage() {
                 Chapters
               </h2>
               <Button asChild>
-                <Link href={`/books/33/chapters/create`}>New Chapter</Link>
+                <Link href={`/books/${book.id}/chapters/create`}>New Chapter</Link>
               </Button>
             </div>
 
             <div className="space-y-4">
-              {chapters.map((chapter, index) => (
+                {chapters.map((chapter: ChapterType, index: number) => (
                 <ChapterCard
                   key={index}
                   chapter={chapter}
                   index={index}
                   bookId={book.id.toString()}
                 />
-              ))}
+                ))}
             </div>
 
             <div className="mt-8 text-center py-12 bg-yellow-50 rounded-2xl border-2 border-yellow-200 border-dashed">

@@ -104,7 +104,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
   }, [chapter.content]);
   const editor = useMemo(() => withReact(createEditor()), []);
 
-  console.log(chapter.content);
+
 
   return (
     <div className="darkContainer">

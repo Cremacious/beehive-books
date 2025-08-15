@@ -1,10 +1,11 @@
 'use server';
 
 import prisma from '../prisma';
-import { bookSchema } from '../validators/book.validators';
+import { bookSchema, chapterSchema } from '../validators/book.validators';
 import { z } from 'zod';
 import { getAuthenticatedUser } from '../types/server-utils';
 import { revalidatePath } from 'next/cache';
+import { ca } from 'zod/v4/locales';
 
 export async function createBook(data: z.infer<typeof bookSchema>) {
   try {
@@ -82,6 +83,43 @@ export async function getUserBooksById(userId: string) {
   }
 }
 
+export async function getBookById(bookId: string) {
+  try {
+    const book = await prisma.book.findUnique({
+      where: { id: Number(bookId) },
+      include: {
+        chapters: {
+          orderBy: { id: 'asc' },
+        },
+        comments: true,
+        collaborators: true,
+      },
+    });
+
+    if (!book) throw new Error('Book not found');
+
+    const bookWithRelations = book as any;
+
+    let cover: string | undefined = undefined;
+    if (bookWithRelations.coverImage) {
+      const base64 = Buffer.from(bookWithRelations.coverImage).toString(
+        'base64'
+      );
+      cover = `data:image/jpeg;base64,${base64}`;
+    }
+
+    return {
+      ...bookWithRelations,
+      cover,
+      chapters: bookWithRelations.chapters ?? [],
+      comments: bookWithRelations.comments ?? [],
+      collaborators: bookWithRelations.collaborators ?? [],
+    };
+  } catch (error) {
+    console.error('Error fetching book by id:', error);
+    return null;
+  }
+}
 
 export async function getFriendsBooks() {
   try {
@@ -91,14 +129,11 @@ export async function getFriendsBooks() {
 
     const friendships = await prisma.friendship.findMany({
       where: {
-        OR: [
-          { userId: user.id },
-          { friendId: user.id }
-        ]
-      }
+        OR: [{ userId: user.id }, { friendId: user.id }],
+      },
     });
 
-    const friendIds = friendships.map(f =>
+    const friendIds = friendships.map((f) =>
       f.userId === user.id ? f.friendId : f.userId
     );
 
@@ -107,7 +142,7 @@ export async function getFriendsBooks() {
     const books = await prisma.book.findMany({
       where: {
         userId: { in: friendIds },
-        privacy: 'public'
+        privacy: 'public',
       },
       include: {
         user: true,
@@ -139,5 +174,67 @@ export async function getFriendsBooks() {
   } catch (error) {
     console.error('Error fetching friends books:', error);
     return [];
+  }
+}
+
+export async function createChapter(
+  bookId: string,
+  data: z.infer<typeof chapterSchema>
+) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const book = await prisma.book.findUnique({
+      where: { id: Number(bookId) },
+      include: { user: true },
+    });
+
+    if (!book) throw new Error('Book not found');
+    if (book.userId !== user.id) throw new Error('Unauthorized');
+
+    const parsedData = chapterSchema.parse(data);
+
+    const chapter = await prisma.chapter.create({
+      data: {
+        title: parsedData.title,
+        content: parsedData.content,
+        bookId: book.id,
+        author: user.id,
+        privacy: parsedData.privacy ?? 'public',
+      },
+    });
+
+    revalidatePath(`/books/${bookId}`);
+    return { success: true, message: 'Chapter created successfully', chapter };
+  } catch (error) {
+    console.error('Error creating chapter:', error);
+    return { success: false, message: 'Failed to create chapter' };
+  }
+}
+
+export async function getChapterById({ chapterId }: { chapterId: string }) {
+  try {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: Number(chapterId) },
+      include: {
+        book: {
+          include: {
+            user: true,
+            comments: true,
+            collaborators: true,
+          },
+        },
+        comments: true,
+      },
+    });
+
+    if (!chapter) throw new Error('Chapter not found');
+
+    return chapter;
+  } catch (error) {
+    console.error('Error fetching chapter by id:', error);
+    return null;
   }
 }
