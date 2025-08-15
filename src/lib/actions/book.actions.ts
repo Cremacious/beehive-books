@@ -52,10 +52,92 @@ export async function getUserBooksById(userId: string) {
   try {
     const books = await prisma.book.findMany({
       where: { userId },
+      include: {
+        chapters: {
+          orderBy: { id: 'asc' },
+        },
+        comments: true,
+        collaborators: true,
+      },
+      orderBy: { id: 'asc' },
     });
-    return books;
+    const mapped = books.map((b: any) => {
+      let cover: string | undefined = undefined;
+      if (b.coverImage) {
+        const base64 = Buffer.from(b.coverImage).toString('base64');
+        cover = `data:image/jpeg;base64,${base64}`;
+      }
+      return {
+        ...b,
+        cover,
+        chapters: b.chapters ?? [],
+        comments: b.comments ?? [],
+        collaborators: b.collaborators ?? [],
+      };
+    });
+    return mapped;
   } catch (error) {
     console.error('Error fetching user books:', error);
+    return [];
+  }
+}
+
+
+export async function getFriendsBooks() {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        OR: [
+          { userId: user.id },
+          { friendId: user.id }
+        ]
+      }
+    });
+
+    const friendIds = friendships.map(f =>
+      f.userId === user.id ? f.friendId : f.userId
+    );
+
+    if (friendIds.length === 0) return [];
+
+    const books = await prisma.book.findMany({
+      where: {
+        userId: { in: friendIds },
+        privacy: 'public'
+      },
+      include: {
+        user: true,
+        chapters: {
+          orderBy: { id: 'asc' },
+        },
+        comments: true,
+        collaborators: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    const mapped = books.map((b: any) => {
+      let cover: string | undefined = undefined;
+      if (b.coverImage) {
+        const base64 = Buffer.from(b.coverImage).toString('base64');
+        cover = `data:image/jpeg;base64,${base64}`;
+      }
+      return {
+        ...b,
+        cover,
+        chapters: b.chapters ?? [],
+        comments: b.comments ?? [],
+        collaborators: b.collaborators ?? [],
+      };
+    });
+
+    return mapped;
+  } catch (error) {
+    console.error('Error fetching friends books:', error);
     return [];
   }
 }

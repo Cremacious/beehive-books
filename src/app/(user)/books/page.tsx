@@ -3,28 +3,31 @@ import { mockUser } from '@/lib/sampleData';
 import beeBookshelf from '@/assets/site/beeBookshelf.png';
 import Image from 'next/image';
 import BookShelf from '@/components/books/bookshelf';
-import { getAuthenticatedUser } from '@/lib/types/server-utils';
-import { getUserBooksById } from '@/lib/actions/book.actions';
+// import { getAuthenticatedUser } from '@/lib/types/server-utils';
+// import { getUserBooksById } from '@/lib/actions/book.actions';
 
 
 export default async function BooksPage() {
-  const { user } = await getAuthenticatedUser();
 
-  const rawOtherBooks = user?.id ? await getUserBooksById(user.id) : [];
-  const otherBooks = rawOtherBooks.map((book: any) => {
-    const cover = book.coverImage
-      ? `data:image/jpeg;base64,${Buffer.from(book.coverImage).toString(
-          'base64'
-        )}`
-      : undefined;
-    return {
-      ...book,
-      cover,
-      chapters: book.chapters ?? [],
-      comments: book.comments ?? [],
-      collaborators: book.collaborators ?? [],
-    };
-  });
+
+  // const { user } = await getAuthenticatedUser();
+
+  // const books = user?.id ? await getUserBooksById(user.id);
+
+  // const otherBooks = rawOtherBooks.map((book: any) => {
+  //   const cover = book.coverImage
+  //     ? `data:image/jpeg;base64,${Buffer.from(book.coverImage).toString(
+  //         'base64'
+  //       )}`
+  //     : undefined;
+  //   return {
+  //     ...book,
+  //     cover,
+  //     chapters: book.chapters ?? [],
+  //     comments: book.comments ?? [],
+  //     collaborators: book.collaborators ?? [],
+  //   };
+  // });
 
   const userBooks = mockUser.books;
 
@@ -64,14 +67,14 @@ export default async function BooksPage() {
             />
           </div>
         </div>
-        {otherBooks.length > 0 && (
+        {/* {otherBooks.length > 0 && (
           <div className="darkContainer space-y-6">
             <h2 className="text-2xl font-bold text-yellow-400 mb-2">
               Other Books by You
             </h2>
             <BookShelf books={otherBooks} owner={'Your'} />
           </div>
-        )}
+        )} */}
         <div className="darkContainer space-y-6">
           <BookShelf books={userBooks} owner={'Your'} />
         </div>
