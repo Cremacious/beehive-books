@@ -5,7 +5,6 @@ import { bookSchema, chapterSchema } from '../validators/book.validators';
 import { z } from 'zod';
 import { getAuthenticatedUser } from '../types/server-utils';
 import { revalidatePath } from 'next/cache';
-import { ca } from 'zod/v4/locales';
 
 export async function createBook(data: z.infer<typeof bookSchema>) {
   try {
@@ -57,7 +56,14 @@ export async function getUserBooksById(userId: string) {
         chapters: {
           orderBy: { id: 'asc' },
         },
-        comments: true,
+        comments: {
+          include: {
+            author: true,
+            replies: {
+              include: { author: true },
+            },
+          },
+        },
         collaborators: true,
       },
       orderBy: { id: 'asc' },
@@ -72,7 +78,39 @@ export async function getUserBooksById(userId: string) {
         ...b,
         cover,
         chapters: b.chapters ?? [],
-        comments: b.comments ?? [],
+        comments:
+          (b.comments ?? []).map((c: any) => ({
+            id: c.id,
+            authorId: c.authorId,
+            content: c.content,
+            createdAt:
+              c.createdAt instanceof Date
+                ? c.createdAt.toISOString()
+                : c.createdAt,
+            chapterId: c.chapterId,
+            bookId: c.bookId ?? undefined,
+            parentId: c.parentId ?? undefined,
+            author: c.author
+              ? { id: c.author.id, name: c.author.name }
+              : { id: '', name: '' },
+            replies:
+              (c.replies ?? []).map((r: any) => ({
+                id: r.id,
+                authorId: r.authorId,
+                content: r.content,
+                createdAt:
+                  r.createdAt instanceof Date
+                    ? r.createdAt.toISOString()
+                    : r.createdAt,
+                chapterId: r.chapterId,
+                bookId: r.bookId ?? undefined,
+                parentId: r.parentId ?? undefined,
+                author: r.author
+                  ? { id: r.author.id, name: r.author.name }
+                  : { id: '', name: '' },
+                replies: [],
+              })) ?? [],
+          })) ?? [],
         collaborators: b.collaborators ?? [],
       };
     });
@@ -91,7 +129,12 @@ export async function getBookById(bookId: string) {
         chapters: {
           orderBy: { id: 'asc' },
         },
-        comments: true,
+        comments: {
+          include: {
+            author: true,
+            replies: { include: { author: true } },
+          },
+        },
         collaborators: true,
       },
     });
@@ -112,7 +155,39 @@ export async function getBookById(bookId: string) {
       ...bookWithRelations,
       cover,
       chapters: bookWithRelations.chapters ?? [],
-      comments: bookWithRelations.comments ?? [],
+      comments:
+        (bookWithRelations.comments ?? []).map((c: any) => ({
+          id: c.id,
+          authorId: c.authorId,
+          content: c.content,
+          createdAt:
+            c.createdAt instanceof Date
+              ? c.createdAt.toISOString()
+              : c.createdAt,
+          chapterId: c.chapterId,
+          bookId: c.bookId ?? undefined,
+          parentId: c.parentId ?? undefined,
+          author: c.author
+            ? { id: c.author.id, name: c.author.name }
+            : { id: '', name: '' },
+          replies:
+            (c.replies ?? []).map((r: any) => ({
+              id: r.id,
+              authorId: r.authorId,
+              content: r.content,
+              createdAt:
+                r.createdAt instanceof Date
+                  ? r.createdAt.toISOString()
+                  : r.createdAt,
+              chapterId: r.chapterId,
+              bookId: r.bookId ?? undefined,
+              parentId: r.parentId ?? undefined,
+              author: r.author
+                ? { id: r.author.id, name: r.author.name }
+                : { id: '', name: '' },
+              replies: [],
+            })) ?? [],
+        })) ?? [],
       collaborators: bookWithRelations.collaborators ?? [],
     };
   } catch (error) {
@@ -149,7 +224,9 @@ export async function getFriendsBooks() {
         chapters: {
           orderBy: { id: 'asc' },
         },
-        comments: true,
+        comments: {
+          include: { author: true, replies: { include: { author: true } } },
+        },
         collaborators: true,
       },
       orderBy: { id: 'asc' },
@@ -165,7 +242,39 @@ export async function getFriendsBooks() {
         ...b,
         cover,
         chapters: b.chapters ?? [],
-        comments: b.comments ?? [],
+        comments:
+          (b.comments ?? []).map((c: any) => ({
+            id: c.id,
+            authorId: c.authorId,
+            content: c.content,
+            createdAt:
+              c.createdAt instanceof Date
+                ? c.createdAt.toISOString()
+                : c.createdAt,
+            chapterId: c.chapterId,
+            bookId: c.bookId ?? undefined,
+            parentId: c.parentId ?? undefined,
+            author: c.author
+              ? { id: c.author.id, name: c.author.name }
+              : { id: '', name: '' },
+            replies:
+              (c.replies ?? []).map((r: any) => ({
+                id: r.id,
+                authorId: r.authorId,
+                content: r.content,
+                createdAt:
+                  r.createdAt instanceof Date
+                    ? r.createdAt.toISOString()
+                    : r.createdAt,
+                chapterId: r.chapterId,
+                bookId: r.bookId ?? undefined,
+                parentId: r.parentId ?? undefined,
+                author: r.author
+                  ? { id: r.author.id, name: r.author.name }
+                  : { id: '', name: '' },
+                replies: [],
+              })) ?? [],
+          })) ?? [],
         collaborators: b.collaborators ?? [],
       };
     });
@@ -222,17 +331,69 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
         book: {
           include: {
             user: true,
-            comments: true,
+            comments: { include: { author: true } },
             collaborators: true,
           },
         },
-        comments: true,
+        comments: {
+          include: { author: true, replies: { include: { author: true } } },
+        },
       },
     });
 
     if (!chapter) throw new Error('Chapter not found');
 
-    return chapter;
+    return {
+      id: chapter.id,
+      author: chapter.author,
+      title: chapter.title,
+      notes: chapter.notes ?? undefined,
+      content: chapter.content,
+      privacy: chapter.privacy,
+      createdAt:
+        chapter.createdAt instanceof Date
+          ? chapter.createdAt.toISOString()
+          : chapter.createdAt,
+      updatedAt:
+        chapter.updatedAt instanceof Date
+          ? chapter.updatedAt.toISOString()
+          : chapter.updatedAt,
+      status: chapter.status,
+      wordCount: chapter.wordCount,
+      comments:
+        chapter.comments?.map((c: any) => ({
+          id: c.id,
+          authorId: c.authorId,
+          content: c.content,
+          createdAt:
+            c.createdAt instanceof Date
+              ? c.createdAt.toISOString()
+              : c.createdAt,
+          chapterId: c.chapterId,
+          bookId: c.bookId ?? undefined,
+          parentId: c.parentId ?? undefined,
+          author: c.author
+            ? { id: c.author.id, name: c.author.name }
+            : { id: '', name: '' },
+          replies:
+            (c.replies ?? []).map((r: any) => ({
+              id: r.id,
+              authorId: r.authorId,
+              content: r.content,
+              createdAt:
+                r.createdAt instanceof Date
+                  ? r.createdAt.toISOString()
+                  : r.createdAt,
+              chapterId: r.chapterId,
+              bookId: r.bookId ?? undefined,
+              parentId: r.parentId ?? undefined,
+              author: r.author
+                ? { id: r.author.id, name: r.author.name }
+                : { id: '', name: '' },
+              replies: [],
+            })) ?? [],
+        })) ?? [],
+    };
   } catch (error) {
     console.error('Error fetching chapter by id:', error);
     return null;

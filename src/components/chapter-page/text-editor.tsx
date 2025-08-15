@@ -207,7 +207,6 @@ const FontSizeDropdown = () => {
 
 const ColorPicker = ({
   format,
-  label,
 }: {
   format: 'color' | 'backgroundColor';
   label: string;

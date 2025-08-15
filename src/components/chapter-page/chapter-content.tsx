@@ -18,7 +18,7 @@ const fontOptions = [
   { label: 'Garamond', value: 'Garamond, serif' },
 ];
 
-const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i); 
+const fontSizes = Array.from({ length: 65 }, (_, i) => 8 + i);
 
 const Element = (props: any) => {
   const { attributes, children, element } = props;
@@ -92,7 +92,6 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
   const [dark, setDark] = useState(false);
   const [fontSize, setFontSize] = useState('16');
 
-  
   const value: Descendant[] = useMemo(() => {
     try {
       return chapter.content
@@ -104,13 +103,10 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
   }, [chapter.content]);
   const editor = useMemo(() => withReact(createEditor()), []);
 
-
-
   return (
     <div className="darkContainer">
       <div className="shadow-xl rounded-2xl md:p-6 p-1 darkColor border-b-8 border-b-yellow-400 mb-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 my-4">
-      
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Font:</label>
             <select
@@ -143,7 +139,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
               ))}
             </select>
           </div>
-    
+
           <div className="flex gap-2 items-center w-full md:w-auto justify-center">
             <label className="font-semibold text-yellow-400">Dark Mode:</label>
             <Button
@@ -159,7 +155,7 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
         <div
           className={`prose prose-lg max-w-none ${
             dark ? 'bg-[#202020] text-white' : 'bg-white text-slate-800'
-          } font-bold rounded-xl mb-4 border-2 p-2 md:p-6 shadow-inner min-h-[800px] transition-colors`}
+          } font-bold rounded-xl mb-4 border-2 p-2 md:p-6 shadow-inner h-[800px] overflow-auto min-h-0 transition-colors`}
           style={{ fontFamily: font, fontSize: fontSize + 'px' }}
         >
           <Slate editor={editor} initialValue={value} onChange={() => {}}>
@@ -168,13 +164,13 @@ export default function ChapterContent({ chapter }: { chapter: ChapterType }) {
               renderElement={Element}
               renderLeaf={Leaf}
               style={{
-                minHeight: 800,
+                minHeight: 0,
                 fontFamily: font,
                 fontSize: fontSize + 'px',
-                background: dark ? '#202020' : 'white',
+                background: 'transparent',
                 color: dark ? 'white' : '#222',
               }}
-              className="outline-none border-none bg-transparent shadow-none p-0 m-0 min-h-[800px] max-h-[800px] h-[800px]"
+              className="outline-none border-none bg-transparent shadow-none p-0 m-0 min-h-0 h-auto"
             />
           </Slate>
         </div>

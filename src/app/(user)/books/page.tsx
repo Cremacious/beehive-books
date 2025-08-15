@@ -60,9 +60,9 @@ export default async function BooksPage() {
             <BookShelf books={books} owner={'Your'} />
           </div>
         )}
-        <div className="darkContainer space-y-6">
+        {/* <div className="darkContainer space-y-6">
           <BookShelf books={userBooks} owner={'Your'} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

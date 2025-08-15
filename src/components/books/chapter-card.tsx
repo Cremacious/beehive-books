@@ -31,13 +31,13 @@ export default function ChapterCard({
             {chapter.title}
           </h3>
 
-          <p className="text-slate-800 mb-3 leading-relaxed">
+          <p className="line-clamp-3 text-slate-800 mb-3 leading-relaxed">
             {chapter.content}
           </p>
 
           <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
             <span> {chapter.wordCount.toLocaleString()} words</span>
-            <span>{(chapter.comments?.length ?? 0)} comments</span>
+            <span>{chapter.comments?.length ?? 0} comments</span>
             {/* <span>Updated {chapter.updatedAt}</span> */}
           </div>
         </div>

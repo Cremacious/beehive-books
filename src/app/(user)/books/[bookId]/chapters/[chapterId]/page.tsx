@@ -58,7 +58,7 @@ export default async function ChapterPage({
 
         <ChapterContent chapter={chapter} />
 
-        {/* <CommentSection comments={chapter.comments} /> */}
+        <CommentSection comments={chapter.comments} />
       </div>
     </div>
   );

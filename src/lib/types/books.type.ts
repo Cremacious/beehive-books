@@ -7,7 +7,7 @@ export type BookType = {
   description?: string;
   privacy: string;
   cover?: string;
-  lastEditedBy?: number;
+  lastEditedBy?: string;
   createdAt: string;
   publishedAt?: string;
   updatedAt: string;
@@ -34,7 +34,7 @@ export type ChapterType = {
 
 export type CommentType = {
   id: number;
-  authorId: number;
+  authorId: string;
   content: string;
   createdAt: string;
   chapterId: number;
@@ -44,7 +44,6 @@ export type CommentType = {
 };
 
 export type BookUserType = {
-  id: number;
+  id: string;
   name: string;
 };
-

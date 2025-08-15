@@ -10,14 +10,17 @@ import { MoveLeft } from 'lucide-react';
 import { getBookById } from '@/lib/actions/book.actions';
 import { ChapterType } from '@/lib/types/books.type';
 
-export default async function BookPage({ params }: { params: { bookId: string } }) {
+export default async function BookPage({
+  params,
+}: {
+  params: Promise<{ bookId: string }>;
+}) {
   // const book = mockUser.books[0];
   // const chapters = book ? book.chapters : [];
 
-  const { bookId } = params;
+  const { bookId } = await params;
   const book = await getBookById(bookId);
   const chapters = book?.chapters ?? [];
- 
 
   return (
     <div className="max-w-6xl mx-auto px-2">
@@ -40,19 +43,21 @@ export default async function BookPage({ params }: { params: { bookId: string } 
                 Chapters
               </h2>
               <Button asChild>
-                <Link href={`/books/${book.id}/chapters/create`}>New Chapter</Link>
+                <Link href={`/books/${book.id}/chapters/create`}>
+                  New Chapter
+                </Link>
               </Button>
             </div>
 
             <div className="space-y-4">
-                {chapters.map((chapter: ChapterType, index: number) => (
+              {chapters.map((chapter: ChapterType, index: number) => (
                 <ChapterCard
                   key={index}
                   chapter={chapter}
                   index={index}
                   bookId={book.id.toString()}
                 />
-                ))}
+              ))}
             </div>
 
             <div className="mt-8 text-center py-12 bg-yellow-50 rounded-2xl border-2 border-yellow-200 border-dashed">
