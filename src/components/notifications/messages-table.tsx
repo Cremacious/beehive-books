@@ -20,12 +20,12 @@ export default function MessagesTable({
   const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function handleDelete(id: number) {
-    setMessages(messages.filter((msg) => msg.id !== id));
+    setMessages(messages.filter((msg) => msg.id !== id.toString()));
   }
 
   function handleView(id: number) {
     setMessages(
-      messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
+      messages.map((msg) => (Number(msg.id) === id ? { ...msg, read: true } : msg))
     );
   }
 
@@ -59,11 +59,11 @@ export default function MessagesTable({
                 onClick={(e) => {
                   if ((e.target as HTMLElement).closest('.actions-cell'))
                     return;
-                  handleRowClick(msg.id);
+                  handleRowClick(Number(msg.id));
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ')
-                    handleRowClick(msg.id);
+                    handleRowClick(Number(msg.id));
                 }}
               >
                 <div className="w-32 px-4 py-3 font-medium text-yellow-700">
@@ -79,7 +79,7 @@ export default function MessagesTable({
                     size="icon"
                     variant="ghost"
                     aria-label="View"
-                    onClick={() => handleView(msg.id)}
+                    onClick={() => handleView(Number(msg.id))}
                   >
                     <Eye className="w-5 h-5 text-yellow-600" />
                   </Button>
@@ -87,7 +87,7 @@ export default function MessagesTable({
                     size="icon"
                     variant="ghost"
                     aria-label="Delete"
-                    onClick={() => handleDelete(msg.id)}
+                    onClick={() => handleDelete(Number(msg.id))}
                   >
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </Button>
