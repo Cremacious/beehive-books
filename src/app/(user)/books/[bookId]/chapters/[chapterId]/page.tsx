@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 // import { mockUser } from '@/lib/sampleData';
 import Link from 'next/link';
 import { getChapterById } from '@/lib/actions/book.actions';
+import { MoveLeft } from 'lucide-react';
 
 export default async function ChapterPage({
   params,
@@ -13,7 +14,7 @@ export default async function ChapterPage({
   // const chapter = mockUser.books[0].chapters[0];
 
   const { chapterId } = await params;
- 
+
   const chapter = await getChapterById({ chapterId });
 
   if (!chapter) {
@@ -22,6 +23,14 @@ export default async function ChapterPage({
 
   return (
     <div className="max-w-7xl mx-auto px-1">
+      <div className="mb-4">
+        <Button variant={'secondary'} asChild>
+          <Link href={`/books`}>
+            <MoveLeft className="mr-2" />
+            Back to Book Page
+          </Link>
+        </Button>
+      </div>
       <div className="space-y-6">
         <div className="max-w-5xl mx-auto">
           <div className="darkContainer">

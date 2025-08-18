@@ -27,10 +27,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createBook } from '@/lib/actions/book.actions';
+import { useRouter } from 'next/navigation';
 
 export default function CreateBookForm() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
+  const router = useRouter();
 
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const form = useForm<z.infer<typeof bookSchema>>({
@@ -109,8 +111,6 @@ export default function CreateBookForm() {
 
   async function onSubmit(values: z.infer<typeof bookSchema>) {
     try {
-
-
       if (coverFile && coverFile.size > 12 * 1024 * 1024) {
         toast.error('Cover image is too large (max 12MB).');
 
@@ -133,6 +133,7 @@ export default function CreateBookForm() {
       if (response.success) {
         toast.success(response.message);
         form.reset();
+        router.push('/books');
         setCoverFile(null);
         setCoverPreview(null);
       } else {
@@ -141,7 +142,7 @@ export default function CreateBookForm() {
     } catch (error) {
       console.log('Error creating book:', error);
       toast.error('Failed to submit the form. Please try again.');
-    } 
+    }
   }
 
   return (
@@ -183,7 +184,6 @@ export default function CreateBookForm() {
           </div>
         </div>
 
-    
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
@@ -229,7 +229,6 @@ export default function CreateBookForm() {
           </div>
         </div>
 
- 
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
@@ -303,11 +302,14 @@ export default function CreateBookForm() {
           name="privacy"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Privacy</FormLabel>
+              <FormLabel className="text-yellow-400 text-lg">Privacy</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="" />
+                  <SelectTrigger className="bg-white">
+                    <SelectValue
+                      className="text-slate-800"
+                      placeholder="Public"
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -315,15 +317,23 @@ export default function CreateBookForm() {
                   <SelectItem value="private">Private</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Make the book public or only availible for friends
+              <FormDescription className="text-white">
+                Make the book public or only available for friends
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         {/* Submit Button */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-between pt-4">
+          <Button
+            type="button"
+            variant={'secondary'}
+            onClick={() => router.push('/books')}
+            className=""
+          >
+            Cancel
+          </Button>
           <Button type="submit">Create Book</Button>
         </div>
       </form>

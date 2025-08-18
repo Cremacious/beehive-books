@@ -9,22 +9,24 @@ import beeWriting from '@/assets/site/beeWriting.png';
 import { MoveLeft } from 'lucide-react';
 import { getBookById } from '@/lib/actions/book.actions';
 import { ChapterType } from '@/lib/types/books.type';
+import { notFound } from 'next/navigation';
 
 export default async function BookPage({
   params,
 }: {
-  params: Promise<{ bookId: string }>;
+  params: { bookId: string };
 }) {
   // const book = mockUser.books[0];
   // const chapters = book ? book.chapters : [];
 
-  const { bookId } = await params;
+  const { bookId } = params;
   const book = await getBookById(bookId);
-  const chapters = book?.chapters ?? [];
+  if (!book) notFound();
+  const chapters = book.chapters ?? [];
 
   return (
     <div className="max-w-6xl mx-auto px-2">
-      <div className="mb-6">
+      <div className="mb-4">
         <Button variant={'secondary'} asChild>
           <Link href="/books">
             <MoveLeft className="mr-2" />

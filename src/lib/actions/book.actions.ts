@@ -88,10 +88,11 @@ export async function getUserBooksById(userId: string) {
         lastEditedBy: b.lastEditedBy ?? undefined,
         createdAt:
           b.createdAt instanceof Date ? b.createdAt.toISOString() : b.createdAt,
-        publishedAt:
-          b.publishedAt instanceof Date
+        publishedAt: b.publishedAt
+          ? b.publishedAt instanceof Date
             ? b.publishedAt.toISOString()
-            : b.publishedAt,
+            : String(b.publishedAt)
+          : undefined,
         updatedAt:
           b.updatedAt instanceof Date ? b.updatedAt.toISOString() : b.updatedAt,
         status: b.status,
@@ -193,8 +194,28 @@ export async function getUserBooksById(userId: string) {
 
 export async function getBookById(bookId: string) {
   try {
+    // Defensive validation: ensure we have a usable id for Prisma.
+    if (
+      bookId === undefined ||
+      bookId === null ||
+      String(bookId).trim() === ''
+    ) {
+      console.error('getBookById called without bookId');
+      return null;
+    }
+
+    // Try to parse numeric id. If your schema uses Int for book.id this must be numeric.
+    const idNum = Number(bookId);
+    if (Number.isNaN(idNum)) {
+      console.error(
+        'getBookById received a non-numeric bookId while the DB expects an Int:',
+        bookId
+      );
+      return null;
+    }
+
     const book = await prisma.book.findUnique({
-      where: { id: Number(bookId) },
+      where: { id: idNum },
       include: {
         chapters: {
           orderBy: { id: 'asc' },
@@ -231,10 +252,11 @@ export async function getBookById(bookId: string) {
         book.createdAt instanceof Date
           ? book.createdAt.toISOString()
           : book.createdAt,
-      publishedAt:
-        book.publishedAt instanceof Date
+      publishedAt: book.publishedAt
+        ? book.publishedAt instanceof Date
           ? book.publishedAt.toISOString()
-          : book.publishedAt,
+          : String(book.publishedAt)
+        : undefined,
       updatedAt:
         book.updatedAt instanceof Date
           ? book.updatedAt.toISOString()
@@ -393,10 +415,11 @@ export async function getFriendsBooks() {
         lastEditedBy: b.lastEditedBy ?? undefined,
         createdAt:
           b.createdAt instanceof Date ? b.createdAt.toISOString() : b.createdAt,
-        publishedAt:
-          b.publishedAt instanceof Date
+        publishedAt: b.publishedAt
+          ? b.publishedAt instanceof Date
             ? b.publishedAt.toISOString()
-            : b.publishedAt,
+            : String(b.publishedAt)
+          : undefined,
         updatedAt:
           b.updatedAt instanceof Date ? b.updatedAt.toISOString() : b.updatedAt,
         status: b.status,

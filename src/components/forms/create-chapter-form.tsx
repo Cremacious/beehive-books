@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -19,8 +18,10 @@ import { chapterSchema } from '@/lib/validators/book.validators';
 import TextEditor from '../chapter-page/text-editor';
 import { Textarea } from '../ui/textarea';
 import { createChapter } from '@/lib/actions/book.actions';
+import { useRouter } from 'next/navigation';
 
 export default function MyForm({ bookId }: { bookId: string }) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof chapterSchema>>({
     resolver: zodResolver(chapterSchema),
   });
@@ -30,6 +31,8 @@ export default function MyForm({ bookId }: { bookId: string }) {
       const response = await createChapter(bookId, values);
       if (response.success) {
         toast.success('Chapter created successfully!');
+        form.reset();
+        router.push(`/books/${bookId}`);
       } else {
         toast.error('Failed to create chapter.');
       }
@@ -66,7 +69,6 @@ export default function MyForm({ bookId }: { bookId: string }) {
             </FormItem>
           )}
         />
-        {bookId}
         <FormField
           control={form.control}
           name="notes"
@@ -99,7 +101,17 @@ export default function MyForm({ bookId }: { bookId: string }) {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <div className="flex justify-between pt-4">
+          <Button
+            type="button"
+            variant={'secondary'}
+            onClick={() => router.push(`/books/${bookId}`)}
+            className=""
+          >
+            Cancel
+          </Button>
+          <Button type="submit">Create Chapter</Button>
+        </div>
       </form>
     </Form>
   );
