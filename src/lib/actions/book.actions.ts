@@ -68,20 +68,55 @@ export async function getUserBooksById(userId: string) {
       },
       orderBy: { id: 'asc' },
     });
+
     const mapped = books.map((b: any) => {
-      let cover: string | undefined = undefined;
-      if (b.coverImage) {
-        const base64 = Buffer.from(b.coverImage).toString('base64');
-        cover = `data:image/jpeg;base64,${base64}`;
-      }
+      const cover = b.coverImage
+        ? `data:image/jpeg;base64,${Buffer.from(b.coverImage).toString(
+            'base64'
+          )}`
+        : undefined;
+
       return {
-        ...b,
+        id: b.id,
+        title: b.title,
+        author: b.author,
+        genre: b.genre ?? undefined,
+        category: b.category ?? undefined,
+        description: b.description ?? undefined,
+        privacy: b.privacy,
         cover,
-        chapters: b.chapters ?? [],
-        comments:
-          (b.comments ?? []).map((c: any) => ({
+        lastEditedBy: b.lastEditedBy ?? undefined,
+        createdAt:
+          b.createdAt instanceof Date ? b.createdAt.toISOString() : b.createdAt,
+        publishedAt:
+          b.publishedAt instanceof Date
+            ? b.publishedAt.toISOString()
+            : b.publishedAt,
+        updatedAt:
+          b.updatedAt instanceof Date ? b.updatedAt.toISOString() : b.updatedAt,
+        status: b.status,
+        wordCount: b.wordCount,
+        userId: b.userId,
+        chapters: (b.chapters ?? []).map((ch: any) => ({
+          id: ch.id,
+          author: ch.author ? String(ch.author) : undefined,
+          title: ch.title,
+          notes: ch.notes ?? undefined,
+          content: ch.content,
+          privacy: ch.privacy,
+          createdAt:
+            ch.createdAt instanceof Date
+              ? ch.createdAt.toISOString()
+              : ch.createdAt,
+          updatedAt:
+            ch.updatedAt instanceof Date
+              ? ch.updatedAt.toISOString()
+              : ch.updatedAt,
+          status: ch.status,
+          wordCount: ch.wordCount,
+          comments: (ch.comments ?? []).map((c: any) => ({
             id: c.id,
-            authorId: c.authorId,
+            authorId: c.authorId ? String(c.authorId) : '',
             content: c.content,
             createdAt:
               c.createdAt instanceof Date
@@ -91,29 +126,64 @@ export async function getUserBooksById(userId: string) {
             bookId: c.bookId ?? undefined,
             parentId: c.parentId ?? undefined,
             author: c.author
-              ? { id: c.author.id, name: c.author.name }
+              ? { id: String(c.author.id), name: c.author.name }
               : { id: '', name: '' },
-            replies:
-              (c.replies ?? []).map((r: any) => ({
-                id: r.id,
-                authorId: r.authorId,
-                content: r.content,
-                createdAt:
-                  r.createdAt instanceof Date
-                    ? r.createdAt.toISOString()
-                    : r.createdAt,
-                chapterId: r.chapterId,
-                bookId: r.bookId ?? undefined,
-                parentId: r.parentId ?? undefined,
-                author: r.author
-                  ? { id: r.author.id, name: r.author.name }
-                  : { id: '', name: '' },
-                replies: [],
-              })) ?? [],
-          })) ?? [],
-        collaborators: b.collaborators ?? [],
+            replies: (c.replies ?? []).map((r: any) => ({
+              id: r.id,
+              authorId: r.authorId ? String(r.authorId) : '',
+              content: r.content,
+              createdAt:
+                r.createdAt instanceof Date
+                  ? r.createdAt.toISOString()
+                  : r.createdAt,
+              chapterId: r.chapterId,
+              bookId: r.bookId ?? undefined,
+              parentId: r.parentId ?? undefined,
+              author: r.author
+                ? { id: String(r.author.id), name: r.author.name }
+                : { id: '', name: '' },
+              replies: [],
+            })),
+          })),
+        })),
+        comments: (b.comments ?? []).map((c: any) => ({
+          id: c.id,
+          authorId: c.authorId ? String(c.authorId) : '',
+          content: c.content,
+          createdAt:
+            c.createdAt instanceof Date
+              ? c.createdAt.toISOString()
+              : c.createdAt,
+          chapterId: c.chapterId,
+          bookId: c.bookId ?? undefined,
+          parentId: c.parentId ?? undefined,
+          author: c.author
+            ? { id: String(c.author.id), name: c.author.name }
+            : { id: '', name: '' },
+          replies: (c.replies ?? []).map((r: any) => ({
+            id: r.id,
+            authorId: r.authorId ? String(r.authorId) : '',
+            content: r.content,
+            createdAt:
+              r.createdAt instanceof Date
+                ? r.createdAt.toISOString()
+                : r.createdAt,
+            chapterId: r.chapterId,
+            bookId: r.bookId ?? undefined,
+            parentId: r.parentId ?? undefined,
+            author: r.author
+              ? { id: String(r.author.id), name: r.author.name }
+              : { id: '', name: '' },
+            replies: [],
+          })),
+        })),
+        collaborators: (b.collaborators ?? []).map((u: any) => ({
+          id: String(u.id),
+          name: u.name,
+        })),
       };
     });
+
     return mapped;
   } catch (error) {
     console.error('Error fetching user books:', error);
@@ -141,24 +211,93 @@ export async function getBookById(bookId: string) {
 
     if (!book) throw new Error('Book not found');
 
-    const bookWithRelations = book as any;
+    const cover = book.coverImage
+      ? `data:image/jpeg;base64,${Buffer.from(book.coverImage).toString(
+          'base64'
+        )}`
+      : undefined;
 
-    let cover: string | undefined = undefined;
-    if (bookWithRelations.coverImage) {
-      const base64 = Buffer.from(bookWithRelations.coverImage).toString(
-        'base64'
-      );
-      cover = `data:image/jpeg;base64,${base64}`;
-    }
-
-    return {
-      ...bookWithRelations,
+    const mapped = {
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      genre: book.genre ?? undefined,
+      category: book.category ?? undefined,
+      description: book.description ?? undefined,
+      privacy: book.privacy,
       cover,
-      chapters: bookWithRelations.chapters ?? [],
+      lastEditedBy: book.lastEditedBy ?? undefined,
+      createdAt:
+        book.createdAt instanceof Date
+          ? book.createdAt.toISOString()
+          : book.createdAt,
+      publishedAt:
+        book.publishedAt instanceof Date
+          ? book.publishedAt.toISOString()
+          : book.publishedAt,
+      updatedAt:
+        book.updatedAt instanceof Date
+          ? book.updatedAt.toISOString()
+          : book.updatedAt,
+      status: book.status,
+      wordCount: book.wordCount,
+      userId: book.userId,
+      chapters:
+        (book.chapters ?? []).map((ch: any) => ({
+          id: ch.id,
+          author: ch.author,
+          title: ch.title,
+          notes: ch.notes ?? undefined,
+          content: ch.content,
+          privacy: ch.privacy,
+          createdAt:
+            ch.createdAt instanceof Date
+              ? ch.createdAt.toISOString()
+              : ch.createdAt,
+          updatedAt:
+            ch.updatedAt instanceof Date
+              ? ch.updatedAt.toISOString()
+              : ch.updatedAt,
+          status: ch.status,
+          wordCount: ch.wordCount,
+          comments:
+            (ch.comments ?? []).map((c: any) => ({
+              id: c.id,
+              authorId: String(c.authorId),
+              content: c.content,
+              createdAt:
+                c.createdAt instanceof Date
+                  ? c.createdAt.toISOString()
+                  : c.createdAt,
+              chapterId: c.chapterId,
+              bookId: c.bookId ?? undefined,
+              parentId: c.parentId ?? undefined,
+              author: c.author
+                ? { id: String(c.author.id), name: c.author.name }
+                : { id: '', name: '' },
+              replies:
+                (c.replies ?? []).map((r: any) => ({
+                  id: r.id,
+                  authorId: String(r.authorId),
+                  content: r.content,
+                  createdAt:
+                    r.createdAt instanceof Date
+                      ? r.createdAt.toISOString()
+                      : r.createdAt,
+                  chapterId: r.chapterId,
+                  bookId: r.bookId ?? undefined,
+                  parentId: r.parentId ?? undefined,
+                  author: r.author
+                    ? { id: String(r.author.id), name: r.author.name }
+                    : { id: '', name: '' },
+                  replies: [],
+                })) ?? [],
+            })) ?? [],
+        })) ?? [],
       comments:
-        (bookWithRelations.comments ?? []).map((c: any) => ({
+        (book.comments ?? []).map((c: any) => ({
           id: c.id,
-          authorId: c.authorId,
+          authorId: String(c.authorId),
           content: c.content,
           createdAt:
             c.createdAt instanceof Date
@@ -168,12 +307,12 @@ export async function getBookById(bookId: string) {
           bookId: c.bookId ?? undefined,
           parentId: c.parentId ?? undefined,
           author: c.author
-            ? { id: c.author.id, name: c.author.name }
+            ? { id: String(c.author.id), name: c.author.name }
             : { id: '', name: '' },
           replies:
             (c.replies ?? []).map((r: any) => ({
               id: r.id,
-              authorId: r.authorId,
+              authorId: String(r.authorId),
               content: r.content,
               createdAt:
                 r.createdAt instanceof Date
@@ -183,13 +322,18 @@ export async function getBookById(bookId: string) {
               bookId: r.bookId ?? undefined,
               parentId: r.parentId ?? undefined,
               author: r.author
-                ? { id: r.author.id, name: r.author.name }
+                ? { id: String(r.author.id), name: r.author.name }
                 : { id: '', name: '' },
               replies: [],
             })) ?? [],
         })) ?? [],
-      collaborators: bookWithRelations.collaborators ?? [],
+      collaborators: (book.collaborators ?? []).map((u: any) => ({
+        id: String(u.id),
+        name: u.name,
+      })),
     };
+
+    return mapped;
   } catch (error) {
     console.error('Error fetching book by id:', error);
     return null;
@@ -221,9 +365,7 @@ export async function getFriendsBooks() {
       },
       include: {
         user: true,
-        chapters: {
-          orderBy: { id: 'asc' },
-        },
+        chapters: { orderBy: { id: 'asc' } },
         comments: {
           include: { author: true, replies: { include: { author: true } } },
         },
@@ -233,19 +375,54 @@ export async function getFriendsBooks() {
     });
 
     const mapped = books.map((b: any) => {
-      let cover: string | undefined = undefined;
-      if (b.coverImage) {
-        const base64 = Buffer.from(b.coverImage).toString('base64');
-        cover = `data:image/jpeg;base64,${base64}`;
-      }
+      const cover = b.coverImage
+        ? `data:image/jpeg;base64,${Buffer.from(b.coverImage).toString(
+            'base64'
+          )}`
+        : undefined;
+
       return {
-        ...b,
+        id: b.id,
+        title: b.title,
+        author: b.author,
+        genre: b.genre ?? undefined,
+        category: b.category ?? undefined,
+        description: b.description ?? undefined,
+        privacy: b.privacy,
         cover,
-        chapters: b.chapters ?? [],
-        comments:
-          (b.comments ?? []).map((c: any) => ({
+        lastEditedBy: b.lastEditedBy ?? undefined,
+        createdAt:
+          b.createdAt instanceof Date ? b.createdAt.toISOString() : b.createdAt,
+        publishedAt:
+          b.publishedAt instanceof Date
+            ? b.publishedAt.toISOString()
+            : b.publishedAt,
+        updatedAt:
+          b.updatedAt instanceof Date ? b.updatedAt.toISOString() : b.updatedAt,
+        status: b.status,
+        wordCount: b.wordCount,
+        userId: b.userId,
+        user: b.user ? { id: String(b.user.id), name: b.user.name } : undefined,
+        chapters: (b.chapters ?? []).map((ch: any) => ({
+          id: ch.id,
+          author: ch.author ? String(ch.author) : undefined,
+          title: ch.title,
+          notes: ch.notes ?? undefined,
+          content: ch.content,
+          privacy: ch.privacy,
+          createdAt:
+            ch.createdAt instanceof Date
+              ? ch.createdAt.toISOString()
+              : ch.createdAt,
+          updatedAt:
+            ch.updatedAt instanceof Date
+              ? ch.updatedAt.toISOString()
+              : ch.updatedAt,
+          status: ch.status,
+          wordCount: ch.wordCount,
+          comments: (ch.comments ?? []).map((c: any) => ({
             id: c.id,
-            authorId: c.authorId,
+            authorId: c.authorId ? String(c.authorId) : '',
             content: c.content,
             createdAt:
               c.createdAt instanceof Date
@@ -255,27 +432,61 @@ export async function getFriendsBooks() {
             bookId: c.bookId ?? undefined,
             parentId: c.parentId ?? undefined,
             author: c.author
-              ? { id: c.author.id, name: c.author.name }
+              ? { id: String(c.author.id), name: c.author.name }
               : { id: '', name: '' },
-            replies:
-              (c.replies ?? []).map((r: any) => ({
-                id: r.id,
-                authorId: r.authorId,
-                content: r.content,
-                createdAt:
-                  r.createdAt instanceof Date
-                    ? r.createdAt.toISOString()
-                    : r.createdAt,
-                chapterId: r.chapterId,
-                bookId: r.bookId ?? undefined,
-                parentId: r.parentId ?? undefined,
-                author: r.author
-                  ? { id: r.author.id, name: r.author.name }
-                  : { id: '', name: '' },
-                replies: [],
-              })) ?? [],
-          })) ?? [],
-        collaborators: b.collaborators ?? [],
+            replies: (c.replies ?? []).map((r: any) => ({
+              id: r.id,
+              authorId: r.authorId ? String(r.authorId) : '',
+              content: r.content,
+              createdAt:
+                r.createdAt instanceof Date
+                  ? r.createdAt.toISOString()
+                  : r.createdAt,
+              chapterId: r.chapterId,
+              bookId: r.bookId ?? undefined,
+              parentId: r.parentId ?? undefined,
+              author: r.author
+                ? { id: String(r.author.id), name: r.author.name }
+                : { id: '', name: '' },
+              replies: [],
+            })),
+          })),
+        })),
+        comments: (b.comments ?? []).map((c: any) => ({
+          id: c.id,
+          authorId: c.authorId ? String(c.authorId) : '',
+          content: c.content,
+          createdAt:
+            c.createdAt instanceof Date
+              ? c.createdAt.toISOString()
+              : c.createdAt,
+          chapterId: c.chapterId,
+          bookId: c.bookId ?? undefined,
+          parentId: c.parentId ?? undefined,
+          author: c.author
+            ? { id: String(c.author.id), name: c.author.name }
+            : { id: '', name: '' },
+          replies: (c.replies ?? []).map((r: any) => ({
+            id: r.id,
+            authorId: r.authorId ? String(r.authorId) : '',
+            content: r.content,
+            createdAt:
+              r.createdAt instanceof Date
+                ? r.createdAt.toISOString()
+                : r.createdAt,
+            chapterId: r.chapterId,
+            bookId: r.bookId ?? undefined,
+            parentId: r.parentId ?? undefined,
+            author: r.author
+              ? { id: String(r.author.id), name: r.author.name }
+              : { id: '', name: '' },
+            replies: [],
+          })),
+        })),
+        collaborators: (b.collaborators ?? []).map((u: any) => ({
+          id: String(u.id),
+          name: u.name,
+        })),
       };
     });
 

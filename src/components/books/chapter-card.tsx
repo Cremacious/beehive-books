@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { ChapterType } from '@/lib/types/books.type';
+import { slateContentToPlainText } from '@/lib/utils';
 
 export default function ChapterCard({
   chapter,
@@ -32,7 +33,7 @@ export default function ChapterCard({
           </h3>
 
           <p className="line-clamp-3 text-slate-800 mb-3 leading-relaxed">
-            {chapter.content}
+            {slateContentToPlainText(chapter.content)}
           </p>
 
           <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
