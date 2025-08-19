@@ -32,6 +32,7 @@ export default function MyForm({ bookId }: { bookId: string }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof chapterSchema>>({
     resolver: zodResolver(chapterSchema),
+    defaultValues: { status: 'In Progress' },
   });
 
   async function onSubmit(values: z.infer<typeof chapterSchema>) {
@@ -117,17 +118,20 @@ export default function MyForm({ bookId }: { bookId: string }) {
               <FormLabel className="text-yellow-400 text-lg">
                 Chapter Status
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
+              <FormControl>
+                <Select
+                  value={field.value ?? 'In Progress'}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="bg-white">
                     <SelectValue placeholder="Select Chapter Status" />
                   </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">In Progress</SelectItem>
-                  <SelectItem value="m@google.com">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
               <FormDescription className="text-white">
                 Is this chapter a work in progress or completed?
               </FormDescription>

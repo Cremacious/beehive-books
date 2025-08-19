@@ -546,6 +546,7 @@ export async function createChapter(
         bookId: book.id,
         author: user.id,
         privacy: parsedData.privacy ?? 'public',
+        status: parsedData.status ?? 'In Progress',
       },
     });
 
@@ -567,7 +568,6 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
             user: true,
             comments: { include: { author: true } },
             collaborators: true,
-          
           },
         },
         comments: {
