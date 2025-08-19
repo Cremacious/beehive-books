@@ -7,11 +7,30 @@ import { Button } from '../ui/button';
 import { Settings } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { useNotificationStore } from '@/store/notifications.store';
+import { useEffect, useState } from 'react';
 
 export default function AuthButtons() {
   const notificationCount = useNotificationStore((s) => s.unreadCount());
 
   const { data: session } = useSession();
+  const [currentImage, setCurrentImage] = useState<string | null>(
+    session?.user?.image ?? null
+  );
+
+  useEffect(() => {
+    // update when session changes
+    setCurrentImage(session?.user?.image ?? null);
+  }, [session?.user?.image]);
+
+  useEffect(() => {
+    function onImageUpdated(e: any) {
+      const newImage = e?.detail?.image;
+      if (newImage) setCurrentImage(newImage);
+    }
+    window.addEventListener('user:image:updated', onImageUpdated);
+    return () =>
+      window.removeEventListener('user:image:updated', onImageUpdated);
+  }, []);
 
   // const notificationCount = 14;
 
@@ -35,7 +54,7 @@ export default function AuthButtons() {
         <div className="relative">
           <Link href="/profile">
             <Image
-              src={session.user.image || defaultProfileImage}
+              src={currentImage ?? session.user.image ?? defaultProfileImage}
               alt="Profile"
               width={40}
               height={40}
@@ -48,10 +67,12 @@ export default function AuthButtons() {
             )}
           </Link>
         </div>
-        <Settings
-          size={35}
-          className="text-yellow-400 hover:text-yellow-500 hoverAnimateTiny"
-        />
+        <Link href={'/settings'}>
+          <Settings
+            size={35}
+            className="text-yellow-400 hover:text-yellow-500 hoverAnimateTiny"
+          />{' '}
+        </Link>
       </div>
       <Button onClick={() => signOut()}>Sign Out</Button>
     </div>
