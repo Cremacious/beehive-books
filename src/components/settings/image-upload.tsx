@@ -4,8 +4,8 @@ import { uploadUserImage } from '../../lib/actions/user.actions';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-
-export default function ImageUpload() {
+import defaultProfileImage from '@/assets/stock/stockProfile.png';
+export default function ImageUpload({ image }: { image?: string | null }) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -188,7 +188,13 @@ export default function ImageUpload() {
                   height={112}
                 />
               ) : (
-                <div className="text-yellow-800 text-2xl md:text-3xl">📷</div>
+                  <Image
+                  src={image ?? defaultProfileImage}
+                  alt="Preview"
+                  className="object-cover w-full h-full"
+                  width={112}
+                  height={112}
+                />
               )}
             </div>
           </div>

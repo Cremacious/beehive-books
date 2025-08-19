@@ -8,19 +8,57 @@ import { Settings } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { useNotificationStore } from '@/store/notifications.store';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function AuthButtons() {
+type UserLike = {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+} | null;
+
+export default function AuthButtons({
+  initialUser,
+}: {
+  initialUser?: UserLike;
+}) {
+  const router = useRouter();
+
   const notificationCount = useNotificationStore((s) => s.unreadCount());
 
   const { data: session } = useSession();
+
+  // track whether the client has hydrated — after this point prefer client session
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  // Prefer server-provided initial user only before client hydration to avoid UI flash.
+  const resolvedUser = hydrated
+    ? session?.user ?? null
+    : session?.user ?? initialUser ?? null;
+
   const [currentImage, setCurrentImage] = useState<string | null>(
-    session?.user?.image ?? null
+    resolvedUser?.image ?? null
   );
 
+  const handleSignOut = async () => {
+    // await signOut so client session updates before redirect
+    await signOut();
+    // clear local UI state immediately to avoid transient signed-in UI
+    setCurrentImage(null);
+    router.push('/'); // Redirect to home after sign out
+  };
+
   useEffect(() => {
-    // update when session changes
-    setCurrentImage(session?.user?.image ?? null);
-  }, [session?.user?.image]);
+    // update when session changes (client hydrates)
+    // after hydration we should prefer the live session value and not fall back to initialUser
+    const newImage = hydrated
+      ? session?.user?.image ?? null
+      : session?.user?.image ?? initialUser?.image ?? null;
+    setCurrentImage(newImage);
+  }, [session?.user?.image, initialUser?.image, hydrated]);
 
   useEffect(() => {
     function onImageUpdated(e: any) {
@@ -32,9 +70,7 @@ export default function AuthButtons() {
       window.removeEventListener('user:image:updated', onImageUpdated);
   }, []);
 
-  // const notificationCount = 14;
-
-  if (!session?.user) {
+  if (!resolvedUser) {
     return (
       <div className="flex gap-2">
         <Button>{notificationCount}</Button>
@@ -54,7 +90,7 @@ export default function AuthButtons() {
         <div className="relative">
           <Link href="/profile">
             <Image
-              src={currentImage ?? session.user.image ?? defaultProfileImage}
+              src={currentImage ?? resolvedUser.image ?? defaultProfileImage}
               alt="Profile"
               width={40}
               height={40}
@@ -74,7 +110,7 @@ export default function AuthButtons() {
           />{' '}
         </Link>
       </div>
-      <Button onClick={() => signOut()}>Sign Out</Button>
+      <Button onClick={handleSignOut}>Sign Out</Button>
     </div>
   );
 }

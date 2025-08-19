@@ -1,6 +1,9 @@
 import ImageUpload from '@/components/settings/image-upload';
+import { getAuthenticatedUser } from '@/lib/types/server-utils';
 
 export default async function SettingsPage() {
+  const {user} = await getAuthenticatedUser();
+
   return (
     <div className="max-w-3xl mx-auto px-2">
       <div className="darkContainer">
@@ -14,7 +17,8 @@ export default async function SettingsPage() {
             <p className="text-sm text-white mb-4">
               Upload a new profile image.
             </p>
-            <ImageUpload />
+            <ImageUpload image={user?.image} />
+
           </div>
 
           {/* Change Username */}

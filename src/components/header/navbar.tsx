@@ -4,8 +4,11 @@ import AuthButtons from './auth-buttons';
 import hiveIcon from '@/assets/hive-icon3.png';
 import { Sidebar } from './sidebar';
 import { ROUTES } from '@/lib/constants';
+import { getCurrentUser } from '@/lib/auth-server';
 
 export default async function Navbar() {
+  const user = await getCurrentUser();
+
   return (
     <nav className="w-full px-6 py-4 customDark  shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -38,7 +41,7 @@ export default async function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center min-w-[180px] justify-end ">
-          <AuthButtons />
+          <AuthButtons initialUser={user} />
         </div>
         <div className="md:hidden">
           <Sidebar />
