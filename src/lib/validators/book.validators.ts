@@ -14,6 +14,7 @@ export const bookSchema = z.object({
 export const chapterSchema = z.object({
   title: z.string().min(1),
   notes: z.string().min(1).optional(),
+  status: z.string().min(1).optional(),
   content: z.string().min(1),
   privacy: z.enum(['public', 'private']).optional(),
 });

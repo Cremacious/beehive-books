@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,6 +20,13 @@ import TextEditor from '../chapter-page/text-editor';
 import { Textarea } from '../ui/textarea';
 import { createChapter } from '@/lib/actions/book.actions';
 import { useRouter } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function MyForm({ bookId }: { bookId: string }) {
   const router = useRouter();
@@ -96,6 +104,33 @@ export default function MyForm({ bookId }: { bookId: string }) {
                 <TextEditor {...field} />
               </FormControl>
 
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-yellow-400 text-lg">
+                Chapter Status
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Select Chapter Status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="m@example.com">In Progress</SelectItem>
+                  <SelectItem value="m@google.com">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription className="text-white">
+                Is this chapter a work in progress or completed?
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
