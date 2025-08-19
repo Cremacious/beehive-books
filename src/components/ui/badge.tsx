@@ -25,7 +25,7 @@ const badgeVariants = cva(
         public:
           'border-0 text-md font-bold bg-gray-100 text-gray-700 border-b-2 border-b-gray-300 px-2 py-1 rounded-full ',
         chapter:
-          'border-0 text-md font-bold bg-yellow-200 text-slate-800 border-b-2 border-b-[#121212] px-3 py-1 rounded-full ',
+          'border-0 text-md font-bold bg-yellow-200 text-slate-800 border-b-2 border-b-yellow-300 px-3 py-1 rounded-full ',
         notification:
           'absolute -top-1 -right-1 bg-yellow-400 text-slate-800 text-xs font-bold rounded-full px-2 py-0.5 border-2 border-black z-10',
       },

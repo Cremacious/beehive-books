@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getChapterById } from '@/lib/actions/book.actions';
 import { MoveLeft } from 'lucide-react';
+import { getChapterWordCount } from '@/lib/utils';
 
 export default async function ChapterPage({
   params,
@@ -51,23 +52,31 @@ export default async function ChapterPage({
                     <span>·</span>
                     {/* <span>Updated {chapter.updatedAt}</span> */}
                     <span>·</span>
-                    <span>{chapter.wordCount} words</span>
+                    <span>
+                      {getChapterWordCount(chapter).toLocaleString()} words
+                    </span>
                     <span>·</span>
                     <span>{chapter.comments.length} comments</span>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button asChild variant="secondary">
-                    <Link href="../">← Back to Book</Link>
-                  </Button>
                 </div>
               </div>
             </div>{' '}
           </div>
         </div>
         <div className="darkContainer">
-          <div className="lightContainer">
-            <div className="text-white text-lg">{chapter.notes}</div>
+          <div className="lightContainer space-y-2">
+            <div className="text-yellow-400 text-lg playWright">
+              Author&apos;s Notes
+            </div>
+            <div className="text-white ">
+              {chapter.notes && chapter.notes.length > 0 ? (
+                chapter.notes
+              ) : (
+                <div className='flex justify-center items-center h-16'>
+                  <div className="text-center">No author notes.</div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <ChapterContent chapter={chapter} />
