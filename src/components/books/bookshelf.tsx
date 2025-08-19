@@ -1,5 +1,7 @@
 import { BookType } from '@/lib/types/books.type';
 import BookCard from './book-card';
+// import Image from 'next/image';
+
 
 export default function BookShelf({
   books,
@@ -19,8 +21,9 @@ export default function BookShelf({
         {books.length > 0 ? (
           books.map((book) => <BookCard key={book.id} book={book} />)
         ) : (
-          <div className="col-span-full text-slate-500 text-center py-12 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-            <p className="font-['Caveat',cursive] text-lg">No books found.</p>
+          <div className="col-span-full text-slate-800 text-center py-12 ">
+            {/* <Image src={beeBookshelf} alt="Bee Bookshelf" width={200} height={200} /> */}
+            <p className=" text-lg">Your bookshelf is empty. Start adding books!</p>
           </div>
         )}
       </div>

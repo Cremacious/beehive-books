@@ -25,7 +25,7 @@ export default async function ChapterPage({
     <div className="max-w-7xl mx-auto px-1">
       <div className="mb-4">
         <Button variant={'secondary'} asChild>
-          <Link href={`/books`}>
+          <Link href={`/books/${chapter.}`}>
             <MoveLeft className="mr-2" />
             Back to Book Page
           </Link>

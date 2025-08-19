@@ -52,14 +52,11 @@ export default async function BooksPage() {
             />
           </div>
         </div>
-        {books.length > 0 && (
-          <div className="darkContainer space-y-6">
-            <h2 className="text-2xl font-bold text-yellow-400 mb-2">
-              Other Books by You
-            </h2>
-            <BookShelf books={books} owner={'Your'} />
-          </div>
-        )}
+
+        <div className="darkContainer space-y-6">
+          <BookShelf books={books} owner={'Your'} />
+        </div>
+
         {/* <div className="darkContainer space-y-6">
           <BookShelf books={userBooks} owner={'Your'} />
         </div> */}

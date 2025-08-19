@@ -35,8 +35,8 @@ export default function BookCard({ book }: { book: BookType }) {
         </div>
 
         <div className="flex flex-wrap gap-1 mb-3 justify-center min-h-[2.5rem] items-start">
+          <Badge variant={'wood'}>{book.category}</Badge>
           <Badge variant={'wood'}>{book.genre}</Badge>
-          <Badge variant={'wood'}>{book.privacy}</Badge>
         </div>
       </div>
 
