@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { BookType } from '@/lib/types/books.type';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
+import { getBookWordCount } from '@/lib/utils';
 
 export default function BookDetailsHero({ book }: { book: BookType }) {
   return (
@@ -51,7 +52,7 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
           </div>
           <div className="yellowAccent text-center">
             <div className="text-2xl font-bold text-yellow-800">
-              {book.wordCount}
+              {getBookWordCount(book).toLocaleString()}
             </div>
             <div className="text-yellow-800 font-bold">Words</div>
           </div>

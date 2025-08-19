@@ -567,6 +567,7 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
             user: true,
             comments: { include: { author: true } },
             collaborators: true,
+          
           },
         },
         comments: {
@@ -579,6 +580,7 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
 
     return {
       id: chapter.id,
+      bookId: chapter.bookId,
       author: chapter.author,
       title: chapter.title,
       notes: chapter.notes ?? undefined,

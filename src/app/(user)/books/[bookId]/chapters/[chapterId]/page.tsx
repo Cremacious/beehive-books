@@ -20,12 +20,13 @@ export default async function ChapterPage({
   if (!chapter) {
     return <div className="text-red-500">Chapter not found</div>;
   }
+  // console.log('Chapter data:', chapter);
 
   return (
     <div className="max-w-7xl mx-auto px-1">
       <div className="mb-4">
         <Button variant={'secondary'} asChild>
-          <Link href={`/books/${chapter.}`}>
+          <Link href={`/books/${chapter.bookId}`}>
             <MoveLeft className="mr-2" />
             Back to Book Page
           </Link>
@@ -64,7 +65,11 @@ export default async function ChapterPage({
             </div>{' '}
           </div>
         </div>
-
+        <div className="darkContainer">
+          <div className="lightContainer">
+            <div className="text-white text-lg">{chapter.notes}</div>
+          </div>
+        </div>
         <ChapterContent chapter={chapter} />
 
         <CommentSection comments={chapter.comments} />

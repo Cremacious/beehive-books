@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { ChapterType } from '@/lib/types/books.type';
-import { slateContentToPlainText } from '@/lib/utils';
+import { getChapterWordCount, slateContentToPlainText } from '@/lib/utils';
 
 export default function ChapterCard({
   chapter,
@@ -37,7 +37,7 @@ export default function ChapterCard({
           </p>
 
           <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
-            <span> {chapter.wordCount.toLocaleString()} words</span>
+            <span> {getChapterWordCount(chapter).toLocaleString()} words</span>
             <span>{chapter.comments?.length ?? 0} comments</span>
             {/* <span>Updated {chapter.updatedAt}</span> */}
           </div>

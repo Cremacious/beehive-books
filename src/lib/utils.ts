@@ -24,3 +24,16 @@ export function slateContentToPlainText(content: unknown): string {
     return String(content ?? '');
   }
 }
+
+export function getBookWordCount(book: { chapters: { content: string }[] }) {
+  return book.chapters.reduce((total, chapter) => {
+    if (!chapter.content) return total;
+    const words = chapter.content.trim().split(/\s+/).filter(Boolean);
+    return total + words.length;
+  }, 0);
+}
+
+export function getChapterWordCount(chapter: { content: string }) {
+  if (!chapter.content) return 0;
+  return chapter.content.trim().split(/\s+/).filter(Boolean).length;
+}
