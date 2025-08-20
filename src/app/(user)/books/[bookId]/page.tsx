@@ -14,12 +14,10 @@ import { notFound } from 'next/navigation';
 export default async function BookPage({
   params,
 }: {
-  params: { bookId: string };
+  params: Promise<{ bookId: string }>;
 }) {
-  // const book = mockUser.books[0];
-  // const chapters = book ? book.chapters : [];
 
-  const { bookId } = params;
+  const { bookId } = await params;
   const book = await getBookById(bookId);
   if (!book) notFound();
   const chapters = book.chapters ?? [];
