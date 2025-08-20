@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import BookDetailsHero from '@/components/books/book-details-hero';
-// import { mockUser } from '@/lib/sampleData';
 import ChapterCard from '@/components/books/chapter-card';
 import Image from 'next/image';
 import beeWriting from '@/assets/site/beeWriting.png';

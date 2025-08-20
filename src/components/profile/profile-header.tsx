@@ -1,8 +1,9 @@
-import { UserType } from '@/lib/types/user.type';
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import { Share2 } from 'lucide-react';
+import { UserType } from '@/lib/types/user.type';
+
 
 export default function ProfileHeader({ user }: { user: UserType }) {
   return (
