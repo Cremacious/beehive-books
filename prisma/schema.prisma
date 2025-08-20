@@ -56,6 +56,7 @@ model Friendship {
   friendId  String
   status    FriendshipStatus @default(PENDING)
   createdAt DateTime @default(now())
+  
 }
 
 enum FriendshipStatus {
