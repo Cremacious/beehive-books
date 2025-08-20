@@ -33,7 +33,7 @@ export default async function ProfileHeader({ user }: { user: UserType }) {
             </div>
 
             {isCurrentUser && (
-              <FriendStatusButton isFriend={friendshipStatus.isFriend} friendId={user.id} />
+              <FriendStatusButton friendshipStatus={friendshipStatus.status} friendId={user.id} />
             )}
             <div className="text-white">
               Joined{' '}

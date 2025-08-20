@@ -54,7 +54,14 @@ model Friendship {
   user      User     @relation("UserFriends", fields: [userId], references: [id])
   friend    User     @relation("FriendOf", fields: [friendId], references: [id])
   friendId  String
+  status    FriendshipStatus @default(PENDING)
   createdAt DateTime @default(now())
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Book {
