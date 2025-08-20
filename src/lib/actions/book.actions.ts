@@ -48,6 +48,55 @@ export async function createBook(data: z.infer<typeof bookSchema>) {
   }
 }
 
+export async function editBook(
+  bookId: string,
+  data: z.infer<typeof bookSchema>
+) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const existingBook = await prisma.book.findUnique({
+      where: { id: Number(bookId) },
+    });
+
+    if (!existingBook) throw new Error('Book not found');
+
+    if (existingBook.userId !== user.id) {
+      throw new Error('Unauthorized');
+    }
+    const parsedData = bookSchema.parse(data);
+
+    let coverBuffer: Buffer | undefined = undefined;
+    if (parsedData.coverImageBase64) {
+      const base64Part = parsedData.coverImageBase64.includes(',')
+        ? parsedData.coverImageBase64.split(',')[1]
+        : parsedData.coverImageBase64;
+      coverBuffer = Buffer.from(base64Part, 'base64');
+    }
+
+    await prisma.book.update({
+      where: { id: Number(bookId) },
+      data: {
+        title: parsedData.title,
+        author: parsedData.author,
+        genre: parsedData.genre ?? undefined,
+        category: parsedData.category ?? undefined,
+        description: parsedData.description ?? undefined,
+        privacy: parsedData.privacy,
+        coverImage: coverBuffer,
+      },
+    });
+
+    revalidatePath(`/books/${bookId}`);
+    return { success: true, message: 'Book updated successfully' };
+  } catch (error) {
+    console.error('Error updating book:', error);
+    return { success: false, message: 'Failed to update book' };
+  }
+}
+
 export async function getUserBooksById(userId: string) {
   try {
     const books = await prisma.book.findMany({

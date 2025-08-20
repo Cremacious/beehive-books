@@ -18,15 +18,9 @@ export default function ChapterCard({
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <Badge variant={'wood'}>{chapter.status}</Badge>
-            {/* <Badge variant={'chapter'}>Chapter {index + 1}</Badge> */}
-            {/* {chapter.status === 'completed' ? (
-              <Badge variant={'completed'}>Completed</Badge>
-            ) : chapter.status === 'inProgress' ? (
-              <Badge variant={'inProgress'}>In Progress</Badge>
-            ) : (
-              <Badge variant={'wood'}>Draft</Badge>
-            )} */}
+            {chapter.status === 'In Progress' && (
+              <Badge variant={'wood'}>{chapter.status}</Badge>
+            )}
           </div>
 
           <h3 className="text-2xl font-bold text-slate-900 mb-2 poppins group-hover:text-yellow-700 transition-colors">

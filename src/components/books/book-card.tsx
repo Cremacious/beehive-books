@@ -50,7 +50,7 @@ export default function BookCard({ book }: { book: BookType }) {
               <Link href={`/books/${book.id}`}>View</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/books/${book.id}/edit`}>Edit</Link>
+              <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/books/${book.id}/share`}> Share</Link>
