@@ -17,6 +17,8 @@ export default async function ProfileHeader({ user }: { user: UserType }) {
   const friendshipStatus = await checkFriendshipStatus(user.id);
   console.log('Friendship Status:', friendshipStatus);
 
+  const isLoggedInUser = !currentUser.error;
+
   return (
     <div className="darkContainer ">
       <div className="grid grid-cols-1 md:grid-cols-3 md:space-x-6 space-y-4 md:space-y-0">
@@ -32,9 +34,9 @@ export default async function ProfileHeader({ user }: { user: UserType }) {
               />
             </div>
 
-            {isCurrentUser && (
+            {isCurrentUser && isLoggedInUser ? (
               <FriendStatusButton friendshipStatus={friendshipStatus.status} friendId={user.id} />
-            )}
+            ) : null}
             <div className="text-white">
               Joined{' '}
               {new Date(user.createdAt).toLocaleDateString('en-US', {

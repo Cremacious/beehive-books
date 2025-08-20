@@ -38,7 +38,7 @@ export default function AuthButtons() {
     setImageSrc(session?.user?.image ?? null);
   }, [session?.user?.image]);
 
-  // listen for the custom event dispatched by ImageUpload and update image immediately
+
   useEffect(() => {
     const handler = (ev: Event) => {
       try {
@@ -65,7 +65,6 @@ export default function AuthButtons() {
           </div>
         ) : (
           <div className="flex gap-2 justify-end w-full">
-            <Button>{notificationCount}</Button>
             <Button asChild variant="outline">
               <Link href="/sign-in">Sign In</Link>
             </Button>

@@ -6,8 +6,8 @@ import { getAuthenticatedUser } from '../types/server-utils';
 export async function checkFriendshipStatus(friendId: string) {
   try {
     const { user, error } = await getAuthenticatedUser();
-    if (error) throw new Error(error);
-    if (!user) throw new Error('User not found');
+    if (error) return { isFriend: false, status: 'ERROR', message: error };
+    if (!user) return { isFriend: false, status: 'ERROR', message: 'User not found' };
     if (user.id === friendId) {
       return {
         isFriend: false,

@@ -1,9 +1,8 @@
-'use client'
+'use client';
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { sendFriendRequest } from '@/lib/actions/friend.actions';
 import { toast } from 'sonner';
-
 
 export default function FriendStatusButton({
   friendId,
@@ -12,7 +11,6 @@ export default function FriendStatusButton({
   friendId: string;
   friendshipStatus: string;
 }) {
- 
   const [status, setStatus] = useState<string>(friendshipStatus ?? 'NONE');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +28,7 @@ export default function FriendStatusButton({
         setStatus('PENDING');
         toast.success(response.message ?? 'Friend request sent');
       } else {
-        toast.error(response?.message || 'Failed to send friend request');
+        return;
       }
     } catch (err: any) {
       console.error('Error sending friend request:', err);
