@@ -88,7 +88,7 @@ export default function ImageUpload({ image }: { image?: string | null }) {
 
     try {
       setIsUploading(true);
-      // limit client-side file size to 12MB
+   
       if (coverFile.size > 12 * 1024 * 1024) {
         toast.error('Image too large (max 12MB)');
         setIsUploading(false);

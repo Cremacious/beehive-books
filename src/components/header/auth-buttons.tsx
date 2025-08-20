@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useEffect, useState } from 'react';
 
 export default function AuthButtons() {
   const router = useRouter();
@@ -24,10 +25,32 @@ export default function AuthButtons() {
 
   const { data: session, isPending } = useSession();
 
+  const [imageSrc, setImageSrc] = useState<string | null | undefined>(
+    () => session?.user?.image
+  );
+
   const handleSignOut = async () => {
     await signOut();
     router.push('/');
   };
+
+  useEffect(() => {
+    setImageSrc(session?.user?.image ?? null);
+  }, [session?.user?.image]);
+
+  // listen for the custom event dispatched by ImageUpload and update image immediately
+  useEffect(() => {
+    const handler = (ev: Event) => {
+      try {
+        const detail = (ev as CustomEvent).detail;
+        if (detail?.image) setImageSrc(detail.image);
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener('user:image:updated', handler);
+    return () => window.removeEventListener('user:image:updated', handler);
+  }, []);
 
   const containerClass = 'w-[300px] flex items-center justify-end gap-6';
 
@@ -60,10 +83,10 @@ export default function AuthButtons() {
       <div className="relative flex items-center space-x-4 ">
         <div className="relative">
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <div>
                 <Image
-                  src={session?.user?.image ?? defaultProfileImage}
+                  src={imageSrc ?? defaultProfileImage}
                   alt="Profile"
                   width={50}
                   height={50}
