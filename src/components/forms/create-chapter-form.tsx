@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function MyForm({ bookId }: { bookId: string }) {
+export default function CreateChapterForm({ bookId }: { bookId: string }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof chapterSchema>>({
     resolver: zodResolver(chapterSchema),

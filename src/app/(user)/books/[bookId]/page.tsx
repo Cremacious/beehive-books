@@ -16,7 +16,6 @@ export default async function BookPage({
 }: {
   params: Promise<{ bookId: string }>;
 }) {
-
   const { bookId } = await params;
   const book = await getBookById(bookId);
   if (!book) notFound();
@@ -42,11 +41,14 @@ export default async function BookPage({
               <h2 className="text-4xl font-bold text-yellow-400 flex items-center gap-2 drop-shadow-sm ">
                 Chapters
               </h2>
-              <Button asChild>
-                <Link href={`/books/${book.id}/chapters/create`}>
-                  New Chapter
-                </Link>
-              </Button>
+
+              {chapters.length > 0 && (
+                <Button asChild>
+                  <Link href={`/books/${book.id}/chapters/create`}>
+                    New ChapterX
+                  </Link>
+                </Button>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -76,7 +78,11 @@ export default async function BookPage({
                   <p className="text-slate-700 mb-4">
                     Keep your story buzzing with new adventures!
                   </p>
-                  <CreateChapterButton />
+                  <Button asChild>
+                    <Link href={`/books/${book.id}/chapters/create`}>
+                      Add Your First Chapter
+                    </Link>
+                  </Button>
                 </div>
               )}
             </div>
