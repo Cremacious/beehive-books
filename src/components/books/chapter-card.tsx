@@ -42,7 +42,11 @@ export default function ChapterCard({
           <Button asChild>
             <Link href={`/books/${bookId}/chapters/${chapter.id}`}>Read</Link>
           </Button>
-          <Button variant={'secondary'}>Edit</Button>
+          <Button asChild variant={'secondary'}>
+            <Link href={`/books/${bookId}/chapters/edit-chapter/${chapter.id}`}>
+              Edit
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

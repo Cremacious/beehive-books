@@ -593,6 +593,7 @@ export async function createChapter(
         title: parsedData.title,
         content: parsedData.content,
         bookId: book.id,
+        notes: parsedData.notes ?? undefined,
         author: user.id,
         privacy: parsedData.privacy ?? 'public',
         status: parsedData.status ?? 'In Progress',
@@ -604,6 +605,44 @@ export async function createChapter(
   } catch (error) {
     console.error('Error creating chapter:', error);
     return { success: false, message: 'Failed to create chapter' };
+  }
+}
+
+export async function editChapter(
+  chapterId: string,
+  data: z.infer<typeof chapterSchema>
+) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: Number(chapterId) },
+      include: { book: true },
+    });
+
+    if (!chapter) throw new Error('Chapter not found');
+    if (chapter.book.userId !== user.id) throw new Error('Unauthorized');
+
+    const parsedData = chapterSchema.parse(data);
+
+    await prisma.chapter.update({
+      where: { id: Number(chapterId) },
+      data: {
+        title: parsedData.title,
+        content: parsedData.content,
+        notes: parsedData.notes ?? undefined,
+        privacy: parsedData.privacy ?? 'public',
+        status: parsedData.status ?? 'In Progress',
+      },
+    });
+
+    revalidatePath(`/books/${chapter.bookId}`);
+    return { success: true, message: 'Chapter updated successfully' };
+  } catch (error) {
+    console.error('Error updating chapter:', error);
+    return { success: false, message: 'Failed to update chapter' };
   }
 }
 
