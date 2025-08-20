@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import CreateChapterButton from '@/components/buttons/create-chapter-button';
 import BookDetailsHero from '@/components/books/book-details-hero';
 // import { mockUser } from '@/lib/sampleData';
 import ChapterCard from '@/components/books/chapter-card';
