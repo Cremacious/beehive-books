@@ -3,6 +3,7 @@ import BookShelf from '@/components/books/bookshelf';
 import { getUserBooksById } from '@/lib/actions/book.actions';
 import { getDatabaseUserById } from '@/lib/actions/user.actions';
 
+
 export default async function ProfilePage({
   params,
 }: {
@@ -17,8 +18,8 @@ export default async function ProfilePage({
     return <div>User not found</div>;
   }
 
-  const user = await getDatabaseUserById(userId);
-  if (!user) {
+  const profileUser = await getDatabaseUserById(userId);
+  if (!profileUser) {
     return <div>User not found</div>;
   }
 
@@ -27,15 +28,16 @@ export default async function ProfilePage({
       <div className="space-y-6">
         <ProfileHeader
           user={{
-            name: user.name,
-            image: user.image || undefined,
+            name: profileUser.name,
+            image: profileUser.image || undefined,
             isFriend: false,
-            createdAt: user.createdAt,
-            bio: user.bio || undefined,
+            createdAt: profileUser.createdAt,
+            bio: profileUser.bio || undefined,
+            id: profileUser.id,
           }}
         />
         <div className="darkContainer">
-          <BookShelf books={userBooks} owner={`${user.name}'s`} />
+          <BookShelf books={userBooks} owner={`${profileUser.name}'s`} />
         </div>
       </div>
     </div>

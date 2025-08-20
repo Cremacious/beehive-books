@@ -3,9 +3,20 @@ import { Button } from '../ui/button';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import { Share2 } from 'lucide-react';
 import { UserType } from '@/lib/types/user.type';
+import FriendStatusButton from '../friends/friend-status-button';
+import { getAuthenticatedUser } from '@/lib/types/server-utils';
+import {
+  checkFriendshipStatus,
+} from '@/lib/actions/friend.actions';
 
+export default async function ProfileHeader({ user }: { user: UserType }) {
+  const currentUser = await getAuthenticatedUser();
 
-export default function ProfileHeader({ user }: { user: UserType }) {
+  const isCurrentUser = currentUser?.user?.id !== user.id;
+
+  const friendshipStatus = await checkFriendshipStatus(user.id);
+  console.log('Friendship Status:', friendshipStatus);
+
   return (
     <div className="darkContainer ">
       <div className="grid grid-cols-1 md:grid-cols-3 md:space-x-6 space-y-4 md:space-y-0">
@@ -20,12 +31,10 @@ export default function ProfileHeader({ user }: { user: UserType }) {
                 className="object-cover w-full h-full"
               />
             </div>
-            <Button
-              variant={user.isFriend ? 'secondary' : 'default'}
-              className="w-full"
-            >
-              {user.isFriend ? 'Friends ✓' : 'Add to Friends'}
-            </Button>
+
+            {isCurrentUser && (
+              <FriendStatusButton isFriend={friendshipStatus.isFriend} friendId={user.id} />
+            )}
             <div className="text-white">
               Joined{' '}
               {new Date(user.createdAt).toLocaleDateString('en-US', {

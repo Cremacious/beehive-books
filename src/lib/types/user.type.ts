@@ -4,4 +4,5 @@ export type UserType = {
   isFriend: boolean;
   createdAt: string | Date;
   bio?: string;
+  id: string;
 };

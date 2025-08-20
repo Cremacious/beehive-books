@@ -29,7 +29,6 @@ export async function getDatabaseUserById(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-     
       friends: {
         include: {
           friend: true,
@@ -75,3 +74,4 @@ export async function getDatabaseUserById(userId: string) {
       friends,
     };
   }
+
