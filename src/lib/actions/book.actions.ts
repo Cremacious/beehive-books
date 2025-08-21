@@ -689,6 +689,7 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
         chapter.comments?.map((c: any) => ({
           id: c.id,
           authorId: c.authorId,
+
           content: c.content,
           createdAt:
             c.createdAt instanceof Date
@@ -698,7 +699,7 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
           bookId: c.bookId ?? undefined,
           parentId: c.parentId ?? undefined,
           author: c.author
-            ? { id: c.author.id, name: c.author.name }
+            ? { id: c.author.id, name: c.author.name, image: c.author.image }
             : { id: '', name: '' },
           replies:
             (c.replies ?? []).map((r: any) => ({

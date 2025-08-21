@@ -46,4 +46,5 @@ export type CommentType = {
 export type BookUserType = {
   id: string;
   name: string;
+  image?: string; 
 };

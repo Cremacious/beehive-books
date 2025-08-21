@@ -1,18 +1,13 @@
 import Image from 'next/image';
 import friendImage from '../../../assets/site/friends.png';
 import FriendsTable from '@/components/friends/friends-table';
-import { mockUser } from '@/lib/sampleData';
 import ViewFriendRequestsButton from '@/components/friends/view-friends-button';
 import { getPendingFriendRequests } from '@/lib/actions/friend.actions';
-
-const friends = mockUser.friends.map((friend: any) => ({
-  ...friend,
-  avatar: friend.avatar ?? 'https://randomuser.me/api/portraits/lego/1.jpg',
-}));
+import { getUserFriends } from '@/lib/actions/friend.actions';
 
 export default async function FriendsPage() {
+  const friends = await getUserFriends();
   const friendRequests = await getPendingFriendRequests();
-
 
   return (
     <div className="">

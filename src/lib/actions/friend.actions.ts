@@ -3,6 +3,53 @@
 import prisma from '../prisma';
 import { getAuthenticatedUser } from '../server-utils';
 
+export async function getUserFriends() {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    console.log('Fetching user friends for:', user?.id);
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const friends = await prisma.friendship.findMany({
+      where: {
+        OR: [
+          { userId: user.id, status: 'ACCEPTED' },
+          { friendId: user.id, status: 'ACCEPTED' },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        friend: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return friends.map((f) => ({
+      id: f.userId === user.id ? f.friend.id : f.user.id,
+      name: f.userId === user.id ? f.friend.name : f.user.name,
+      image:
+        f.userId === user.id
+          ? f.friend.image ?? undefined
+          : f.user.image ?? undefined,
+    }));
+  } catch (error) {
+    console.log('Error fetching user friends:', error);
+    return [];
+  }
+}
+
 export async function checkFriendshipStatus(friendId: string) {
   try {
     const { user, error } = await getAuthenticatedUser();

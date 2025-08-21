@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { FriendType } from '@/lib/types/friend.type';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function FriendsTable({ friends }: { friends: FriendType[] }) {
+  const router = useRouter();
   const [searchEmail, setSearchEmail] = useState('');
   const [friendRequests, setFriendRequests] = useState<
     { id: number; email: string }[]
@@ -113,7 +115,12 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
             </div>
             <div className="flex flex-row gap-8 mt-4">
               <Button size={'sm'}> Books</Button>
-              <Button size={'sm'}>Profile</Button>
+              <Button
+                onClick={() => router.push(`/profile/${friend.id}`)}
+                size={'sm'}
+              >
+                Profile
+              </Button>
             </div>
           </div>
         ))}

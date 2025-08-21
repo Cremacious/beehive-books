@@ -1,12 +1,23 @@
 import { CommentType } from '@/lib/types/books.type';
 import { Button } from '../ui/button';
+import Image from 'next/image';
+import defaultProfileImage from '@/assets/stock/stockProfile.png';
 
 export default function ChapterComment({ comment }: { comment: CommentType }) {
   return (
     <div className="">
       <div className="bg-yellow-50 rounded-lg p-4 border-b-4 border-yellow-200 shadow-md">
-        <div className="font-semibold text-yellow-800 mb-1">
-          {comment.author.name}
+        <div className="flex items-center mb-3">
+          <Image
+            src={comment.author.image ?? defaultProfileImage}
+            alt={comment.author.name}
+            width={50}
+            height={50}
+            className="rounded-full mr-3 inline-block"
+          />
+          <div className="font-semibold text-lg text-yellow-800 mb-1">
+            {comment.author.name}
+          </div>
         </div>
         <div className="text-slate-800">{comment.content}</div>
         <div className="flex justify-between mt-2">

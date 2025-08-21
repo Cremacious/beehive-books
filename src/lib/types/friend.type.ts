@@ -1,7 +1,7 @@
 export type FriendType = {
-  id: number;
+  id: string;
   name: string;
-  avatar: string;
+  image?: string;
 };
 
 export type FriendRequestType = {
