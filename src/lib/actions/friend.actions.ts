@@ -117,13 +117,14 @@ export async function getPendingFriendRequests() {
 
     if (!requests || requests.length === 0) return [];
 
+   
     return requests.map((r) => ({
       id: r.id,
       sender: r.user?.name ?? '',
       name: r.user?.name ?? '',
       fromId: r.userId,
       fromName: r.user?.name ?? '',
-      fromImage: r.user?.image ?? undefined,
+      image: r.user?.image ?? undefined,
       status: r.status,
       createdAt:
         r.createdAt instanceof Date

@@ -25,5 +25,5 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
     }),
   unreadCount: () => get().notifications.filter((n) => !n.read).length,
   pendingFriendRequestsCount: () =>
-    get().friendRequests.filter((r) => r.status === 'pending').length,
+    get().friendRequests.filter((r) => r.status === 'PENDING').length,
 }));

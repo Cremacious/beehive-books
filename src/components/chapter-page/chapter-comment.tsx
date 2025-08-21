@@ -87,7 +87,9 @@ export default function ChapterComment({ comment }: { comment: CommentType }) {
         </div>
         <div className="text-slate-800">{comment.content}</div>
         <div className="flex justify-between mt-2">
-          <div className="text-xs text-slate-500 mt-1">{comment.createdAt}</div>
+          <div className="text-xs text-slate-500 mt-1">
+            {new Date(comment.createdAt).toLocaleString()}
+          </div>
           <Button onClick={() => setIsReplying(!isReplying)} size={'sm'}>
             {isReplying ? 'Cancel' : 'Reply'}
           </Button>
@@ -122,7 +124,7 @@ export default function ChapterComment({ comment }: { comment: CommentType }) {
           </Form>
         )}
       </div>
-  
+
       {localReplies.length === 0 ? null : (
         <div className="mt-4 pl-4 border-l-2 border-yellow-200">
           {localReplies.map((reply) => (

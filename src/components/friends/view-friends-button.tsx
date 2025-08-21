@@ -26,7 +26,10 @@ export default function ViewFriendRequestsButton({
 }: {
   pendingFriendRequests: FriendRequestType[];
 }) {
-  const friendRequests = useNotificationStore((s) => s.friendRequests);
+  const pendingCount = useNotificationStore((s) =>
+    s.pendingFriendRequestsCount()
+  );
+  // const friendRequests = useNotificationStore((s) => s.friendRequests);
   const setFriendRequests = useNotificationStore((s) => s.setFriendRequests);
 
   const [requests, setRequests] = useState<FriendRequestType[]>(
@@ -54,7 +57,7 @@ export default function ViewFriendRequestsButton({
         >
           View All Friend Requests
           <span className="absolute top-0 right-2 -translate-y-1/2 bg-yellow-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md">
-            {friendRequests.length}
+            {pendingCount}
           </span>
         </Button>
       </AlertDialogTrigger>
