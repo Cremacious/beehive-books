@@ -1,5 +1,5 @@
 import ImageUpload from '@/components/settings/image-upload';
-import { getAuthenticatedUser } from '@/lib/providers/types/server-utils';
+import { getAuthenticatedUser } from '@/lib/types/server-utils';
 
 export default async function SettingsPage() {
   const { user } = await getAuthenticatedUser();

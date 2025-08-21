@@ -3,7 +3,7 @@
 import prisma from '../prisma';
 import { bookSchema, chapterSchema } from '../validators/book.validators';
 import { z } from 'zod';
-import { getAuthenticatedUser } from '../providers/types/server-utils';
+import { getAuthenticatedUser } from '../types/server-utils';
 import { revalidatePath } from 'next/cache';
 
 export async function createBook(data: z.infer<typeof bookSchema>) {

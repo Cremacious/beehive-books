@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { FriendRequestType } from '@/lib/providers/types/friend.type';
+import { FriendRequestType } from '@/lib/types/friend.type';
 import {
   acceptFriendRequest,
   rejectFriendRequest,

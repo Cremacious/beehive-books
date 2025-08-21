@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
-import { BookType } from '@/lib/providers/types/books.type';
+import { BookType } from '@/lib/types/books.type';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 import { getBookWordCount } from '@/lib/utils';
 

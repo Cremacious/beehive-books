@@ -2,9 +2,9 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import { Share2 } from 'lucide-react';
-import { UserType } from '@/lib/providers/types/user.type';
+import { UserType } from '@/lib/types/user.type';
 import FriendStatusButton from '../friends/friend-status-button';
-import { getAuthenticatedUser } from '@/lib/providers/types/server-utils';
+import { getAuthenticatedUser } from '@/lib/types/server-utils';
 import { checkFriendshipStatus } from '@/lib/actions/friend.actions';
 
 export default async function ProfileHeader({ user }: { user: UserType }) {

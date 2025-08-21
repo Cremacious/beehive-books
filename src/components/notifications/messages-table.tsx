@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { NotificationType } from '@/lib/providers/types/message.type';
+import { NotificationType } from '@/lib/types/message.type';
 import { Button } from '../ui/button';
 import { Eye, Trash2 } from 'lucide-react';
 

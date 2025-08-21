@@ -9,7 +9,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
-import { BookType } from '@/lib/providers/types/books.type';
+import { BookType } from '@/lib/types/books.type';
 
 export default function BookCard({ book }: { book: BookType }) {
   return (

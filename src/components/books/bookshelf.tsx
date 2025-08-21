@@ -1,4 +1,4 @@
-import { BookType } from '@/lib/providers/types/books.type';
+import { BookType } from '@/lib/types/books.type';
 import BookCard from './book-card';
 // import Image from 'next/image';
 

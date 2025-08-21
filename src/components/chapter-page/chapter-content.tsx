@@ -4,7 +4,7 @@ import { Slate, Editable, withReact } from 'slate-react';
 import { createEditor, Descendant } from 'slate';
 import { useState } from 'react';
 import { Button } from '../ui/button';
-import { ChapterType } from '@/lib/providers/types/books.type';
+import { ChapterType } from '@/lib/types/books.type';
 
 const fontOptions = [
   { label: 'Arial', value: 'Arial, sans-serif' },

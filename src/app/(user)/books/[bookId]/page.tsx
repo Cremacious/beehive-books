@@ -6,7 +6,7 @@ import Image from 'next/image';
 import beeWriting from '@/assets/site/beeWriting.png';
 import { MoveLeft } from 'lucide-react';
 import { getBookById } from '@/lib/actions/book.actions';
-import { ChapterType } from '@/lib/providers/types/books.type';
+import { ChapterType } from '@/lib/types/books.type';
 import { notFound } from 'next/navigation';
 
 export default async function BookPage({
