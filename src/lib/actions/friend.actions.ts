@@ -1,13 +1,14 @@
 'use server';
-
+// import { FriendshipStatus } from '@prisma/client';
 import prisma from '../prisma';
-import { getAuthenticatedUser } from '../types/server-utils';
+import { getAuthenticatedUser } from '../providers/types/server-utils';
 
 export async function checkFriendshipStatus(friendId: string) {
   try {
     const { user, error } = await getAuthenticatedUser();
     if (error) return { isFriend: false, status: 'ERROR', message: error };
-    if (!user) return { isFriend: false, status: 'ERROR', message: 'User not found' };
+    if (!user)
+      return { isFriend: false, status: 'ERROR', message: 'User not found' };
     if (user.id === friendId) {
       return {
         isFriend: false,
@@ -39,6 +40,51 @@ export async function checkFriendshipStatus(friendId: string) {
   } catch (error) {
     console.error('Error checking friendship status:', error);
     throw new Error('Failed to check friendship status');
+  }
+}
+
+export async function getPendingFriendRequests() {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    // Get all friendship requests where the current user is the recipient (friendId)
+    const requests = await prisma.friendship.findMany({
+      where: {
+        friendId: user.id,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    console.log('Pending friend requests:', requests);
+
+    // If no requests, return 0 (or empty array for your usage)
+    if (!requests || requests.length === 0) return [];
+
+    // Map to a simple shape for your UI/table
+    return requests.map((r) => ({
+      id: r.id,
+      fromId: r.userId,
+      fromName: r.user?.name ?? '',
+      fromImage: r.user?.image ?? undefined,
+      status: r.status,
+      createdAt:
+        r.createdAt instanceof Date
+          ? r.createdAt.toISOString()
+          : String(r.createdAt),
+    }));
+  } catch (error) {
+    console.error('Error fetching friend requests:', error);
+    return [];
   }
 }
 

@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { editChapter } from '@/lib/actions/book.actions';
-import { ChapterType } from '@/lib/types/books.type';
+import { ChapterType } from '@/lib/providers/types/books.type';
 
 export default function EditChapterForm({
   chapter,

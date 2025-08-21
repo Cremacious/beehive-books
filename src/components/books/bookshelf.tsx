@@ -1,7 +1,6 @@
-import { BookType } from '@/lib/types/books.type';
+import { BookType } from '@/lib/providers/types/books.type';
 import BookCard from './book-card';
 // import Image from 'next/image';
-
 
 export default function BookShelf({
   books,
@@ -23,7 +22,9 @@ export default function BookShelf({
         ) : (
           <div className="col-span-full text-slate-800 text-center py-12 ">
             {/* <Image src={beeBookshelf} alt="Bee Bookshelf" width={200} height={200} /> */}
-            <p className=" text-lg">Your bookshelf is empty. Start adding books!</p>
+            <p className=" text-lg">
+              Your bookshelf is empty. Start adding books!
+            </p>
           </div>
         )}
       </div>

@@ -1,13 +1,15 @@
 import ImageUpload from '@/components/settings/image-upload';
-import { getAuthenticatedUser } from '@/lib/types/server-utils';
+import { getAuthenticatedUser } from '@/lib/providers/types/server-utils';
 
 export default async function SettingsPage() {
-  const {user} = await getAuthenticatedUser();
+  const { user } = await getAuthenticatedUser();
 
   return (
     <div className="max-w-3xl mx-auto px-2">
       <div className="darkContainer">
-        <div className="text-center text-yellow-400 caveatBrush text-2xl">Settings</div>
+        <div className="text-center text-yellow-400 caveatBrush text-2xl">
+          Settings
+        </div>
         <div className="space-y-4 py-6">
           {/* Profile Image Upload */}
           <div className="lightContainer py-6">
@@ -18,7 +20,6 @@ export default async function SettingsPage() {
               Upload a new profile image.
             </p>
             <ImageUpload image={user?.image} />
-
           </div>
 
           {/* Change Username */}
@@ -45,7 +46,7 @@ export default async function SettingsPage() {
           </div>
 
           {/* Update Email */}
-     <div className="lightContainer">
+          <div className="lightContainer">
             <h3 className="text-lg font-semibold text-yellow-400 mb-3">
               Update Email
             </h3>

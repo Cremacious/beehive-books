@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/select';
 import { editBook } from '@/lib/actions/book.actions';
 import { useRouter } from 'next/navigation';
-import { BookType } from '@/lib/types/books.type';
+import { BookType } from '@/lib/providers/types/books.type';
 
 export default function EditBookForm({ book }: { book: BookType }) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -44,7 +44,10 @@ export default function EditBookForm({ book }: { book: BookType }) {
       genre: book.genre || '',
       category: book.category || '',
       description: book.description || '',
-      privacy: book.privacy === 'public' || book.privacy === 'private' ? book.privacy : 'public',
+      privacy:
+        book.privacy === 'public' || book.privacy === 'private'
+          ? book.privacy
+          : 'public',
     },
   });
 

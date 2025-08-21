@@ -1,5 +1,5 @@
 import { Button } from '../ui/button';
-import { CommentType } from '@/lib/types/books.type';
+import { CommentType } from '@/lib/providers/types/books.type';
 import ChapterComment from './chapter-comment';
 
 export default function CommentSection({

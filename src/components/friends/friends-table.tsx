@@ -1,7 +1,7 @@
-'use client'
+'use client';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { FriendType } from '@/lib/types/friend.type';
+import { FriendType } from '@/lib/providers/types/friend.type';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import Image from 'next/image';
 

@@ -2,12 +2,10 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import { Share2 } from 'lucide-react';
-import { UserType } from '@/lib/types/user.type';
+import { UserType } from '@/lib/providers/types/user.type';
 import FriendStatusButton from '../friends/friend-status-button';
-import { getAuthenticatedUser } from '@/lib/types/server-utils';
-import {
-  checkFriendshipStatus,
-} from '@/lib/actions/friend.actions';
+import { getAuthenticatedUser } from '@/lib/providers/types/server-utils';
+import { checkFriendshipStatus } from '@/lib/actions/friend.actions';
 
 export default async function ProfileHeader({ user }: { user: UserType }) {
   const currentUser = await getAuthenticatedUser();
@@ -35,7 +33,10 @@ export default async function ProfileHeader({ user }: { user: UserType }) {
             </div>
 
             {isCurrentUser && isLoggedInUser ? (
-              <FriendStatusButton friendshipStatus={friendshipStatus.status} friendId={user.id} />
+              <FriendStatusButton
+                friendshipStatus={friendshipStatus.status}
+                friendId={user.id}
+              />
             ) : null}
             <div className="text-white">
               Joined{' '}

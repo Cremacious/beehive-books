@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { ChapterType } from '@/lib/types/books.type';
+import { ChapterType } from '@/lib/providers/types/books.type';
 import { getChapterWordCount, slateContentToPlainText } from '@/lib/utils';
 
 export default function ChapterCard({

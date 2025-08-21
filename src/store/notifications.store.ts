@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { NotificationType } from '@/lib/types/message.type';
-import { FriendRequestType } from '@/lib/types/friend.type';
+import { NotificationType } from '@/lib/providers/types/message.type';
+import { FriendRequestType } from '@/lib/providers/types/friend.type';
 
 type NotificationStore = {
   notifications: NotificationType[];

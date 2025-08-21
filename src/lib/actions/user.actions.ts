@@ -1,10 +1,9 @@
 'use server';
 
 import prisma from '../prisma';
-import { getAuthenticatedUser } from '../types/server-utils';
+import { getAuthenticatedUser } from '../providers/types/server-utils';
 
 export async function uploadUserImage(imageBase64: string) {
-
   if (!imageBase64) throw new Error('No image provided');
   if (!/^data:image\/[a-zA-Z]+;base64,/.test(imageBase64)) {
     throw new Error('Invalid base64 image format');
@@ -44,8 +43,6 @@ export async function getDatabaseUserById(userId: string) {
 
   if (!user) throw new Error('User not found');
 
-  
-
   const friendUsers = [
     ...(user.friends ?? []).map((f: any) => f.friend),
     ...(user.friendOf ?? []).map((f: any) => f.user),
@@ -59,19 +56,27 @@ export async function getDatabaseUserById(userId: string) {
       name: fu.name,
       image: fu.image ?? undefined,
       bio: fu.bio ?? undefined,
-      createdAt: fu.createdAt instanceof Date ? fu.createdAt.toISOString() : fu.createdAt,
+      createdAt:
+        fu.createdAt instanceof Date
+          ? fu.createdAt.toISOString()
+          : fu.createdAt,
     });
   });
   const friends = Array.from(uniqueFriendsMap.values());
 
-    return {
-      id: user.id,
-      name: user.name,
-      image: user.image ?? undefined,
-      bio: user.bio ?? undefined,
-      createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : user.createdAt,
-      updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : user.updatedAt,
-      friends,
-    };
-  }
-
+  return {
+    id: user.id,
+    name: user.name,
+    image: user.image ?? undefined,
+    bio: user.bio ?? undefined,
+    createdAt:
+      user.createdAt instanceof Date
+        ? user.createdAt.toISOString()
+        : user.createdAt,
+    updatedAt:
+      user.updatedAt instanceof Date
+        ? user.updatedAt.toISOString()
+        : user.updatedAt,
+    friends,
+  };
+}
