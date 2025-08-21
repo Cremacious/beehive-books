@@ -13,13 +13,16 @@ const friends = mockUser.friends.map((friend: any) => ({
 export default async function FriendsPage() {
   const friendRequests = await getPendingFriendRequests();
 
+
   return (
     <div className="">
       <div className="max-w-6xl mx-auto p-2">
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
             <div className="absolute top-4 right-4 z-10">
-              <ViewFriendRequestsButton pendingFriendRequests={friendRequests} />
+              <ViewFriendRequestsButton
+                pendingFriendRequests={friendRequests}
+              />
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">

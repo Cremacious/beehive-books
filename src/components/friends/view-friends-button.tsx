@@ -19,6 +19,7 @@ import {
   rejectFriendRequest,
 } from '@/lib/actions/friend.actions';
 import Image from 'next/image';
+import defaultProfileImage from '@/assets/stock/stockProfile.png';
 
 export default function ViewFriendRequestsButton({
   pendingFriendRequests,
@@ -26,6 +27,8 @@ export default function ViewFriendRequestsButton({
   pendingFriendRequests: FriendRequestType[];
 }) {
   const friendRequests = useNotificationStore((s) => s.friendRequests);
+  const setFriendRequests = useNotificationStore((s) => s.setFriendRequests);
+
   const [requests, setRequests] = useState<FriendRequestType[]>(
     pendingFriendRequests
   );
@@ -33,11 +36,13 @@ export default function ViewFriendRequestsButton({
   const handleAccept = async (id: string) => {
     await acceptFriendRequest(id);
     setRequests((prev) => prev.filter((req) => req.id !== id));
+    setFriendRequests(requests.filter((req) => req.id !== id));
   };
 
   const handleReject = async (id: string) => {
     await rejectFriendRequest(id);
     setRequests((prev) => prev.filter((req) => req.id !== id));
+    setFriendRequests(requests.filter((req) => req.id !== id));
   };
 
   return (
@@ -67,7 +72,7 @@ export default function ViewFriendRequestsButton({
                   <li key={request.id} className="flex items-center gap-3">
                     <div className="border-b p-2 border-gray-200 w-full rounded-lg flex items-center gap-3 bg-white shadow-sm">
                       <Image
-                        src={request.image ?? '/default-profile.png'}
+                        src={request.image ?? defaultProfileImage}
                         alt={request.sender}
                         width={40}
                         height={40}
