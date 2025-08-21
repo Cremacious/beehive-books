@@ -595,6 +595,7 @@ export async function createChapter(
         bookId: book.id,
         notes: parsedData.notes ?? undefined,
         author: user.id,
+   
         privacy: parsedData.privacy ?? 'public',
         status: parsedData.status ?? 'In Progress',
       },

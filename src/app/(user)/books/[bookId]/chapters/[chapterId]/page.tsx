@@ -6,22 +6,28 @@ import Link from 'next/link';
 import { getChapterById } from '@/lib/actions/book.actions';
 import { MoveLeft } from 'lucide-react';
 import { getChapterWordCount } from '@/lib/utils';
+import { checkFriendshipStatus } from '@/lib/actions/friend.actions';
+import { getAuthenticatedUser } from '@/lib/types/server-utils';
 
 export default async function ChapterPage({
   params,
 }: {
   params: Promise<{ chapterId: string }>;
 }) {
-  // const chapter = mockUser.books[0].chapters[0];
-
   const { chapterId } = await params;
-
   const chapter = await getChapterById({ chapterId });
 
   if (!chapter) {
     return <div className="text-red-500">Chapter not found</div>;
   }
-  // console.log('Chapter data:', chapter);
+
+  const bookOwnerId = chapter.author;
+  const { user } = await getAuthenticatedUser();
+
+  const isOwner = user?.id === bookOwnerId;
+  const friendship = await checkFriendshipStatus(bookOwnerId);
+  const isFriend = friendship?.isFriend === true;
+  const canSeeComments = isOwner || isFriend;
 
   return (
     <div className="max-w-7xl mx-auto px-1">
@@ -72,7 +78,7 @@ export default async function ChapterPage({
               {chapter.notes && chapter.notes.length > 0 ? (
                 chapter.notes
               ) : (
-                <div className='flex justify-center items-center h-16'>
+                <div className="flex justify-center items-center h-16">
                   <div className="text-center">No author notes.</div>
                 </div>
               )}
@@ -80,8 +86,7 @@ export default async function ChapterPage({
           </div>
         </div>
         <ChapterContent chapter={chapter} />
-
-        <CommentSection comments={chapter.comments} />
+        {canSeeComments && <CommentSection comments={chapter.comments} />}
       </div>
     </div>
   );
