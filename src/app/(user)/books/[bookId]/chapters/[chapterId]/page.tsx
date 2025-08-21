@@ -7,7 +7,7 @@ import { getChapterById } from '@/lib/actions/book.actions';
 import { MoveLeft } from 'lucide-react';
 import { getChapterWordCount } from '@/lib/utils';
 import { checkFriendshipStatus } from '@/lib/actions/friend.actions';
-import { getAuthenticatedUser } from '@/lib/types/server-utils';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 
 export default async function ChapterPage({
   params,
@@ -86,7 +86,7 @@ export default async function ChapterPage({
           </div>
         </div>
         <ChapterContent chapter={chapter} />
-        {canSeeComments && <CommentSection comments={chapter.comments} />}
+        {canSeeComments && <CommentSection chapterId={chapter.id} comments={chapter.comments} />}
       </div>
     </div>
   );

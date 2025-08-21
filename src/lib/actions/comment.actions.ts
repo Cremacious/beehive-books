@@ -1,32 +1,31 @@
-// import prisma from '../prisma';
-// import { getAuthenticatedUser } from '../providers/types/server-utils';
+'use server';
+import prisma from '../prisma';
+import { getAuthenticatedUser } from '../server-utils';
 
+export async function createComment({
+  chapterId,
+  content,
+}: {
+  chapterId: number | string;
+  content: string;
+}) {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) throw new Error('User not found');
 
-// export async function createCommentNotification(
-//   bookId: string,
-//   chapterId: string,
-//   commentId: string,
-//   content: string
-// ) {
-//   try {
-//     const { user, error } = await getAuthenticatedUser();
-//     if (error) throw new Error(error);
-//     if (!user) throw new Error('User not found');
+    await prisma.comment.create({
+      data: {
+        chapterId: Number(chapterId),
+        content,
+        authorId: user.id,
+      },
+    });
 
-//     const notification = await prisma.notification.create({
-//       data: {
-//         userId: user.id,
-//         type: 'COMMENT',
-//         bookId,
-//         chapterId,
-//         commentId,
-//         content,
-//       },
-//     });
-
-//     return notification;
-//   } catch (error) {
-//     console.error('Error creating comment notification:', error);
-//     throw new Error('Failed to create comment notification');
-//   }
-// }
+    return { success: true, message: 'Comment created' };
+  } catch (error) {
+    return {
+      success: false,
+      message: (error as Error).message || 'Error creating comment',
+    };
+  }
+}

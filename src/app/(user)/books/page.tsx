@@ -3,7 +3,7 @@ import { mockUser } from '@/lib/sampleData';
 import beeBookshelf from '@/assets/site/beeBookshelf.png';
 import Image from 'next/image';
 import BookShelf from '@/components/books/bookshelf';
-import { getAuthenticatedUser } from '@/lib/types/server-utils';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 import { getUserBooksById } from '@/lib/actions/book.actions';
 
 export default async function BooksPage() {

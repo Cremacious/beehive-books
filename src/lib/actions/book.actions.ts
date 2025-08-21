@@ -3,7 +3,7 @@
 import prisma from '../prisma';
 import { bookSchema, chapterSchema } from '../validators/book.validators';
 import { z } from 'zod';
-import { getAuthenticatedUser } from '../types/server-utils';
+import { getAuthenticatedUser } from '../server-utils';
 import { revalidatePath } from 'next/cache';
 
 export async function createBook(data: z.infer<typeof bookSchema>) {
@@ -595,7 +595,7 @@ export async function createChapter(
         bookId: book.id,
         notes: parsedData.notes ?? undefined,
         author: user.id,
-   
+
         privacy: parsedData.privacy ?? 'public',
         status: parsedData.status ?? 'In Progress',
       },

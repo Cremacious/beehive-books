@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '../prisma';
-import { getAuthenticatedUser } from '../types/server-utils';
+import { getAuthenticatedUser } from '../server-utils';
 
 export async function uploadUserImage(imageBase64: string) {
   if (!imageBase64) throw new Error('No image provided');

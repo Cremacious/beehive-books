@@ -1,7 +1,7 @@
 'use server';
 // import { FriendshipStatus } from '@prisma/client';
 import prisma from '../prisma';
-import { getAuthenticatedUser } from '../types/server-utils';
+import { getAuthenticatedUser } from '../server-utils';
 
 export async function checkFriendshipStatus(friendId: string) {
   try {
