@@ -17,7 +17,6 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { CommentType } from '@/lib/types/books.type';
 import ChapterComment from './chapter-comment';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -35,7 +34,7 @@ export default function CommentSection({
     resolver: zodResolver(formSchema),
   });
 
-  const router = useRouter();
+
   const [localComments, setLocalComments] = useState<CommentType[]>(
     () => comments ?? []
   );

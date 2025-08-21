@@ -53,4 +53,54 @@ export async function createComment({
     };
   }
 }
-// ...existing code...
+
+export async function createCommentReply({
+  commentId,
+  content,
+  chapterId,
+}: {
+  commentId: number | string;
+  content: string;
+  chapterId: number | string;
+}) {
+  try {
+    const { user } = await getAuthenticatedUser();
+    if (!user) throw new Error('User not found');
+
+    const created = await prisma.comment.create({
+      data: {
+        parentId: Number(commentId),
+        chapterId: Number(chapterId),
+        content,
+        authorId: user.id,
+      },
+      include: { author: { select: { id: true, name: true, image: true } } },
+    });
+
+    return {
+      success: true,
+      message: 'Reply created',
+      reply: {
+        id: created.id,
+        content: created.content,
+        authorId: created.authorId,
+        author: created.author
+          ? {
+              id: created.author.id,
+              name: created.author.name,
+              image: created.author.image ?? undefined,
+            }
+          : undefined,
+        createdAt:
+          created.createdAt instanceof Date
+            ? created.createdAt.toISOString()
+            : created.createdAt,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: (error as Error).message || 'Error creating reply',
+    };
+  }
+}
