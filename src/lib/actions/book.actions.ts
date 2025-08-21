@@ -660,7 +660,16 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
           },
         },
         comments: {
-          include: { author: true, replies: { include: { author: true } } },
+          include: {
+            author: { select: { id: true, name: true, image: true } },
+            replies: {
+              include: {
+                author: { select: { id: true, name: true, image: true } },
+              },
+              orderBy: { createdAt: 'asc' },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
@@ -686,39 +695,41 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
       status: chapter.status,
       wordCount: chapter.wordCount,
       comments:
-        chapter.comments?.map((c: any) => ({
-          id: c.id,
-          authorId: c.authorId,
+        chapter.comments
+          ?.filter((c: any) => c.parentId == null) // Only top-level comments
+          .map((c: any) => ({
+            id: c.id,
+            authorId: c.authorId,
 
-          content: c.content,
-          createdAt:
-            c.createdAt instanceof Date
-              ? c.createdAt.toISOString()
-              : c.createdAt,
-          chapterId: c.chapterId,
-          bookId: c.bookId ?? undefined,
-          parentId: c.parentId ?? undefined,
-          author: c.author
-            ? { id: c.author.id, name: c.author.name, image: c.author.image }
-            : { id: '', name: '' },
-          replies:
-            (c.replies ?? []).map((r: any) => ({
-              id: r.id,
-              authorId: r.authorId,
-              content: r.content,
-              createdAt:
-                r.createdAt instanceof Date
-                  ? r.createdAt.toISOString()
-                  : r.createdAt,
-              chapterId: r.chapterId,
-              bookId: r.bookId ?? undefined,
-              parentId: r.parentId ?? undefined,
-              author: r.author
-                ? { id: r.author.id, name: r.author.name }
-                : { id: '', name: '' },
-              replies: [],
-            })) ?? [],
-        })) ?? [],
+            content: c.content,
+            createdAt:
+              c.createdAt instanceof Date
+                ? c.createdAt.toISOString()
+                : c.createdAt,
+            chapterId: c.chapterId,
+            bookId: c.bookId ?? undefined,
+            parentId: c.parentId ?? undefined,
+            author: c.author
+              ? { id: c.author.id, name: c.author.name, image: c.author.image }
+              : { id: '', name: '' },
+            replies:
+              (c.replies ?? []).map((r: any) => ({
+                id: r.id,
+                authorId: r.authorId,
+                content: r.content,
+                createdAt:
+                  r.createdAt instanceof Date
+                    ? r.createdAt.toISOString()
+                    : r.createdAt,
+                chapterId: r.chapterId,
+                bookId: r.bookId ?? undefined,
+                parentId: r.parentId ?? undefined,
+                author: r.author
+                  ? { id: r.author.id, name: r.author.name }
+                  : { id: '', name: '' },
+                replies: [],
+              })) ?? [],
+          })) ?? [],
     };
   } catch (error) {
     console.error('Error fetching chapter by id:', error);
