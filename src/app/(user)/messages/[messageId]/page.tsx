@@ -1,53 +1,19 @@
+import { getMessageById } from '@/lib/actions/message.actions';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-const mockMessages = [
-  {
-    id: 1,
-    type: 'Friend Request',
-    message: 'Your friend request to Maya Honeywell was approved!',
-    date: '2025-08-05',
-    read: false,
-  },
-  {
-    id: 2,
-    type: 'Comment',
-    message: 'Buzz Aldrin commented on your chapter: "Loved the twist!"',
-    date: '2025-08-04',
-    read: true,
-  },
-  {
-    id: 3,
-    type: 'Comment',
-    message: 'Beatrice Wood commented: "Great writing as always!"',
-    date: '2025-08-03',
-    read: false,
-  },
-  {
-    id: 4,
-    type: 'Friend Request',
-    message: 'Winston Hive accepted your friend request.',
-    date: '2025-08-02',
-    read: true,
-  },
-  {
-    id: 5,
-    type: 'Comment',
-    message: 'Sunny Fields commented: "Can’t wait for the next chapter!"',
-    date: '2025-08-01',
-    read: false,
-  },
-];
-
-export default function MessagePage() {
-  const messageId = 1;
-  const message =
-    mockMessages.find((m) => m.id === messageId) || mockMessages[0];
+export default async function MessagePage({
+  params,
+}: {
+  params: Promise<{ messageId: string }>;
+}) {
+  const { messageId } = await params;
+  const message = await getMessageById(messageId);
 
   return (
     <div className="mx-auto max-w-5xl px-2">
       <div className="darkContainer ">
-        <div className="whiteContainer p-6 md:p-10">
+        <div className="lightContainer p-6 md:p-10">
           <div className="mb-6 flex items-center gap-2">
             <Link
               href="/messages"

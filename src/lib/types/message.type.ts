@@ -4,4 +4,5 @@ export type NotificationType = {
   message: string;
   date: string;
   read: boolean;
+  sender?: string;
 };

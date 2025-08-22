@@ -19,23 +19,25 @@ export default function MessagesTable({
   const totalPages = Math.ceil(messages.length / PAGE_SIZE);
   const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  function handleDelete(id: number) {
-    setMessages(messages.filter((msg) => msg.id !== id.toString()));
-  }
+  // function handleView(id: number) {
+  //   router.push(`/messages/${id}`);
+  //   setMessages(
+  //     messages.map((msg) =>
+  //       Number(msg.id) === id ? { ...msg, read: true } : msg
+  //     )
+  //   );
+  // }
 
-  function handleView(id: number) {
+  function handleView(id: string) {
     router.push(`/messages/${id}`);
     setMessages(
-      messages.map((msg) =>
-        Number(msg.id) === id ? { ...msg, read: true } : msg
-      )
+      messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
     );
   }
-
-  async function handleRowClick(id: number) {
-    router.push(`/messages/${id}`);
-    await markMessageAsRead(id.toString());
-  }
+  // async function handleRowClick(id: number) {
+  //   router.push(`/messages/${id}`);
+  //   await markMessageAsRead(id.toString());
+  // }
 
   return (
     <div>
@@ -43,6 +45,7 @@ export default function MessagesTable({
         <div className="min-w-[600px]">
           <div className="flex bg-yellow-100 font-bold text-yellow-900 rounded-t-lg border-b-2 border-yellow-200">
             <div className="w-32 px-4 py-3">Type</div>
+            <div className="w-32 px-4 py-3">From</div>
             <div className="flex-1 px-4 py-3">Message</div>
             <div className="w-32 px-4 py-3">Date</div>
             <div className="w-32 px-4 py-3 text-center"></div>
@@ -59,23 +62,17 @@ export default function MessagesTable({
                 className={`flex items-center border-b border-yellow-100 transition cursor-pointer ${
                   msg.read
                     ? 'bg-white'
-                    : 'bg-yellow-200 font-bold border-l-8 border-yellow-400'
+                    : 'bg-yellow-100 font-bold border-l-8 border-yellow-400'
                 } hover:bg-yellow-200 focus-within:bg-yellow-200`}
                 tabIndex={0}
-                onClick={(e) => {
-                  if ((e.target as HTMLElement).closest('.actions-cell'))
-                    return;
-                  handleRowClick(Number(msg.id));
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ')
-                    handleRowClick(Number(msg.id));
-                }}
               >
                 <div className="w-32 px-4 py-3 font-medium text-yellow-700">
-                  {msg.type}
+                  {msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
                 </div>
-                <div className="flex-1 px-4 py-3">{msg.message}</div>
+                <div className="w-32 px-4 py-3 text-yellow-700">
+                  {msg.sender || 'Unknown'}
+                </div>
+                <div className="flex-1 px-4 py-3 truncate">{msg.message}</div>
                 <div className="w-32 px-4 py-3">
                   {new Date(msg.date).toLocaleDateString(undefined, {
                     month: '2-digit',
@@ -92,7 +89,7 @@ export default function MessagesTable({
                     aria-label="View"
                     onClick={async () => {
                       await markMessageAsRead(msg.id);
-                      handleView(Number(msg.id));
+                      handleView(msg.id);
                     }}
                   >
                     View
