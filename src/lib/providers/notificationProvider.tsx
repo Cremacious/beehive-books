@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useNotificationStore } from '@/store/notifications.store';
 import { getPendingFriendRequests } from '../actions/friend.actions';
 import { FriendRequestType } from '@/lib/types/friend.type';
+import { getUserMessages } from '@/lib/actions/message.actions';
 
 export default function NotificationInitializer({
   initialFriendRequests = [],

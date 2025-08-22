@@ -19,15 +19,12 @@ export default function MessagesTable({
   const totalPages = Math.ceil(messages.length / PAGE_SIZE);
   const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
- 
-
   function handleView(id: string) {
     router.push(`/messages/${id}`);
     setMessages(
       messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
     );
   }
-
 
   return (
     <div>
@@ -57,12 +54,21 @@ export default function MessagesTable({
                 tabIndex={0}
               >
                 <div className="w-32 px-4 py-3 font-medium text-yellow-700">
-                  {msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                  {msg.type === 'friend_request'
+                    ? 'Friend Request'
+                    : msg.type === 'comment'
+                    ? 'Comment'
+                    : msg.type}
                 </div>
                 <div className="w-32 px-4 py-3 text-yellow-700">
                   {msg.sender || 'Unknown'}
                 </div>
-                <div className="flex-1 px-4 py-3 truncate">{msg.message}</div>
+                <div className="flex-1 px-4 py-3 truncate">
+                  {' '}
+                  {msg.type === 'friend_request'
+                    ? 'New friend request'
+                    : msg.message}
+                </div>
                 <div className="w-32 px-4 py-3">
                   {new Date(msg.date).toLocaleDateString(undefined, {
                     month: '2-digit',
