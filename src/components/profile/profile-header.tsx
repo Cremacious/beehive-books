@@ -13,7 +13,7 @@ export default async function ProfileHeader({ user }: { user: UserType }) {
   const isCurrentUser = currentUser?.user?.id !== user.id;
 
   const friendshipStatus = await checkFriendshipStatus(user.id);
-  console.log('Friendship Status:', friendshipStatus);
+
 
   const isLoggedInUser = !currentUser.error;
 

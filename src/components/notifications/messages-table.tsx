@@ -19,14 +19,7 @@ export default function MessagesTable({
   const totalPages = Math.ceil(messages.length / PAGE_SIZE);
   const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // function handleView(id: number) {
-  //   router.push(`/messages/${id}`);
-  //   setMessages(
-  //     messages.map((msg) =>
-  //       Number(msg.id) === id ? { ...msg, read: true } : msg
-  //     )
-  //   );
-  // }
+ 
 
   function handleView(id: string) {
     router.push(`/messages/${id}`);
@@ -34,10 +27,7 @@ export default function MessagesTable({
       messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
     );
   }
-  // async function handleRowClick(id: number) {
-  //   router.push(`/messages/${id}`);
-  //   await markMessageAsRead(id.toString());
-  // }
+
 
   return (
     <div>

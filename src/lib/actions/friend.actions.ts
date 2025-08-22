@@ -6,7 +6,6 @@ import { getAuthenticatedUser } from '../server-utils';
 export async function getUserFriends() {
   try {
     const { user, error } = await getAuthenticatedUser();
-    console.log('Fetching user friends for:', user?.id);
     if (error) throw new Error(error);
     if (!user) throw new Error('User not found');
 
@@ -113,11 +112,8 @@ export async function getPendingFriendRequests() {
       orderBy: { createdAt: 'desc' },
     });
 
-    console.log('Fetched Friend Requests:', requests);
-
     if (!requests || requests.length === 0) return [];
 
-   
     return requests.map((r) => ({
       id: r.id,
       sender: r.user?.name ?? '',
@@ -160,13 +156,29 @@ export async function sendFriendRequest(friendId: string) {
       if (existing.status === 'ACCEPTED')
         throw new Error('You are already friends');
     }
-    await prisma.friendship.create({
+    const friendship = await prisma.friendship.create({
       data: {
         userId: user.id,
         friendId,
         status: 'PENDING',
       },
     });
+
+    const notification = await prisma.notification.create({
+      data: {
+        userId: friendId,
+        type: 'friend_request',
+        data: {
+          friendshipId: friendship.id,
+          requesterId: user.id,
+          requesterName: user.name,
+          requesterImage: user.image,
+        },
+        isRead: false,
+      },
+    });
+    console.log('Created Notification:', notification);
+
     return { success: true, message: 'Friend request sent successfully' };
   } catch (error) {
     console.error('Error sending friend request:', error);
