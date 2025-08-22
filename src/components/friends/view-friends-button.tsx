@@ -26,10 +26,10 @@ export default function ViewFriendRequestsButton({
 }: {
   pendingFriendRequests: FriendRequestType[];
 }) {
-  const pendingCount = useNotificationStore((s) =>
-    s.pendingFriendRequestsCount()
-  );
-  // const friendRequests = useNotificationStore((s) => s.friendRequests);
+  const pendingCount =
+    useNotificationStore((s) => s.pendingFriendRequestsCount()) ||
+    pendingFriendRequests.filter((r) => r.status === 'PENDING').length;
+
   const setFriendRequests = useNotificationStore((s) => s.setFriendRequests);
 
   const [requests, setRequests] = useState<FriendRequestType[]>(
