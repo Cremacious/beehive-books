@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { NotificationType } from '@/lib/types/message.type';
 import { Button } from '../ui/button';
-import { Eye, Trash2 } from 'lucide-react';
 import { markMessageAsRead } from '@/lib/actions/message.actions';
 
 export default function MessagesTable({
@@ -46,7 +45,7 @@ export default function MessagesTable({
             <div className="w-32 px-4 py-3">Type</div>
             <div className="flex-1 px-4 py-3">Message</div>
             <div className="w-32 px-4 py-3">Date</div>
-            <div className="w-32 px-4 py-3 text-right">Actions</div>
+            <div className="w-32 px-4 py-3 text-center"></div>
           </div>
 
           {paginated.length === 0 ? (
@@ -60,7 +59,7 @@ export default function MessagesTable({
                 className={`flex items-center border-b border-yellow-100 transition cursor-pointer ${
                   msg.read
                     ? 'bg-white'
-                    : 'bg-yellow-50 font-bold border-l-4 border-yellow-400'
+                    : 'bg-yellow-200 font-bold border-l-8 border-yellow-400'
                 } hover:bg-yellow-200 focus-within:bg-yellow-200`}
                 tabIndex={0}
                 onClick={(e) => {
@@ -77,31 +76,27 @@ export default function MessagesTable({
                   {msg.type}
                 </div>
                 <div className="flex-1 px-4 py-3">{msg.message}</div>
-                <div className="w-32 px-4 py-3">{msg.date}</div>
+                <div className="w-32 px-4 py-3">
+                  {new Date(msg.date).toLocaleDateString(undefined, {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: '2-digit',
+                  })}
+                </div>
                 <div
                   className="w-32 px-4 py-3 text-right flex gap-2 actions-cell"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Button
-                    size="icon"
-                    variant="ghost"
+                    size={'sm'}
                     aria-label="View"
                     onClick={async () => {
                       await markMessageAsRead(msg.id);
                       handleView(Number(msg.id));
                     }}
                   >
-                    <Eye className="w-5 h-5 text-yellow-600" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Delete"
-                    onClick={() => handleDelete(Number(msg.id))}
-                  >
-                    <Trash2 className="w-5 h-5 text-red-500" />
-                  </Button>
-                  {!msg.read && <div>UNREAD</div>}
+                    View
+                  </Button>{' '}
                 </div>
               </div>
             ))
