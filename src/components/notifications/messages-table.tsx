@@ -25,6 +25,7 @@ export default function MessagesTable({
   }
 
   function handleView(id: number) {
+    router.push(`/messages/${id}`);
     setMessages(
       messages.map((msg) =>
         Number(msg.id) === id ? { ...msg, read: true } : msg
@@ -32,8 +33,9 @@ export default function MessagesTable({
     );
   }
 
-  function handleRowClick(id: number) {
+  async function handleRowClick(id: number) {
     router.push(`/messages/${id}`);
+    await markMessageAsRead(id.toString());
   }
 
   return (
@@ -99,12 +101,7 @@ export default function MessagesTable({
                   >
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </Button>
-                  {!msg.read && (
-                    <span
-                      className="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"
-                      title="Unread"
-                    />
-                  )}
+                  {!msg.read && <div>UNREAD</div>}
                 </div>
               </div>
             ))
