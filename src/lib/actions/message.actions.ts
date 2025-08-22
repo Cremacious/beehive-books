@@ -13,8 +13,12 @@ export async function getUserMessages() {
     id: n.id,
     type: n.type,
     sender:
-      typeof n.data === 'object' && n.data !== null && 'commenterName' in n.data
-        ? (n.data as { commenterName?: string }).commenterName || 'Unknown'
+      typeof n.data === 'object' && n.data !== null
+        ? 'commenterName' in n.data
+          ? (n.data as { commenterName?: string }).commenterName || 'Unknown'
+          : 'requesterName' in n.data
+          ? (n.data as { requesterName?: string }).requesterName || 'Unknown'
+          : 'Unknown'
         : 'Unknown',
     message:
       typeof n.data === 'object' && n.data !== null && 'content' in n.data
