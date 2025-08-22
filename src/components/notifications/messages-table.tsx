@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { NotificationType } from '@/lib/types/message.type';
 import { Button } from '../ui/button';
 import { markMessageAsRead } from '@/lib/actions/message.actions';
+import { useNotificationStore } from '@/store/notifications.store';
 
 export default function MessagesTable({
   userMessages,
@@ -19,8 +20,11 @@ export default function MessagesTable({
   const totalPages = Math.ceil(messages.length / PAGE_SIZE);
   const paginated = messages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  const markAsRead = useNotificationStore((s) => s.markAsRead);
+
   function handleView(id: string) {
     router.push(`/messages/${id}`);
+    markAsRead(id);
     setMessages(
       messages.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
     );

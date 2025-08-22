@@ -38,7 +38,6 @@ export default function AuthButtons() {
     setImageSrc(session?.user?.image ?? null);
   }, [session?.user?.image]);
 
-
   useEffect(() => {
     const handler = (ev: Event) => {
       try {

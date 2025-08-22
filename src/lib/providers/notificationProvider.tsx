@@ -22,6 +22,9 @@ export default function NotificationInitializer({
     const fetchFriendRequests = async () => {
       const friendRequests = await getPendingFriendRequests();
       setFriendRequests(friendRequests.length > 0 ? friendRequests : []);
+      const messages = await getUserMessages();
+      const unreadMessages = messages.filter((msg) => !msg.read);
+      setNotifications(unreadMessages.length > 0 ? unreadMessages : []);
     };
     fetchFriendRequests();
   }, [setNotifications, setFriendRequests]);
