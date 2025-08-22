@@ -1,12 +1,13 @@
 import beeMailbox from '@/assets/site/mailbox.png';
 import Image from 'next/image';
 import MessagesTable from '@/components/notifications/messages-table';
-import { mockUser } from '@/lib/sampleData';
+// import { mockUser } from '@/lib/sampleData';
+import { getUserMessages } from '@/lib/actions/message.actions';
 
+export default async function MessagesPage() {
+  // const messages = mockUser.notifications
+  const messages = await getUserMessages();
 
-export default function MessagesPage() {
-
-  const messages = mockUser.notifications
   return (
     <div className="mx-auto max-w-5xl px-2">
       <div className="darkContainer ">

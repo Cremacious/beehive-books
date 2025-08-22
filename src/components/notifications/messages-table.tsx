@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { NotificationType } from '@/lib/types/message.type';
 import { Button } from '../ui/button';
 import { Eye, Trash2 } from 'lucide-react';
+import { markMessageAsRead } from '@/lib/actions/message.actions';
 
 export default function MessagesTable({
   userMessages,
@@ -55,7 +56,9 @@ export default function MessagesTable({
               <div
                 key={msg.id}
                 className={`flex items-center border-b border-yellow-100 transition cursor-pointer ${
-                  msg.read ? 'bg-white' : 'bg-yellow-50'
+                  msg.read
+                    ? 'bg-white'
+                    : 'bg-yellow-50 font-bold border-l-4 border-yellow-400'
                 } hover:bg-yellow-200 focus-within:bg-yellow-200`}
                 tabIndex={0}
                 onClick={(e) => {
@@ -81,7 +84,10 @@ export default function MessagesTable({
                     size="icon"
                     variant="ghost"
                     aria-label="View"
-                    onClick={() => handleView(Number(msg.id))}
+                    onClick={async () => {
+                      await markMessageAsRead(msg.id);
+                      handleView(Number(msg.id));
+                    }}
                   >
                     <Eye className="w-5 h-5 text-yellow-600" />
                   </Button>
@@ -93,6 +99,12 @@ export default function MessagesTable({
                   >
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </Button>
+                  {!msg.read && (
+                    <span
+                      className="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"
+                      title="Unread"
+                    />
+                  )}
                 </div>
               </div>
             ))

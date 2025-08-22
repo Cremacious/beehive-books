@@ -1,4 +1,3 @@
-// ...existing code...
 'use server';
 import prisma from '../prisma';
 import { getAuthenticatedUser } from '../server-utils';
@@ -14,7 +13,6 @@ export async function createComment({
     const { user } = await getAuthenticatedUser();
     if (!user) throw new Error('User not found');
 
-    // create and include author so we can return a complete comment object
     const created = await prisma.comment.create({
       data: {
         chapterId: Number(chapterId),
@@ -23,6 +21,27 @@ export async function createComment({
       },
       include: { author: { select: { id: true, name: true, image: true } } },
     });
+
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: Number(chapterId) },
+      include: { book: true },
+    });
+    if (chapter && user.id !== chapter.author) {
+      await prisma.notification.create({
+        data: {
+          userId: chapter.author,
+          type: 'comment',
+          data: {
+            commentId: created.id,
+            chapterId: created.chapterId,
+            content: created.content,
+            commenterId: user.id,
+            commenterName: user.name,
+          },
+          isRead: false,
+        },
+      });
+    }
 
     return {
       success: true,
