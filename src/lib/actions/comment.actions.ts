@@ -37,6 +37,8 @@ export async function createComment({
             content: created.content,
             commenterId: user.id,
             commenterName: user.name,
+            chapterTitle: chapter.title,
+            bookTitle: chapter.book.title,
           },
           isRead: false,
         },

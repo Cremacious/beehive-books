@@ -27,6 +27,10 @@ export async function getUserMessages() {
     date: n.createdAt instanceof Date ? n.createdAt.toISOString() : n.createdAt,
     read: n.isRead,
     data: n.data,
+    chapterTitle:
+      typeof n.data === 'object' && n.data !== null && 'chapterTitle' in n.data
+        ? (n.data as { chapterTitle?: string }).chapterTitle || ''
+        : '',
   }));
 }
 
@@ -67,6 +71,18 @@ export async function getMessageById(id: string) {
           : message.createdAt,
       read: message.isRead,
       data: message.data,
+      chapterTitle:
+        typeof message.data === 'object' &&
+        message.data !== null &&
+        'chapterTitle' in message.data
+          ? (message.data as { chapterTitle?: string }).chapterTitle || ''
+          : '',
+      bookTitle:
+        typeof message.data === 'object' &&
+        message.data !== null &&
+        'bookTitle' in message.data
+          ? (message.data as { bookTitle?: string }).bookTitle || ''
+          : '',
     };
   } catch (error) {
     console.error('Error fetching message by ID:', error);

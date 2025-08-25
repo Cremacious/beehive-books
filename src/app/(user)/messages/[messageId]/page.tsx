@@ -56,7 +56,9 @@ export default async function MessagePage({
             </Link>
           </div>
           <div className="text-lg text-white mb-2">
-            {message.sender} says...
+            <span className="text-yellow-400">{message.sender}</span> commented
+            on <span className="text-yellow-400">{message.chapterTitle}</span>{' '}
+            in <span className="text-yellow-400">{message.bookTitle}</span>
           </div>
 
           <div className="mb-6 text-slate-700 text-lg bg-yellow-50 rounded-lg p-4 border border-yellow-100 shadow-sm">

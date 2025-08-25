@@ -5,4 +5,5 @@ export type NotificationType = {
   date: string;
   read: boolean;
   sender?: string;
+  chapterTitle?: string;
 };
