@@ -21,8 +21,6 @@ import { useEffect, useState } from 'react';
 export default function AuthButtons() {
   const router = useRouter();
 
-  // const notificationCount = useNotificationStore((s) => s.unreadCount());
-
   const notificationCount = useNotificationStore(
     (s) => s.unreadCount() + s.pendingFriendRequestsCount()
   );
@@ -141,7 +139,6 @@ export default function AuthButtons() {
               >
                 Settings
               </DropdownMenuItem>
-              {/* Sign Out */}
               <DropdownMenuItem
                 className="text-white hover:bg-yellow-400 hover:text-slate-800 text-lg"
                 onClick={handleSignOut}
