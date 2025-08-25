@@ -21,12 +21,13 @@ import { useNotificationStore } from '@/store/notifications.store';
 
 export function Sidebar() {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
 
   const unreadMessages = useNotificationStore((s) => s.unreadCount());
   const pendingFriendRequests = useNotificationStore((s) =>
     s.pendingFriendRequestsCount()
   );
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleButtonClick = (path: string) => {
     setIsOpen(!isOpen);
@@ -48,7 +49,7 @@ export function Sidebar() {
   }, [session?.user?.image]);
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <button className="bg-[#181818] text-yellow-300 font-bold rounded-xl border-b-4 border-t-2 border-r-2 border-l-2 border-b-yellow-500 border-t-yellow-400 border-r-yellow-400  border-l-yellow-400 hover:bg-[#121212] hover:border-b-yellow-500 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-0.5 p-1 hover:cursor-pointer caveatBrush text-xl">
           <Menu className="h-6 w-8" />
