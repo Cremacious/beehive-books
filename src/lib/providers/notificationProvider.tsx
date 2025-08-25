@@ -5,6 +5,7 @@ import { useNotificationStore } from '@/store/notifications.store';
 import { getPendingFriendRequests } from '../actions/friend.actions';
 import { FriendRequestType } from '@/lib/types/friend.type';
 import { getUserMessages } from '@/lib/actions/message.actions';
+import { usePathname } from 'next/navigation';
 
 export default function NotificationInitializer({
   initialFriendRequests = [],
@@ -13,6 +14,7 @@ export default function NotificationInitializer({
 }) {
   const setNotifications = useNotificationStore((s) => s.setNotifications);
   const setFriendRequests = useNotificationStore((s) => s.setFriendRequests);
+  const pathname = usePathname();
 
   useEffect(() => {
     setFriendRequests(initialFriendRequests);
@@ -27,7 +29,7 @@ export default function NotificationInitializer({
       setNotifications(unreadMessages.length > 0 ? unreadMessages : []);
     };
     fetchFriendRequests();
-  }, [setNotifications, setFriendRequests]);
+  }, [setNotifications, setFriendRequests, pathname]);
 
   return null;
 }
