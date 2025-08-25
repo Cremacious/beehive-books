@@ -21,7 +21,15 @@ import { useEffect, useState } from 'react';
 export default function AuthButtons() {
   const router = useRouter();
 
-  const notificationCount = useNotificationStore((s) => s.unreadCount());
+  // const notificationCount = useNotificationStore((s) => s.unreadCount());
+
+  const notificationCount = useNotificationStore(
+    (s) => s.unreadCount() + s.pendingFriendRequestsCount()
+  );
+  const unreadMessages = useNotificationStore((s) => s.unreadCount());
+  const pendingFriendRequests = useNotificationStore((s) =>
+    s.pendingFriendRequestsCount()
+  );
 
   const { data: session, isPending } = useSession();
 
@@ -102,6 +110,24 @@ export default function AuthButtons() {
                 My Account
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-yellow-400" />
+              <DropdownMenuItem
+                className="text-white hover:bg-yellow-400 hover:text-slate-800 text-lg"
+                onClick={() => router.push(`/messages`)}
+              >
+                Unread Messages{' '}
+                <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900">
+                  {unreadMessages}
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-white hover:bg-yellow-400 hover:text-slate-800 text-lg"
+                onClick={() => router.push(`/friends`)}
+              >
+                Friend Requests
+                <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900">
+                  {pendingFriendRequests}
+                </span>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-white hover:bg-yellow-400 hover:text-slate-800 text-lg"
                 onClick={() => router.push(`/profile/${session?.user?.id}`)}
