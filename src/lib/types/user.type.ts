@@ -6,3 +6,4 @@ export type UserType = {
   bio?: string;
   id: string;
 };
+
