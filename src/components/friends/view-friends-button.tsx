@@ -86,7 +86,8 @@ export default function ViewFriendRequestsButton({
                       </span>
                       <Button
                         size="sm"
-                        className="ml-auto"
+                        variant="acceptFriend"
+                        className="ml-auto "
                         onClick={() => handleAccept(request.id)}
                       >
                         Accept

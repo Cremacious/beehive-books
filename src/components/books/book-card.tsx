@@ -1,9 +1,9 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -47,22 +47,22 @@ export default function BookCard({
 
       <div className="flex gap-2 w-full justify-between items-center mt-auto">
         {editable && (
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant={'secondary'}>Options</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild>
-                <Link href={`/books/${book.id}`}>View</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/books/${book.id}/share`}> Share</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button asChild variant={'secondary'} className="flex-1">
+            <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
+          </Button>
+          // <DropdownMenu>
+          //   <DropdownMenuTrigger>
+          //     <Button variant={'secondary'}>Options</Button>
+          //   </DropdownMenuTrigger>
+          //   <DropdownMenuContent>
+          //     <DropdownMenuItem asChild>
+          //       <Link href={`/books/${book.id}`}>View</Link>
+          //     </DropdownMenuItem>
+          //     <DropdownMenuItem asChild>
+          //       <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
+          //     </DropdownMenuItem>
+          //   </DropdownMenuContent>
+          // </DropdownMenu>
         )}
 
         <Button asChild className="flex-1">

@@ -60,7 +60,7 @@ export default function FriendRequestByEmail() {
               <FormControl>
                 <Input
                   className="rounded-lg px-4 py-2 border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white text-slate-800 shadow-sm transition w-full"
-                  placeholder=""
+                  placeholder="Enter friend's email..."
                   type="email"
                   {...field}
                 />

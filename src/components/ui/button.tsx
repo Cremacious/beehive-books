@@ -24,6 +24,8 @@ const buttonVariants = cva(
           'bg-white text-slate-800 shadow-md border-2 border-yellow-200 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer',
         darkMode:
           'bg-[#202020] text-white border-2 border-yellow-200  shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer',
+        acceptFriend:
+          'bg-yellow-400 text-slate-800 shadow-xs hover:bg-yellow-500  focus-visible:ring-destructive/20 ',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

@@ -110,12 +110,11 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
               {friend.name}
             </div>
             <div className="flex flex-row gap-8 mt-4">
-              <Button size={'sm'}> Books</Button>
               <Button
                 onClick={() => router.push(`/profile/${friend.id}`)}
                 size={'sm'}
               >
-                Profile
+                View Profile
               </Button>
             </div>
           </div>

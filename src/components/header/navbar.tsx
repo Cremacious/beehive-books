@@ -1,21 +1,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import AuthButtons from './auth-buttons';
-import hiveIcon from '@/assets/hive-icon3.png';
+import hiveIcon from '@/assets/hive-icon4.png';
 import { Sidebar } from './sidebar';
 import { ROUTES } from '@/lib/constants';
 
 export default async function Navbar() {
- 
-
   return (
-    <nav className="w-full px-6 py-4 customDark  shadow-lg">
+    <nav className="w-full px-6 py-2 customDark  shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center ">
           <Image
             src={hiveIcon}
             alt="Beehive Books"
-            className="h-10 w-10 mr-2"
+            className="h-12 w-12 mr-2 mb-1"
           />
           <Link
             href="/"
