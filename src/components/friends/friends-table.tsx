@@ -5,13 +5,11 @@ import { FriendType } from '@/lib/types/friend.type';
 import defaultProfileImage from '../../assets/stock/stockProfile.png';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import FriendRequestByEmail from './request-by-email';
 
 export default function FriendsTable({ friends }: { friends: FriendType[] }) {
   const router = useRouter();
-  const [searchEmail, setSearchEmail] = useState('');
-  const [friendRequests, setFriendRequests] = useState<
-    { id: number; email: string }[]
-  >([]);
+
   const [filterName, setFilterName] = useState('');
   const [sortAlpha, setSortAlpha] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +37,7 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
         <div className="flex flex-col md:flex-row items-stretch gap-6 w-full">
           <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-2">
             <div className="flex flex-col w-full">
-              <label className="text-sm font-semibold text-yellow-700 mb-1">
+              <label className="text-lg font-semibold text-yellow-400 mb-2">
                 Search by Name
               </label>
               <input
@@ -65,32 +63,7 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <label className="text-sm font-semibold text-yellow-700 mb-1">
-              Find Friends by Email
-            </label>
-            <div className="flex flex-col md:flex-row gap-2 w-full">
-              <input
-                type="email"
-                placeholder="Enter email address..."
-                value={searchEmail}
-                onChange={(e) => setSearchEmail(e.target.value)}
-                className="rounded-lg px-4 py-2 border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white text-slate-800 shadow-sm transition w-full"
-              />
-              <Button
-                className="w-full ml-2 md:w-auto mt-2 md:mt-1"
-                onClick={() => {
-                  if (searchEmail) {
-                    setFriendRequests([
-                      ...friendRequests,
-                      { id: Date.now(), email: searchEmail },
-                    ]);
-                    setSearchEmail('');
-                  }
-                }}
-              >
-                Send Request
-              </Button>
-            </div>
+            <FriendRequestByEmail />
           </div>
         </div>
       </div>

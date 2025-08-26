@@ -186,6 +186,29 @@ export async function sendFriendRequest(friendId: string) {
   }
 }
 
+export async function sendFriendRequestByEmail(email: string) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+    if (user.email === email) {
+      throw new Error('Cannot send friend request to yourself');
+    }
+
+    const friend = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!friend) {
+      throw new Error('No user found with that email');
+    }
+
+    return await sendFriendRequest(friend.id);
+  } catch (error) {
+    console.error('Error sending friend request by email:', error);
+    throw new Error('Failed to send friend request by email');
+  }
+}
+
 export async function acceptFriendRequest(requestId: string) {
   try {
     const { user, error } = await getAuthenticatedUser();
