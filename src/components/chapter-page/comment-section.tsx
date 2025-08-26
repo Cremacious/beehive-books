@@ -34,14 +34,12 @@ export default function CommentSection({
     resolver: zodResolver(formSchema),
   });
 
-
   const [localComments, setLocalComments] = useState<CommentType[]>(
     () => comments ?? []
   );
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
       const response = await createComment({
         chapterId,
         content: values.content,
@@ -49,10 +47,7 @@ export default function CommentSection({
       if (response.success) {
         toast.success('Comment created');
         form.reset();
-        setLocalComments((prev) => [
-          ...prev,
-          response.comment as CommentType,
-        ]);
+        setLocalComments((prev) => [...prev, response.comment as CommentType]);
       } else {
         toast.error(response.message || 'Failed to create comment');
       }
@@ -71,7 +66,10 @@ export default function CommentSection({
           </h2>
           <div className="space-y-4 mb-6">
             {localComments.length === 0 ? (
-              <div>No comments yet</div>
+              <div className="bg-yellow-100 rounded-2xl p-4 flex flex-col justify-center items-center h-[300px]">
+                <div className="text-lg font-bold">No comments yet</div>
+                <div>Psssst. You should be the first.</div>
+              </div>
             ) : (
               localComments.map((comment) => (
                 <ChapterComment key={comment.id} comment={comment} />
@@ -88,7 +86,9 @@ export default function CommentSection({
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Comment</FormLabel>
+                    <FormLabel className="text-lg text-yellow-400">
+                      Leave a comment
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder=""

@@ -43,7 +43,7 @@ export default async function BookPage({
               {chapters.length > 0 && (
                 <Button asChild>
                   <Link href={`/books/${book.id}/chapters/create`}>
-                    New ChapterX
+                    New Chapter
                   </Link>
                 </Button>
               )}

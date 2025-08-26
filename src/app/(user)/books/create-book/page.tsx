@@ -1,9 +1,20 @@
 import CreateBookForm from '@/components/forms/create-book-form';
+import { Button } from '@/components/ui/button';
+import { MoveLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CreateBookPage({}) {
   return (
     <div className="min-h-screen flex flex-col justify-center">
       <div className="max-w-5xl mx-auto p-2">
+        <div className="mb-4">
+          <Button variant={'secondary'} asChild>
+            <Link href="/books">
+              <MoveLeft className="mr-2" />
+              Back to Bookshelf
+            </Link>
+          </Button>
+        </div>
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">

@@ -1,4 +1,7 @@
 import CreateChapterForm from '@/components/forms/create-chapter-form';
+import { Button } from '@/components/ui/button';
+import { MoveLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function CreateChapterPage({
   params,
@@ -10,6 +13,14 @@ export default async function CreateChapterPage({
   return (
     <div className="min-h-screen flex flex-col justify-center">
       <div className="max-w-7xl mx-auto p-2">
+        <div className="mb-4">
+          <Button variant={'secondary'} asChild>
+            <Link href={`/books/${bookId}`}>
+              <MoveLeft className="mr-2" />
+              Back to Book
+            </Link>
+          </Button>
+        </div>
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-4 md:mb-4 px-2 md:px-6 pt-2">
