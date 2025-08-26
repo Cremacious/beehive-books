@@ -125,3 +125,10 @@ export async function createCommentReply({
     };
   }
 }
+
+export async function getUserCommentCount(userId: string) {
+  const count = await prisma.comment.count({
+    where: { authorId: userId },
+  });
+  return count;
+}

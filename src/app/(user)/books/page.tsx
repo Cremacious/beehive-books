@@ -1,5 +1,5 @@
 import BooksStats from '@/components/books/books-stats';
-import { mockUser } from '@/lib/sampleData';
+// import { mockUser } from '@/lib/sampleData';
 import beeBookshelf from '@/assets/site/beeBookshelf.png';
 import Image from 'next/image';
 import BookShelf from '@/components/books/bookshelf';
@@ -14,13 +14,9 @@ export default async function BooksPage() {
 
   const books = await getUserBooksById(user.id);
 
-  const userBooks = mockUser.books;
-
-  const totalBooks = userBooks.length;
-  const totalChapters = userBooks.reduce(
-    (acc, b) => acc + b.chapters.length,
-    0
-  );
+  const totalBooks = books.length;
+  const totalChapters = books.reduce((acc, b) => acc + b.chapters.length, 0);
+  // const totalComments = await getUserCommentCount(user.id);
 
   return (
     <div className="max-w-7xl mx-auto px-2">
@@ -44,12 +40,7 @@ export default async function BooksPage() {
                 Share, create, and grow together!
               </p>
             </div>
-            <BooksStats
-              totalBooks={totalBooks}
-              totalChapters={totalChapters}
-              totalComments={10}
-              totalFriendsBooks={5}
-            />
+            <BooksStats totalBooks={totalBooks} totalChapters={totalChapters} />
           </div>
         </div>
 

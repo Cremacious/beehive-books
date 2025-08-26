@@ -3,13 +3,11 @@ import CreateBookButton from '../buttons/create-book-button';
 export default function BooksStats({
   totalBooks,
   totalChapters,
-  totalComments,
-  totalFriendsBooks,
+
 }: {
   totalBooks: number;
   totalChapters: number;
-  totalComments: number;
-  totalFriendsBooks: number;
+
 }) {
   return (
     <div className=" lightContainer flex flex-col justify-between">
@@ -27,7 +25,7 @@ export default function BooksStats({
           <div className="text-yellow-800 font-bold">Chapters</div>
         </div>
 
-        <div className="text-center yellowAccent">
+        {/* <div className="text-center yellowAccent">
           <div className="text-2xl font-bold text-yellow-800 ">
             {totalComments}
           </div>
@@ -39,7 +37,7 @@ export default function BooksStats({
             {totalFriendsBooks}
           </div>
           <div className="text-yellow-800 font-bold">Friends Books</div>
-        </div>
+        </div> */}
       </div>
       <div className="flex justify-center my-4 w-full">
         <CreateBookButton full={true} />
