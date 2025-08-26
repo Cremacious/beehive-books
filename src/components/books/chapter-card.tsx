@@ -6,12 +6,12 @@ import { getChapterWordCount, slateContentToPlainText } from '@/lib/utils';
 
 export default function ChapterCard({
   chapter,
-  // index,
+  isAuthor,
   bookId,
 }: {
   chapter: ChapterType;
-  index: number;
   bookId: string;
+  isAuthor: boolean;
 }) {
   return (
     <div className="bg-yellow-50  border-b-4 border-b-yellow-400 border-yellow-200 rounded-2xl p-6 hover:shadow-lg transition-all hover:border-yellow-400 group">
@@ -34,7 +34,6 @@ export default function ChapterCard({
           <div className="flex flex-wrap gap-4 text-sm text-slate-800 ">
             <span> {getChapterWordCount(chapter).toLocaleString()} words</span>
             <span>{chapter.comments?.length ?? 0} comments</span>
-            {/* <span>Updated {chapter.updatedAt}</span> */}
           </div>
         </div>
 
@@ -42,11 +41,15 @@ export default function ChapterCard({
           <Button asChild>
             <Link href={`/books/${bookId}/chapters/${chapter.id}`}>Read</Link>
           </Button>
-          <Button asChild variant={'secondary'}>
-            <Link href={`/books/${bookId}/chapters/edit-chapter/${chapter.id}`}>
-              Edit
-            </Link>
-          </Button>
+          {isAuthor && (
+            <Button asChild variant={'secondary'}>
+              <Link
+                href={`/books/${bookId}/chapters/edit-chapter/${chapter.id}`}
+              >
+                Edit
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import DeleteDialog from '@/components/delete-dialog';
 import EditBookForm from '@/components/forms/edit-book-form';
 import { Button } from '@/components/ui/button';
 import { getBookById } from '@/lib/actions/book.actions';
@@ -29,6 +30,9 @@ export default async function EditBookPage({
         </div>
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
+            <div className="flex justify-end">
+              <DeleteDialog deleteId={book.id.toString()} type={'book'} />
+            </div>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-6 pt-6">
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl md:text-4xl font-bold text-yellow-400 playWright drop-shadow-sm mb-1 text-center">
@@ -40,6 +44,7 @@ export default async function EditBookPage({
                 </p>
               </div>
             </div>
+
             {/* Divider */}
             <div className="border-b-2 border-yellow-200 mb-8" />
             <div className="md:p-6">

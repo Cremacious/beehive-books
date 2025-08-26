@@ -11,7 +11,13 @@ import Link from 'next/link';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 import { BookType } from '@/lib/types/books.type';
 
-export default function BookCard({ book }: { book: BookType }) {
+export default function BookCard({
+  book,
+  editable,
+}: {
+  book: BookType;
+  editable: boolean;
+}) {
   return (
     <div className="customDark2 hoverAnimate2 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative h-[400px]">
       <div className="flex flex-col items-center flex-1 justify-between">
@@ -40,22 +46,25 @@ export default function BookCard({ book }: { book: BookType }) {
       </div>
 
       <div className="flex gap-2 w-full justify-between items-center mt-auto">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant={'secondary'}>Options</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <Link href={`/books/${book.id}`}>View</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/books/${book.id}/share`}> Share</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {editable && (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={'secondary'}>Options</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link href={`/books/${book.id}`}>View</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/books/edit-book/${book.id}`}>Edit</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/books/${book.id}/share`}> Share</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         <Button asChild className="flex-1">
           <Link href={`/books/${book.id}`}>Read</Link>
         </Button>

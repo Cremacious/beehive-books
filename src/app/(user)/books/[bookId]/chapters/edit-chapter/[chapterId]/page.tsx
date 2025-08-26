@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { getChapterById } from '@/lib/actions/book.actions';
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
+import DeleteDialog from '@/components/delete-dialog';
 
 export default async function EditChapterPage({
   params,
@@ -28,6 +29,9 @@ export default async function EditChapterPage({
         </div>
         <div className="darkContainer">
           <div className="lightContainer relative overflow-hidden">
+            <div className="flex justify-end">
+              <DeleteDialog deleteId={chapter.id.toString()} type={'chapter'} />
+            </div>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-4 md:mb-4 px-2 md:px-6 pt-2">
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl text-center md:text-4xl font-bold mb-4 text-yellow-400 font-playWright drop-shadow-sm">

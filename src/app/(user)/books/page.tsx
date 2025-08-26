@@ -16,7 +16,6 @@ export default async function BooksPage() {
 
   const totalBooks = books.length;
   const totalChapters = books.reduce((acc, b) => acc + b.chapters.length, 0);
-  // const totalComments = await getUserCommentCount(user.id);
 
   return (
     <div className="max-w-7xl mx-auto px-2">
@@ -45,7 +44,7 @@ export default async function BooksPage() {
         </div>
 
         <div className="darkContainer space-y-6">
-          <BookShelf books={books} owner={'Your'} />
+          <BookShelf editable={true} books={books} owner={'Your'} />
         </div>
 
         {/* <div className="darkContainer space-y-6">

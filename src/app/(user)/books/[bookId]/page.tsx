@@ -10,7 +10,6 @@ import { ChapterType } from '@/lib/types/books.type';
 import { notFound } from 'next/navigation';
 import { getBookWordCount } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import DeleteDialog from '@/components/delete-dialog';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 import { getAuthenticatedUser } from '@/lib/server-utils';
 
@@ -60,11 +59,6 @@ export default async function BookPage({
               </div>
             </div>
             <div className="flex-1">
-              <div className="flex justify-end ">
-                {isAuthor && (
-                  <DeleteDialog type="book" deleteId={book.id.toString()} />
-                )}
-              </div>
               <h1 className="text-5xl font-bold text-yellow-400 mb-3 poppins drop-shadow-sm text-center">
                 {book.title}
               </h1>
@@ -147,8 +141,8 @@ export default async function BookPage({
                   <ChapterCard
                     key={index}
                     chapter={chapter}
-                    index={index}
                     bookId={book.id.toString()}
+                    isAuthor={isAuthor}
                   />
                 ))
               ) : (

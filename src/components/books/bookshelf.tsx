@@ -1,13 +1,14 @@
 import { BookType } from '@/lib/types/books.type';
 import BookCard from './book-card';
-// import Image from 'next/image';
 
 export default function BookShelf({
   books,
   owner,
+  editable,
 }: {
   books: BookType[];
   owner: string;
+  editable: boolean;
 }) {
   return (
     <div className="lightContainer">
@@ -18,7 +19,9 @@ export default function BookShelf({
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6 bg-gradient-to-t from-yellow-200 via-yellow-100 to-yellow-200 px-2 py-6 md:p-6 rounded-xl">
         {books.length > 0 ? (
-          books.map((book) => <BookCard key={book.id} book={book} />)
+          books.map((book) => (
+            <BookCard editable={editable} key={book.id} book={book} />
+          ))
         ) : (
           <div className="col-span-full text-slate-800 text-center py-12 ">
             {/* <Image src={beeBookshelf} alt="Bee Bookshelf" width={200} height={200} /> */}

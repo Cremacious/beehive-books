@@ -3,7 +3,6 @@ import BookShelf from '@/components/books/bookshelf';
 import { getUserBooksById } from '@/lib/actions/book.actions';
 import { getDatabaseUserById } from '@/lib/actions/user.actions';
 
-
 export default async function ProfilePage({
   params,
 }: {
@@ -37,7 +36,11 @@ export default async function ProfilePage({
           }}
         />
         <div className="darkContainer">
-          <BookShelf books={userBooks} owner={`${profileUser.name}'s`} />
+          <BookShelf
+            editable={false}
+            books={userBooks}
+            owner={`${profileUser.name}'s`}
+          />
         </div>
       </div>
     </div>
