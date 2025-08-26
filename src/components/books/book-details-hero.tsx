@@ -3,11 +3,12 @@ import { Badge } from '../ui/badge';
 import { BookType } from '@/lib/types/books.type';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 import { getBookWordCount } from '@/lib/utils';
+import DeleteDialog from '../delete-dialog';
 
 export default function BookDetailsHero({ book }: { book: BookType }) {
   return (
     <div className="flex flex-col lg:flex-row gap-8 mb-4 lightContainer">
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-">
         <div className="relative flex justify-center mt-2">
           <Image
             src={
@@ -23,6 +24,9 @@ export default function BookDetailsHero({ book }: { book: BookType }) {
         </div>
       </div>
       <div className="flex-1">
+        <div className="flex justify-end ">
+          <DeleteDialog type='book' deleteId={book.id.toString()} />
+        </div>
         <h1 className="text-5xl font-bold text-yellow-400 mb-3 poppins drop-shadow-sm text-center">
           {book.title}
         </h1>

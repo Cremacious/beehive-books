@@ -11,7 +11,6 @@ import Link from 'next/link';
 import defaultCoverImage from '@/assets/stock/defaultBook.jpg';
 import { BookType } from '@/lib/types/books.type';
 
-
 export default function BookCard({ book }: { book: BookType }) {
   return (
     <div className="customDark2 hoverAnimate2 rounded-2xl shadow-lg p-5 flex flex-col items-center border-b-6 border-b-yellow-500 relative h-[400px]">
@@ -55,7 +54,6 @@ export default function BookCard({ book }: { book: BookType }) {
             <DropdownMenuItem asChild>
               <Link href={`/books/${book.id}/share`}> Share</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button asChild className="flex-1">

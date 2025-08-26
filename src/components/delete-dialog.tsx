@@ -21,7 +21,7 @@ export default function DeleteDialog({
   deleteId: string;
 }) {
   const router = useRouter();
-  
+
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
     switch (type) {
