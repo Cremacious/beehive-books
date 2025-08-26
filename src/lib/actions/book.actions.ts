@@ -696,7 +696,7 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
       wordCount: chapter.wordCount,
       comments:
         chapter.comments
-          ?.filter((c: any) => c.parentId == null) 
+          ?.filter((c: any) => c.parentId == null)
           .map((c: any) => ({
             id: c.id,
             authorId: c.authorId,
@@ -712,27 +712,83 @@ export async function getChapterById({ chapterId }: { chapterId: string }) {
             author: c.author
               ? { id: c.author.id, name: c.author.name, image: c.author.image }
               : { id: '', name: '' },
-           replies:
-  (c.replies ?? []).map((r: any) => ({
-    id: r.id,
-    authorId: r.authorId,
-    content: r.content,
-    createdAt:
-      r.createdAt instanceof Date
-        ? r.createdAt.toISOString()
-        : r.createdAt,
-    chapterId: r.chapterId,
-    bookId: r.bookId ?? undefined,
-    parentId: r.parentId ?? undefined,
-    author: r.author
-      ? { id: r.author.id, name: r.author.name, image: r.author.image ?? undefined }
-      : { id: '', name: '' },
-    replies: [],
-  })) ?? [],
+            replies:
+              (c.replies ?? []).map((r: any) => ({
+                id: r.id,
+                authorId: r.authorId,
+                content: r.content,
+                createdAt:
+                  r.createdAt instanceof Date
+                    ? r.createdAt.toISOString()
+                    : r.createdAt,
+                chapterId: r.chapterId,
+                bookId: r.bookId ?? undefined,
+                parentId: r.parentId ?? undefined,
+                author: r.author
+                  ? {
+                      id: r.author.id,
+                      name: r.author.name,
+                      image: r.author.image ?? undefined,
+                    }
+                  : { id: '', name: '' },
+                replies: [],
+              })) ?? [],
           })) ?? [],
     };
   } catch (error) {
     console.error('Error fetching chapter by id:', error);
     return null;
+  }
+}
+
+export async function deleteBookById(bookId: string) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const book = await prisma.book.findUnique({
+      where: { id: Number(bookId) },
+    });
+    if (!book) throw new Error('Book not found');
+    if (book.userId !== user.id) throw new Error('Unauthorized');
+
+    await prisma.book.delete({
+      where: { id: Number(bookId) },
+    });
+
+    revalidatePath('/books');
+
+    return { success: true, message: 'Book deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting book:', error);
+    return { success: false, message: 'Failed to delete book' };
+  }
+}
+
+export async function deleteChapterById(chapterId: string) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: Number(chapterId) },
+      include: { book: true },
+    });
+
+    if (!chapter) throw new Error('Chapter not found');
+    if (chapter.book.userId !== user.id) throw new Error('Unauthorized');
+
+    await prisma.chapter.delete({
+      where: { id: Number(chapterId) },
+    });
+
+    revalidatePath(`/books/${chapter.bookId}`);
+
+    return { success: true, message: 'Chapter deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting chapter:', error);
+    return { success: false, message: 'Failed to delete chapter' };
   }
 }

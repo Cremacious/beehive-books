@@ -32,6 +32,9 @@ export default function CommentSection({
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: '',
+    },
   });
 
   const [localComments, setLocalComments] = useState<CommentType[]>(
