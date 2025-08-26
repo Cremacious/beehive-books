@@ -47,13 +47,13 @@ export default function FriendRequestByEmail() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-2 w-full"
+        className="flex flex-col md:flex-row gap-2 w-full items-end"
       >
         <FormField
           control={form.control}
           name="friendEmail"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel className="text-yellow-400 text-lg">
                 Friend Email
               </FormLabel>
@@ -65,12 +65,11 @@ export default function FriendRequestByEmail() {
                   {...field}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full md:w-auto mt-2 md:mt-5" type="submit">
+        <Button className="w-full md:w-auto" type="submit">
           Send Request
         </Button>
       </form>
