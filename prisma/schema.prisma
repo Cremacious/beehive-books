@@ -99,15 +99,15 @@ model Chapter {
   updatedAt  DateTime   @updatedAt
   status     String     @default("In Progress")
   wordCount  Int        @default(0)
-  book       Book       @relation(fields: [bookId], references: [id])
-  bookId     Int
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId Int
   comments   Comment[]
 }
 model Comment {
   id         Int        @id @default(autoincrement())
   content    String
   createdAt  DateTime   @default(now())
-  chapter    Chapter    @relation(fields: [chapterId], references: [id])
+ chapter    Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId  Int
   book       Book?      @relation("BookComments", fields: [bookId], references: [id])
   bookId     Int?
