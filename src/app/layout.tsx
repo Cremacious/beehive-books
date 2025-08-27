@@ -24,7 +24,7 @@ export default async function RootLayout({
             initialFriendRequests={pendingFriendRequests}
           />
           <Navbar />
-          <div className="mb-4"></div>
+          {/* <div className="mb-4"></div> */}
           {children}
           <Footer />
           <Toaster richColors />

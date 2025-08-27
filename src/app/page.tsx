@@ -1,136 +1,203 @@
-import Link from 'next/link';
+// import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-between  text-slate-900 ">
-      {/* Header */}
-
-      <section className="flex flex-col items-center gap-4 mt-12">
-        <div className="flex gap-4">
-          <Link
-            href="/sign-up"
-            className="bg-yellow-400 text-slate-900 font-bold px-8 py-3 rounded-full shadow hover:bg-yellow-500 transition border-2 border-black text-center"
-          >
-            Get Started
-          </Link>
-          <Link
-            href="/sign-in"
-            className="bg-black text-yellow-300 font-bold px-8 py-3 rounded-full border-2 border-yellow-400 hover:bg-slate-800 transition text-center"
-          >
-            Sign In
-          </Link>
-          <Link href={'/dashboard'}>Dashboard</Link>
-        </div>
-      </section>
-
-      <section className="w-full max-w-4xl mt-20 px-4">
-        <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-yellow-200 mb-8">
-          How It Works
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-yellow-100 dark:bg-slate-800 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400 border-4 border-black mb-4">
-              <span className="text-2xl font-extrabold text-black">1</span>
+    <div>
+      {/* Hero Section */}
+      <div className="px-4 sm:px-10 py-6 bg-[#202020] shadow-2xl">
+        <div className="grid xl:grid-cols-2 justify-center items-center gap-10 md:mx-8 ">
+          <div className="">
+            <div className="max-w-3xl max-xl:mx-auto max-xl:text-center">
+              <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px]">
+                Get buzzing with writing!
+              </h1>
+              <p className="text-base leading-relaxed mt-6 text-white">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                sunt in culpa qui officia deserunt mollit anim id est laborum.
+              </p>
             </div>
-            <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-yellow-200">
-              Create Your Book
-            </h3>
-            <p className="text-slate-700 dark:text-yellow-100">
-              Start a new book project, add a custom author, title, and cover.
-              Organize your chapters easily.
-            </p>
+            <div className="mt-12 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
+              <Button size={'lg'}>Get Started</Button>
+              <Button size={'lg'} variant={'secondary'}>
+                Sign In
+              </Button>
+            </div>
           </div>
-
-          <div className="bg-yellow-100 dark:bg-slate-800 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-black border-4 border-yellow-400 mb-4">
-              <span className="text-2xl font-extrabold text-yellow-400">2</span>
-            </div>
-            <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-yellow-200">
-              Edit with Friends
-            </h3>
-            <p className="text-slate-700 dark:text-yellow-100">
-              Invite friends to comment, suggest edits, and collaborate on
-              chapters. Manage privacy and feedback easily.
-            </p>
-          </div>
-          <div className="bg-yellow-100 dark:bg-slate-800 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400 border-4 border-black mb-4">
-              <span className="text-2xl font-extrabold text-black">3</span>
-            </div>
-            <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-yellow-200">
-              Share Online
-            </h3>
-            <p className="text-slate-700 dark:text-yellow-100">
-              Publish your book or chapters, share with friends, and control who
-              can read or comment. Spread your story!
-            </p>
+          <div className="xl:aspect-[8/7] sm:aspect-[10/7] w-full">
+            <img
+              src="https://readymadeui.com/images/ai-laptop.webp"
+              alt="banner img"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="w-full max-w-5xl mt-20 mb-12 px-4 grid gap-8 md:grid-cols-3">
-        <div className="bg-slate-900 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-          <span className="inline-block bg-yellow-400 rounded-full p-3 mb-4 border-2 border-black">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <path
-                d="M6 4h12v2H6V4zm0 4h12v2H6V8zm0 4h8v2H6v-2zm0 4h8v2H6v-2z"
-                stroke="#000"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+      {/* Features Section */}
+      <div id="features" className="px-4 sm:px-10 md:mt-28 mt-20 ">
+        <div className="max-w-screen-xl mx-auto max-lg:max-w-xl bg-[#202020] py-8 px-4 md:px-6 rounded-2xl shadow-2xl">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-yellow-400 lg:text-4xl sm:text-3xl text-2xl font-semibold mb-6 md:!leading-[50px] leading-[40px]">
+              orem ipsum dolor sit amet
+            </h2>
+            <p className="text-white  leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna
+            </p>
+          </div>
+          <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16">
+            <div className="aspect-[7/4]">
+              <img
+                src="https://readymadeui.com/images/data-laptop.webp"
+                alt="analytics-img"
+                className="w-full h-full object-contain"
               />
-            </svg>
-          </span>
-          <h3 className="font-bold text-lg mb-2 text-yellow-400">
-            Write Books Online
-          </h3>
-          <p className="text-yellow-100">
-            Create, edit, and organize your books and chapters from anywhere, on
-            any device.
-          </p>
-        </div>
-        <div className="bg-slate-900 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-          <span className="inline-block bg-yellow-400 rounded-full p-3 mb-4 border-2 border-black">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <path
-                d="M17 8a5 5 0 0 1-10 0"
-                stroke="#000"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            </div>
+            <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
+              <h3 className="text-xl font-semibold mb-6 text-yellow-400">
+                Create Books With Ease
+              </h3>
+              <p className="text-base text-white  leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Smart Assistant doesn’t
+                just process words—it understands meaning, context, and nuance
+                like a human. Our state-of-the-art NLP engine goes beyond
+                keyword matching to deliver truly intelligent interactions,
+                making every conversation.
+              </p>
+            </div>
+          </div>
+          <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16 md:mx-8 ">
+            <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
+              <h3 className="text-xl font-semibold mb-6 text-yellow-400">
+                Get Feedback From Friends
+              </h3>
+              <p className="text-white  leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+            </div>
+            <div className="aspect-[7/4] max-lg:-order-1">
+              <img
+                src="https://readymadeui.com/images/tech-img.webp"
+                alt="analytics-img"
+                className="w-full h-full object-contain"
               />
-              <circle cx="12" cy="12" r="10" stroke="#000" strokeWidth="2" />
-            </svg>
-          </span>
-          <h3 className="font-bold text-lg mb-2 text-yellow-400">
-            Share & Collaborate
-          </h3>
-          <p className="text-yellow-100">
-            Easily share your books or chapters with friends. Control privacy
-            and invite feedback for beta editing.
-          </p>
-        </div>
-        <div className="bg-slate-900 rounded-xl shadow p-6 flex flex-col items-center text-center border-2 border-yellow-400">
-          <span className="inline-block bg-yellow-400 rounded-full p-3 mb-4 border-2 border-black">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <path
-                d="M8 21h8M12 17v4M21 7l-9-4-9 4M4 10v4a8 8 0 0 0 16 0v-4"
-                stroke="#000"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            </div>
+          </div>
+          <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16">
+            <div className="aspect-[7/4]">
+              <img
+                src="https://readymadeui.com/images/data-laptop.webp"
+                alt="analytics-img"
+                className="w-full h-full object-contain"
               />
-            </svg>
-          </span>
-          <h3 className="font-bold text-lg mb-2 text-yellow-400">
-            Comment & Connect
-          </h3>
-          <p className="text-yellow-100">
-            Friends can comment on chapters, reply, and help you improve your
-            writing. Manage friends and notifications easily.
-          </p>
+            </div>
+            <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
+              <h3 className="text-xl font-semibold mb-6 text-yellow-400">
+                Share Your Work With The World
+              </h3>
+              <p className="text-base text-white leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+            </div>
+          </div>
         </div>
-      </section>
-    </main>
+      </div>
+      {/* Advanced AI Section */}
+      <div id="advanced-ai" className="px-4 sm:px-10 md:mt-28 mt-20">
+        <div className="max-w-screen-xl mx-auto">
+          <div className="bg-[#202020] px-6 sm:px-12 py-16 rounded-3xl">
+            <div className="grid lg:grid-cols-2 items-center gap-12">
+              <div className="max-w-xl max-lg:mx-auto">
+                <div className="max-lg:text-center">
+                  <h2 className="text-yellow-400 lg:text-4xl sm:text-3xl text-2xl font-semibold mb-6 md:!leading-[50px] leading-[40px]">
+                    Lorem ipsum dolor sit amet
+                  </h2>
+                  <p className="text-white leading-relaxed">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam
+                  </p>
+                </div>
+                <ul className="space-y-4 mt-8">
+                  <li className="flex items-start text-white">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={18}
+                      className="mr-3 bg-yellow-600 fill-white rounded-full p-[3px] shrink-0"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                        data-original="#000000"
+                      />
+                    </svg>
+                    <span>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    </span>
+                  </li>
+                  <li className="flex items-start text-white">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={18}
+                      className="mr-3 bg-yellow-600 fill-white rounded-full p-[3px] shrink-0"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                        data-original="#000000"
+                      />
+                    </svg>
+                    <span>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    </span>
+                  </li>
+                  <li className="flex items-start text-white">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={18}
+                      className="mr-3 bg-yellow-600 fill-white rounded-full p-[3px] shrink-0"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                        data-original="#000000"
+                      />
+                    </svg>
+                    <span>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    </span>
+                  </li>
+                </ul>
+                <div className="mt-8">
+                  <Button>Get Started</Button>
+                </div>
+              </div>
+              <div className="aspect-[6/5] max-lg:max-w-xl max-lg:mx-auto max-lg:-order-1">
+                <img
+                  src="https://readymadeui.com/images/cloaked-ai-img.webp"
+                  alt="analytics-img"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
