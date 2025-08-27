@@ -42,6 +42,7 @@ export default function Home() {
               className="object-contain w-3/4 h-3/4 mx-auto rounded-2xl mb-6"
               height={300}
               width={300}
+              priority
             />
           </div>
         </div>
@@ -65,6 +66,7 @@ export default function Home() {
                 src={beeWriting}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
+                priority
               />
             </div>
             <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
@@ -100,6 +102,7 @@ export default function Home() {
                 src={beeFriends}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
+                priority
               />
             </div>
           </div>
@@ -109,6 +112,7 @@ export default function Home() {
                 src={beeShare}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
+                priority
               />
             </div>
             <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
