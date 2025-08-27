@@ -1,9 +1,14 @@
 import CreateBookForm from '@/components/forms/create-book-form';
 import { Button } from '@/components/ui/button';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function CreateBookPage({}) {
+export default async function CreateBookPage({}) {
+  const { user } = await getAuthenticatedUser();
+  if (!user) {
+    return <div className="text-red-500">User not authenticated</div>;
+  }
   return (
     <div className="min-h-screen flex flex-col justify-center">
       <div className="max-w-5xl mx-auto p-2">

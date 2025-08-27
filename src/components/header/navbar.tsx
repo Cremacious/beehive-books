@@ -3,7 +3,7 @@ import Image from 'next/image';
 import AuthButtons from './auth-buttons';
 import hiveIcon from '@/assets/hive-icon4.png';
 import { Sidebar } from './sidebar';
-import { ROUTES } from '@/lib/constants';
+import NavLinks from './navlinks';
 
 export default async function Navbar() {
   return (
@@ -24,17 +24,7 @@ export default async function Navbar() {
         </div>
 
         <div className="flex-1 md:flex hidden justify-center">
-          <div className="flex gap-8 text-yellow-100 font-medium">
-            {ROUTES.map((route) => (
-              <Link
-                key={route.path}
-                href={route.path}
-                className="hover:text-yellow-400  text-yellow-300 hoverAnimateTiny text-lg font-bold"
-              >
-                {route.name}
-              </Link>
-            ))}
-          </div>
+          <NavLinks />
         </div>
 
         <div className="hidden md:flex items-center min-w-[180px] justify-end ">

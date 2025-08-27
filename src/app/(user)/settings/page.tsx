@@ -4,6 +4,9 @@ import { getAuthenticatedUser } from '@/lib/server-utils';
 export default async function SettingsPage() {
   const { user } = await getAuthenticatedUser();
 
+  if (!user) {
+    return <div className="text-red-500">User not authenticated</div>;
+  }
   return (
     <div className="max-w-3xl mx-auto px-2">
       <div className="darkContainer">

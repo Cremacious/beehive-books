@@ -3,8 +3,13 @@ import Image from 'next/image';
 import MessagesTable from '@/components/notifications/messages-table';
 // import { mockUser } from '@/lib/sampleData';
 import { getUserMessages } from '@/lib/actions/message.actions';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 
 export default async function MessagesPage() {
+  const { user } = await getAuthenticatedUser();
+  if (!user) {
+    return <div className="text-red-500">User not authenticated</div>;
+  }
   // const messages = mockUser.notifications
   const messages = await getUserMessages();
 

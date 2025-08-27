@@ -4,8 +4,13 @@ import FriendsTable from '@/components/friends/friends-table';
 import ViewFriendRequestsButton from '@/components/friends/view-friends-button';
 import { getPendingFriendRequests } from '@/lib/actions/friend.actions';
 import { getUserFriends } from '@/lib/actions/friend.actions';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 
 export default async function FriendsPage() {
+  const { user } = await getAuthenticatedUser();
+  if (!user) {
+    return <div className="text-red-500">User not authenticated</div>;
+  }
   const friends = await getUserFriends();
   const friendRequests = await getPendingFriendRequests();
 

@@ -2,6 +2,7 @@ import DeleteDialog from '@/components/delete-dialog';
 import EditBookForm from '@/components/forms/edit-book-form';
 import { Button } from '@/components/ui/button';
 import { getBookById } from '@/lib/actions/book.actions';
+import { getAuthenticatedUser } from '@/lib/server-utils';
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,6 +11,10 @@ export default async function EditBookPage({
 }: {
   params: Promise<{ bookId: string }>;
 }) {
+  const { user } = await getAuthenticatedUser();
+  if (!user) {
+    return <div className="text-red-500">User not authenticated</div>;
+  }
   const { bookId } = await params;
 
   const book = await getBookById(bookId);
