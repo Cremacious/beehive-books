@@ -12,38 +12,41 @@ export default function Home() {
     <div>
       {/* Hero Section */}
       <div className="px-4 sm:px-10 pt-6 bg-[#202020] shadow-2xl ">
-        <div className="grid xl:grid-cols-2 justify-center items-center gap-5 md:mx-8 ">
-          <div className="">
-            <div className="max-w-3xl max-xl:mx-auto max-xl:text-center">
-              <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px]">
-                Get buzzing with writing!
-              </h1>
-              <p className="text-base leading-relaxed mt-6 text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid xl:grid-cols-2 justify-center items-center gap-5 md:mx-8 ">
+            <div className="xl:aspect-[8/7] sm:aspect-[10/7] w-full">
+              <Image
+                src={heroImage}
+                alt="banner img"
+                className="object-contain w-3/4 h-3/4 mx-auto rounded-2xl mb-6"
+                height={300}
+                width={300}
+                priority
+              />
             </div>
-            <div className="mt-12 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
-              <Button size={'lg'}>Get Started</Button>
-              <Button size={'lg'} variant={'secondary'}>
-                Sign In
-              </Button>
+            <div className="">
+              <div className="max-w-3xl max-xl:mx-auto max-xl:text-center">
+                <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px]">
+                  Get buzzing with writing!
+                </h1>
+                <p className="text-base leading-relaxed mt-6 text-white">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </p>
+              </div>
+              <div className="mt-12 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
+                <Button size={'lg'}>Get Started</Button>
+                <Button size={'lg'} variant={'secondary'}>
+                  Sign In
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="xl:aspect-[8/7] sm:aspect-[10/7] w-full">
-            <Image
-              src={heroImage}
-              alt="banner img"
-              className="object-contain w-3/4 h-3/4 mx-auto rounded-2xl mb-6"
-              height={300}
-              width={300}
-              priority
-            />
           </div>
         </div>
       </div>

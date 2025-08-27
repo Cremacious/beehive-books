@@ -18,14 +18,15 @@ export default async function RootLayout({
   const pendingFriendRequests = await getPendingFriendRequests();
   return (
     <html lang="en">
-      <body className={`antialiased`}>
-        <div className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-500 min-h-screen">
+      <body className="antialiased">
+        <div className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-500 min-h-screen flex flex-col">
           <NotificationInitializer
             initialFriendRequests={pendingFriendRequests}
           />
           <Navbar />
-          {/* <div className="mb-4"></div> */}
-          {children}
+          <main className="flex-1 flex flex-col relative z-0 h-full">
+            {children}
+          </main>
           <Footer />
           <Toaster richColors />
         </div>

@@ -61,7 +61,7 @@ export default function MyForm() {
               <FormControl>
                 <Input className="bg-white" placeholder="" type="" {...field} />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-white">
                 This is your public display name.
               </FormDescription>
               <FormMessage />
@@ -130,7 +130,9 @@ export default function MyForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button className="w-full" type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );
