@@ -80,3 +80,72 @@ export async function getDatabaseUserById(userId: string) {
     friends,
   };
 }
+
+export async function updateUsername(username: string) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { name: username },
+    });
+
+    return {
+      success: true,
+      message: 'Username updated successfully',
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+      },
+    };
+  } catch (error) {
+    console.error('Error updating username:', error);
+    return { success: false, message: 'Failed to update username' };
+  }
+}
+
+export async function updateEmail(email: string) {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    const updatedEmail = await prisma.user.update({
+      where: { id: user.id },
+      data: { email: email },
+    });
+
+    return {
+      success: true,
+      message: 'Username updated successfully',
+      user: {
+        id: updatedEmail.id,
+        email: updatedEmail.email,
+      },
+    };
+  } catch (error) {
+    console.error('Error updating email:', error);
+    return { success: false, message: 'Failed to update email' };
+  }
+}
+
+export async function deleteAccount() {
+  try {
+    const { user, error } = await getAuthenticatedUser();
+    if (error) throw new Error(error);
+    if (!user) throw new Error('User not found');
+
+    await prisma.user.delete({
+      where: { id: user.id },
+    });
+
+    return {
+      success: true,
+      message: 'User deleted successfully',
+    };
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    return { success: false, message: 'Failed to delete account' };
+  }
+}
