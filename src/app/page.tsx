@@ -1,12 +1,18 @@
 // import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import heroImage from '@/assets/site/beehive.png';
+import beeWriting from '@/assets/site/beeWriting.png';
+import beeShare from '@/assets/site/createBook.png';
+import beeFriends from '@/assets/site/friends.png';
+import beeJoin from '@/assets/site/signup.png';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <div className="px-4 sm:px-10 py-6 bg-[#202020] shadow-2xl">
-        <div className="grid xl:grid-cols-2 justify-center items-center gap-10 md:mx-8 ">
+      <div className="px-4 sm:px-10 pt-6 bg-[#202020] shadow-2xl ">
+        <div className="grid xl:grid-cols-2 justify-center items-center gap-5 md:mx-8 ">
           <div className="">
             <div className="max-w-3xl max-xl:mx-auto max-xl:text-center">
               <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px]">
@@ -30,10 +36,12 @@ export default function Home() {
             </div>
           </div>
           <div className="xl:aspect-[8/7] sm:aspect-[10/7] w-full">
-            <img
-              src="https://readymadeui.com/images/ai-laptop.webp"
+            <Image
+              src={heroImage}
               alt="banner img"
-              className="w-full h-full object-contain"
+              className="object-contain w-3/4 h-3/4 mx-auto rounded-2xl mb-6"
+              height={300}
+              width={300}
             />
           </div>
         </div>
@@ -53,8 +61,8 @@ export default function Home() {
           </div>
           <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16">
             <div className="aspect-[7/4]">
-              <img
-                src="https://readymadeui.com/images/data-laptop.webp"
+              <Image
+                src={beeWriting}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
               />
@@ -75,7 +83,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16 md:mx-8 ">
+          <div className="grid lg:grid-cols-2 items-center gap-x-1 gap-y-8 mt-16 md:mx-8 ">
             <div className="max-w-lg max-lg:text-center max-lg:mx-auto">
               <h3 className="text-xl font-semibold mb-6 text-yellow-400">
                 Get Feedback From Friends
@@ -88,8 +96,8 @@ export default function Home() {
               </p>
             </div>
             <div className="aspect-[7/4] max-lg:-order-1">
-              <img
-                src="https://readymadeui.com/images/tech-img.webp"
+              <Image
+                src={beeFriends}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
               />
@@ -97,8 +105,8 @@ export default function Home() {
           </div>
           <div className="grid lg:grid-cols-2 items-center gap-x-12 gap-y-8 mt-16">
             <div className="aspect-[7/4]">
-              <img
-                src="https://readymadeui.com/images/data-laptop.webp"
+              <Image
+                src={beeShare}
                 alt="analytics-img"
                 className="w-full h-full object-contain"
               />
@@ -188,8 +196,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="aspect-[6/5] max-lg:max-w-xl max-lg:mx-auto max-lg:-order-1">
-                <img
-                  src="https://readymadeui.com/images/cloaked-ai-img.webp"
+                <Image
+                  src={beeJoin}
                   alt="analytics-img"
                   className="w-full h-full object-contain"
                 />
