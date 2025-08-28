@@ -73,7 +73,7 @@ export function Sidebar() {
                 className="rounded-full border-2 border-yellow-400 object-cover"
                 style={{ aspectRatio: '1 / 1' }}
                 priority
-                onClick={() => router.push(`/profile/${session?.user?.id}`)}
+                onClick={() => handleButtonClick(`/profile/${session?.user?.id}`)}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -120,7 +120,7 @@ export function Sidebar() {
           <div className="space-y-4 mx-2 mt-6">
             <Button
               variant="ghost"
-              onClick={() => router.push('/sign-in')}
+              onClick={() => handleButtonClick('/sign-in')}
               className="text-xl font-bold w-full text-center px-4 py-6 text-yellow-300  relative overflow-hidden rounded-lg transition-all duration-300 group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
@@ -131,7 +131,7 @@ export function Sidebar() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => router.push('/sign-up')}
+              onClick={() => handleButtonClick('/sign-up')}
               className="text-xl font-bold w-full text-center px-4 py-6 text-yellow-300  relative overflow-hidden rounded-lg transition-all duration-300 group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
@@ -142,14 +142,14 @@ export function Sidebar() {
             </Button>
           </div>
         )}
-    
+
         {session?.user && (
           <SheetFooter>
             <div className="flex justify-between items-center w-full">
               <Settings
                 size={35}
                 className="text-yellow-400 hover:text-yellow-500 hoverAnimateTiny"
-                onClick={() => router.push('/settings')}
+                onClick={() => handleButtonClick('/settings')}
               />
               <Button onClick={handleSignOut} className="w-3/4" type="submit">
                 Sign Out
