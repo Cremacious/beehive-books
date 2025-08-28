@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
+import { LoaderPinwheel } from 'lucide-react';
 
 const formSchema = z.object({
   commentReply: z.string(),
@@ -33,6 +34,8 @@ export default function ChapterComment({ comment }: { comment: CommentType }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const isSubmitting = form.formState.isSubmitting;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -118,7 +121,14 @@ export default function ChapterComment({ comment }: { comment: CommentType }) {
                 )}
               />
               <Button size={'sm'} type="submit">
-                Submit Reply
+                {isSubmitting ? (
+                  <LoaderPinwheel
+                    className="animate-spin  mx-2 text-[#202020]"
+                    size={300}
+                  />
+                ) : (
+                  'Submit Reply'
+                )}
               </Button>
             </form>
           </Form>

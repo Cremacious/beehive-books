@@ -36,15 +36,21 @@ export default function ViewFriendRequestsButton({
     pendingFriendRequests
   );
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleAccept = async (id: string) => {
+    setIsLoading(true);
     await acceptFriendRequest(id);
     setRequests((prev) => prev.filter((req) => req.id !== id));
     setFriendRequests(requests.filter((req) => req.id !== id));
+    setIsLoading(false);
   };
 
   const handleReject = async (id: string) => {
+    setIsLoading(true);
     await rejectFriendRequest(id);
     setRequests((prev) => prev.filter((req) => req.id !== id));
+    setIsLoading(false);
     setFriendRequests(requests.filter((req) => req.id !== id));
   };
 
@@ -90,14 +96,14 @@ export default function ViewFriendRequestsButton({
                         className="ml-auto "
                         onClick={() => handleAccept(request.id)}
                       >
-                        Accept
+                        {isLoading ? 'Processing...' : 'Accept'}
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => handleReject(request.id)}
                       >
-                        Reject
+                        {isLoading ? 'Processing...' : 'Reject'}
                       </Button>
                     </div>
                   </li>

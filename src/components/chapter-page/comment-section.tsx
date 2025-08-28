@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CommentType } from '@/lib/types/books.type';
 import ChapterComment from './chapter-comment';
 import { useState } from 'react';
+import { LoaderPinwheel } from 'lucide-react';
 
 const formSchema = z.object({
   content: z.string(),
@@ -59,6 +60,8 @@ export default function CommentSection({
       toast.error('Failed to submit the form. Please try again.');
     }
   }
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <div className="max-w-5xl mx-auto darkContainer">
@@ -104,7 +107,16 @@ export default function CommentSection({
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>
+              <Button type="submit">
+                {isSubmitting ? (
+                  <LoaderPinwheel
+                    className="animate-spin  mx-2 text-[#202020]"
+                    size={300}
+                  />
+                ) : (
+                  'Submit Comment'
+                )}
+              </Button>
             </form>
           </Form>
         </div>

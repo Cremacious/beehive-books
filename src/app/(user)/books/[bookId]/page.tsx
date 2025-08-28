@@ -99,7 +99,7 @@ export default async function BookPage({
                   <div className="text-yellow-800 font-bold">Comments</div>
                 </div>
               </div>
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <h3 className="text-lg font-semibold text-white mb-2">
                   Collaborators
                 </h3>
@@ -115,7 +115,7 @@ export default async function BookPage({
                     </span>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
