@@ -6,6 +6,7 @@ import beeShare from '@/assets/site/createBook.png';
 import beeFriends from '@/assets/site/friends.png';
 import beeJoin from '@/assets/site/signup.png';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -41,9 +42,11 @@ export default function Home() {
                 </p>
               </div>
               <div className="mt-12 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
-                <Button size={'lg'}>Get Started</Button>
-                <Button size={'lg'} variant={'secondary'}>
-                  Sign In
+                <Button asChild size={'lg'}>
+                  <Link href="/sign-up">Get Started</Link>
+                </Button>
+                <Button asChild size={'lg'} variant={'secondary'}>
+                  <Link href="/sign-in">Sign In</Link>
                 </Button>
               </div>
             </div>

@@ -23,7 +23,7 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-1 mt-4">
+    <div className="mx-auto max-w-6xl w-full px-1 mt-4">
       <div className="space-y-6">
         <ProfileHeader
           user={{
