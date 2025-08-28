@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { editChapter } from '@/lib/actions/book.actions';
 import { ChapterType } from '@/lib/types/books.type';
+import { LoaderPinwheel } from 'lucide-react';
 
 export default function EditChapterForm({
   chapter,
@@ -62,7 +63,7 @@ export default function EditChapterForm({
       toast.error('Failed to submit the form. Please try again.');
     }
   }
-
+  const isSubmitting = form.formState.isSubmitting;
   return (
     <Form {...form}>
       <form
@@ -161,7 +162,18 @@ export default function EditChapterForm({
           >
             Cancel
           </Button>
-          <Button type="submit">Create Chapter</Button>
+          {isSubmitting ? (
+            <Button className="" disabled>
+              <LoaderPinwheel
+                className="animate-spin  mx-2 text-[#202020]"
+                size={300}
+              />
+            </Button>
+          ) : (
+            <Button className="" type="submit">
+              Submit Chapter Edit
+            </Button>
+          )}
         </div>
       </form>
     </Form>

@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { signIn } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { signInFormSchema } from '@/lib/validators/auth.validators';
+import { LoaderPinwheel } from 'lucide-react';
 
 export default function SignInForm() {
   const router = useRouter();
@@ -40,6 +41,8 @@ export default function SignInForm() {
       toast.error('Failed to submit the form. Please try again.');
     }
   }
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -86,7 +89,18 @@ export default function SignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        {isSubmitting ? (
+          <Button className="w-full" disabled>
+            <LoaderPinwheel
+              className="animate-spin text-[#202020]"
+              size={300}
+            />
+          </Button>
+        ) : (
+          <Button className="w-full" type="submit">
+            Sign In
+          </Button>
+        )}
       </form>
     </Form>
   );

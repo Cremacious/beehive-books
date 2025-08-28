@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { createBook } from '@/lib/actions/book.actions';
 import { useRouter } from 'next/navigation';
+import { LoaderPinwheel } from 'lucide-react';
 
 export default function CreateBookForm() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -144,6 +145,7 @@ export default function CreateBookForm() {
       toast.error('Failed to submit the form. Please try again.');
     }
   }
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -334,7 +336,18 @@ export default function CreateBookForm() {
           >
             Cancel
           </Button>
-          <Button type="submit">Create Book</Button>
+          {isSubmitting ? (
+            <Button className="" disabled>
+              <LoaderPinwheel
+                className="animate-spin  mx-2 text-[#202020]"
+                size={300}
+              />
+            </Button>
+          ) : (
+            <Button className="" type="submit">
+              Create Book
+            </Button>
+          )}
         </div>
       </form>
     </Form>

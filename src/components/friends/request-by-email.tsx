@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { LoaderPinwheel } from 'lucide-react';
 
 const formSchema = z.object({
   friendEmail: z.string(),
@@ -43,6 +44,8 @@ export default function FriendRequestByEmail() {
     }
   }
 
+  const isSubmitting = form.formState.isSubmitting;
+
   return (
     <Form {...form}>
       <form
@@ -69,9 +72,19 @@ export default function FriendRequestByEmail() {
             </FormItem>
           )}
         />
-        <Button className="w-full md:w-auto" type="submit">
-          Send Request
-        </Button>
+
+        {isSubmitting ? (
+          <Button className="" disabled>
+            <LoaderPinwheel
+              className="animate-spin  mx-2 text-[#202020]"
+              size={300}
+            />
+          </Button>
+        ) : (
+          <Button className="w-full md:w-auto" type="submit">
+            Send Request
+          </Button>
+        )}
       </form>
     </Form>
   );

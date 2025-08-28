@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { LoaderPinwheel } from 'lucide-react';
 
 export default function CreateChapterForm({ bookId }: { bookId: string }) {
   const router = useRouter();
@@ -50,6 +51,8 @@ export default function CreateChapterForm({ bookId }: { bookId: string }) {
       toast.error('Failed to submit the form. Please try again.');
     }
   }
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -149,7 +152,18 @@ export default function CreateChapterForm({ bookId }: { bookId: string }) {
           >
             Cancel
           </Button>
-          <Button type="submit">Create Chapter</Button>
+          {isSubmitting ? (
+            <Button className="" disabled>
+              <LoaderPinwheel
+                className="animate-spin  mx-2 text-[#202020]"
+                size={300}
+              />
+            </Button>
+          ) : (
+            <Button className="" type="submit">
+              Create Chapter
+            </Button>
+          )}
         </div>
       </form>
     </Form>

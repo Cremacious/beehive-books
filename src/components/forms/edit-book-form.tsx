@@ -29,7 +29,7 @@ import {
 import { editBook } from '@/lib/actions/book.actions';
 import { useRouter } from 'next/navigation';
 import { BookType } from '@/lib/types/books.type';
-
+import { LoaderPinwheel } from 'lucide-react';
 
 export default function EditBookForm({ book }: { book: BookType }) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -157,6 +157,8 @@ export default function EditBookForm({ book }: { book: BookType }) {
       toast.error('Failed to submit the form. Please try again.');
     }
   }
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -347,7 +349,18 @@ export default function EditBookForm({ book }: { book: BookType }) {
           >
             Cancel
           </Button>
-          <Button type="submit">Edit Book</Button>
+          {isSubmitting ? (
+            <Button className="" disabled>
+              <LoaderPinwheel
+                className="animate-spin text-[#202020]"
+                size={300}
+              />
+            </Button>
+          ) : (
+            <Button className="" type="submit">
+              Submit Edit
+            </Button>
+          )}
         </div>
       </form>
     </Form>
