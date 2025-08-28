@@ -43,7 +43,7 @@ export default function MessagesTable({
           </div>
 
           {paginated.length === 0 ? (
-            <div className="flex text-center text-slate-400 py-8">
+            <div className="flex text-center text-slate-800 py-8 bg-white min-h-[600px]">
               <div className="w-full">No messages found.</div>
             </div>
           ) : (
@@ -127,14 +127,6 @@ export default function MessagesTable({
             Next
           </Button>
         )}
-        {/* <Button
-          variant="outline"
-          size="sm"
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </Button> */}
       </div>
     </div>
   );

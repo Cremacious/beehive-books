@@ -46,8 +46,14 @@ export default async function FriendsPage() {
             </div>
 
             <div className="border-b-2 border-yellow-200 mb-8" />
-
-            <FriendsTable friends={friends} />
+            {friends.length === 0 ? (
+              <div className="text-center text-yellow-300 mb-8">
+                You have no friends added yet. Start by sending some friend
+                requests!
+              </div>
+            ) : (
+              <FriendsTable friends={friends} />
+            )}
           </div>
         </div>
       </div>

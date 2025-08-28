@@ -27,8 +27,8 @@ export default function Home() {
             </div>
             <div className="">
               <div className="max-w-3xl max-xl:mx-auto max-xl:text-center">
-                <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px]">
-                  Get buzzing with writing!
+                <h1 className="lg:text-6xl md:text-5xl text-4xl text-yellow-400 font-semibold lg:!leading-[75px] md:!leading-[65px] leading-[55px] text-center">
+                  Get buzzed about writing!
                 </h1>
                 <p className="text-base leading-relaxed mt-6 text-white">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
@@ -41,7 +41,7 @@ export default function Home() {
                   mollit anim id est laborum.
                 </p>
               </div>
-              <div className="mt-12 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
+              <div className="mt-12 mb-8 md:mb-0 flex flex-wrap gap-x-6 gap-y-4 max-xl:justify-center">
                 <Button asChild size={'lg'}>
                   <Link href="/sign-up">Get Started</Link>
                 </Button>
