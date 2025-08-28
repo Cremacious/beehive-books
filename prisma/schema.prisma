@@ -85,7 +85,7 @@ model Book {
   comments      Comment[]  @relation("BookComments")
   collaborators User[]     @relation("BookCollaborators")
   userId        String
-  user          User       @relation("UserBooks", fields: [userId], references: [id])
+  user          User       @relation("UserBooks", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Chapter {
@@ -111,7 +111,7 @@ model Comment {
   chapterId  Int
   book       Book?      @relation("BookComments", fields: [bookId], references: [id])
   bookId     Int?
-  author     User       @relation(fields: [authorId], references: [id])
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
   parent     Comment?   @relation("CommentReplies", fields: [parentId], references: [id])
   parentId   Int?
