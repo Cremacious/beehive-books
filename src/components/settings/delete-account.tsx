@@ -68,7 +68,7 @@ export default function DeleteAccount() {
           )}
         />
         <Button type="submit" className="md:col-span-1">
-          Submit
+          Delete Account
         </Button>
       </form>{' '}
     </Form>

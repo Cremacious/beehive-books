@@ -36,29 +36,6 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
     <div>
       <div className="flex flex-col gap-6 mb-6 px-2 md:px-6">
         <div className="flex flex-col md:flex-row items-stretch gap-6 w-full">
-          {/* <div className="flex-1 flex flex-col md:flex-row items-end justify-center gap-2">
-            <div className="flex flex-col w-full">
-              <label className="text-lg font-semibold text-yellow-400 mb-2">
-                Search by Name
-              </label>
-              <input
-                type="text"
-                placeholder="Search friends by name..."
-                value={filterName}
-                onChange={(e) => setFilterName(e.target.value)}
-                className="rounded-lg px-4 py-2 border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white text-slate-800 shadow-sm transition w-full"
-              />
-            </div>
-            <Button
-              className={`md:ml-2 w-full md:w-auto ${
-                sortAlpha ? 'bg-yellow-500' : ''
-              }`}
-              style={{ alignSelf: 'stretch' }}
-              onClick={() => setSortAlpha(!sortAlpha)}
-            >
-              Sort A-Z
-            </Button>
-          </div> */}
           <div className="flex-1 flex flex-col justify-center">
             <label className="text-lg font-semibold text-yellow-400 mb-2">
               Search by Name
@@ -90,36 +67,41 @@ export default function FriendsTable({ friends }: { friends: FriendType[] }) {
           </div>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:p-6">
-        {paginatedFriends.map((friend) => (
-          <div
-            key={friend.id}
-            className="bg-yellow-50 border-b-6 border-b-yellow-400 rounded-xl shadow-md flex flex-col items-center p-6 hoverAnimate1  hover:shadow-lg hover:border-yellow-200"
-          >
-            <div className="w-20 h-20 rounded-full border-4 border-yellow-200 bg-white overflow-hidden mb-3">
-              <Image
-                width={100}
-                height={100}
-                src={defaultProfileImage}
-                alt={friend.name}
-                className="object-cover w-full h-full"
-              />
+      {friends.length === 0 ? (
+        <div className="text-center text-yellow-300 flex justify-center items-center flex-col gap-4 py-20">
+          You have no friends added yet. Start by sending some friend requests!
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:p-6">
+          {paginatedFriends.map((friend) => (
+            <div
+              key={friend.id}
+              className="bg-yellow-50 border-b-6 border-b-yellow-400 rounded-xl shadow-md flex flex-col items-center p-6 hoverAnimate1  hover:shadow-lg hover:border-yellow-200"
+            >
+              <div className="w-20 h-20 rounded-full border-4 border-yellow-200 bg-white overflow-hidden mb-3">
+                <Image
+                  width={100}
+                  height={100}
+                  src={friend.image || defaultProfileImage}
+                  alt={friend.name}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="font-bold text-lg text-slate-800 mb-1 playWright">
+                {friend.name}
+              </div>
+              <div className="flex flex-row gap-8 mt-4">
+                <Button
+                  onClick={() => router.push(`/profile/${friend.id}`)}
+                  size={'sm'}
+                >
+                  View Profile
+                </Button>
+              </div>
             </div>
-            <div className="font-bold text-lg text-slate-800 mb-1 playWright">
-              {friend.name}
-            </div>
-            <div className="flex flex-row gap-8 mt-4">
-              <Button
-                onClick={() => router.push(`/profile/${friend.id}`)}
-                size={'sm'}
-              >
-                View Profile
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {!friends && totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8">
