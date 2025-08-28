@@ -40,9 +40,9 @@ model User {
 
 model FriendRequest {
   id        String   @id @default(uuid())
-  from      User     @relation("SentRequests", fields: [fromId], references: [id])
+  from      User     @relation("SentRequests", fields: [fromId], references: [id], onDelete: Cascade)
   fromId    String
-  to        User     @relation("ReceivedRequests", fields: [toId], references: [id])
+  to        User     @relation("ReceivedRequests", fields: [toId], references: [id], onDelete: Cascade)
   toId      String
   status    String  
   createdAt DateTime @default(now())
@@ -51,8 +51,8 @@ model FriendRequest {
 model Friendship {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation("UserFriends", fields: [userId], references: [id])
-  friend    User     @relation("FriendOf", fields: [friendId], references: [id])
+  user      User     @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
   friendId  String
   status    FriendshipStatus @default(PENDING)
   createdAt DateTime @default(now())
@@ -120,7 +120,7 @@ model Comment {
 
 model Notification {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   type      String   
   data      Json
