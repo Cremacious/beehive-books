@@ -73,11 +73,11 @@ export default async function BookPage({
                   {book.genre}
                 </Badge>
                 <Badge className="" variant={'public'}>
-                  {book.privacy}
+                  {book.category}
                 </Badge>
-                <Badge className="" variant={'inProgress'}>
+                {/* <Badge className="" variant={'inProgress'}>
                   {book.status}
-                </Badge>
+                </Badge> */}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="yellowAccent text-center">
