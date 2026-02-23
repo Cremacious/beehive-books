@@ -14,8 +14,8 @@ import {
   getCommentsByChapterId,
 } from '@/lib/sample/books.sample';
 import type { Comment, Reply } from '@/lib/types/books';
+import BackButton from '@/components/shared/back-button';
 
-// TODO: replace hardcoded ids with params.bookId / params.chapterId when wiring to DB
 const BOOK_ID    = '1';
 const CHAPTER_ID = 'ch3';
 
@@ -29,20 +29,11 @@ export default function ChapterReaderPage() {
 
   return (
     <div>
-
-      {/* Top bar */}
       <div className="sticky top-0 z-10 bg-[#1e1e1e]/95 backdrop-blur border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between gap-3">
-        <Link
-          href={`/library/${book.id}`}
-          className="inline-flex items-center gap-1.5 text-sm text-white/45 hover:text-white transition-colors shrink-0"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">{book.title}</span>
-          <span className="sm:hidden">Back</span>
-        </Link>
+       <BackButton href={`/library/${book.id}`} label="" className="text-sm" />
 
         <div className="text-center min-w-0">
-          <p className="text-xs text-white/35 truncate">
+          <p className="text-xs text-yellow-500 truncate">
             Chapter {chapter.order}
           </p>
           <h1 className="text-sm font-semibold text-white truncate leading-tight">
@@ -51,18 +42,16 @@ export default function ChapterReaderPage() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-xs text-white/30 mr-1 hidden sm:inline">
+          <span className="text-xs text-white mr-1 hidden sm:inline">
             {chapter.wordCount.toLocaleString()} words
           </span>
           <button className="p-1.5 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all">
-            <MoreHorizontal className="w-4 h-4" />
+            {/* <MoreHorizontal className="w-4 h-4" /> */}
           </button>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-10">
-
-        {/* Author's notes */}
         {chapter.authorNotes && (
           <div className="mb-8 rounded-xl border border-[#FFC300]/20 bg-[#FFC300]/6 px-5 py-4">
             <div className="flex items-center gap-2 mb-2">
@@ -71,16 +60,14 @@ export default function ChapterReaderPage() {
                 Author&apos;s Note
               </span>
             </div>
-            <p className="text-sm text-white/65 leading-relaxed italic">
+            <p className="text-sm text-white leading-relaxed italic">
               {chapter.authorNotes}
             </p>
           </div>
         )}
-
-        {/* Chapter content */}
         {chapter.content && (
           <article
-            className="text-white/75 text-base leading-[1.9]
+            className="text-white text-base leading-[1.9]
               [&_p]:mb-5
               [&_em]:text-white/60 [&_em]:italic
               [&_strong]:text-white [&_strong]:font-semibold
@@ -92,17 +79,17 @@ export default function ChapterReaderPage() {
           />
         )}
 
-        {/* Chapter navigation */}
+  
         <div className="flex items-center justify-between gap-4 mt-14 pt-8 border-t border-[#2a2a2a]">
           {prev ? (
             <Link
               href={`/library/${book.id}/${prev.id}`}
               className="flex items-center gap-2 group"
             >
-              <ChevronLeft className="w-4 h-4 text-white/30 group-hover:text-[#FFC300] transition-colors shrink-0" />
+              <ChevronLeft className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
               <div className="min-w-0">
-                <p className="text-xs text-white/30">Previous</p>
-                <p className="text-sm font-medium text-white/60 group-hover:text-white truncate transition-colors">
+                <p className="text-xs text-yellow-500">Previous</p>
+                <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
                   {prev.title}
                 </p>
               </div>
@@ -115,24 +102,24 @@ export default function ChapterReaderPage() {
               className="flex items-center gap-2 text-right group"
             >
               <div className="min-w-0">
-                <p className="text-xs text-white/30">Next</p>
-                <p className="text-sm font-medium text-white/60 group-hover:text-white truncate transition-colors">
+                <p className="text-xs text-yellow-500">Next</p>
+                <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
                   {next.title}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-[#FFC300] transition-colors shrink-0" />
+              <ChevronRight className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
             </Link>
           ) : <div />}
         </div>
 
-        {/* Comments */}
+     
         <section className="mt-14">
           <h2 className="text-base font-semibold text-white mb-6 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-white/40" />
             {comments.length} Comments
           </h2>
 
-          {/* Comment input */}
+       
           <div className="flex gap-3 mb-8">
             <div className="w-8 h-8 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 ring-1 ring-[#FFC300]/20">
               <span className="text-[#FFC300] text-xs font-bold">S</span>
@@ -154,7 +141,7 @@ export default function ChapterReaderPage() {
             </div>
           </div>
 
-          {/* Comment list */}
+   
           <div className="space-y-6">
             {comments.map(comment => (
               <CommentItem key={comment.id} comment={comment} />
@@ -174,7 +161,6 @@ function CommentItem({ comment }: { comment: Comment }) {
 
   return (
     <div>
-      {/* Main comment */}
       <div className="flex gap-3">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${comment.user.colorClass}`}>
           {comment.user.initials}
@@ -200,7 +186,7 @@ function CommentItem({ comment }: { comment: Comment }) {
         </div>
       </div>
 
-      {/* Replies */}
+
       {comment.replies.length > 0 && (
         <div className="ml-11 mt-3 space-y-4">
           {comment.replies.map(reply => (
@@ -209,7 +195,7 @@ function CommentItem({ comment }: { comment: Comment }) {
         </div>
       )}
 
-      {/* Reply input */}
+
       {showReply && (
         <div className="ml-11 mt-3 flex gap-2">
           <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">

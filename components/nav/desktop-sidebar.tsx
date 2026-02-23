@@ -116,9 +116,7 @@ export function DesktopSidebar() {
             <p className="text-white text-sm font-semibold truncate leading-tight">
               {user?.username ?? user?.firstName ?? 'User'}
             </p>
-            <p className="text-white/35 text-xs truncate leading-tight mt-0.5">
-              Beehive Books
-            </p>
+           
           </div>
 
           <div className="flex items-center gap-1">

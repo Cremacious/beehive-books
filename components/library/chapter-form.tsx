@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type ExistingChapter = {
   title:       string;
@@ -137,12 +138,9 @@ export function ChapterForm({ mode, cancelHref, chapter }: ChapterFormProps) {
               >
                 Cancel
               </Link>
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[#FFC300] text-[#1a1a1a] hover:bg-[#FFD740] transition-all duration-200 disabled:opacity-50"
-              >
+              <Button type="submit">
                 {isEdit ? 'Save Changes' : 'Create Chapter'}
-              </button>
+              </Button>
             </div>
           </div>
 

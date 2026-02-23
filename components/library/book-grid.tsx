@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Search, SlidersHorizontal, BookOpen, Plus } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import Pagination from '@/components/shared/pagination';
+import { Button } from '@/components/ui/button';
 import type { Book } from '@/lib/types/books';
 
 type SortOption = 'date-added' | 'title' | 'author';
@@ -48,13 +49,12 @@ export default function BookGrid({ books }: { books: Book[] }) {
         <p className="text-sm text-white/30 mb-6 max-w-xs">
           Start writing by creating your first book.
         </p>
-        <Link
-          href="/library/create"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FFC300] text-[#1a1a1a] text-sm font-semibold hover:bg-[#FFD740] transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Create your first book
-        </Link>
+        <Button asChild>
+          <Link href="/library/create">
+            <Plus />
+            Create your first book
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
       {displayed.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {displayed.map(book => (
               <BookCard key={book.id} book={book} />
             ))}

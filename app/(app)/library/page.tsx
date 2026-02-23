@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { getBooks } from '@/lib/sample/books.sample';
 import BookGrid from '@/components/library/book-grid';
+import { Button } from '@/components/ui/button';
 
 export default function LibraryPage() {
   const books = getBooks();
@@ -16,13 +17,12 @@ export default function LibraryPage() {
             {books.length} book{books.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link
-          href="/library/create"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFC300] text-[#1a1a1a] text-sm font-semibold hover:bg-[#FFD740] transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          New Book
-        </Link>
+        <Button asChild size="sm">
+          <Link href="/library/create">
+            <Plus />
+            New Book
+          </Link>
+        </Button>
       </div>
 
       <BookGrid books={books} />

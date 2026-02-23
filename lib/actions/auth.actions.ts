@@ -24,19 +24,18 @@ export async function completeOnboarding(
   try {
     const client = await clerkClient();
 
-    // Upload profile image to Clerk if one was provided
     const imageFile = formData.get('avatar');
     if (imageFile instanceof File && imageFile.size > 0) {
       await client.users.updateUserProfileImage(userId, { file: imageFile });
     }
 
-    // Persist username + mark onboarding complete in the DB
+
     await db
       .update(users)
       .set({ username, onboardingComplete: true, updatedAt: new Date() })
       .where(eq(users.clerkId, userId));
 
-    // Sync flag to Clerk metadata so the middleware sees it immediately
+   
     await client.users.updateUserMetadata(userId, {
       publicMetadata: { onboardingComplete: true },
     });

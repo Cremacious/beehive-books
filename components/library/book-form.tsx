@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Upload, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const CATEGORIES = [
   'Fiction', 'Non-Fiction', 'Poetry', 'Memoir',
@@ -220,12 +221,9 @@ export function BookForm({ mode, cancelHref = '/library', book }: BookFormProps)
               >
                 Cancel
               </Link>
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[#FFC300] text-[#1a1a1a] hover:bg-[#FFD740] transition-all duration-200 disabled:opacity-50"
-              >
+              <Button type="submit">
                 {isEdit ? 'Save Changes' : 'Create Book'}
-              </button>
+              </Button>
             </div>
           </div>
 
