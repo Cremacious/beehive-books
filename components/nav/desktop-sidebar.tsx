@@ -18,14 +18,14 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { href: '/home',          label: 'Feed',          icon: Home      },
-  { href: '/explore',       label: 'Explore',       icon: Compass   },
-  { href: '/library',       label: 'Library',       icon: Library   },
+  { href: '/home', label: 'Feed', icon: Home },
+  { href: '/explore', label: 'Explore', icon: Compass },
+  { href: '/library', label: 'Library', icon: Library },
   // { href: '/write',         label: 'Write',         icon: PenLine   },
-  { href: '/clubs',         label: 'Clubs',         icon: Users     },
-  { href: '/prompts',       label: 'Prompts',       icon: Lightbulb },
-  { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked},
-  { href: '/notifications', label: 'Notifications', icon: Bell      },
+  { href: '/clubs', label: 'Clubs', icon: Users },
+  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
+  { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
 ] as const;
 
 export function DesktopSidebar() {
@@ -38,8 +38,6 @@ export function DesktopSidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-64 lg:w-72 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] shadow-2xl z-40 shrink-0">
-
-      {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[#2a2a2a]">
         <span className="text-[22px] leading-none">🐝</span>
         <span className="text-white font-bold text-lg tracking-tight mainFont">
@@ -47,7 +45,6 @@ export function DesktopSidebar() {
         </span>
       </div>
 
-      {/* Nav items */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         <ul className="space-y-0.5">
           {navItems.map(({ href, label, icon: Icon }) => {
@@ -75,7 +72,6 @@ export function DesktopSidebar() {
             );
           })}
 
-          {/* Profile — links to /u/[username] */}
           {user && (
             <li>
               <Link
@@ -100,10 +96,8 @@ export function DesktopSidebar() {
         </ul>
       </nav>
 
-      {/* User section */}
       <div className="px-3 pb-4 border-t border-[#FFC300]/10 pt-3">
         <div className="flex items-center gap-3 px-2 py-2 rounded-xl">
-          {/* Avatar */}
           {user?.imageUrl ? (
             <img
               src={user.imageUrl}
@@ -120,7 +114,7 @@ export function DesktopSidebar() {
 
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-semibold truncate leading-tight">
-              {user?.fullName ?? user?.firstName ?? 'User'}
+              {user?.username ?? user?.firstName ?? 'User'}
             </p>
             <p className="text-white/35 text-xs truncate leading-tight mt-0.5">
               Beehive Books
@@ -145,7 +139,6 @@ export function DesktopSidebar() {
           </div>
         </div>
       </div>
-
     </aside>
   );
 }

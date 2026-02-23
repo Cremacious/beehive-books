@@ -1,6 +1,6 @@
 'use server';
 
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -13,22 +13,30 @@ export async function completeOnboarding(
   const { userId } = await auth();
   if (!userId) return { error: 'Not authenticated.' };
 
-  const username = (formData.get('username') as string | null)?.trim() ?? '';
+  const user = await currentUser();
+  if (!user) return { error: 'Not authenticated.' };
 
-  if (username.length < 3) {
-    return { error: 'Username must be at least 3 characters.' };
-  }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    return { error: 'Only letters, numbers, and underscores allowed.' };
+  const username = user.username;
+  if (!username) {
+    return { error: 'No username found on your account. Please contact support.' };
   }
 
   try {
+    const client = await clerkClient();
+
+    // Upload profile image to Clerk if one was provided
+    const imageFile = formData.get('avatar');
+    if (imageFile instanceof File && imageFile.size > 0) {
+      await client.users.updateUserProfileImage(userId, { file: imageFile });
+    }
+
+    // Persist username + mark onboarding complete in the DB
     await db
       .update(users)
       .set({ username, onboardingComplete: true, updatedAt: new Date() })
       .where(eq(users.clerkId, userId));
 
-    const client = await clerkClient();
+    // Sync flag to Clerk metadata so the middleware sees it immediately
     await client.users.updateUserMetadata(userId, {
       publicMetadata: { onboardingComplete: true },
     });
