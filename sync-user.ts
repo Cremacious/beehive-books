@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server';
+import { currentUser, clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 
@@ -9,7 +9,7 @@ export async function syncUser() {
   const email = user.emailAddresses[0]?.emailAddress;
   if (!email) return null;
 
-  await db
+  const [dbUser] = await db
     .insert(users)
     .values({
       clerkId:   user.id,
@@ -28,5 +28,14 @@ export async function syncUser() {
         imageUrl:  user.imageUrl,
         updatedAt: new Date(),
       },
+    })
+    .returning({ onboardingComplete: users.onboardingComplete });
+
+  // If DB says onboarded but Clerk JWT doesn't know yet, sync it once
+  if (dbUser?.onboardingComplete && !user.publicMetadata?.onboardingComplete) {
+    const client = await clerkClient();
+    await client.users.updateUserMetadata(user.id, {
+      publicMetadata: { onboardingComplete: true },
     });
+  }
 }
