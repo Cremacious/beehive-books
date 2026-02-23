@@ -23,18 +23,16 @@ export default function BookCard({ book }: { book: Book }) {
       </div>
 
       <div className="flex flex-col flex-1 px-3 pt-2.5 pb-3 gap-1">
-        <h3 className="text-xs font-semibold text-white/80 leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors duration-200">
+        <h3 className="text-xs font-semibold text-yellow-500 leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors duration-200">
           {book.title}
         </h3>
-        <p className="text-[10px] text-white/30 truncate">{book.author}</p>
+        <p className="text-[10px] text-white truncate">{book.author}</p>
 
         <div className="mt-auto pt-2.5 flex items-center justify-between gap-1">
-          <span className="px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-[9px] font-medium truncate max-w-[70%]">
+          <span className="px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-[10px] font-medium truncate max-w-[70%]">
             {book.genre}
           </span>
-          <span className="text-[9px] text-white/20 shrink-0">
-            {book.chapterCount} ch
-          </span>
+        
         </div>
       </div>
     </Link>

@@ -36,11 +36,11 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
       <div className="px-4 py-4 border-b border-[#2a2a2a] sm:px-6">
-        {/* Row 1: title + primary CTA */}
+
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-white">Chapters</h2>
           <div className="flex items-center gap-2">
-            {/* Reorder + Add Collection hidden on mobile, shown inline on desktop */}
+         
             <Button
               size="sm"
               variant={reorderMode ? 'default' : 'outline'}
@@ -62,7 +62,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
           </div>
         </div>
 
-        {/* Row 2: secondary actions — mobile only */}
+
         <div className="flex sm:hidden items-center gap-2 mt-3">
           <Button
             size="sm"
@@ -103,7 +103,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
               <span className="text-sm font-semibold text-white/80">
                 {col.name}
               </span>
-              <span className="text-xs text-white/30 ml-1">
+              <span className="text-xs text-white/70 ml-1">
                 {col.chapters.length} chapter
                 {col.chapters.length !== 1 ? 's' : ''}
               </span>

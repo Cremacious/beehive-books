@@ -123,14 +123,14 @@ export function DesktopSidebar() {
             <Link
               href="/settings/profile"
               title="Settings"
-              className="p-1.5 rounded-lg text-white/35 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all duration-200"
+              className="p-1.5 rounded-lg text-white hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all duration-200"
             >
               <Settings className="w-4 h-4" />
             </Link>
             <button
               onClick={() => signOut({ redirectUrl: '/' })}
               title="Sign out"
-              className="p-1.5 rounded-lg text-white/35 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200"
+              className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-all duration-200"
             >
               <LogOut className="w-4 h-4" />
             </button>
