@@ -50,7 +50,7 @@ export function BookForm({ mode, cancelHref = '/library', book }: BookFormProps)
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] px-4 py-8">
+    <div className="px-4 py-8">
       <div className="mx-auto max-w-2xl">
 
         {/* Page header */}

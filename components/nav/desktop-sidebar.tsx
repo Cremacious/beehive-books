@@ -118,7 +118,6 @@ export function DesktopSidebar() {
             </div>
           )}
 
-          {/* Name */}
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-semibold truncate leading-tight">
               {user?.fullName ?? user?.firstName ?? 'User'}
@@ -128,7 +127,6 @@ export function DesktopSidebar() {
             </p>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-1">
             <Link
               href="/settings/profile"

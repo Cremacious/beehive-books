@@ -26,7 +26,7 @@ export function ChapterForm({ mode, cancelHref, chapter }: ChapterFormProps) {
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] px-4 py-8">
+    <div className="px-4 py-8">
       <div className="mx-auto max-w-3xl">
 
         {/* Page header */}
