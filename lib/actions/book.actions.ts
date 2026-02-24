@@ -457,6 +457,24 @@ export async function deleteCollectionAction(
   }
 }
 
+export async function assignChapterToCollectionAction(
+  bookId: string,
+  chapterId: string,
+  collectionId: string | null,
+): Promise<ActionResult> {
+  await requireBookOwner(bookId);
+  try {
+    await db
+      .update(chapters)
+      .set({ collectionId })
+      .where(and(eq(chapters.id, chapterId), eq(chapters.bookId, bookId)));
+    revalidatePath(`/library/${bookId}`);
+    return { success: true, message: 'Chapter moved.' };
+  } catch {
+    return { success: false, message: 'Failed to move chapter.' };
+  }
+}
+
 /* ─── Comment Actions ──────────────────────────────────────────────────────── */
 
 export async function addCommentAction(

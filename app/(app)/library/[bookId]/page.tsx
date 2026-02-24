@@ -32,7 +32,12 @@ export default async function BookPage({
         <div className="flex gap-5">
           <div className="hidden sm:flex w-28 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
             {book.coverUrl ? (
-              <Image src={book.coverUrl} alt={book.title} fill className="object-cover" />
+              <Image
+                src={book.coverUrl}
+                alt={book.title}
+                fill
+                className="object-cover"
+              />
             ) : (
               <BookOpen className="w-8 h-8 text-white/10" />
             )}
@@ -66,8 +71,9 @@ export default async function BookPage({
             <div className="flex flex-wrap gap-2 mt-3">
               <Badge variant="secondary">{book.genre}</Badge>
               <Badge variant="secondary">{book.category}</Badge>
-              <Badge className='capitalize' variant="secondary">{book.privacy.toLowerCase()}</Badge>
-             
+              <Badge className="capitalize" variant="secondary">
+                {book.privacy.toLowerCase()}
+              </Badge>
             </div>
 
             <p className="text-sm text-white mt-3 leading-relaxed line-clamp-3">
@@ -76,15 +82,15 @@ export default async function BookPage({
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
               <div className="flex items-center gap-1.5 text-sm text-white">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5 text-yellow-500" />
                 <span>{chapters.length} chapters</span>
               </div>
               <div className="flex items-center gap-1.5 text-sm text-white">
-                <BookOpen className="w-3.5 h-3.5" />
+                <BookOpen className="w-3.5 h-3.5 text-yellow-500" />
                 <span>{book.wordCount.toLocaleString()} words</span>
               </div>
               <div className="flex items-center gap-1.5 text-sm text-white">
-                <MessageSquare className="w-3.5 h-3.5" />
+                <MessageSquare className="w-3.5 h-3.5 text-yellow-500" />
                 <span>{book.commentCount} comments</span>
               </div>
             </div>

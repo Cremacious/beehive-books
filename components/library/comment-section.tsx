@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart, MessageSquare, Send, Loader2 } from 'lucide-react';
+import { Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useCommentStore } from '@/lib/stores/comment-store';
 
@@ -118,32 +118,32 @@ export function CommentSection({ chapterId, comments, currentUserId }: Props) {
   return (
     <section className="mt-14">
       <h2 className="text-base font-semibold text-white mb-6 flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-white/40" />
+        <MessageSquare className="w-4 h-4 text-yellow-500" />
         {comments.length} Comment{comments.length !== 1 ? 's' : ''}
       </h2>
 
       {currentUserId && (
         <div className="flex gap-3 mb-8">
           <CurrentUserAvatar className="w-8 h-8 text-xs" />
-          <div className="flex-1 relative">
+          <div className="flex-1 flex flex-col gap-2">
             <textarea
               value={commentText}
               onChange={e => setCommentText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmitComment(); }}
               rows={2}
               placeholder="Leave a comment…"
-              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 pr-11 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
             />
-            <button
-              onClick={handleSubmitComment}
-              disabled={!commentText.trim() || submitting}
-              className="absolute bottom-2.5 right-2.5 p-1.5 rounded-lg text-white/25 hover:text-[#FFC300] disabled:opacity-30 disabled:hover:text-white/25 transition-colors"
-            >
-              {submitting
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Send className="w-3.5 h-3.5" />
-              }
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={handleSubmitComment}
+                disabled={!commentText.trim() || submitting}
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors"
+              >
+                {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -263,9 +263,10 @@ function CommentItem({
           <button
             onClick={handleReply}
             disabled={!replyText.trim() || submitting}
-            className="p-1.5 rounded-lg text-white/25 hover:text-[#FFC300] disabled:opacity-30 transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors shrink-0"
           >
-            {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+            {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
+            Reply
           </button>
         </div>
       )}

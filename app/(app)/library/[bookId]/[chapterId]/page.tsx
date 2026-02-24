@@ -20,7 +20,7 @@ export default async function ChapterReaderPage({
     notFound();
   }
 
-  const { chapter, book, prev, next, comments, currentUserId } = data;
+  const { chapter, prev, next, comments, currentUserId } = data;
 
   return (
     <div>
@@ -34,7 +34,7 @@ export default async function ChapterReaderPage({
           </h1>
         </div>
 
-        <span className="text-xs text-white/30 shrink-0 hidden sm:inline">
+        <span className="text-xs text-white shrink-0 hidden sm:inline">
           {chapter.wordCount.toLocaleString()} words
         </span>
       </div>

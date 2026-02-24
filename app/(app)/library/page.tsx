@@ -17,12 +17,15 @@ export default async function LibraryPage() {
             {books.length} book{books.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button asChild size="sm">
+        {books.length > 0 && (
+
+          <Button asChild size="sm">
           <Link href="/library/create">
             <Plus />
             New Book
           </Link>
         </Button>
+        )}
       </div>
 
       <BookGrid books={books} />

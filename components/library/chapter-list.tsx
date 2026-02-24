@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -10,7 +10,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
   type DragEndEvent,
+  type DragOverEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -27,7 +29,7 @@ import {
   ChevronDown,
   ChevronRight,
   FolderOpen,
-  MoreHorizontal,
+  // MoreHorizontal,
   FileText,
   Loader2,
 } from 'lucide-react';
@@ -35,42 +37,85 @@ import type { Chapter, Collection } from '@/lib/types/books';
 import { useBookStore } from '@/lib/stores/book-store';
 
 type Props = {
-  bookId:      string;
-  chapters:    Chapter[];
+  bookId: string;
+  chapters: Chapter[];
   collections: Collection[];
 };
 
 export default function ChapterList({ bookId, chapters, collections }: Props) {
   const router = useRouter();
-  const { reorderMode, setReorderMode, reorderChapters, createCollection } = useBookStore();
+  const {
+    reorderMode,
+    setReorderMode,
+    reorderChapters,
+    createCollection,
+    assignChapterToCollection,
+  } = useBookStore();
 
   const [localChapters, setLocalChapters] = useState(chapters);
-  const [collapsed, setCollapsed]         = useState<Record<string, boolean>>({});
-  const [saving, setSaving]               = useState(false);
-  const [newColName, setNewColName]       = useState('');
-  const [showColInput, setShowColInput]   = useState(false);
-  const [addingCol, setAddingCol]         = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState(false);
+  const [newColName, setNewColName] = useState('');
+  const [showColInput, setShowColInput] = useState(false);
+  const [addingCol, setAddingCol] = useState(false);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const toggleCollapse = (id: string) =>
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
+  function handleAssignCollection(
+    chapterId: string,
+    collectionId: string | null,
+  ) {
+    setLocalChapters((prev) =>
+      prev.map((c) => (c.id === chapterId ? { ...c, collectionId } : c)),
+    );
+    assignChapterToCollection(bookId, chapterId, collectionId).then(() =>
+      router.refresh(),
+    );
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const id = event.over?.id as string | undefined;
+    const isZone = id === 'uncategorized' || (id?.startsWith('col:') ?? false);
+    setDragOverId(isZone ? (id ?? null) : null);
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+    setDragOverId(null);
     if (!over || active.id === over.id) return;
 
-    const oldIndex = localChapters.findIndex(c => c.id === active.id);
-    const newIndex = localChapters.findIndex(c => c.id === over.id);
+    const id = over.id as string;
+
+    if (id.startsWith('col:')) {
+      handleAssignCollection(active.id as string, id.slice(4));
+      return;
+    }
+
+    if (id === 'uncategorized') {
+      handleAssignCollection(active.id as string, null);
+      return;
+    }
+
+    const oldIndex = localChapters.findIndex((c) => c.id === active.id);
+    const newIndex = localChapters.findIndex((c) => c.id === over.id);
     setLocalChapters(arrayMove(localChapters, oldIndex, newIndex));
   }
 
   async function handleSaveOrder() {
     setSaving(true);
-    const result = await reorderChapters(bookId, localChapters.map(c => c.id));
+    const result = await reorderChapters(
+      bookId,
+      localChapters.map((c) => c.id),
+    );
     setSaving(false);
     if (result.success) {
       setReorderMode(false);
@@ -90,10 +135,10 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     }
   }
 
-  const soloChapters = localChapters.filter(c => !c.collectionId);
-  const collectionChapters = collections.map(col => ({
+  const soloChapters = localChapters.filter((c) => !c.collectionId);
+  const collectionGroups = collections.map((col) => ({
     ...col,
-    chapters: localChapters.filter(c => c.collectionId === col.id),
+    chapters: localChapters.filter((c) => c.collectionId === col.id),
   }));
 
   return (
@@ -105,9 +150,20 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
             {reorderMode ? (
               <>
                 <Button size="sm" onClick={handleSaveOrder} disabled={saving}>
-                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Order'}
+                  {saving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    'Save Order'
+                  )}
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => { setReorderMode(false); setLocalChapters(chapters); }}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setReorderMode(false);
+                    setLocalChapters(chapters);
+                  }}
+                >
                   Cancel
                 </Button>
               </>
@@ -125,51 +181,87 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   size="sm"
                   variant="outline"
                   className="hidden sm:flex"
-                  onClick={() => setShowColInput(v => !v)}
+                  onClick={() => setShowColInput((v) => !v)}
                 >
                   <FolderOpen />
                   Add Collection
                 </Button>
-                <Button asChild size="sm">
-                  <Link href={`/library/${bookId}/create-chapter`}>
-                    <Plus />
-                    Chapter
-                  </Link>
-                </Button>
+                {chapters.length > 0 && (
+                  <Button asChild size="sm">
+                    <Link href={`/library/${bookId}/create-chapter`}>
+                      <Plus />
+                      Chapter
+                    </Link>
+                  </Button>
+                )}
               </>
             )}
           </div>
         </div>
 
-
+        {reorderMode && (
+          <div className="mt-3 p-3 rounded-lg bg-[#FFC300]/10 border border-[#FFC300]/20">
+            <p className="text-sm text-white/80 font-medium">
+              Reorder Mode Active
+            </p>
+            <p className="text-xs text-white/60 mt-1">
+              Drag and drop chapters to reorganize them. You can move chapters
+              into or out of collections by dropping them on the collection
+              zones.
+            </p>
+          </div>
+        )}
         {!reorderMode && (
           <div className="flex sm:hidden items-center gap-2 mt-3">
-            <Button size="sm" variant="outline" onClick={() => setReorderMode(true)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setReorderMode(true)}
+            >
               Reorder
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowColInput(v => !v)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowColInput((v) => !v)}
+            >
               <FolderOpen />
               Collection
             </Button>
           </div>
         )}
-
-      
         {showColInput && (
           <div className="flex items-center gap-2 mt-3">
             <input
               type="text"
               value={newColName}
-              onChange={e => setNewColName(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') handleAddCollection(); }}
+              onChange={(e) => setNewColName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddCollection();
+              }}
               placeholder="Collection name…"
               autoFocus
               className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-1.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 transition-all"
             />
-            <Button size="sm" onClick={handleAddCollection} disabled={addingCol || !newColName.trim()}>
-              {addingCol ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Add'}
+            <Button
+              size="sm"
+              onClick={handleAddCollection}
+              disabled={addingCol || !newColName.trim()}
+            >
+              {addingCol ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                'Add'
+              )}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => { setShowColInput(false); setNewColName(''); }}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setShowColInput(false);
+                setNewColName('');
+              }}
+            >
               Cancel
             </Button>
           </div>
@@ -177,49 +269,85 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
       </div>
 
       <div className="divide-y divide-[#2a2a2a]">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={soloChapters.map(c => c.id)} strategy={verticalListSortingStrategy}>
-            {soloChapters.map(chapter => (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={localChapters.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {reorderMode && collections.length > 0 && (
+              <DroppableZone
+                id="uncategorized"
+                label="Uncategorized"
+                isOver={dragOverId === 'uncategorized'}
+              />
+            )}
+
+            {soloChapters.map((chapter) => (
               <SortableChapterRow
                 key={chapter.id}
                 chapter={chapter}
                 bookId={bookId}
                 reorderMode={reorderMode}
+                collections={collections}
+                onAssignCollection={(colId) =>
+                  handleAssignCollection(chapter.id, colId)
+                }
               />
+            ))}
+
+            {collectionGroups.map((col) => (
+              <div key={col.id}>
+                {reorderMode ? (
+                  <DroppableZone
+                    id={`col:${col.id}`}
+                    label={col.name}
+                    isOver={dragOverId === `col:${col.id}`}
+                    isCollection
+                  />
+                ) : (
+                  <button
+                    onClick={() => toggleCollapse(col.id)}
+                    className="w-full flex items-center gap-3 px-6 py-3.5 bg-[#1e1e1e] hover:bg-[#1c1c1c] transition-colors text-left"
+                  >
+                    {collapsed[col.id] ? (
+                      <ChevronRight className="w-4 h-4 text-[#FFC300]" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-[#FFC300]" />
+                    )}
+                    <FolderOpen className="w-4 h-4 text-[#FFC300]/70" />
+                    <span className="text-sm font-semibold text-white/80">
+                      {col.name}
+                    </span>
+                    <span className="text-xs text-white/70 ml-1">
+                      {col.chapters.length} chapter
+                      {col.chapters.length !== 1 ? 's' : ''}
+                    </span>
+                  </button>
+                )}
+
+                {(!collapsed[col.id] || reorderMode) &&
+                  col.chapters.map((chapter) => (
+                    <SortableChapterRow
+                      key={chapter.id}
+                      chapter={chapter}
+                      bookId={bookId}
+                      reorderMode={reorderMode}
+                      indent
+                      collections={collections}
+                      onAssignCollection={(colId) =>
+                        handleAssignCollection(chapter.id, colId)
+                      }
+                    />
+                  ))}
+              </div>
             ))}
           </SortableContext>
         </DndContext>
-
-        {collectionChapters.map(col => (
-          <div key={col.id}>
-            <button
-              onClick={() => toggleCollapse(col.id)}
-              className="w-full flex items-center gap-3 px-6 py-3.5 bg-[#1e1e1e] hover:bg-[#1c1c1c] transition-colors text-left"
-            >
-              {collapsed[col.id] ? (
-                <ChevronRight className="w-4 h-4 text-[#FFC300]" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-[#FFC300]" />
-              )}
-              <FolderOpen className="w-4 h-4 text-[#FFC300]/70" />
-              <span className="text-sm font-semibold text-white/80">{col.name}</span>
-              <span className="text-xs text-white/70 ml-1">
-                {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
-              </span>
-            </button>
-
-            {!collapsed[col.id] &&
-              col.chapters.map(chapter => (
-                <SortableChapterRow
-                  key={chapter.id}
-                  chapter={chapter}
-                  bookId={bookId}
-                  reorderMode={reorderMode}
-                  indent
-                />
-              ))}
-          </div>
-        ))}
 
         {chapters.length === 0 && (
           <div className="flex flex-col items-center py-16 text-center">
@@ -238,16 +366,64 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   );
 }
 
+function DroppableZone({
+  id,
+  label,
+  isOver,
+  isCollection = false,
+}: {
+  id: string;
+  label: string;
+  isOver: boolean;
+  isCollection?: boolean;
+}) {
+  const { setNodeRef } = useDroppable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex items-center gap-3 px-6 py-3 transition-all border-y ${
+        isOver
+          ? 'border-[#FFC300]/40 bg-[#FFC300]/10'
+          : 'border-transparent bg-[#1e1e1e]'
+      }`}
+    >
+      {isCollection ? (
+        <FolderOpen
+          className={`w-4 h-4 transition-colors ${isOver ? 'text-[#FFC300]' : 'text-[#FFC300]/40'}`}
+        />
+      ) : (
+        <FileText
+          className={`w-4 h-4 transition-colors ${isOver ? 'text-white/60' : 'text-white/20'}`}
+        />
+      )}
+      <span
+        className={`text-sm font-semibold transition-colors ${isOver ? 'text-white/80' : 'text-white/30'}`}
+      >
+        {label}
+      </span>
+      {isOver && (
+        <span className="text-xs text-[#FFC300]/60 ml-1">
+          drop to move here
+        </span>
+      )}
+    </div>
+  );
+}
+
 function SortableChapterRow({
   chapter,
   bookId,
   reorderMode,
   indent = false,
+  collections,
+  onAssignCollection,
 }: {
-  chapter:     Chapter;
-  bookId:      string;
+  chapter: Chapter;
+  bookId: string;
   reorderMode: boolean;
-  indent?:     boolean;
+  indent?: boolean;
+  collections: Collection[];
+  onAssignCollection: (collectionId: string | null) => void;
 }) {
   const {
     attributes,
@@ -258,36 +434,61 @@ function SortableChapterRow({
     isDragging,
   } = useSortable({ id: chapter.id });
 
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    function onMouseDown(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [showMenu]);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const currentCollection = collections.find(
+    (c) => c.id === chapter.collectionId,
+  );
+  const otherCollections = collections.filter(
+    (c) => c.id !== chapter.collectionId,
+  );
+  const hasMenuItems = !!chapter.collectionId || otherCollections.length > 0;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 px-6 py-4 hover:bg-white/2 transition-colors group ${indent ? 'pl-14' : ''}`}
+      {...(reorderMode ? { ...attributes, ...listeners } : {})}
+      className={`flex items-center gap-3 px-6 py-4 hover:bg-white/2 transition-colors group ${indent ? 'pl-14' : ''} ${reorderMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       {reorderMode && (
-        <button
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing touch-none shrink-0"
-          type="button"
-        >
+        <div className="shrink-0">
           <GripVertical className="w-4 h-4 text-white/50" />
-        </button>
+        </div>
       )}
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-white truncate">
           {chapter.title}
         </p>
-        <p className="text-xs text-white/70 mt-0.5">
-          {chapter.wordCount.toLocaleString()} words
-        </p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <p className="text-xs text-white/70">
+            {chapter.wordCount.toLocaleString()} words
+          </p>
+          {reorderMode && currentCollection && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FFC300]/10 text-[#FFC300]/70 border border-[#FFC300]/20">
+              {currentCollection.name}
+            </span>
+          )}
+        </div>
       </div>
 
       {!reorderMode && (
@@ -304,9 +505,41 @@ function SortableChapterRow({
           >
             Edit
           </Link>
-          <button className="p-1.5 rounded-lg text-white hover:text-white/60 hover:bg-white/5 transition-all">
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
+          {hasMenuItems && (
+            <div className="relative" ref={menuRef}>
+              {showMenu && (
+                <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+                  <p className="px-3 py-1.5 text-[10px] text-white/30 uppercase tracking-wider">
+                    Move to
+                  </p>
+                  {chapter.collectionId && (
+                    <button
+                      onClick={() => {
+                        onAssignCollection(null);
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors"
+                    >
+                      Remove from collection
+                    </button>
+                  )}
+                  {otherCollections.map((col) => (
+                    <button
+                      key={col.id}
+                      onClick={() => {
+                        onAssignCollection(col.id);
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                    >
+                      <FolderOpen className="w-3 h-3 text-[#FFC300]/50 shrink-0" />
+                      {col.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
