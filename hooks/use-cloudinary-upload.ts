@@ -12,7 +12,7 @@ export function useCloudinaryUpload(folder: UploadFolder, entityId: string) {
   async function upload(file: File): Promise<string | null> {
     setUploading(true);
     try {
-      const { signature, timestamp, publicId, cloudName, apiKey } =
+      const { signature, timestamp, publicId, cloudFolder, cloudName, apiKey } =
         await generateUploadSignatureAction(folder, entityId);
 
       const formData = new FormData();
@@ -21,7 +21,7 @@ export function useCloudinaryUpload(folder: UploadFolder, entityId: string) {
       formData.append('timestamp', String(timestamp));
       formData.append('signature', signature);
       formData.append('public_id', publicId);
-      formData.append('overwrite', 'true');
+      formData.append('folder', cloudFolder);
 
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,

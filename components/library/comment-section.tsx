@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Send, Loader2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import { useCommentStore } from '@/lib/stores/comment-store';
 
 type CommentUser = {
@@ -38,15 +39,53 @@ type Props = {
 };
 
 function displayName(user: CommentUser): string {
-  if (user.firstName || user.lastName) {
+  if (user.username) return user.username;
+  if (user.firstName || user.lastName)
     return [user.firstName, user.lastName].filter(Boolean).join(' ');
-  }
-  return user.username ?? 'Anonymous';
+  return 'Anonymous';
 }
 
 function initials(user: CommentUser): string {
-  const name = displayName(user);
-  return name.slice(0, 2).toUpperCase();
+  return (user.username ?? displayName(user)).slice(0, 2).toUpperCase();
+}
+
+function CurrentUserAvatar({ className }: { className: string }) {
+  const { user } = useUser();
+  return (
+    <Avatar
+      imageUrl={user?.imageUrl ?? null}
+      alt="You"
+      fallback={(user?.username ?? 'Y').slice(0, 2).toUpperCase()}
+      className={className}
+    />
+  );
+}
+
+function Avatar({
+  imageUrl,
+  alt,
+  fallback,
+  className,
+}: {
+  imageUrl: string | null;
+  alt: string;
+  fallback: string;
+  className: string;
+}) {
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt={alt}
+        className={`rounded-full object-cover shrink-0 ${className}`}
+      />
+    );
+  }
+  return (
+    <div className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white/60 ${className}`}>
+      {fallback}
+    </div>
+  );
 }
 
 function timeAgo(date: Date): string {
@@ -85,9 +124,7 @@ export function CommentSection({ chapterId, comments, currentUserId }: Props) {
 
       {currentUserId && (
         <div className="flex gap-3 mb-8">
-          <div className="w-8 h-8 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 ring-1 ring-[#FFC300]/20">
-            <span className="text-[#FFC300] text-xs font-bold">Y</span>
-          </div>
+          <CurrentUserAvatar className="w-8 h-8 text-xs" />
           <div className="flex-1 relative">
             <textarea
               value={commentText}
@@ -166,9 +203,12 @@ function CommentItem({
   return (
     <div>
       <div className="flex gap-3">
-        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-white/60">
-          {initials(comment.user)}
-        </div>
+        <Avatar
+          imageUrl={comment.user.imageUrl}
+          alt={displayName(comment.user)}
+          fallback={initials(comment.user)}
+          className="w-8 h-8 text-xs"
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm font-semibold text-white/80">{displayName(comment.user)}</span>
@@ -211,9 +251,7 @@ function CommentItem({
 
       {showReply && (
         <div className="ml-11 mt-3 flex gap-2">
-          <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
-            <span className="text-[#FFC300] text-[10px] font-bold">Y</span>
-          </div>
+          <CurrentUserAvatar className="w-7 h-7 text-[10px]" />
           <input
             autoFocus
             value={replyText}
@@ -250,9 +288,12 @@ function ReplyItem({
 
   return (
     <div className="flex gap-3">
-      <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-[10px] font-bold text-white/60">
-        {initials(reply.user)}
-      </div>
+      <Avatar
+        imageUrl={reply.user.imageUrl}
+        alt={displayName(reply.user)}
+        fallback={initials(reply.user)}
+        className="w-7 h-7 text-[10px]"
+      />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-semibold text-white/80">{displayName(reply.user)}</span>

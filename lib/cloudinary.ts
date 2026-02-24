@@ -6,7 +6,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-export const coverPublicId  = (bookId: string)  => `beehive/covers/${bookId}`;
-export const avatarPublicId = (userId: string)  => `beehive/avatars/${userId}`;
+export const coverPublicId  = (bookId: string)  => `hive-covers/${bookId}`;
+export const avatarPublicId = (userId: string)  => `hive-avatars/${userId}`;
 
 export { cloudinary };

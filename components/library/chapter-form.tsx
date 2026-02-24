@@ -8,30 +8,42 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
-import { chapterSchema, type ChapterFormData } from '@/lib/validations/chapter.schema';
-import { createChapterAction, updateChapterAction, deleteChapterAction } from '@/lib/actions/book.actions';
+import {
+  chapterSchema,
+  type ChapterFormData,
+} from '@/lib/validations/chapter.schema';
+import {
+  createChapterAction,
+  updateChapterAction,
+  deleteChapterAction,
+} from '@/lib/actions/book.actions';
 
 type ExistingChapter = {
-  id:          string;
-  title:       string;
+  id: string;
+  title: string;
   authorNotes: string | null;
-  content:     string | null;
+  content: string | null;
 };
 
 type ChapterFormProps = {
-  mode:       'create' | 'edit';
+  mode: 'create' | 'edit';
   cancelHref: string;
-  bookId:     string;
-  chapter?:   ExistingChapter;
+  bookId: string;
+  chapter?: ExistingChapter;
 };
 
-export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormProps) {
+export function ChapterForm({
+  mode,
+  cancelHref,
+  bookId,
+  chapter,
+}: ChapterFormProps) {
   const isEdit = mode === 'edit';
   const router = useRouter();
 
-  const [isDeleting, setIsDeleting]       = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [serverError, setServerError]     = useState('');
+  const [serverError, setServerError] = useState('');
 
   const {
     register,
@@ -41,9 +53,9 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
   } = useForm<ChapterFormData>({
     resolver: zodResolver(chapterSchema),
     defaultValues: {
-      title:       chapter?.title       ?? '',
+      title: chapter?.title ?? '',
       authorNotes: chapter?.authorNotes ?? '',
-      content:     chapter?.content     ?? '',
+      content: chapter?.content ?? '',
     },
   });
 
@@ -64,11 +76,17 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
   }
 
   async function handleDelete() {
-    if (!deleteConfirm) { setDeleteConfirm(true); return; }
+    if (!deleteConfirm) {
+      setDeleteConfirm(true);
+      return;
+    }
     setIsDeleting(true);
     const result = await deleteChapterAction(bookId, chapter!.id);
     if (result.success) router.push(`/library/${bookId}`);
-    else { setIsDeleting(false); setServerError(result.message); }
+    else {
+      setIsDeleting(false);
+      setServerError(result.message);
+    }
   }
 
   const inputClass =
@@ -81,18 +99,18 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
   return (
     <div className="px-4 py-8">
       <div className="mx-auto max-w-3xl">
-
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white">
             {isEdit ? 'Edit Chapter' : 'New Chapter'}
           </h1>
           <p className="mt-1 text-sm text-white/45">
-            {isEdit ? 'Update chapter details and content.' : 'Write and publish a new chapter.'}
+            {isEdit
+              ? 'Update chapter details and content.'
+              : 'Write and publish a new chapter.'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
           {/* Title + Author Notes */}
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
             <div className="space-y-1.5">
@@ -105,13 +123,17 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
                 placeholder="Enter your chapter title…"
                 className={inputClass}
               />
-              {errors.title && <p className={errorClass}>{errors.title.message}</p>}
+              {errors.title && (
+                <p className={errorClass}>{errors.title.message}</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-white/75">
                 Author&apos;s Notes
-                <span className="ml-2 text-xs text-white/30 font-normal">(optional)</span>
+                <span className="ml-2 text-xs text-white/30 font-normal">
+                  (optional)
+                </span>
               </label>
               <textarea
                 {...register('authorNotes')}
@@ -119,9 +141,12 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
                 placeholder="Share thoughts, context, or a message to your readers…"
                 className={inputClass + ' resize-y'}
               />
-              {errors.authorNotes && <p className={errorClass}>{errors.authorNotes.message}</p>}
+              {errors.authorNotes && (
+                <p className={errorClass}>{errors.authorNotes.message}</p>
+              )}
               <p className="text-xs text-white/30">
-                Shown to readers in a highlighted box before the chapter content.
+                Shown to readers in a highlighted box before the chapter
+                content.
               </p>
             </div>
           </div>
@@ -138,7 +163,6 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
             )}
           />
 
-        
           {(serverError || errors.content) && (
             <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
               <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
@@ -148,36 +172,45 @@ export function ChapterForm({ mode, cancelHref, bookId, chapter }: ChapterFormPr
             </div>
           )}
 
-      
           <div className="flex items-center justify-between">
             {isEdit ? (
-              <button
+              <Button
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all duration-200 disabled:opacity-50"
+                variant="destructive"
               >
-                {isDeleting ? 'Deleting…' : deleteConfirm ? 'Confirm delete?' : 'Delete Chapter'}
-              </button>
-            ) : <div />}
+                {isDeleting
+                  ? 'Deleting…'
+                  : deleteConfirm
+                    ? 'Confirm delete?'
+                    : 'Delete Chapter'}
+              </Button>
+            ) : (
+              <div />
+            )}
 
             <div className="flex items-center gap-3">
               <Link
                 href={cancelHref}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+                className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/6 transition-all duration-200"
               >
                 Cancel
               </Link>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> {isEdit ? 'Saving…' : 'Creating…'}</>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />{' '}
+                    {isEdit ? 'Saving…' : 'Creating…'}
+                  </>
+                ) : isEdit ? (
+                  'Save Changes'
                 ) : (
-                  isEdit ? 'Save Changes' : 'Create Chapter'
+                  'Create Chapter'
                 )}
               </Button>
             </div>
           </div>
-
         </form>
       </div>
     </div>

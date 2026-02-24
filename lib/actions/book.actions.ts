@@ -159,7 +159,6 @@ export async function getPublicBookAction(bookId: string) {
   return book;
 }
 
-/* ─── Chapter Actions ──────────────────────────────────────────────────────── */
 
 export async function getChapterWithContextAction(chapterId: string) {
   const { userId } = await auth();
@@ -218,7 +217,6 @@ export async function getChapterWithContextAction(chapterId: string) {
   const prev = idx > 0 ? allChapters[idx - 1] : null;
   const next = idx < allChapters.length - 1 ? allChapters[idx + 1] : null;
 
-  // Always attach likedByMe; fetch liked IDs only when authenticated
   const likedIds = userId
     ? (
         await db.query.commentLikes.findMany({
@@ -264,22 +262,20 @@ export async function createChapterAction(
   const nextOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
 
   try {
-    await db.transaction(async (tx) => {
-      await tx.insert(chapters).values({
-        bookId,
-        ...parsed.data,
-        wordCount,
-        order: nextOrder,
-      });
-      await tx
-        .update(books)
-        .set({
-          chapterCount: sql`${books.chapterCount} + 1`,
-          wordCount: sql`${books.wordCount} + ${wordCount}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(books.id, bookId));
+    await db.insert(chapters).values({
+      bookId,
+      ...parsed.data,
+      wordCount,
+      order: nextOrder,
     });
+    await db
+      .update(books)
+      .set({
+        chapterCount: sql`${books.chapterCount} + 1`,
+        wordCount: sql`${books.wordCount} + ${wordCount}`,
+        updatedAt: new Date(),
+      })
+      .where(eq(books.id, bookId));
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Chapter added.' };
   } catch {
@@ -308,21 +304,19 @@ export async function updateChapterAction(
   const wordCountDiff = newWordCount - existing.wordCount;
 
   try {
-    await db.transaction(async (tx) => {
-      await tx
-        .update(chapters)
-        .set({ ...parsed.data, wordCount: newWordCount, updatedAt: new Date() })
-        .where(eq(chapters.id, chapterId));
-      if (wordCountDiff !== 0) {
-        await tx
-          .update(books)
-          .set({
-            wordCount: sql`${books.wordCount} + ${wordCountDiff}`,
-            updatedAt: new Date(),
-          })
-          .where(eq(books.id, bookId));
-      }
-    });
+    await db
+      .update(chapters)
+      .set({ ...parsed.data, wordCount: newWordCount, updatedAt: new Date() })
+      .where(eq(chapters.id, chapterId));
+    if (wordCountDiff !== 0) {
+      await db
+        .update(books)
+        .set({
+          wordCount: sql`${books.wordCount} + ${wordCountDiff}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(books.id, bookId));
+    }
     revalidatePath(`/library/${bookId}/${chapterId}`);
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Chapter updated.' };
@@ -343,17 +337,15 @@ export async function deleteChapterAction(
   if (!chapter) return { success: false, message: 'Chapter not found.' };
 
   try {
-    await db.transaction(async (tx) => {
-      await tx.delete(chapters).where(eq(chapters.id, chapterId));
-      await tx
-        .update(books)
-        .set({
-          chapterCount: sql`${books.chapterCount} - 1`,
-          wordCount: sql`${books.wordCount} - ${chapter.wordCount}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(books.id, bookId));
-    });
+    await db.delete(chapters).where(eq(chapters.id, chapterId));
+    await db
+      .update(books)
+      .set({
+        chapterCount: sql`${books.chapterCount} - 1`,
+        wordCount: sql`${books.wordCount} - ${chapter.wordCount}`,
+        updatedAt: new Date(),
+      })
+      .where(eq(books.id, bookId));
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Chapter deleted.' };
   } catch {
@@ -367,16 +359,14 @@ export async function reorderChaptersAction(
 ): Promise<ActionResult> {
   await requireBookOwner(bookId);
   try {
-    await db.transaction(async (tx) => {
-      await Promise.all(
-        orderedIds.map((id, index) =>
-          tx
-            .update(chapters)
-            .set({ order: index + 1 })
-            .where(eq(chapters.id, id)),
-        ),
-      );
-    });
+    await Promise.all(
+      orderedIds.map((id, index) =>
+        db
+          .update(chapters)
+          .set({ order: index + 1 })
+          .where(eq(chapters.id, id)),
+      ),
+    );
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Chapters reordered.' };
   } catch {
@@ -392,16 +382,14 @@ export async function reorderCollectionsAction(
 ): Promise<ActionResult> {
   await requireBookOwner(bookId);
   try {
-    await db.transaction(async (tx) => {
-      await Promise.all(
-        orderedIds.map((id, index) =>
-          tx
-            .update(collections)
-            .set({ order: index + 1 })
-            .where(eq(collections.id, id)),
-        ),
-      );
-    });
+    await Promise.all(
+      orderedIds.map((id, index) =>
+        db
+          .update(collections)
+          .set({ order: index + 1 })
+          .where(eq(collections.id, id)),
+      ),
+    );
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Collections reordered.' };
   } catch {
@@ -457,14 +445,11 @@ export async function deleteCollectionAction(
 ): Promise<ActionResult> {
   await requireBookOwner(bookId);
   try {
-    await db.transaction(async (tx) => {
-      // Detach chapters from the collection (don't delete them)
-      await tx
-        .update(chapters)
-        .set({ collectionId: null })
-        .where(eq(chapters.collectionId, collectionId));
-      await tx.delete(collections).where(eq(collections.id, collectionId));
-    });
+    await db
+      .update(chapters)
+      .set({ collectionId: null })
+      .where(eq(chapters.collectionId, collectionId));
+    await db.delete(collections).where(eq(collections.id, collectionId));
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Collection deleted.' };
   } catch {
@@ -493,22 +478,20 @@ export async function addCommentAction(
   }
 
   try {
-    await db.transaction(async (tx) => {
-      await tx.insert(chapterComments).values({
-        chapterId,
-        userId,
-        content: content.trim(),
-        parentId: parentId ?? null,
-      });
-      await tx
-        .update(chapters)
-        .set({ commentCount: sql`${chapters.commentCount} + 1` })
-        .where(eq(chapters.id, chapterId));
-      await tx
-        .update(books)
-        .set({ commentCount: sql`${books.commentCount} + 1` })
-        .where(eq(books.id, book.id));
+    await db.insert(chapterComments).values({
+      chapterId,
+      userId,
+      content: content.trim(),
+      parentId: parentId ?? null,
     });
+    await db
+      .update(chapters)
+      .set({ commentCount: sql`${chapters.commentCount} + 1` })
+      .where(eq(chapters.id, chapterId));
+    await db
+      .update(books)
+      .set({ commentCount: sql`${books.commentCount} + 1` })
+      .where(eq(books.id, book.id));
     revalidatePath(`/library/${book.id}/${chapterId}`);
     return { success: true, message: 'Comment added.' };
   } catch {
@@ -530,31 +513,27 @@ export async function toggleCommentLikeAction(
 
   try {
     if (existing) {
-      await db.transaction(async (tx) => {
-        await tx
-          .delete(commentLikes)
-          .where(
-            and(
-              eq(commentLikes.userId, userId),
-              eq(commentLikes.commentId, commentId),
-            ),
-          );
-        await tx
-          .update(chapterComments)
-          .set({
-            likeCount: sql`GREATEST(${chapterComments.likeCount} - 1, 0)`,
-          })
-          .where(eq(chapterComments.id, commentId));
-      });
+      await db
+        .delete(commentLikes)
+        .where(
+          and(
+            eq(commentLikes.userId, userId),
+            eq(commentLikes.commentId, commentId),
+          ),
+        );
+      await db
+        .update(chapterComments)
+        .set({
+          likeCount: sql`GREATEST(${chapterComments.likeCount} - 1, 0)`,
+        })
+        .where(eq(chapterComments.id, commentId));
       return { success: true, liked: false };
     } else {
-      await db.transaction(async (tx) => {
-        await tx.insert(commentLikes).values({ userId, commentId });
-        await tx
-          .update(chapterComments)
-          .set({ likeCount: sql`${chapterComments.likeCount} + 1` })
-          .where(eq(chapterComments.id, commentId));
-      });
+      await db.insert(commentLikes).values({ userId, commentId });
+      await db
+        .update(chapterComments)
+        .set({ likeCount: sql`${chapterComments.likeCount} + 1` })
+        .where(eq(chapterComments.id, commentId));
       return { success: true, liked: true };
     }
   } catch {
