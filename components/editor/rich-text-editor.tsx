@@ -31,14 +31,14 @@ export function RichTextEditor({ content = '', onChange, editable = true }: Prop
     return (
       <EditorContent
         editor={editor}
-        className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed
+        className="prose prose-invert prose-sm max-w-none text-white leading-relaxed
           [&_.ProseMirror]:outline-none
           [&_.ProseMirror_p]:mb-5
-          [&_.ProseMirror_em]:text-white/60 [&_.ProseMirror_em]:italic
+          [&_.ProseMirror_em]:text-white [&_.ProseMirror_em]:italic
           [&_.ProseMirror_strong]:text-white [&_.ProseMirror_strong]:font-semibold
           [&_.ProseMirror_h1]:text-white [&_.ProseMirror_h1]:text-2xl [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:mb-4
           [&_.ProseMirror_h2]:text-white [&_.ProseMirror_h2]:text-xl [&_.ProseMirror_h2]:font-bold [&_.ProseMirror_h2]:mb-3
-          [&_.ProseMirror_blockquote]:border-l-2 [&_.ProseMirror_blockquote]:border-[#FFC300]/30 [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-white/50 [&_.ProseMirror_blockquote]:italic
+          [&_.ProseMirror_blockquote]:border-l-2 [&_.ProseMirror_blockquote]:border-[#FFC300]/30 [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-white [&_.ProseMirror_blockquote]:italic
           [&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:pl-5 [&_.ProseMirror_ul]:mb-4
           [&_.ProseMirror_ol]:list-decimal [&_.ProseMirror_ol]:pl-5 [&_.ProseMirror_ol]:mb-4
           [&_.ProseMirror_li]:mb-1"
@@ -130,7 +130,7 @@ export function RichTextEditor({ content = '', onChange, editable = true }: Prop
           <Redo className="w-3.5 h-3.5" />
         </ToolbarButton>
 
-        <span className="ml-auto text-xs text-white/25">
+        <span className="ml-auto text-xs text-white">
           {editor.getText().trim().split(/\s+/).filter(Boolean).length} words
         </span>
       </div>
@@ -176,7 +176,7 @@ function ToolbarButton({
       className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
         active
           ? 'bg-[#FFC300]/15 text-[#FFC300]'
-          : 'text-white/40 hover:text-white hover:bg-white/[0.07]'
+          : 'text-white hover:text-white hover:bg-white/[0.07]'
       }`}
     >
       {children}

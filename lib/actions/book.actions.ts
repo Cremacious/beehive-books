@@ -247,7 +247,7 @@ export async function getChapterWithContextAction(chapterId: string) {
 export async function createChapterAction(
   bookId: string,
   data: ChapterFormData,
-): Promise<ActionResult> {
+): Promise<ActionResult & { chapterId?: string }> {
   await requireBookOwner(bookId);
   const parsed = chapterSchema.safeParse(data);
   if (!parsed.success)
@@ -262,12 +262,15 @@ export async function createChapterAction(
   const nextOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
 
   try {
-    await db.insert(chapters).values({
-      bookId,
-      ...parsed.data,
-      wordCount,
-      order: nextOrder,
-    });
+    const [inserted] = await db
+      .insert(chapters)
+      .values({
+        bookId,
+        ...parsed.data,
+        wordCount,
+        order: nextOrder,
+      })
+      .returning({ id: chapters.id });
     await db
       .update(books)
       .set({
@@ -277,7 +280,7 @@ export async function createChapterAction(
       })
       .where(eq(books.id, bookId));
     revalidatePath(`/library/${bookId}`);
-    return { success: true, message: 'Chapter added.' };
+    return { success: true, message: 'Chapter added.', chapterId: inserted.id };
   } catch {
     return { success: false, message: 'Failed to create chapter.' };
   }

@@ -104,6 +104,11 @@ export function BookForm({
   });
 
   const privacy = watch('privacy');
+  const descriptionValue = watch('description') ?? '';
+  const descChars = descriptionValue.length;
+  const descWords = descriptionValue.trim()
+    ? descriptionValue.trim().split(/\s+/).filter(Boolean).length
+    : 0;
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -318,9 +323,22 @@ export function BookForm({
               placeholder="Write a compelling description of your book…"
               className={inputClass + ' resize-y'}
             />
-            {errors.description && (
-              <p className={errorClass}>{errors.description.message}</p>
-            )}
+            <div className="flex items-center justify-between">
+              {errors.description ? (
+                <p className={errorClass}>{errors.description.message}</p>
+              ) : (
+                <span />
+              )}
+              <p className="text-xs shrink-0 ml-2">
+                <span className={descWords > 200 ? 'text-red-400' : descWords > 180 ? 'text-yellow-500' : 'text-white/30'}>
+                  {descWords}/200 words
+                </span>
+                <span className="text-white/20 mx-1.5">·</span>
+                <span className={descChars > 1200 ? 'text-red-400' : descChars > 1080 ? 'text-yellow-500' : 'text-white/30'}>
+                  {descChars}/1200 chars
+                </span>
+              </p>
+            </div>
           </div>
 
           {/* Privacy */}

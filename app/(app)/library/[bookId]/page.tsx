@@ -3,8 +3,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Edit, Share2, BookOpen, FileText, MessageSquare } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
+import { ExpandableDescription } from '@/components/shared/expandable-description';
 import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
+import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
 
@@ -29,15 +31,18 @@ export default async function BookPage({
       <BackButton href="/library" label="My Library" className="mb-6" />
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 mb-6">
-        <div className="flex gap-5">
-          <div className="hidden sm:flex w-28 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
+        <div className="flex flex-col sm:flex-row gap-5 sm:items-start">
+          <div className="flex w-40 mx-auto sm:mx-0 sm:w-36 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
             {book.coverUrl ? (
-              <Image
-                src={book.coverUrl}
-                alt={book.title}
-                fill
-                className="object-cover"
-              />
+              <>
+                <Image
+                  src={book.coverUrl}
+                  alt={book.title}
+                  fill
+                  className="object-cover"
+                />
+                <CoverImageViewer src={book.coverUrl} alt={book.title} />
+              </>
             ) : (
               <BookOpen className="w-8 h-8 text-white/10" />
             )}
@@ -76,9 +81,7 @@ export default async function BookPage({
               </Badge>
             </div>
 
-            <p className="text-sm text-white mt-3 leading-relaxed line-clamp-3">
-              {book.description}
-            </p>
+            <ExpandableDescription text={book.description} />
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
               <div className="flex items-center gap-1.5 text-sm text-white">

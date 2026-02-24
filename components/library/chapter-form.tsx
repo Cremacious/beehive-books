@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, FolderOpen, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
@@ -30,6 +30,7 @@ type ChapterFormProps = {
   cancelHref: string;
   bookId: string;
   chapter?: ExistingChapter;
+  collections?: { id: string; name: string }[];
 };
 
 export function ChapterForm({
@@ -37,6 +38,7 @@ export function ChapterForm({
   cancelHref,
   bookId,
   chapter,
+  collections = [],
 }: ChapterFormProps) {
   const isEdit = mode === 'edit';
   const router = useRouter();
@@ -56,22 +58,29 @@ export function ChapterForm({
       title: chapter?.title ?? '',
       authorNotes: chapter?.authorNotes ?? '',
       content: chapter?.content ?? '',
+      collectionId: null,
     },
   });
 
   async function onSubmit(data: ChapterFormData) {
     setServerError('');
-    let result;
-    if (isEdit && chapter) {
-      result = await updateChapterAction(bookId, chapter.id, data);
-    } else {
-      result = await createChapterAction(bookId, data);
-    }
+    // Convert empty-string from select → null
+    const submitData = {
+      ...data,
+      collectionId: data.collectionId || null,
+    };
 
-    if (result.success) {
-      router.push(cancelHref);
+    if (isEdit && chapter) {
+      const result = await updateChapterAction(bookId, chapter.id, submitData);
+      if (result.success) router.push(cancelHref);
+      else setServerError(result.message);
     } else {
-      setServerError(result.message);
+      const result = await createChapterAction(bookId, submitData);
+      if (result.success && result.chapterId) {
+        router.push(`/library/${bookId}/${result.chapterId}`);
+      } else {
+        setServerError(result.message);
+      }
     }
   }
 
@@ -131,7 +140,7 @@ export function ChapterForm({
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-white/75">
                 Author&apos;s Notes
-                <span className="ml-2 text-xs text-white/30 font-normal">
+                <span className="ml-2 text-xs text-white/70 font-normal">
                   (optional)
                 </span>
               </label>
@@ -144,11 +153,34 @@ export function ChapterForm({
               {errors.authorNotes && (
                 <p className={errorClass}>{errors.authorNotes.message}</p>
               )}
-              <p className="text-xs text-white/30">
+              <p className="text-xs text-white">
                 Shown to readers in a highlighted box before the chapter
                 content.
               </p>
             </div>
+
+            {!isEdit && collections.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-white/75 flex items-center gap-1.5">
+                  <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />
+                  Collection
+                  <span className="ml-1 text-xs text-white/70 font-normal">
+                    (optional)
+                  </span>
+                </label>
+                <select
+                  {...register('collectionId')}
+                  className={inputClass + ' appearance-none'}
+                >
+                  <option value="">No collection</option>
+                  {collections.map((col) => (
+                    <option key={col.id} value={col.id}>
+                      {col.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Rich Text Editor */}
@@ -191,12 +223,14 @@ export function ChapterForm({
             )}
 
             <div className="flex items-center gap-3">
+              <Button asChild variant="outline">
               <Link
                 href={cancelHref}
                 className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/6 transition-all duration-200"
               >
                 Cancel
               </Link>
+              </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
