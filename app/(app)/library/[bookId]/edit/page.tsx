@@ -1,15 +1,6 @@
+import { notFound } from 'next/navigation';
 import { BookForm } from '@/components/library/book-form';
-
-// Placeholder — replace with DB fetch using bookId param
-const PLACEHOLDER_BOOK = {
-  title:       'The Silent Garden',
-  author:      'Sarah Mitchell',
-  category:    'Fiction',
-  genre:       'Literary Fiction',
-  description: 'A story about silence, loss, and finding beauty in unexpected places.',
-  privacy:     'PUBLIC',
-  coverUrl:    null,
-};
+import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
 
 export default async function EditBookPage({
   params,
@@ -18,10 +9,17 @@ export default async function EditBookPage({
 }) {
   const { bookId } = await params;
 
+  let book;
+  try {
+    book = await getBookWithChaptersAction(bookId);
+  } catch {
+    notFound();
+  }
+
   return (
     <BookForm
       mode="edit"
-      book={PLACEHOLDER_BOOK}
+      book={book}
       cancelHref={`/library/${bookId}`}
     />
   );

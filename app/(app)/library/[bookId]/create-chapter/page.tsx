@@ -10,6 +10,7 @@ export default async function CreateChapterPage({
   return (
     <ChapterForm
       mode="create"
+      bookId={bookId}
       cancelHref={`/library/${bookId}`}
     />
   );

@@ -1,11 +1,6 @@
+import { notFound } from 'next/navigation';
 import { ChapterForm } from '@/components/library/chapter-form';
-
-// Placeholder — replace with DB fetch using bookId + chapterId params
-const PLACEHOLDER_CHAPTER = {
-  title:       'Old Letters',
-  authorNotes: 'This chapter was the hardest to write.',
-  content:     '<p>The attic smelled of cedar and forgotten decades.</p>',
-};
+import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
 
 export default async function EditChapterPage({
   params,
@@ -14,10 +9,21 @@ export default async function EditChapterPage({
 }) {
   const { bookId, chapterId } = await params;
 
+  let book;
+  try {
+    book = await getBookWithChaptersAction(bookId);
+  } catch {
+    notFound();
+  }
+
+  const chapter = book.chapters.find(c => c.id === chapterId);
+  if (!chapter) notFound();
+
   return (
     <ChapterForm
       mode="edit"
-      chapter={PLACEHOLDER_CHAPTER}
+      bookId={bookId}
+      chapter={chapter}
       cancelHref={`/library/${bookId}/${chapterId}`}
     />
   );

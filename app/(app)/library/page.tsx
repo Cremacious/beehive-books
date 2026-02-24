@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { getBooks } from '@/lib/sample/books.sample';
 import BookGrid from '@/components/library/book-grid';
 import { Button } from '@/components/ui/button';
+import { getUserBooksAction } from '@/lib/actions/book.actions';
 
-export default function LibraryPage() {
-  const books = getBooks();
+export default async function LibraryPage() {
+  const books = await getUserBooksAction();
 
   return (
     <div className="px-4 py-8 md:px-8">

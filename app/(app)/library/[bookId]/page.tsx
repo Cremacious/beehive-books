@@ -1,14 +1,12 @@
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Edit, Share2, BookOpen, FileText, MessageSquare } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { Button } from '@/components/ui/button';
-import {
-  getBookById,
-  getChaptersByBookId,
-  getCollectionsByBookId,
-} from '@/lib/sample/books.sample';
 import ChapterList from '@/components/library/chapter-list';
 import { Badge } from '@/components/ui/badge';
+import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
 
 export default async function BookPage({
   params,
@@ -16,9 +14,15 @@ export default async function BookPage({
   params: Promise<{ bookId: string }>;
 }) {
   const { bookId } = await params;
-  const book = getBookById(bookId)!;
-  const chapters = getChaptersByBookId(bookId);
-  const collections = getCollectionsByBookId(bookId);
+
+  let book;
+  try {
+    book = await getBookWithChaptersAction(bookId);
+  } catch {
+    notFound();
+  }
+
+  const { chapters, collections } = book;
 
   return (
     <div className="px-4 py-6 md:px-8">
@@ -26,8 +30,12 @@ export default async function BookPage({
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 mb-6">
         <div className="flex gap-5">
-          <div className="hidden sm:flex w-28 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center">
-            <BookOpen className="w-8 h-8 text-white/10" />
+          <div className="hidden sm:flex w-28 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
+            {book.coverUrl ? (
+              <Image src={book.coverUrl} alt={book.title} fill className="object-cover" />
+            ) : (
+              <BookOpen className="w-8 h-8 text-white/10" />
+            )}
           </div>
 
           <div className="flex-1 min-w-0">
