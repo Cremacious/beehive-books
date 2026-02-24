@@ -203,7 +203,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
               )}
               <FolderOpen className="w-4 h-4 text-[#FFC300]/70" />
               <span className="text-sm font-semibold text-white/80">{col.name}</span>
-              <span className="text-xs text-white/30 ml-1">
+              <span className="text-xs text-white/70 ml-1">
                 {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
               </span>
             </button>
