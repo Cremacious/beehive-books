@@ -32,6 +32,7 @@ import {
   MoreHorizontal,
   FileText,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books';
 import { useBookStore } from '@/lib/stores/book-store';
@@ -50,11 +51,26 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     reorderChapters,
     reorderCollections,
     createCollection,
+    deleteChapter,
     assignChapterToCollection,
   } = useBookStore();
 
-  const [localChapters, setLocalChapters] = useState(chapters);
-  const [localCollections, setLocalCollections] = useState(collections);
+  // Pending state is only used during drag-and-drop reordering.
+  // Outside reorder mode we read directly from props so router.refresh() is
+  // immediately visible without any useEffect sync.
+  const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(
+    null,
+  );
+  const [pendingCollections, setPendingCollections] = useState<
+    Collection[] | null
+  >(null);
+
+  const localChapters =
+    reorderMode && pendingChapters !== null ? pendingChapters : chapters;
+  const localCollections =
+    reorderMode && pendingCollections !== null
+      ? pendingCollections
+      : collections;
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
   const [newColName, setNewColName] = useState('');
@@ -76,12 +92,18 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     chapterId: string,
     collectionId: string | null,
   ) {
-    setLocalChapters((prev) =>
-      prev.map((c) => (c.id === chapterId ? { ...c, collectionId } : c)),
+    setPendingChapters((prev) =>
+      (prev ?? chapters).map((c) =>
+        c.id === chapterId ? { ...c, collectionId } : c,
+      ),
     );
     assignChapterToCollection(bookId, chapterId, collectionId).then(() =>
       router.refresh(),
     );
+  }
+
+  function handleDeleteChapter(chapterId: string) {
+    deleteChapter(bookId, chapterId).then(() => router.refresh());
   }
 
   function handleDragOver(event: DragOverEvent) {
@@ -111,7 +133,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
       const oldIndex = localCollections.findIndex((c) => c.id === activeId);
       const newIndex = localCollections.findIndex((c) => c.id === overId);
       if (oldIndex !== -1 && newIndex !== -1) {
-        setLocalCollections(arrayMove(localCollections, oldIndex, newIndex));
+        setPendingCollections(arrayMove(localCollections, oldIndex, newIndex));
       }
       return;
     }
@@ -130,7 +152,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
 
     const oldIndex = localChapters.findIndex((c) => c.id === activeId);
     const newIndex = localChapters.findIndex((c) => c.id === overId);
-    setLocalChapters(arrayMove(localChapters, oldIndex, newIndex));
+    setPendingChapters(arrayMove(localChapters, oldIndex, newIndex));
   }
 
   async function handleSaveOrder() {
@@ -148,6 +170,8 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     setSaving(false);
     if (chapterResult.success && collectionResult.success) {
       setReorderMode(false);
+      setPendingChapters(null);
+      setPendingCollections(null);
       router.refresh();
     }
   }
@@ -191,8 +215,8 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   variant="outline"
                   onClick={() => {
                     setReorderMode(false);
-                    setLocalChapters(chapters);
-                    setLocalCollections(collections);
+                    setPendingChapters(null);
+                    setPendingCollections(null);
                   }}
                 >
                   Cancel
@@ -204,7 +228,11 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   size="sm"
                   variant="outline"
                   className="hidden sm:flex"
-                  onClick={() => setReorderMode(true)}
+                  onClick={() => {
+                    setPendingChapters([...chapters]);
+                    setPendingCollections([...collections]);
+                    setReorderMode(true);
+                  }}
                 >
                   Reorder
                 </Button>
@@ -243,7 +271,11 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setReorderMode(true)}
+              onClick={() => {
+                setPendingChapters([...chapters]);
+                setPendingCollections([...collections]);
+                setReorderMode(true);
+              }}
             >
               Reorder
             </Button>
@@ -325,6 +357,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   onAssignCollection={(colId) =>
                     handleAssignCollection(chapter.id, colId)
                   }
+                  onDeleteChapter={() => handleDeleteChapter(chapter.id)}
                 />
               ))}
             </SortableContext>
@@ -357,6 +390,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                         onAssignCollection={(colId) =>
                           handleAssignCollection(chapter.id, colId)
                         }
+                        onDeleteChapter={() => handleDeleteChapter(chapter.id)}
                       />
                     ))}
                   </SortableContext>
@@ -490,7 +524,7 @@ function SortableCollectionHeader({
         style={style}
         className="flex items-center gap-3 px-6 py-3 bg-[#1e1e1e] border-y border-[#FFC300]/30"
       >
-        <FolderOpen className="w-4 h-4 text-[#FFC300]/70 shrink-0" />
+        <FolderOpen className="w-4 h-4 text-yellow-500 shrink-0" />
         <input
           autoFocus
           value={nameInput}
@@ -533,7 +567,8 @@ function SortableCollectionHeader({
         className="flex items-center gap-3 px-6 py-3 bg-[#323232] border-y border-red-500/20"
       >
         <p className="flex-1 min-w-0 text-sm font-bold text-white leading-relaxed">
-          Delete <span className="font-bold text-sm text-yellow-500">{col.name}</span>?
+          Delete{' '}
+          <span className="font-bold text-sm text-yellow-500">{col.name}</span>?
           {col.chapters.length > 0 && (
             <span className="text-white font-bold text-sm">
               {' '}
@@ -590,7 +625,7 @@ function SortableCollectionHeader({
         </div>
       )}
       <FolderOpen
-        className={`w-4 h-4 shrink-0 transition-colors ${isReordering && isChapterDragOver ? 'text-[#FFC300]' : 'text-[#FFC300]/70'}`}
+        className={`w-4 h-4 shrink-0 transition-colors ${isReordering && isChapterDragOver ? 'text-yellow-500' : 'text-yellow-500'}`}
       />
       <div
         className="flex items-baseline gap-2 flex-1 min-w-0"
@@ -628,7 +663,7 @@ function SortableCollectionHeader({
                 setRenaming(true);
                 setShowMenu(false);
               }}
-              className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors"
+              className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
             >
               Rename
             </button>
@@ -637,7 +672,7 @@ function SortableCollectionHeader({
                 setConfirmDelete(true);
                 setShowMenu(false);
               }}
-              className="w-full text-left px-3 py-2 text-xs text-red-400/80 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+              className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
             >
               Delete collection
             </button>
@@ -655,6 +690,7 @@ function SortableChapterRow({
   indent = false,
   collections,
   onAssignCollection,
+  onDeleteChapter,
 }: {
   chapter: Chapter;
   bookId: string;
@@ -662,6 +698,7 @@ function SortableChapterRow({
   indent?: boolean;
   collections: Collection[];
   onAssignCollection: (collectionId: string | null) => void;
+  onDeleteChapter: () => void;
 }) {
   const {
     attributes,
@@ -673,6 +710,8 @@ function SortableChapterRow({
   } = useSortable({ id: chapter.id });
 
   const [showMenu, setShowMenu] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -698,7 +737,7 @@ function SortableChapterRow({
   const otherCollections = collections.filter(
     (c) => c.id !== chapter.collectionId,
   );
-  const hasMenuItems = !!chapter.collectionId || otherCollections.length > 0;
+  const hasMoveItems = !!chapter.collectionId || otherCollections.length > 0;
 
   return (
     <div
@@ -733,58 +772,105 @@ function SortableChapterRow({
 
       {!reorderMode && (
         <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href={`/library/${bookId}/${chapter.id}`}
-            className="px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
-          >
-            Read
-          </Link>
-          <Link
-            href={`/library/${bookId}/${chapter.id}/edit`}
-            className="px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
-          >
-            Edit
-          </Link>
-          {hasMenuItems && (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setShowMenu((v) => !v)}
-                className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+          {confirmDelete ? (
+            <>
+              <span className="text-xs text-white hidden sm:inline">
+                Delete this chapter?
+              </span>
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={deleting}
+                onClick={async () => {
+                  setDeleting(true);
+                  onDeleteChapter();
+                  setDeleting(false);
+                  setConfirmDelete(false);
+                }}
               >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
-                  <p className="px-3 py-1.5 text-[10px] text-white uppercase tracking-wider">
-                    Move to
-                  </p>
-                  {chapter.collectionId && (
+                {deleting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link
+                href={`/library/${bookId}/${chapter.id}`}
+                className="px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
+              >
+                Read
+              </Link>
+              <Link
+                href={`/library/${bookId}/${chapter.id}/edit`}
+                className="px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
+              >
+                Edit
+              </Link>
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setShowMenu((v) => !v)}
+                  className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+                    {hasMoveItems && (
+                      <>
+                        <p className="px-3 py-1.5 text-[10px] text-white/40 uppercase tracking-wider">
+                          Move to
+                        </p>
+                        {chapter.collectionId && (
+                          <button
+                            onClick={() => {
+                              onAssignCollection(null);
+                              setShowMenu(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors"
+                          >
+                            Remove from collection
+                          </button>
+                        )}
+                        {otherCollections.map((col) => (
+                          <button
+                            key={col.id}
+                            onClick={() => {
+                              onAssignCollection(col.id);
+                              setShowMenu(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                          >
+                            <FolderOpen className="w-3 h-3 text-yellow-500 shrink-0" />
+                            {col.name}
+                          </button>
+                        ))}
+                        <div className="my-1 border-t border-[#2a2a2a]" />
+                      </>
+                    )}
                     <button
                       onClick={() => {
-                        onAssignCollection(null);
+                        setConfirmDelete(true);
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs text-red-400/80 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
                     >
-                      Remove from collection
+                      <Trash2 className="w-3 h-3 shrink-0" />
+                      Delete chapter
                     </button>
-                  )}
-                  {otherCollections.map((col) => (
-                    <button
-                      key={col.id}
-                      onClick={() => {
-                        onAssignCollection(col.id);
-                        setShowMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
-                    >
-                      <FolderOpen className="w-3 h-3 text-yellow-500 shrink-0" />
-                      {col.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       )}

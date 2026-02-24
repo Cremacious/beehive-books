@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import {
   deleteBookAction,
+  deleteChapterAction,
   reorderChaptersAction,
   reorderCollectionsAction,
   deleteCollectionAction,
@@ -17,6 +18,7 @@ interface BookStore {
   setPendingOrder:(ids: string[]) => void;
   
   deleteBook:                 (bookId: string) => Promise<ActionResult>;
+  deleteChapter:              (bookId: string, chapterId: string) => Promise<ActionResult>;
   reorderChapters:            (bookId: string, orderedIds: string[]) => Promise<ActionResult>;
   reorderCollections:         (bookId: string, orderedIds: string[]) => Promise<ActionResult>;
   createCollection:           (bookId: string, name: string) => Promise<ActionResult>;
@@ -32,6 +34,7 @@ export const useBookStore = create<BookStore>((set) => ({
   setPendingOrder:(ids) => set({ pendingOrder: ids }),
 
   deleteBook:                (bookId) => deleteBookAction(bookId),
+  deleteChapter:             (bookId, chapterId) => deleteChapterAction(bookId, chapterId),
   reorderChapters:           (bookId, orderedIds) => reorderChaptersAction(bookId, orderedIds),
   reorderCollections:        (bookId, orderedIds) => reorderCollectionsAction(bookId, orderedIds),
   createCollection:          (bookId, name) => createCollectionAction(bookId, name),
