@@ -445,10 +445,27 @@ export async function deleteCollectionAction(
 ): Promise<ActionResult> {
   await requireBookOwner(bookId);
   try {
-    await db
-      .update(chapters)
-      .set({ collectionId: null })
-      .where(eq(chapters.collectionId, collectionId));
+    // Find chapters being deleted so we can adjust book totals
+    const toDelete = await db.query.chapters.findMany({
+      where: eq(chapters.collectionId, collectionId),
+      columns: { wordCount: true },
+    });
+    const removedWords   = toDelete.reduce((sum, c) => sum + c.wordCount, 0);
+    const removedCount   = toDelete.length;
+
+    await db.delete(chapters).where(eq(chapters.collectionId, collectionId));
+
+    if (removedCount > 0) {
+      await db
+        .update(books)
+        .set({
+          chapterCount: sql`GREATEST(${books.chapterCount} - ${removedCount}, 0)`,
+          wordCount:    sql`GREATEST(${books.wordCount} - ${removedWords}, 0)`,
+          updatedAt:    new Date(),
+        })
+        .where(eq(books.id, bookId));
+    }
+
     await db.delete(collections).where(eq(collections.id, collectionId));
     revalidatePath(`/library/${bookId}`);
     return { success: true, message: 'Collection deleted.' };

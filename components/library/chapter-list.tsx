@@ -29,7 +29,7 @@ import {
   ChevronDown,
   ChevronRight,
   FolderOpen,
-  // MoreHorizontal,
+  MoreHorizontal,
   FileText,
   Loader2,
 } from 'lucide-react';
@@ -48,11 +48,13 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     reorderMode,
     setReorderMode,
     reorderChapters,
+    reorderCollections,
     createCollection,
     assignChapterToCollection,
   } = useBookStore();
 
   const [localChapters, setLocalChapters] = useState(chapters);
+  const [localCollections, setLocalCollections] = useState(collections);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
   const [newColName, setNewColName] = useState('');
@@ -61,7 +63,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -83,9 +85,18 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   }
 
   function handleDragOver(event: DragOverEvent) {
-    const id = event.over?.id as string | undefined;
-    const isZone = id === 'uncategorized' || (id?.startsWith('col:') ?? false);
-    setDragOverId(isZone ? (id ?? null) : null);
+    const { active, over } = event;
+    const overId = over?.id as string | undefined;
+    const activeIsChapter = localChapters.some((c) => c.id === active.id);
+    const overIsCollection = overId
+      ? localCollections.some((c) => c.id === overId)
+      : false;
+    const overIsUncategorized = overId === 'uncategorized';
+    if (activeIsChapter && (overIsCollection || overIsUncategorized)) {
+      setDragOverId(overId ?? null);
+    } else {
+      setDragOverId(null);
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -93,31 +104,49 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     setDragOverId(null);
     if (!over || active.id === over.id) return;
 
-    const id = over.id as string;
+    const activeId = active.id as string;
+    const overId = over.id as string;
 
-    if (id.startsWith('col:')) {
-      handleAssignCollection(active.id as string, id.slice(4));
+    if (localCollections.some((c) => c.id === activeId)) {
+      const oldIndex = localCollections.findIndex((c) => c.id === activeId);
+      const newIndex = localCollections.findIndex((c) => c.id === overId);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setLocalCollections(arrayMove(localCollections, oldIndex, newIndex));
+      }
       return;
     }
 
-    if (id === 'uncategorized') {
-      handleAssignCollection(active.id as string, null);
+    const overIsCollection = localCollections.some((c) => c.id === overId);
+    const overIsUncategorized = overId === 'uncategorized';
+
+    if (overIsCollection) {
+      handleAssignCollection(activeId, overId);
+      return;
+    }
+    if (overIsUncategorized) {
+      handleAssignCollection(activeId, null);
       return;
     }
 
-    const oldIndex = localChapters.findIndex((c) => c.id === active.id);
-    const newIndex = localChapters.findIndex((c) => c.id === over.id);
+    const oldIndex = localChapters.findIndex((c) => c.id === activeId);
+    const newIndex = localChapters.findIndex((c) => c.id === overId);
     setLocalChapters(arrayMove(localChapters, oldIndex, newIndex));
   }
 
   async function handleSaveOrder() {
     setSaving(true);
-    const result = await reorderChapters(
-      bookId,
-      localChapters.map((c) => c.id),
-    );
+    const [chapterResult, collectionResult] = await Promise.all([
+      reorderChapters(
+        bookId,
+        localChapters.map((c) => c.id),
+      ),
+      reorderCollections(
+        bookId,
+        localCollections.map((c) => c.id),
+      ),
+    ]);
     setSaving(false);
-    if (result.success) {
+    if (chapterResult.success && collectionResult.success) {
       setReorderMode(false);
       router.refresh();
     }
@@ -136,13 +165,14 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   }
 
   const soloChapters = localChapters.filter((c) => !c.collectionId);
-  const collectionGroups = collections.map((col) => ({
+  const collectionGroups = localCollections.map((col) => ({
     ...col,
     chapters: localChapters.filter((c) => c.collectionId === col.id),
   }));
 
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
+      {/* Header */}
       <div className="px-4 py-4 border-b border-[#2a2a2a] sm:px-6">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-white">Chapters</h2>
@@ -162,6 +192,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   onClick={() => {
                     setReorderMode(false);
                     setLocalChapters(chapters);
+                    setLocalCollections(collections);
                   }}
                 >
                   Cancel
@@ -198,16 +229,12 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
             )}
           </div>
         </div>
-
         {reorderMode && (
           <div className="mt-3 p-3 rounded-lg bg-[#FFC300]/10 border border-[#FFC300]/20">
-            <p className="text-sm text-white/80 font-medium">
-              Reorder Mode Active
-            </p>
-            <p className="text-xs text-white/60 mt-1">
-              Drag and drop chapters to reorganize them. You can move chapters
-              into or out of collections by dropping them on the collection
-              zones.
+            <p className="text-sm text-white leading-relaxed">
+              Drag chapters and collections into your preferred order. Drop a
+              chapter onto a collection header to move it into that collection,
+              or onto Uncategorized to remove it from a collection.
             </p>
           </div>
         )}
@@ -230,6 +257,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
             </Button>
           </div>
         )}
+
         {showColInput && (
           <div className="flex items-center gap-2 mt-3">
             <input
@@ -241,7 +269,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
               }}
               placeholder="Collection name…"
               autoFocus
-              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-1.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 transition-all"
+              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-1.5 text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#FFC300]/50 transition-all"
             />
             <Button
               size="sm"
@@ -276,74 +304,63 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={localChapters.map((c) => c.id)}
+            items={localCollections.map((c) => c.id)}
             strategy={verticalListSortingStrategy}
           >
-            {reorderMode && collections.length > 0 && (
-              <DroppableZone
-                id="uncategorized"
-                label="Uncategorized"
-                isOver={dragOverId === 'uncategorized'}
-              />
+            {reorderMode && localCollections.length > 0 && (
+              <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
             )}
 
-            {soloChapters.map((chapter) => (
-              <SortableChapterRow
-                key={chapter.id}
-                chapter={chapter}
-                bookId={bookId}
-                reorderMode={reorderMode}
-                collections={collections}
-                onAssignCollection={(colId) =>
-                  handleAssignCollection(chapter.id, colId)
-                }
-              />
-            ))}
+            <SortableContext
+              items={soloChapters.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {soloChapters.map((chapter) => (
+                <SortableChapterRow
+                  key={chapter.id}
+                  chapter={chapter}
+                  bookId={bookId}
+                  reorderMode={reorderMode}
+                  collections={localCollections}
+                  onAssignCollection={(colId) =>
+                    handleAssignCollection(chapter.id, colId)
+                  }
+                />
+              ))}
+            </SortableContext>
 
             {collectionGroups.map((col) => (
               <div key={col.id}>
-                {reorderMode ? (
-                  <DroppableZone
-                    id={`col:${col.id}`}
-                    label={col.name}
-                    isOver={dragOverId === `col:${col.id}`}
-                    isCollection
-                  />
-                ) : (
-                  <button
-                    onClick={() => toggleCollapse(col.id)}
-                    className="w-full flex items-center gap-3 px-6 py-3.5 bg-[#1e1e1e] hover:bg-[#1c1c1c] transition-colors text-left"
-                  >
-                    {collapsed[col.id] ? (
-                      <ChevronRight className="w-4 h-4 text-[#FFC300]" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-[#FFC300]" />
-                    )}
-                    <FolderOpen className="w-4 h-4 text-[#FFC300]/70" />
-                    <span className="text-sm font-semibold text-white/80">
-                      {col.name}
-                    </span>
-                    <span className="text-xs text-white/70 ml-1">
-                      {col.chapters.length} chapter
-                      {col.chapters.length !== 1 ? 's' : ''}
-                    </span>
-                  </button>
-                )}
+                <SortableCollectionHeader
+                  col={col}
+                  bookId={bookId}
+                  isChapterDragOver={dragOverId === col.id}
+                  isReordering={reorderMode}
+                  collapsed={!!collapsed[col.id]}
+                  onToggleCollapse={() => toggleCollapse(col.id)}
+                  onUpdated={() => router.refresh()}
+                />
 
-                {(!collapsed[col.id] || reorderMode) &&
-                  col.chapters.map((chapter) => (
-                    <SortableChapterRow
-                      key={chapter.id}
-                      chapter={chapter}
-                      bookId={bookId}
-                      reorderMode={reorderMode}
-                      indent
-                      collections={collections}
-                      onAssignCollection={(colId) =>
-                        handleAssignCollection(chapter.id, colId)
-                      }
-                    />
-                  ))}
+                {(!collapsed[col.id] || reorderMode) && (
+                  <SortableContext
+                    items={col.chapters.map((c) => c.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {col.chapters.map((chapter) => (
+                      <SortableChapterRow
+                        key={chapter.id}
+                        chapter={chapter}
+                        bookId={bookId}
+                        reorderMode={reorderMode}
+                        indent
+                        collections={localCollections}
+                        onAssignCollection={(colId) =>
+                          handleAssignCollection(chapter.id, colId)
+                        }
+                      />
+                    ))}
+                  </SortableContext>
+                )}
               </div>
             ))}
           </SortableContext>
@@ -366,18 +383,8 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   );
 }
 
-function DroppableZone({
-  id,
-  label,
-  isOver,
-  isCollection = false,
-}: {
-  id: string;
-  label: string;
-  isOver: boolean;
-  isCollection?: boolean;
-}) {
-  const { setNodeRef } = useDroppable({ id });
+function UncategorizedZone({ isOver }: { isOver: boolean }) {
+  const { setNodeRef } = useDroppable({ id: 'uncategorized' });
   return (
     <div
       ref={setNodeRef}
@@ -387,25 +394,256 @@ function DroppableZone({
           : 'border-transparent bg-[#1e1e1e]'
       }`}
     >
-      {isCollection ? (
-        <FolderOpen
-          className={`w-4 h-4 transition-colors ${isOver ? 'text-[#FFC300]' : 'text-[#FFC300]/40'}`}
-        />
-      ) : (
-        <FileText
-          className={`w-4 h-4 transition-colors ${isOver ? 'text-white/60' : 'text-white/20'}`}
-        />
-      )}
+      <FileText
+        className={`w-4 h-4 transition-colors ${isOver ? 'text-white/60' : 'text-white/20'}`}
+      />
       <span
         className={`text-sm font-semibold transition-colors ${isOver ? 'text-white/80' : 'text-white/30'}`}
       >
-        {label}
+        Uncategorized
       </span>
       {isOver && (
         <span className="text-xs text-[#FFC300]/60 ml-1">
           drop to move here
         </span>
       )}
+    </div>
+  );
+}
+
+function SortableCollectionHeader({
+  col,
+  bookId,
+  isChapterDragOver,
+  isReordering,
+  collapsed,
+  onToggleCollapse,
+  onUpdated,
+}: {
+  col: Collection & { chapters: Chapter[] };
+  bookId: string;
+  isChapterDragOver: boolean;
+  isReordering: boolean;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  onUpdated: () => void;
+}) {
+  const { updateCollection, deleteCollection } = useBookStore();
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: col.id });
+
+  const [showMenu, setShowMenu] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [nameInput, setNameInput] = useState(col.name);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    function onMouseDown(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [showMenu]);
+
+  async function handleRename() {
+    if (!nameInput.trim() || nameInput.trim() === col.name) {
+      setRenaming(false);
+      setNameInput(col.name);
+      return;
+    }
+    setSaving(true);
+    await updateCollection(bookId, col.id, nameInput.trim());
+    setSaving(false);
+    setRenaming(false);
+    onUpdated();
+  }
+
+  async function handleDelete() {
+    setSaving(true);
+    await deleteCollection(bookId, col.id);
+    setSaving(false);
+    setConfirmDelete(false);
+    onUpdated();
+  }
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  if (renaming) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="flex items-center gap-3 px-6 py-3 bg-[#1e1e1e] border-y border-[#FFC300]/30"
+      >
+        <FolderOpen className="w-4 h-4 text-[#FFC300]/70 shrink-0" />
+        <input
+          autoFocus
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleRename();
+            if (e.key === 'Escape') {
+              setRenaming(false);
+              setNameInput(col.name);
+            }
+          }}
+          className="flex-1 min-w-0 bg-transparent text-sm font-semibold text-white/80 focus:outline-none border-b border-[#FFC300]/40"
+        />
+        <button
+          onClick={handleRename}
+          disabled={saving}
+          className="text-xs text-[#FFC300] hover:text-[#FFD54F] transition-colors shrink-0"
+        >
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save'}
+        </button>
+        <button
+          onClick={() => {
+            setRenaming(false);
+            setNameInput(col.name);
+          }}
+          className="text-xs text-white/40 hover:text-white/70 transition-colors shrink-0"
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  /* ── Delete confirmation mode ── */
+  if (confirmDelete) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="flex items-center gap-3 px-6 py-3 bg-[#323232] border-y border-red-500/20"
+      >
+        <p className="flex-1 min-w-0 text-sm font-bold text-white leading-relaxed">
+          Delete <span className="font-bold text-sm text-yellow-500">{col.name}</span>?
+          {col.chapters.length > 0 && (
+            <span className="text-white font-bold text-sm">
+              {' '}
+              {col.chapters.length} chapter
+              {col.chapters.length !== 1 ? 's' : ''} will also be deleted.
+            </span>
+          )}
+        </p>
+        <Button
+          onClick={handleDelete}
+          disabled={saving}
+          size={'sm'}
+          variant={'destructive'}
+        >
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Delete'}
+        </Button>
+        <Button onClick={() => setConfirmDelete(false)} variant={'outline'}>
+          Cancel
+        </Button>
+      </div>
+    );
+  }
+
+  /* ── Normal mode ── */
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...(isReordering ? { ...attributes, ...listeners } : {})}
+      className={`flex items-center gap-3 px-6 py-3.5 transition-all border-y ${
+        isReordering
+          ? `cursor-grab active:cursor-grabbing ${
+              isChapterDragOver
+                ? 'border-[#FFC300]/40 bg-[#FFC300]/10'
+                : 'border-transparent bg-[#1e1e1e] hover:bg-[#1c1c1c]'
+            }`
+          : 'border-transparent bg-[#1e1e1e] hover:bg-[#1c1c1c]'
+      }`}
+    >
+      {isReordering ? (
+        <GripVertical
+          className={`w-4 h-4 shrink-0 ${isChapterDragOver ? 'text-[#FFC300]/60' : 'text-white/25'}`}
+        />
+      ) : (
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={onToggleCollapse}
+        >
+          {collapsed ? (
+            <ChevronRight className="w-4 h-4 text-[#FFC300]" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-[#FFC300]" />
+          )}
+        </div>
+      )}
+      <FolderOpen
+        className={`w-4 h-4 shrink-0 transition-colors ${isReordering && isChapterDragOver ? 'text-[#FFC300]' : 'text-[#FFC300]/70'}`}
+      />
+      <div
+        className="flex items-baseline gap-2 flex-1 min-w-0"
+        onClick={!isReordering ? onToggleCollapse : undefined}
+        style={{ cursor: !isReordering ? 'pointer' : undefined }}
+      >
+        <span
+          className={`text-sm font-semibold truncate transition-colors ${isReordering && isChapterDragOver ? 'text-white/90' : 'text-white/80'}`}
+        >
+          {col.name}
+        </span>
+        <span className="text-xs text-white shrink-0">
+          - {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
+        </span>
+        {isReordering && isChapterDragOver && (
+          <span className="text-xs text-[#FFC300]/60 shrink-0">drop here</span>
+        )}
+      </div>
+      <div
+        className="relative shrink-0"
+        ref={menuRef}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={() => setShowMenu((v) => !v)}
+          className="p-1 rounded text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+        >
+          <MoreHorizontal className="w-4 h-4" />
+        </button>
+        {showMenu && (
+          <div className="absolute right-0 top-full mt-1 z-50 min-w-36 rounded-xl bg-[#1a1a1a] border border-[#333] shadow-xl py-1 overflow-hidden">
+            <button
+              onClick={() => {
+                setRenaming(true);
+                setShowMenu(false);
+              }}
+              className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors"
+            >
+              Rename
+            </button>
+            <button
+              onClick={() => {
+                setConfirmDelete(true);
+                setShowMenu(false);
+              }}
+              className="w-full text-left px-3 py-2 text-xs text-red-400/80 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+            >
+              Delete collection
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -467,7 +705,9 @@ function SortableChapterRow({
       ref={setNodeRef}
       style={style}
       {...(reorderMode ? { ...attributes, ...listeners } : {})}
-      className={`flex items-center gap-3 px-6 py-4 hover:bg-white/2 transition-colors group ${indent ? 'pl-14' : ''} ${reorderMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      className={`flex items-center gap-3 px-6 py-4 hover:bg-white/2 transition-colors group ${
+        indent ? 'pl-14' : ''
+      } ${reorderMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       {reorderMode && (
         <div className="shrink-0">
@@ -507,9 +747,15 @@ function SortableChapterRow({
           </Link>
           {hasMenuItems && (
             <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setShowMenu((v) => !v)}
+                className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
               {showMenu && (
                 <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
-                  <p className="px-3 py-1.5 text-[10px] text-white/30 uppercase tracking-wider">
+                  <p className="px-3 py-1.5 text-[10px] text-white uppercase tracking-wider">
                     Move to
                   </p>
                   {chapter.collectionId && (
@@ -518,7 +764,7 @@ function SortableChapterRow({
                         onAssignCollection(null);
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
                     >
                       Remove from collection
                     </button>
@@ -530,9 +776,9 @@ function SortableChapterRow({
                         onAssignCollection(col.id);
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
                     >
-                      <FolderOpen className="w-3 h-3 text-[#FFC300]/50 shrink-0" />
+                      <FolderOpen className="w-3 h-3 text-yellow-500 shrink-0" />
                       {col.name}
                     </button>
                   ))}
