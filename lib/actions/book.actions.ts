@@ -10,7 +10,6 @@ import {
   collections,
   chapterComments,
   commentLikes,
-  users,
 } from '@/db/schema';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {

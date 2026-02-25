@@ -56,6 +56,7 @@ export function BookForm({
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const privacy = watch('privacy');
   const descriptionValue = watch('description') ?? '';
   const descChars = descriptionValue.length;

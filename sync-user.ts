@@ -29,13 +29,20 @@ export async function syncUser() {
         updatedAt: new Date(),
       },
     })
-    .returning({ onboardingComplete: users.onboardingComplete });
+    .returning({ onboardingComplete: users.onboardingComplete, username: users.username });
 
-  // If DB says onboarded but Clerk JWT doesn't know yet, sync it once
-  if (dbUser?.onboardingComplete && !user.publicMetadata?.onboardingComplete) {
+  // Sync any missing publicMetadata fields back to Clerk in a single call
+  const missingOnboarding = dbUser?.onboardingComplete && !user.publicMetadata?.onboardingComplete;
+  const missingUsername   = dbUser?.username && !user.publicMetadata?.username;
+
+  if (missingOnboarding || missingUsername) {
     const client = await clerkClient();
     await client.users.updateUserMetadata(user.id, {
-      publicMetadata: { onboardingComplete: true },
+      publicMetadata: {
+        ...(user.publicMetadata ?? {}),
+        ...(missingOnboarding ? { onboardingComplete: true } : {}),
+        ...(missingUsername   ? { username: dbUser!.username } : {}),
+      },
     });
   }
 }

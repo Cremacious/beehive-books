@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, primaryKey, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -87,6 +87,17 @@ export const readingLists = pgTable('reading_lists', {
   updatedAt:              timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const friendships = pgTable('friendships', {
+  id:          text('id').primaryKey().$defaultFn(() => createId()),
+  requesterId: text('requester_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  addresseeId: text('addressee_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  status:      text('status', { enum: ['PENDING', 'ACCEPTED'] }).notNull().default('PENDING'),
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+  updatedAt:   timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('unique_friendship_idx').on(table.requesterId, table.addresseeId),
+]);
+
 export const readingListBooks = pgTable('reading_list_books', {
   id:            text('id').primaryKey().$defaultFn(() => createId()),
   readingListId: text('reading_list_id').notNull().references(() => readingLists.id, { onDelete: 'cascade' }),
@@ -100,10 +111,25 @@ export const readingListBooks = pgTable('reading_list_books', {
 
 
 export const usersRelations = relations(users, ({ many }) => ({
-  books:        many(books),
-  comments:     many(chapterComments),
-  commentLikes: many(commentLikes),
-  readingLists: many(readingLists),
+  books:            many(books),
+  comments:         many(chapterComments),
+  commentLikes:     many(commentLikes),
+  readingLists:     many(readingLists),
+  sentRequests:     many(friendships, { relationName: 'sentRequests' }),
+  receivedRequests: many(friendships, { relationName: 'receivedRequests' }),
+}));
+
+export const friendshipsRelations = relations(friendships, ({ one }) => ({
+  requester: one(users, {
+    fields:       [friendships.requesterId],
+    references:   [users.clerkId],
+    relationName: 'sentRequests',
+  }),
+  addressee: one(users, {
+    fields:       [friendships.addresseeId],
+    references:   [users.clerkId],
+    relationName: 'receivedRequests',
+  }),
 }));
 
 export const booksRelations = relations(books, ({ one, many }) => ({

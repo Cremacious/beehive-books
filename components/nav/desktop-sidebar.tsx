@@ -9,6 +9,7 @@ import {
   Compass,
   Library,
   Users,
+  Users2,
   Lightbulb,
   BookMarked,
   User,
@@ -17,11 +18,12 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { href: '/home', label: 'Feed', icon: Home },
-  { href: '/explore', label: 'Explore', icon: Compass },
-  { href: '/library', label: 'Library', icon: Library },
-  { href: '/clubs', label: 'Clubs', icon: Users },
-  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
+  { href: '/home',          label: 'Feed',          icon: Home },
+  { href: '/explore',       label: 'Explore',       icon: Compass },
+  { href: '/library',       label: 'Library',       icon: Library },
+  { href: '/friends',       label: 'Friends',       icon: Users2 },
+  { href: '/clubs',         label: 'Clubs',         icon: Users },
+  { href: '/prompts',       label: 'Prompts',       icon: Lightbulb },
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
 ] as const;
 

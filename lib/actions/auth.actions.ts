@@ -46,7 +46,7 @@ export async function completeOnboarding(
       .where(eq(users.clerkId, userId));
 
     await client.users.updateUserMetadata(userId, {
-      publicMetadata: { onboardingComplete: true },
+      publicMetadata: { onboardingComplete: true, username },
     });
   } catch (err: unknown) {
     console.error('Onboarding error:', err);

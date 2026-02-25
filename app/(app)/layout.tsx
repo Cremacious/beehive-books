@@ -1,7 +1,9 @@
 import { DesktopSidebar } from '@/components/nav/desktop-sidebar';
 import { MobileNavbar } from '@/components/nav/mobile-navbar';
+import { syncUser } from '@/sync-user';
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  await syncUser();
   return (
     <div className="flex h-screen overflow-hidden">
       <DesktopSidebar />
