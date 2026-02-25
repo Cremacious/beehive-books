@@ -26,98 +26,104 @@ export default async function BookPage({
 
   const { chapters, collections } = book;
 
+  //TODO: Make it so collections can be ordered. Make it so the chapters can be listed as chapter, chapter, collection, chapter, then collection in the order if the user wants.
+
   return (
     <div className="px-4 py-6 md:px-8">
-      <BackButton href="/library" label="My Library" className="mb-6" />
+      <div className="max-w-6xl mx-auto">
+        <BackButton href="/library" label="My Library" className="mb-6" />
 
-      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 mb-6">
-        <div className="flex flex-col sm:flex-row gap-5 sm:items-start">
-          <div className="flex w-40 mx-auto sm:mx-0 sm:w-36 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
-            {book.coverUrl ? (
-              <>
-                <Image
-                  src={book.coverUrl}
-                  alt={book.title}
-                  fill
-                  className="object-cover"
-                />
-                <CoverImageViewer src={book.coverUrl} alt={book.title} />
-              </>
-            ) : (
-              <BookOpen className="w-8 h-8 text-white/10" />
-            )}
+        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 md:p-8 mb-6">
+          <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
+            <div className="flex w-40 mx-auto sm:mx-0 sm:w-40 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
+              {book.coverUrl ? (
+                <>
+                  <Image
+                    src={book.coverUrl}
+                    alt={book.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <CoverImageViewer src={book.coverUrl} alt={book.title} />
+                </>
+              ) : (
+                <BookOpen className="w-10 h-10 text-white/10" />
+              )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h1 className="text-2xl md:text-3xl font-bold text-yellow-500 leading-tight">
+                    {book.title}
+                  </h1>
+                  <p className="text-base text-white mt-1.5">
+                    by {book.author}
+                  </p>
+                </div>
+
+                <div className="hidden sm:flex items-center gap-2 shrink-0">
+                  <Button variant={'outline'} asChild size="sm">
+                    <Link href={`/library/${book.id}/share`}>
+                      <Share2 className="w-3.5 h-3.5" />
+                      Share
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm">
+                    <Link href={`/library/${book.id}/edit`}>
+                      <Edit />
+                      Edit
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Badge variant="secondary">{book.genre}</Badge>
+                <Badge variant="secondary">{book.category}</Badge>
+                <Badge className="capitalize" variant="secondary">
+                  {book.privacy.toLowerCase()}
+                </Badge>
+              </div>
+
+              <ExpandableDescription text={book.description} />
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5">
+                <div className="flex items-center gap-2 text-base text-white">
+                  <FileText className="w-4 h-4 text-yellow-500" />
+                  <span>{chapters.length} chapters</span>
+                </div>
+                <div className="flex items-center gap-2 text-base text-white">
+                  <BookOpen className="w-4 h-4 text-yellow-500" />
+                  <span>{book.wordCount.toLocaleString()} words</span>
+                </div>
+                <div className="flex items-center gap-2 text-base text-white">
+                  <MessageSquare className="w-4 h-4 text-yellow-500" />
+                  <span>{book.commentCount} comments</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h1 className="text-xl md:text-2xl font-bold text-yellow-500 leading-tight">
-                  {book.title}
-                </h1>
-                <p className="text-sm text-white mt-1">by {book.author}</p>
-              </div>
-
-              <div className="hidden sm:flex items-center gap-2 shrink-0">
-                <Button variant={'outline'} asChild size="sm">
-                  <Link href={`/library/${book.id}/share`}>
-                    <Share2 className="w-3.5 h-3.5" />
-                    Share
-                  </Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link href={`/library/${book.id}/edit`}>
-                    <Edit />
-                    Edit
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              <Badge variant="secondary">{book.genre}</Badge>
-              <Badge variant="secondary">{book.category}</Badge>
-              <Badge className="capitalize" variant="secondary">
-                {book.privacy.toLowerCase()}
-              </Badge>
-            </div>
-
-            <ExpandableDescription text={book.description} />
-
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
-              <div className="flex items-center gap-1.5 text-sm text-white">
-                <FileText className="w-3.5 h-3.5 text-yellow-500" />
-                <span>{chapters.length} chapters</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-white">
-                <BookOpen className="w-3.5 h-3.5 text-yellow-500" />
-                <span>{book.wordCount.toLocaleString()} words</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-white">
-                <MessageSquare className="w-3.5 h-3.5 text-yellow-500" />
-                <span>{book.commentCount} comments</span>
-              </div>
-            </div>
+          <div className="flex sm:hidden gap-2 mt-4">
+            <Button asChild className="flex-1">
+              <Link href={`/library/${book.id}/edit`}>
+                <Edit />
+                Edit Book
+              </Link>
+            </Button>
+            <Button variant="outline" size="icon-sm">
+              <Share2 />
+            </Button>
           </div>
         </div>
 
-        <div className="flex sm:hidden gap-2 mt-4">
-          <Button asChild className="flex-1">
-            <Link href={`/library/${book.id}/edit`}>
-              <Edit />
-              Edit Book
-            </Link>
-          </Button>
-          <Button variant="outline" size="icon-sm">
-            <Share2 />
-          </Button>
-        </div>
+        <ChapterList
+          bookId={bookId}
+          chapters={chapters}
+          collections={collections}
+        />
       </div>
-
-      <ChapterList
-        bookId={bookId}
-        chapters={chapters}
-        collections={collections}
-      />
     </div>
   );
 }

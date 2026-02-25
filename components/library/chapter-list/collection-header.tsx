@@ -92,7 +92,7 @@ export function SortableCollectionHeader({
       <div
         ref={setNodeRef}
         style={style}
-        className="flex items-center gap-3 px-6 py-3 bg-[#1e1e1e] border-y border-[#FFC300]/30"
+        className="flex items-center gap-3 px-4 py-3 bg-[#1e1e1e] border-y border-[#FFC300]/30"
       >
         <FolderOpen className="w-4 h-4 text-yellow-500 shrink-0" />
         <input
@@ -133,7 +133,7 @@ export function SortableCollectionHeader({
       <div
         ref={setNodeRef}
         style={style}
-        className="flex items-center gap-3 px-6 py-3 bg-[#323232] border-y border-red-500/20"
+        className="flex items-center gap-3 px-4 py-3 bg-[#323232] border-y border-red-500/20"
       >
         <p className="flex-1 min-w-0 text-sm font-bold text-white leading-relaxed">
           Delete{' '}
@@ -166,7 +166,7 @@ export function SortableCollectionHeader({
       ref={setNodeRef}
       style={style}
       {...(isReordering ? { ...attributes, ...listeners } : {})}
-      className={`flex items-center gap-3 px-6 py-3.5 transition-all border-y ${
+      className={`flex items-center gap-4 px-5 py-4 transition-all border-y ${
         isReordering
           ? `cursor-grab active:cursor-grabbing ${
               isChapterDragOver
@@ -186,14 +186,14 @@ export function SortableCollectionHeader({
           onClick={onToggleCollapse}
         >
           {collapsed ? (
-            <ChevronRight className="w-4 h-4 text-[#FFC300]" />
+            <ChevronRight className="w-5 h-5 text-[#FFC300]" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-[#FFC300]" />
+            <ChevronDown className="w-5 h-5 text-[#FFC300]" />
           )}
         </div>
       )}
       <FolderOpen
-        className={`w-4 h-4 shrink-0 transition-colors ${isReordering && isChapterDragOver ? 'text-yellow-500' : 'text-yellow-500'}`}
+        className={`w-5 h-5 shrink-0 transition-colors ${isReordering && isChapterDragOver ? 'text-yellow-500' : 'text-yellow-500'}`}
       />
       <div
         className="flex flex-col flex-1 min-w-0"
@@ -201,15 +201,15 @@ export function SortableCollectionHeader({
         style={{ cursor: !isReordering ? 'pointer' : undefined }}
       >
         <span
-          className={`text-sm font-semibold truncate transition-colors ${isReordering && isChapterDragOver ? 'text-white/90' : 'text-white/80'}`}
+          className={`text-base font-semibold truncate transition-colors ${isReordering && isChapterDragOver ? 'text-white/90' : 'text-white'}`}
         >
           {col.name}
         </span>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-white/50 shrink-0">
+          <span className="text-sm text-white/70 shrink-0">
             {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
           </span>
-          <span className="text-xs text-white/50 shrink-0">
+          <span className="text-sm text-white/70 shrink-0">
             ·{' '}
             {col.chapters
               .reduce((sum, chapter) => sum + chapter.wordCount, 0)
@@ -217,7 +217,7 @@ export function SortableCollectionHeader({
             words
           </span>
           {isReordering && isChapterDragOver && (
-            <span className="text-xs text-[#FFC300]/60 shrink-0">
+            <span className="text-sm text-[#FFC300]/60 shrink-0">
               drop here
             </span>
           )}

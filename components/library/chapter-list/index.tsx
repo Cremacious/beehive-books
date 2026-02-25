@@ -58,7 +58,13 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     reorderMode && pendingCollections !== null
       ? pendingCollections
       : collections;
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    const initialCollapsed: Record<string, boolean> = {};
+    collections.forEach((col) => {
+      initialCollapsed[col.id] = true;
+    });
+    return initialCollapsed;
+  });
   const [saving, setSaving] = useState(false);
   const [newColName, setNewColName] = useState('');
   const [showColInput, setShowColInput] = useState(false);
@@ -182,10 +188,10 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
   }));
 
   return (
-    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
-      <div className="px-4 py-4 border-b border-[#2a2a2a] sm:px-6">
+    <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
+      <div className="px-5 py-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-yellow-500">Chapters</h2>
+          <h2 className="text-lg font-semibold text-yellow-500">Chapters</h2>
           <div className="flex items-center gap-2">
             {reorderMode ? (
               <>

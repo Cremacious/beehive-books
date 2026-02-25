@@ -82,8 +82,8 @@ export function SortableChapterRow({
           ? () => router.push(`/library/${bookId}/${chapter.id}`)
           : undefined
       }
-      className={`flex items-center gap-3 px-6 py-4 hover:bg-white/2 transition-colors group ${
-        indent ? 'pl-14' : ''
+      className={`flex items-center gap-4 px-5 py-4  hover:bg-[#2e2e2e] transition-colors group border-b border-[#3f3f3f] ${
+        indent ? 'pl-12' : ''
       } ${reorderMode ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
     >
       {reorderMode && (
@@ -93,11 +93,11 @@ export function SortableChapterRow({
       )}
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">
+        <p className="text-base font-medium text-white truncate">
           {chapter.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
-          <p className="text-xs text-white/70">
+          <p className="text-sm text-white/70">
             {chapter.wordCount.toLocaleString()} words
           </p>
           {reorderMode && currentCollection && (

@@ -10,7 +10,6 @@ import {
   Plus,
   LayoutGrid,
   List,
-  MessageSquare,
 } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import Pagination from '@/components/shared/pagination';
@@ -32,9 +31,9 @@ function BookListItem({ book }: { book: Book }) {
   return (
     <Link
       href={`/library/${book.id}`}
-      className="group flex gap-4 rounded-lg bg-[#202020] border border-[#2a2a2a] p-3 hover:border-[#FFC300]/25 hover:bg-[#232323] transition-all duration-200"
+      className="group flex gap-4 rounded-lg bg-[#202020] border border-[#2a2a2a] p-4 hover:border-[#FFC300]/25 hover:bg-[#232323] transition-all duration-200"
     >
-      <div className="relative w-14 shrink-0 aspect-2/3 rounded-md bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+      <div className="relative w-16 shrink-0 aspect-2/3 rounded-md bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
         {book.coverUrl ? (
           <Image
             src={book.coverUrl}
@@ -43,20 +42,20 @@ function BookListItem({ book }: { book: Book }) {
             className="object-cover"
           />
         ) : (
-          <BookOpen className="w-5 h-5 text-white/10" />
+          <BookOpen className="w-6 h-6 text-white/10" />
         )}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-between gap-1">
         <div className="min-w-0">
-          <h3 className="text-base font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors">
+          <h3 className="text-lg font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors">
             {book.title}
           </h3>
-          <p className="text-sm text-white truncate">{book.author}</p>
+          <p className="text-base text-white truncate">{book.author}</p>
         </div>
 
         <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
-          <span className="px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium">
+          <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium">
             {book.genre}
           </span>
         </div>
@@ -122,14 +121,14 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-16 h-16 rounded-xl bg-[#252525] flex items-center justify-center mb-4">
-          <BookOpen className="w-7 h-7 text-white/15" />
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-20 h-20 rounded-xl bg-[#252525] flex items-center justify-center mb-6">
+          <BookOpen className="w-9 h-9 text-white/15" />
         </div>
-        <h2 className="text-lg font-semibold text-white/55 mb-2">
+        <h2 className="text-xl font-semibold text-white/55 mb-3">
           No books yet
         </h2>
-        <p className="text-sm text-white/30 mb-5 max-w-xs">
+        <p className="text-base text-white/30 mb-6 max-w-xs">
           Start writing by creating your first book.
         </p>
         <Button asChild>
@@ -144,25 +143,25 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
           <input
             type="text"
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by title, author, or genre…"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <div className="relative">
-            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-500 pointer-events-none" />
+            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500 pointer-events-none" />
             <select
               value={sort}
               onChange={(e) => handleSort(e.target.value as SortOption)}
-              className="pl-9 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
+              className="pl-10 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
             >
               <option value="date-added">Date Added</option>
               <option value="title">Title (A–Z)</option>
@@ -174,30 +173,30 @@ export default function BookGrid({ books }: { books: Book[] }) {
             <button
               onClick={() => setView('grid')}
               title="Grid view"
-              className={`px-3 py-2.5 flex items-center transition-colors ${
+              className={`px-4 py-3 flex items-center transition-colors ${
                 view === 'grid'
                   ? 'bg-[#FFC300]/15 text-[#FFC300]'
                   : 'bg-[#252525] text-white hover:text-yellow-500'
               }`}
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-5 h-5" />
             </button>
             <button
               onClick={() => setView('list')}
               title="List view"
-              className={`px-3 py-2.5 flex items-center border-l border-[#2a2a2a] transition-colors ${
+              className={`px-4 py-3 flex items-center border-l border-[#2a2a2a] transition-colors ${
                 view === 'list'
                   ? 'bg-[#FFC300]/15 text-[#FFC300]'
                   : 'bg-[#252525] text-white hover:text-yellow-500'
               }`}
             >
-              <List className="w-4 h-4" />
+              <List className="w-5 h-5" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+      <div className="flex gap-3 mb-8 overflow-x-auto pb-1">
         {PRIVACY_TABS.map(({ value, label }) => {
           const count = privacyCounts[value] ?? 0;
           if (value !== 'ALL' && count === 0) return null;
@@ -205,7 +204,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
             <button
               key={value}
               onClick={() => handlePrivacy(value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 privacyFilter === value
                   ? 'bg-[#FFC300] text-black'
                   : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
@@ -213,8 +212,8 @@ export default function BookGrid({ books }: { books: Book[] }) {
             >
               {label}
               <span
-                className={`text-[10px] ${
-                  privacyFilter === value ? 'text-black/60' : 'text-white/25'
+                className={`text-sm ${
+                  privacyFilter === value ? 'text-black/60' : 'text-yellow-500'
                 }`}
               >
                 {count}
@@ -249,7 +248,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
       {displayed.length > 0 && (
         <>
           {view === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5  gap-3">
               {displayed.map((book) => (
                 <BookCard key={book.id} book={book} />
               ))}
