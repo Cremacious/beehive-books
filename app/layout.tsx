@@ -28,7 +28,7 @@ export default async function RootLayout({
 }>) {
   const { userId } = await auth();
   if (userId) {
-    await syncUser();
+    // syncUser() will be called when needed in actions
   }
 
   return (

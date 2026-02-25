@@ -82,7 +82,7 @@ export default function ReadingListCard({ list }: { list: ReadingList }) {
       ) : (
         <div className="mb-3">
           <div className="h-1.5 bg-[#1a1a1a] rounded-full" />
-          <p className="text-[10px] text-white/25 mt-1.5">No books added yet</p>
+          {/* <p className="text-[12px] text-white/75 mt-1.5">No books added yet</p> */}
         </div>
       )}
 
