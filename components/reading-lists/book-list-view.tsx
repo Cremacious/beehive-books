@@ -6,9 +6,9 @@ import {
   BookOpen,
   CheckCircle2,
   Circle,
-  MoreHorizontal,
   Trash2,
   Loader2,
+  Edit,
 } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import type {
@@ -97,9 +97,10 @@ function BookRow({
           ) : (
             <button
               onClick={() => setShowMenu((v) => !v)}
-              className="p-1.5 rounded-lg text-white/30 hover:text-[#FFC300] hover:bg-white/5 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:text-[#e0ac01] hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
-              <MoreHorizontal className="w-4 h-4" />
+              <Edit className="w-5 h-5" />
+              Edit
             </button>
           )}
 
@@ -110,10 +111,10 @@ function BookRow({
                   onSetCurrentlyReading();
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
               >
                 <BookOpen
-                  className={`w-3.5 h-3.5 shrink-0 ${
+                  className={`w-4 h-4 shrink-0 ${
                     isCurrentlyReading ? 'text-[#FFC300]' : 'text-white/40'
                   }`}
                 />
@@ -127,7 +128,7 @@ function BookRow({
                   onToggleRead();
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
               >
                 {optimisticRead ? (
                   <Circle className="w-3.5 h-3.5 shrink-0 text-white/40" />

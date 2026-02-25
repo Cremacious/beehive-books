@@ -17,8 +17,10 @@ export async function completeOnboarding(
   const user = await currentUser();
   if (!user) return { error: 'Not authenticated.' };
 
-  const username =
-    user.username || user.emailAddresses[0]?.emailAddress?.split('@')[0];
+  const baseUsername = user.emailAddresses[0]?.emailAddress?.split('@')[0];
+  const username = baseUsername
+    ? `${baseUsername}_${userId.slice(-4)}`
+    : `user_${userId.slice(-4)}`;
   if (!username) {
     return { error: 'Unable to generate username. Please contact support.' };
   }
@@ -30,7 +32,12 @@ export async function completeOnboarding(
 
     const imageFile = formData.get('avatar');
     if (imageFile instanceof File && imageFile.size > 0) {
-      await client.users.updateUserProfileImage(userId, { file: imageFile });
+      try {
+        await client.users.updateUserProfileImage(userId, { file: imageFile });
+      } catch (imageErr) {
+        console.error('Failed to upload profile image:', imageErr);
+
+      }
     }
 
     await db
@@ -42,8 +49,19 @@ export async function completeOnboarding(
       publicMetadata: { onboardingComplete: true },
     });
   } catch (err: unknown) {
+    console.error('Onboarding error:', err);
     const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes('unique'))
+    const causeMsg =
+      err instanceof Error && err.cause instanceof Error
+        ? err.cause.message
+        : '';
+    if (
+      msg.includes('unique') ||
+      msg.includes('duplicate') ||
+      msg.includes('violates') ||
+      causeMsg.includes('duplicate') ||
+      causeMsg.includes('unique')
+    )
       return { error: 'That username is already taken.' };
     return { error: 'Something went wrong. Please try again.' };
   }

@@ -107,12 +107,10 @@ export function DesktopSidebar() {
             )}
 
             <div className="hidden lg:block flex-1 min-w-0">
-              <p className="text-white text-sm font-semibold truncate leading-tight">
+              <p className="text-white font-semibold truncate leading-tight">
                 {user?.username ?? user?.firstName ?? 'User'}
               </p>
-              <p className="text-white/35 text-xs truncate mt-0.5">
-                @{user?.username ?? user?.firstName?.toLowerCase() ?? '…'}
-              </p>
+             
             </div>
 
             <div className="hidden lg:flex items-center gap-0.5 shrink-0">

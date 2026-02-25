@@ -24,28 +24,38 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm dark:bg-zinc-900">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#1e1e1e] px-4">
+      <div className="w-full max-w-md rounded-2xl bg-[#252525] p-8 shadow-lg border border-[#2a2a2a]">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Set up your profile</h1>
-          <p className="mt-1 text-sm text-zinc-500">Add a profile photo to personalize your account</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white mainFont">
+            Beehive<span className="text-[#FFC300]">Books</span>
+          </h1>
+          <p className="mt-1 text-sm text-yellow-500">
+            Choose your profile picture (optional)
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-  
           <div className="flex flex-col items-center gap-3">
             <div className="relative">
-              <div className="h-24 w-24 rounded-full bg-zinc-200 dark:bg-zinc-700" />
-              <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-zinc-900 text-white shadow-md transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300">
-                <Camera className="h-4 w-4" />
-                <input type="file" name="avatar" accept="image/*" className="hidden" />
+              <div className="h-32 w-32 rounded-full bg-[#2a2a2a] border-2 border-[#FFC300]/25" />
+              <label className="absolute bottom-0 right-0 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#FFC300] text-black shadow-md transition-colors hover:bg-[#FFC300]/80">
+                <Camera className="h-5 w-5" />
+                <input
+                  type="file"
+                  name="avatar"
+                  accept="image/*"
+                  className="hidden"
+                />
               </label>
             </div>
-            <span className="text-xs text-zinc-400">Profile photo (optional)</span>
+            <span className="text-sm text-yellow-500">
+              Click the camera to upload
+            </span>
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
+            <p className="rounded-lg bg-red-900/20 border border-red-500/20 px-3 py-2 text-sm text-red-400">
               {error}
             </p>
           )}
@@ -53,7 +63,7 @@ export default function OnboardingPage() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-full bg-zinc-900 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-medium text-black transition-colors hover:bg-[#FFC300]/80 disabled:opacity-50"
           >
             {isPending ? 'Saving…' : 'Continue'}
           </button>

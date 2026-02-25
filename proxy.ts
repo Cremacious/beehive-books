@@ -5,15 +5,20 @@ import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 // import { syncUser } from '@/sync-user';
 
-const isPublicRoute    = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 const isOnboardingRoute = createRouteMatcher(['/onboarding']);
-const isRootRoute       = createRouteMatcher(['/']);
+const isRootRoute = createRouteMatcher(['/']);
 
 export default clerkMiddleware(async (auth, request) => {
   const { userId } = await auth();
 
-  // Not signed in — only public routes are accessible
-  if (!userId) return;
+  // Not signed in — redirect to sign-in for protected routes
+  if (!userId) {
+    if (!isPublicRoute(request)) {
+      return NextResponse.redirect(new URL('/sign-in', request.url));
+    }
+    return;
+  }
 
   const [dbUser] = await db
     .select({ onboardingComplete: users.onboardingComplete })

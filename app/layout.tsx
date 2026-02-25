@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
-import { auth } from '@clerk/nextjs/server';
+import { dark } from '@clerk/themes';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { syncUser } from '@/sync-user';
 import { Providers } from '@/app/providers';
 import './globals.css';
 
@@ -26,13 +25,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { userId } = await auth();
-  if (userId) {
-    // syncUser() will be called when needed in actions
-  }
 
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
