@@ -8,11 +8,12 @@ import { readingLists, readingListBooks } from '@/db/schema';
 import {
   readingListSchema,
   bookEntrySchema,
-  type ReadingListFormData,
-  type BookEntryData,
 } from '@/lib/validations/reading-list.schema';
-
-export type ActionResult = { success: boolean; message: string };
+import type {
+  ReadingListFormData,
+  BookEntryData,
+  ActionResult,
+} from '@/lib/types/reading-list.types';
 
 async function requireAuth() {
   const { userId } = await auth();
@@ -83,15 +84,17 @@ export async function createReadingListAction(
           .values(
             validBooks.map((b, i) => ({
               readingListId: inserted.id,
-              title:  b.title,
+              title: b.title,
               author: b.author,
-              order:  i + 1,
+              order: i + 1,
             })),
           )
           .returning({ id: readingListBooks.id });
 
         const crBook =
-          currentlyReadingIdx !== null ? validBooks[currentlyReadingIdx] ?? null : null;
+          currentlyReadingIdx !== null
+            ? (validBooks[currentlyReadingIdx] ?? null)
+            : null;
         const crId =
           currentlyReadingIdx !== null
             ? (insertedBooks[currentlyReadingIdx]?.id ?? null)
@@ -100,9 +103,9 @@ export async function createReadingListAction(
         await db
           .update(readingLists)
           .set({
-            bookCount:              validBooks.length,
-            currentlyReadingId:     crId,
-            currentlyReadingTitle:  crBook?.title ?? null,
+            bookCount: validBooks.length,
+            currentlyReadingId: crId,
+            currentlyReadingTitle: crBook?.title ?? null,
             currentlyReadingAuthor: crBook?.author ?? null,
           })
           .where(eq(readingLists.id, inserted.id));
@@ -110,7 +113,11 @@ export async function createReadingListAction(
     }
 
     revalidatePath('/reading-lists');
-    return { success: true, message: 'Reading list created.', listId: inserted.id };
+    return {
+      success: true,
+      message: 'Reading list created.',
+      listId: inserted.id,
+    };
   } catch {
     return { success: false, message: 'Failed to create reading list.' };
   }
@@ -138,7 +145,9 @@ export async function updateReadingListAction(
   }
 }
 
-export async function deleteReadingListAction(listId: string): Promise<ActionResult> {
+export async function deleteReadingListAction(
+  listId: string,
+): Promise<ActionResult> {
   await requireListOwner(listId);
   try {
     await db.delete(readingLists).where(eq(readingLists.id, listId));
@@ -212,8 +221,8 @@ export async function removeBookFromListAction(
           : readingLists.readCount,
         ...(wasCR
           ? {
-              currentlyReadingId:     null,
-              currentlyReadingTitle:  null,
+              currentlyReadingId: null,
+              currentlyReadingTitle: null,
               currentlyReadingAuthor: null,
             }
           : {}),
@@ -256,7 +265,10 @@ export async function toggleBookReadStatusAction(
       .where(eq(readingLists.id, listId));
 
     revalidatePath(`/reading-lists/${listId}`);
-    return { success: true, message: isRead ? 'Marked as read.' : 'Marked as unread.' };
+    return {
+      success: true,
+      message: isRead ? 'Marked as read.' : 'Marked as unread.',
+    };
   } catch {
     return { success: false, message: 'Failed to update read status.' };
   }
@@ -273,8 +285,8 @@ export async function setCurrentlyReadingAction(
       await db
         .update(readingLists)
         .set({
-          currentlyReadingId:     null,
-          currentlyReadingTitle:  null,
+          currentlyReadingId: null,
+          currentlyReadingTitle: null,
           currentlyReadingAuthor: null,
           updatedAt: new Date(),
         })
@@ -291,8 +303,8 @@ export async function setCurrentlyReadingAction(
       await db
         .update(readingLists)
         .set({
-          currentlyReadingId:     bookId,
-          currentlyReadingTitle:  book.title,
+          currentlyReadingId: bookId,
+          currentlyReadingTitle: book.title,
           currentlyReadingAuthor: book.author,
           updatedAt: new Date(),
         })

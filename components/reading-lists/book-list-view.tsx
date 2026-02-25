@@ -11,14 +11,10 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
-import type { ReadingListBook } from '@/lib/types/reading-list.types';
-
-interface BookListViewProps {
-  books:              ReadingListBook[];
-  listId:             string;
-  isOwner:            boolean;
-  currentlyReadingId: string | null;
-}
+import type {
+  BookListViewProps,
+  ReadingListBook,
+} from '@/lib/types/reading-list.types';
 
 function BookRow({
   book,
@@ -29,13 +25,13 @@ function BookRow({
   onSetCurrentlyReading,
   onRemove,
 }: {
-  book:                 ReadingListBook;
-  isOwner:              boolean;
-  optimisticRead:       boolean;
-  isCurrentlyReading:   boolean;
-  onToggleRead:         () => void;
+  book: ReadingListBook;
+  isOwner: boolean;
+  optimisticRead: boolean;
+  isCurrentlyReading: boolean;
+  onToggleRead: () => void;
   onSetCurrentlyReading: () => void;
-  onRemove:             () => Promise<void>;
+  onRemove: () => Promise<void>;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [removing, setRemoving] = useState(false);
@@ -110,7 +106,10 @@ function BookRow({
           {showMenu && (
             <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
               <button
-                onClick={() => { onSetCurrentlyReading(); setShowMenu(false); }}
+                onClick={() => {
+                  onSetCurrentlyReading();
+                  setShowMenu(false);
+                }}
                 className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
               >
                 <BookOpen
@@ -118,11 +117,16 @@ function BookRow({
                     isCurrentlyReading ? 'text-[#FFC300]' : 'text-white/40'
                   }`}
                 />
-                {isCurrentlyReading ? 'Remove from currently reading' : 'Set as currently reading'}
+                {isCurrentlyReading
+                  ? 'Remove from currently reading'
+                  : 'Set as currently reading'}
               </button>
 
               <button
-                onClick={() => { onToggleRead(); setShowMenu(false); }}
+                onClick={() => {
+                  onToggleRead();
+                  setShowMenu(false);
+                }}
                 className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
               >
                 {optimisticRead ? (
@@ -157,10 +161,11 @@ export function BookListView({
   currentlyReadingId,
 }: BookListViewProps) {
   const router = useRouter();
-  const store  = useReadingListStore();
+  const store = useReadingListStore();
 
   const optimisticCR = store.optimisticCurrentlyReading[listId];
-  const effectiveCRId = optimisticCR !== undefined ? optimisticCR : currentlyReadingId;
+  const effectiveCRId =
+    optimisticCR !== undefined ? optimisticCR : currentlyReadingId;
 
   const handleToggleRead = async (book: ReadingListBook) => {
     const current = store.optimisticReadStatus[book.id] ?? book.isRead;
@@ -170,7 +175,7 @@ export function BookListView({
 
   const handleSetCurrentlyReading = async (book: ReadingListBook) => {
     const isAlreadyCR = effectiveCRId === book.id;
-    const newBookId   = isAlreadyCR ? null : book.id;
+    const newBookId = isAlreadyCR ? null : book.id;
     await store.setCurrentlyReading(listId, newBookId, effectiveCRId ?? null);
     router.refresh();
   };
@@ -197,7 +202,8 @@ export function BookListView({
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 mb-4">
       {books.map((book) => {
-        const optimisticRead   = store.optimisticReadStatus[book.id] ?? book.isRead;
+        const optimisticRead =
+          store.optimisticReadStatus[book.id] ?? book.isRead;
         const isCurrentlyReading = effectiveCRId === book.id;
         return (
           <BookRow

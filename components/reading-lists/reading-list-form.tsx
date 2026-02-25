@@ -7,23 +7,17 @@ import { useRouter } from 'next/navigation';
 import { Plus, X, Loader2, Trash2, BookMarked } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
-import {
-  readingListSchema,
-  type ReadingListFormData,
-  type BookEntryData,
-} from '@/lib/validations/reading-list.schema';
-import type { ReadingList } from '@/lib/types/reading-list.types';
-
-interface ReadingListFormProps {
-  mode: 'create' | 'edit';
-  listId?: string;
-  defaultValues?: Partial<ReadingList>;
-}
+import { readingListSchema } from '@/lib/validations/reading-list.schema';
+import type {
+  ReadingListFormProps,
+  ReadingListFormData,
+  BookEntryData,
+} from '@/lib/types/reading-list.types';
 
 const PRIVACY_OPTIONS = [
   { value: 'PRIVATE', label: 'Private', desc: 'Only you can see this list' },
   { value: 'FRIENDS', label: 'Friends', desc: 'Visible to your friends' },
-  { value: 'PUBLIC',  label: 'Public',  desc: 'Anyone can discover this list' },
+  { value: 'PUBLIC', label: 'Public', desc: 'Anyone can discover this list' },
 ] as const;
 
 export function ReadingListForm({
@@ -32,21 +26,23 @@ export function ReadingListForm({
   defaultValues,
 }: ReadingListFormProps) {
   const router = useRouter();
-  const store  = useReadingListStore();
+  const store = useReadingListStore();
 
-  const [books, setBooks]                         = useState<BookEntryData[]>([]);
-  const [bookTitle, setBookTitle]                 = useState('');
-  const [bookAuthor, setBookAuthor]               = useState('');
-  const [currentlyReadingIdx, setCurrentlyReadingIdx] = useState<number | null>(null);
-  const [error, setError]                         = useState('');
-  const [deleting, setDeleting]                   = useState(false);
+  const [books, setBooks] = useState<BookEntryData[]>([]);
+  const [bookTitle, setBookTitle] = useState('');
+  const [bookAuthor, setBookAuthor] = useState('');
+  const [currentlyReadingIdx, setCurrentlyReadingIdx] = useState<number | null>(
+    null,
+  );
+  const [error, setError] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const form = useForm<ReadingListFormData>({
     resolver: zodResolver(readingListSchema),
     defaultValues: {
-      title:       defaultValues?.title       ?? '',
+      title: defaultValues?.title ?? '',
       description: defaultValues?.description ?? '',
-      privacy:     defaultValues?.privacy     ?? 'PRIVATE',
+      privacy: defaultValues?.privacy ?? 'PRIVATE',
     },
   });
 
@@ -118,7 +114,7 @@ export function ReadingListForm({
         <input
           {...register('title')}
           placeholder="e.g. Fantasy Reads, Books to Read in 2025…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.title && (
           <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>
@@ -134,7 +130,7 @@ export function ReadingListForm({
           {...register('description')}
           rows={3}
           placeholder="What's this list about?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.description && (
           <p className="text-xs text-red-400 mt-1">
@@ -186,7 +182,10 @@ export function ReadingListForm({
                 value={bookTitle}
                 onChange={(e) => setBookTitle(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') { e.preventDefault(); addBook(); }
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addBook();
+                  }
                 }}
                 placeholder="Book title"
                 className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
@@ -196,7 +195,10 @@ export function ReadingListForm({
                 value={bookAuthor}
                 onChange={(e) => setBookAuthor(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') { e.preventDefault(); addBook(); }
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addBook();
+                  }
                 }}
                 placeholder="Author"
                 className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
@@ -233,12 +235,18 @@ export function ReadingListForm({
                         <button
                           type="button"
                           onClick={() => toggleCurrentlyReading(idx)}
-                          title={isCR ? 'Remove from currently reading' : 'Set as currently reading'}
+                          title={
+                            isCR
+                              ? 'Remove from currently reading'
+                              : 'Set as currently reading'
+                          }
                           className="shrink-0"
                         >
                           <BookMarked
                             className={`w-5 h-5 transition-colors ${
-                              isCR ? 'text-[#FFC300]' : 'text-white/20 hover:text-white/50'
+                              isCR
+                                ? 'text-[#FFC300]'
+                                : 'text-white/20 hover:text-white/50'
                             }`}
                           />
                         </button>
@@ -268,7 +276,7 @@ export function ReadingListForm({
                 </div>
               </>
             ) : (
-              <p className="text-xs text-white/25 text-center py-2">
+              <p className="text-sm text-white/75 text-center py-2">
                 No books added yet — you can always add them later.
               </p>
             )}
