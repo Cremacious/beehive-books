@@ -6,16 +6,16 @@ import {
   Home,
   Compass,
   Library,
-  PenLine,
+  BookMarked,
   Users,
 } from 'lucide-react';
 
 const mobileNavItems = [
-  { href: '/explore', label: 'Explore', icon: Compass  },
-  { href: '/library', label: 'Library', icon: Library  },
-  { href: '/home',    label: 'Feed',    icon: Home     },
-  { href: '/write',   label: 'Write',   icon: PenLine  },
-  { href: '/clubs',   label: 'Clubs',   icon: Users    },
+  { href: '/explore',       label: 'Explore', icon: Compass    },
+  { href: '/library',       label: 'Library', icon: Library    },
+  { href: '/home',          label: 'Feed',    icon: Home       },
+  { href: '/reading-lists', label: 'Lists',   icon: BookMarked },
+  { href: '/clubs',         label: 'Clubs',   icon: Users      },
 ] as const;
 
 export function MobileNavbar() {

@@ -72,12 +72,38 @@ export const commentLikes = pgTable('comment_likes', {
   primaryKey({ columns: [table.userId, table.commentId] }),
 ]);
 
+export const readingLists = pgTable('reading_lists', {
+  id:                     text('id').primaryKey().$defaultFn(() => createId()),
+  userId:                 text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  title:                  text('title').notNull(),
+  description:            text('description').notNull().default(''),
+  privacy:                text('privacy', { enum: ['PUBLIC', 'PRIVATE', 'FRIENDS'] }).notNull().default('PRIVATE'),
+  bookCount:              integer('book_count').notNull().default(0),
+  readCount:              integer('read_count').notNull().default(0),
+  currentlyReadingId:     text('currently_reading_id'),
+  currentlyReadingTitle:  text('currently_reading_title'),
+  currentlyReadingAuthor: text('currently_reading_author'),
+  createdAt:              timestamp('created_at').defaultNow().notNull(),
+  updatedAt:              timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const readingListBooks = pgTable('reading_list_books', {
+  id:            text('id').primaryKey().$defaultFn(() => createId()),
+  readingListId: text('reading_list_id').notNull().references(() => readingLists.id, { onDelete: 'cascade' }),
+  title:         text('title').notNull(),
+  author:        text('author').notNull(),
+  isRead:        boolean('is_read').notNull().default(false),
+  order:         integer('order').notNull().default(0),
+  addedAt:       timestamp('added_at').defaultNow().notNull(),
+});
+
 
 
 export const usersRelations = relations(users, ({ many }) => ({
   books:        many(books),
   comments:     many(chapterComments),
   commentLikes: many(commentLikes),
+  readingLists: many(readingLists),
 }));
 
 export const booksRelations = relations(books, ({ one, many }) => ({
@@ -112,4 +138,13 @@ export const chapterCommentsRelations = relations(chapterComments, ({ one, many 
 export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
   user:    one(users,           { fields: [commentLikes.userId],    references: [users.clerkId] }),
   comment: one(chapterComments, { fields: [commentLikes.commentId], references: [chapterComments.id] }),
+}));
+
+export const readingListsRelations = relations(readingLists, ({ one, many }) => ({
+  user:  one(users, { fields: [readingLists.userId], references: [users.clerkId] }),
+  books: many(readingListBooks),
+}));
+
+export const readingListBooksRelations = relations(readingListBooks, ({ one }) => ({
+  readingList: one(readingLists, { fields: [readingListBooks.readingListId], references: [readingLists.id] }),
 }));
