@@ -1,0 +1,404 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { Button } from '@/components/ui/button';
+import { Plus, FolderOpen, FileText, Loader2 } from 'lucide-react';
+import type { Chapter, Collection } from '@/lib/types/books';
+import { useBookStore } from '@/lib/stores/book-store';
+import { UncategorizedZone } from './uncategorized-zone';
+import { SortableCollectionHeader } from './collection-header';
+import { SortableChapterRow } from './chapter-row';
+
+type Props = {
+  bookId: string;
+  chapters: Chapter[];
+  collections: Collection[];
+};
+
+export default function ChapterList({ bookId, chapters, collections }: Props) {
+  const router = useRouter();
+  const {
+    reorderMode,
+    setReorderMode,
+    reorderChapters,
+    reorderCollections,
+    createCollection,
+    deleteChapter,
+    assignChapterToCollection,
+  } = useBookStore();
+
+  const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(
+    null,
+  );
+  const [pendingCollections, setPendingCollections] = useState<
+    Collection[] | null
+  >(null);
+
+  const localChapters =
+    reorderMode && pendingChapters !== null ? pendingChapters : chapters;
+  const localCollections =
+    reorderMode && pendingCollections !== null
+      ? pendingCollections
+      : collections;
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState(false);
+  const [newColName, setNewColName] = useState('');
+  const [showColInput, setShowColInput] = useState(false);
+  const [addingCol, setAddingCol] = useState(false);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const toggleCollapse = (id: string) =>
+    setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  function handleAssignCollection(
+    chapterId: string,
+    collectionId: string | null,
+  ) {
+    setPendingChapters((prev) =>
+      (prev ?? chapters).map((c) =>
+        c.id === chapterId ? { ...c, collectionId } : c,
+      ),
+    );
+    assignChapterToCollection(bookId, chapterId, collectionId).then(() =>
+      router.refresh(),
+    );
+  }
+
+  function handleDeleteChapter(chapterId: string) {
+    deleteChapter(bookId, chapterId).then(() => router.refresh());
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const { active, over } = event;
+    const overId = over?.id as string | undefined;
+    const activeIsChapter = localChapters.some((c) => c.id === active.id);
+    const overIsCollection = overId
+      ? localCollections.some((c) => c.id === overId)
+      : false;
+    const overIsUncategorized = overId === 'uncategorized';
+    if (activeIsChapter && (overIsCollection || overIsUncategorized)) {
+      setDragOverId(overId ?? null);
+    } else {
+      setDragOverId(null);
+    }
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setDragOverId(null);
+    if (!over || active.id === over.id) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    if (localCollections.some((c) => c.id === activeId)) {
+      const oldIndex = localCollections.findIndex((c) => c.id === activeId);
+      const newIndex = localCollections.findIndex((c) => c.id === overId);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setPendingCollections(arrayMove(localCollections, oldIndex, newIndex));
+      }
+      return;
+    }
+
+    const overIsCollection = localCollections.some((c) => c.id === overId);
+    const overIsUncategorized = overId === 'uncategorized';
+
+    if (overIsCollection) {
+      handleAssignCollection(activeId, overId);
+      return;
+    }
+    if (overIsUncategorized) {
+      handleAssignCollection(activeId, null);
+      return;
+    }
+
+    const oldIndex = localChapters.findIndex((c) => c.id === activeId);
+    const newIndex = localChapters.findIndex((c) => c.id === overId);
+    setPendingChapters(arrayMove(localChapters, oldIndex, newIndex));
+  }
+
+  async function handleSaveOrder() {
+    setSaving(true);
+    const [chapterResult, collectionResult] = await Promise.all([
+      reorderChapters(
+        bookId,
+        localChapters.map((c) => c.id),
+      ),
+      reorderCollections(
+        bookId,
+        localCollections.map((c) => c.id),
+      ),
+    ]);
+    setSaving(false);
+    if (chapterResult.success && collectionResult.success) {
+      setReorderMode(false);
+      setPendingChapters(null);
+      setPendingCollections(null);
+      router.refresh();
+    }
+  }
+
+  async function handleAddCollection() {
+    if (!newColName.trim()) return;
+    setAddingCol(true);
+    const result = await createCollection(bookId, newColName.trim());
+    setAddingCol(false);
+    if (result.success) {
+      setNewColName('');
+      setShowColInput(false);
+      router.refresh();
+    }
+  }
+
+  const soloChapters = localChapters.filter((c) => !c.collectionId);
+  const collectionGroups = localCollections.map((col) => ({
+    ...col,
+    chapters: localChapters.filter((c) => c.collectionId === col.id),
+  }));
+
+  return (
+    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
+      <div className="px-4 py-4 border-b border-[#2a2a2a] sm:px-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-yellow-500">Chapters</h2>
+          <div className="flex items-center gap-2">
+            {reorderMode ? (
+              <>
+                <Button size="sm" onClick={handleSaveOrder} disabled={saving}>
+                  {saving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    'Save Order'
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setReorderMode(false);
+                    setPendingChapters(null);
+                    setPendingCollections(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="hidden sm:flex"
+                  onClick={() => {
+                    setPendingChapters([...chapters]);
+                    setPendingCollections([...collections]);
+                    setReorderMode(true);
+                  }}
+                >
+                  Reorder
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="hidden sm:flex"
+                  onClick={() => setShowColInput((v) => !v)}
+                >
+                  <FolderOpen />
+                  Add Collection
+                </Button>
+                {chapters.length > 0 && (
+                  <Button asChild size="sm">
+                    <Link href={`/library/${bookId}/create-chapter`}>
+                      <Plus />
+                      Chapter
+                    </Link>
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+        {reorderMode && (
+          <div className="mt-3 p-3 rounded-lg bg-[#FFC300]/10 border border-[#FFC300]/20">
+            <p className="text-sm text-white leading-relaxed">
+              Drag chapters and collections into your preferred order. Drop a
+              chapter onto a collection header to move it into that collection,
+              or onto Uncategorized to remove it from a collection.
+            </p>
+          </div>
+        )}
+        {!reorderMode && (
+          <div className="flex sm:hidden items-center gap-2 mt-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setPendingChapters([...chapters]);
+                setPendingCollections([...collections]);
+                setReorderMode(true);
+              }}
+            >
+              Reorder
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowColInput((v) => !v)}
+            >
+              <FolderOpen />
+              Collection
+            </Button>
+          </div>
+        )}
+
+        {showColInput && (
+          <div className="flex items-center gap-2 mt-3">
+            <input
+              type="text"
+              value={newColName}
+              onChange={(e) => setNewColName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddCollection();
+              }}
+              placeholder="Collection name…"
+              autoFocus
+              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-1.5 text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#FFC300]/50 transition-all"
+            />
+            <Button
+              size="sm"
+              onClick={handleAddCollection}
+              disabled={addingCol || !newColName.trim()}
+            >
+              {addingCol ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                'Add'
+              )}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setShowColInput(false);
+                setNewColName('');
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="divide-y divide-[#2a2a2a]">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={localCollections.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {reorderMode && localCollections.length > 0 && (
+              <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
+            )}
+
+            <SortableContext
+              items={soloChapters.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {soloChapters.map((chapter) => (
+                <SortableChapterRow
+                  key={chapter.id}
+                  chapter={chapter}
+                  bookId={bookId}
+                  reorderMode={reorderMode}
+                  collections={localCollections}
+                  onAssignCollection={(colId) =>
+                    handleAssignCollection(chapter.id, colId)
+                  }
+                  onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                />
+              ))}
+            </SortableContext>
+
+            {collectionGroups.map((col) => (
+              <div key={col.id}>
+                <SortableCollectionHeader
+                  col={col}
+                  bookId={bookId}
+                  isChapterDragOver={dragOverId === col.id}
+                  isReordering={reorderMode}
+                  collapsed={!!collapsed[col.id]}
+                  onToggleCollapse={() => toggleCollapse(col.id)}
+                  onUpdated={() => router.refresh()}
+                />
+
+                {(!collapsed[col.id] || reorderMode) && (
+                  <SortableContext
+                    items={col.chapters.map((c) => c.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {col.chapters.map((chapter) => (
+                      <SortableChapterRow
+                        key={chapter.id}
+                        chapter={chapter}
+                        bookId={bookId}
+                        reorderMode={reorderMode}
+                        indent
+                        collections={localCollections}
+                        onAssignCollection={(colId) =>
+                          handleAssignCollection(chapter.id, colId)
+                        }
+                        onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                      />
+                    ))}
+                  </SortableContext>
+                )}
+              </div>
+            ))}
+          </SortableContext>
+        </DndContext>
+
+        {chapters.length === 0 && (
+          <div className="flex flex-col items-center py-16 text-center">
+            <FileText className="w-10 h-10 text-white/10 mb-3" />
+            <p className="text-sm text-white/35 mb-4">No chapters yet</p>
+            <Button asChild>
+              <Link href={`/library/${bookId}/create-chapter`}>
+                <Plus />
+                Add first chapter
+              </Link>
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

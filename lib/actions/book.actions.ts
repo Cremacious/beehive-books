@@ -165,7 +165,7 @@ export async function getChapterWithContextAction(chapterId: string) {
 
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),
-    with: { book: true },
+    with: { book: true, collection: { columns: { name: true } } },
   });
   if (!chapter) throw new Error('Chapter not found');
 
@@ -175,11 +175,16 @@ export async function getChapterWithContextAction(chapterId: string) {
   if (book.privacy === 'FRIENDS' && book.userId !== userId)
     throw new Error('Unauthorized');
 
-  const [allChapters, comments] = await Promise.all([
+  const [allChapters, allCollections, comments] = await Promise.all([
     db.query.chapters.findMany({
       where: eq(chapters.bookId, book.id),
       orderBy: (c, { asc }) => [asc(c.order)],
-      columns: { id: true, title: true, order: true },
+      columns: { id: true, title: true, order: true, collectionId: true },
+    }),
+    db.query.collections.findMany({
+      where: eq(collections.bookId, book.id),
+      orderBy: (c, { asc }) => [asc(c.order)],
+      columns: { id: true },
     }),
     db.query.chapterComments.findMany({
       where: and(
@@ -213,9 +218,19 @@ export async function getChapterWithContextAction(chapterId: string) {
     }),
   ]);
 
-  const idx = allChapters.findIndex((c) => c.id === chapterId);
-  const prev = idx > 0 ? allChapters[idx - 1] : null;
-  const next = idx < allChapters.length - 1 ? allChapters[idx + 1] : null;
+  // Build flat reading order: uncategorized chapters first, then each
+  // collection's chapters in collection order.
+  const uncategorized = allChapters.filter((c) => !c.collectionId);
+  const flatOrder = [
+    ...uncategorized,
+    ...allCollections.flatMap((col) =>
+      allChapters.filter((c) => c.collectionId === col.id),
+    ),
+  ];
+
+  const idx = flatOrder.findIndex((c) => c.id === chapterId);
+  const prev = idx > 0 ? flatOrder[idx - 1] : null;
+  const next = idx < flatOrder.length - 1 ? flatOrder[idx + 1] : null;
 
   const likedIds = userId
     ? (

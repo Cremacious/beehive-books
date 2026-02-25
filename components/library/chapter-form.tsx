@@ -23,6 +23,7 @@ type ExistingChapter = {
   title: string;
   authorNotes: string | null;
   content: string | null;
+  collectionId: string | null;
 };
 
 type ChapterFormProps = {
@@ -58,7 +59,7 @@ export function ChapterForm({
       title: chapter?.title ?? '',
       authorNotes: chapter?.authorNotes ?? '',
       content: chapter?.content ?? '',
-      collectionId: null,
+      collectionId: chapter?.collectionId ?? null,
     },
   });
 
@@ -159,7 +160,7 @@ export function ChapterForm({
               </p>
             </div>
 
-            {!isEdit && collections.length > 0 && (
+            {collections.length > 0 && (
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-white/75 flex items-center gap-1.5">
                   <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />

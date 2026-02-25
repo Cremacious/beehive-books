@@ -19,11 +19,14 @@ export default async function EditChapterPage({
   const chapter = book.chapters.find(c => c.id === chapterId);
   if (!chapter) notFound();
 
+  const collections = book.collections.map((c) => ({ id: c.id, name: c.name }));
+
   return (
     <ChapterForm
       mode="edit"
       bookId={bookId}
       chapter={chapter}
+      collections={collections}
       cancelHref={`/library/${bookId}/${chapterId}`}
     />
   );

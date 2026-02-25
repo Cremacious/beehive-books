@@ -24,7 +24,7 @@ export default async function ChapterReaderPage({
 
   return (
     <div>
-      <div className="sticky top-0 z-10 bg-[#1e1e1e] border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between gap-3">
         <BackButton
           href={`/library/${bookId}`}
           label="Back"
@@ -33,7 +33,7 @@ export default async function ChapterReaderPage({
 
         <div className="text-center min-w-0">
           <p className="text-xs text-yellow-500 truncate">
-            Chapter {chapter.order}
+            {chapter.collection ? chapter.collection.name : `Chapter ${chapter.order}`}
           </p>
           <h1 className="text-sm font-semibold text-white truncate leading-tight">
             {chapter.title}
@@ -44,11 +44,7 @@ export default async function ChapterReaderPage({
           {chapter.wordCount.toLocaleString()} words
         </span>
       </div>
-      {/* <BackButton
-        href={`/library/${bookId}`}
-        label="Back To Book"
-        className="text-sm ml-4 mt-4 md:hidden"
-      /> */}
+
       <div className="max-w-2xl mx-auto px-4 py-10">
         {chapter.authorNotes && (
           <div className="mb-8 rounded-xl border border-[#FFC300]/20 bg-[#FFC300]/6 px-5 py-4">
