@@ -17,23 +17,7 @@ import {
   updateChapterAction,
   deleteChapterAction,
 } from '@/lib/actions/book.actions';
-
-type ExistingChapter = {
-  id: string;
-  title: string;
-  authorNotes: string | null;
-  content: string | null;
-  collectionId: string | null;
-};
-
-type ChapterFormProps = {
-  mode: 'create' | 'edit';
-  cancelHref: string;
-  bookId: string;
-  chapter?: ExistingChapter;
-  collections?: { id: string; name: string }[];
-};
-
+import { ChapterFormProps } from '@/lib/types/books.types';
 export function ChapterForm({
   mode,
   cancelHref,
@@ -65,7 +49,6 @@ export function ChapterForm({
 
   async function onSubmit(data: ChapterFormData) {
     setServerError('');
-    // Convert empty-string from select → null
     const submitData = {
       ...data,
       collectionId: data.collectionId || null,
@@ -121,7 +104,6 @@ export function ChapterForm({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Title + Author Notes */}
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-white/75">
@@ -184,7 +166,6 @@ export function ChapterForm({
             )}
           </div>
 
-          {/* Rich Text Editor */}
           <Controller
             name="content"
             control={control}
@@ -225,12 +206,12 @@ export function ChapterForm({
 
             <div className="flex items-center gap-3">
               <Button asChild variant="outline">
-              <Link
-                href={cancelHref}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/6 transition-all duration-200"
-              >
-                Cancel
-              </Link>
+                <Link
+                  href={cancelHref}
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/6 transition-all duration-200"
+                >
+                  Cancel
+                </Link>
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (

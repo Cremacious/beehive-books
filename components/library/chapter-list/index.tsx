@@ -21,7 +21,7 @@ import {
 } from '@dnd-kit/sortable';
 import { Button } from '@/components/ui/button';
 import { Plus, FolderOpen, FileText, Loader2 } from 'lucide-react';
-import type { Chapter, Collection } from '@/lib/types/books';
+import type { Chapter, Collection } from '@/lib/types/books.types';
 import { useBookStore } from '@/lib/stores/book-store';
 import { UncategorizedZone } from './uncategorized-zone';
 import { SortableCollectionHeader } from './collection-header';

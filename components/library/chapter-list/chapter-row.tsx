@@ -13,7 +13,7 @@ import {
   Loader2,
   Trash2,
 } from 'lucide-react';
-import type { Chapter, Collection } from '@/lib/types/books';
+import type { Chapter, Collection } from '@/lib/types/books.types';
 
 export function SortableChapterRow({
   chapter,
@@ -109,7 +109,10 @@ export function SortableChapterRow({
       </div>
 
       {!reorderMode && (
-        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex items-center gap-2 shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
           {confirmDelete ? (
             <>
               <span className="text-xs text-white hidden sm:inline">

@@ -100,7 +100,6 @@ export default async function BookPage({
           </div>
         </div>
 
-        {/* Mobile actions */}
         <div className="flex sm:hidden gap-2 mt-4">
           <Button asChild className="flex-1">
             <Link href={`/library/${book.id}/edit`}>

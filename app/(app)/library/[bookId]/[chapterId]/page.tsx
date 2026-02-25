@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, ChevronUp } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
-import { CommentSection } from '@/components/library/comment-section';
+import { CommentSection } from '@/components/comments/comment-section';
 import { getChapterWithContextAction } from '@/lib/actions/book.actions';
 
 export default async function ChapterReaderPage({
@@ -20,20 +20,22 @@ export default async function ChapterReaderPage({
     notFound();
   }
 
-  const { chapter, prev, next, comments, currentUserId } = data;
+  const { chapter, book, prev, next, comments, currentUserId } = data;
 
   return (
     <div>
       <div className="border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between gap-3">
         <BackButton
           href={`/library/${bookId}`}
-          label="Back"
+          label=""
           className="text-sm shrink-0"
         />
 
         <div className="text-center min-w-0">
           <p className="text-xs text-yellow-500 truncate">
-            {chapter.collection ? chapter.collection.name : `Chapter ${chapter.order}`}
+            {chapter.collection
+              ? chapter.collection.name
+              : `Chapter ${chapter.order}`}
           </p>
           <h1 className="text-sm font-semibold text-white truncate leading-tight">
             {chapter.title}
@@ -45,7 +47,7 @@ export default async function ChapterReaderPage({
         </span>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-10">
+      <div className="max-w-4xl mx-auto px-4 py-10">
         {chapter.authorNotes && (
           <div className="mb-8 rounded-xl border border-[#FFC300]/20 bg-[#FFC300]/6 px-5 py-4">
             <div className="flex items-center gap-2 mb-2">
@@ -81,7 +83,16 @@ export default async function ChapterReaderPage({
           ) : (
             <div />
           )}
-
+          <Link
+            href={`/library/${bookId}`}
+            className="flex flex-col items-center gap-1 group"
+          >
+            <ChevronUp className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors" />
+            <p className="text-xs text-yellow-500">Back To Book</p>
+            <p className="text-sm font-medium text-white group-hover:text-[#FFC300] truncate transition-colors max-w-32 text-center">
+              {book.title}
+            </p>
+          </Link>
           {next ? (
             <Link
               href={`/library/${bookId}/${next.id}`}

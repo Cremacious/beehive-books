@@ -1,42 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useCommentStore } from '@/lib/stores/comment-store';
-
-type CommentUser = {
-  username:  string | null;
-  firstName: string | null;
-  lastName:  string | null;
-  imageUrl:  string | null;
-};
-
-type Reply = {
-  id:        string;
-  content:   string;
-  likeCount: number;
-  likedByMe: boolean;
-  createdAt: Date;
-  user:      CommentUser;
-};
-
-type Comment = {
-  id:        string;
-  content:   string;
-  likeCount: number;
-  likedByMe: boolean;
-  createdAt: Date;
-  user:      CommentUser;
-  replies:   Reply[];
-};
-
-type Props = {
-  chapterId:     string;
-  comments:      Comment[];
-  currentUserId: string | null;
-};
+import type {
+  CommentUser,
+  Reply,
+  Comment,
+  CommentSectionProps,
+} from '@/lib/types/comment.types';
 
 function displayName(user: CommentUser): string {
   if (user.username) return user.username;
@@ -74,10 +49,12 @@ function Avatar({
 }) {
   if (imageUrl) {
     return (
-      <img
+      <Image
         src={imageUrl}
         alt={alt}
         className={`rounded-full object-cover shrink-0 ${className}`}
+        width={32}
+        height={32}
       />
     );
   }
@@ -97,7 +74,7 @@ function timeAgo(date: Date): string {
   return `${Math.floor(hours / 24)}d`;
 }
 
-export function CommentSection({ chapterId, comments, currentUserId }: Props) {
+export function CommentSection({ chapterId, comments, currentUserId }: CommentSectionProps) {
   const router = useRouter();
   const { toggleLike, addComment, optimisticLikes } = useCommentStore();
 

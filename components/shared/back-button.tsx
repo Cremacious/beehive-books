@@ -13,7 +13,7 @@ export default function BackButton({ href, label, className = '' }: Props) {
       href={href}
       className={`inline-flex items-center gap-1.5 text-sm text-white hover:text-white transition-colors ${className} rounded-2xl border border-white/10 px-3 py-2 hover:bg-white/5`}
     >
-      <ArrowLeft className="w-4 h-4" />
+      <ArrowLeft className="w-4 h-4 text-yellow-500" />
       {label}
     </Link>
   );

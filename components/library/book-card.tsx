@@ -1,7 +1,7 @@
 import { BookOpen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Book } from '@/lib/types/books';
+import type { Book } from '@/lib/types/books.types';
 
 export default function BookCard({ book }: { book: Book }) {
   return (
@@ -32,7 +32,6 @@ export default function BookCard({ book }: { book: Book }) {
           <span className="px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-[10px] font-medium truncate max-w-[70%]">
             {book.genre}
           </span>
-        
         </div>
       </div>
     </Link>

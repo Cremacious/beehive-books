@@ -12,7 +12,7 @@ import {
   MoreHorizontal,
   Loader2,
 } from 'lucide-react';
-import type { Chapter, Collection } from '@/lib/types/books';
+import type { Chapter, Collection } from '@/lib/types/books.types';
 import { useBookStore } from '@/lib/stores/book-store';
 
 export function SortableCollectionHeader({
@@ -210,10 +210,16 @@ export function SortableCollectionHeader({
             {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
           </span>
           <span className="text-xs text-white/50 shrink-0">
-            · {col.chapters.reduce((sum, chapter) => sum + chapter.wordCount, 0).toLocaleString()} words
+            ·{' '}
+            {col.chapters
+              .reduce((sum, chapter) => sum + chapter.wordCount, 0)
+              .toLocaleString()}{' '}
+            words
           </span>
           {isReordering && isChapterDragOver && (
-            <span className="text-xs text-[#FFC300]/60 shrink-0">drop here</span>
+            <span className="text-xs text-[#FFC300]/60 shrink-0">
+              drop here
+            </span>
           )}
         </div>
       </div>

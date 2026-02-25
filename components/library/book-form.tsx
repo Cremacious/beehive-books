@@ -16,55 +16,8 @@ import {
   deleteBookAction,
 } from '@/lib/actions/book.actions';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
-
-const CATEGORIES = [
-  'Fiction',
-  'Non-Fiction',
-  'Poetry',
-  'Memoir',
-  'Biography',
-  'Self-Help',
-  'Academic',
-  'Other',
-];
-
-const GENRES = [
-  'Mystery',
-  'Romance',
-  'Science Fiction',
-  'Fantasy',
-  'Thriller',
-  'Horror',
-  'Historical Fiction',
-  'Contemporary',
-  'Literary Fiction',
-  'Young Adult',
-  'Children',
-  'Other',
-];
-
-const PRIVACY_OPTIONS = [
-  { value: 'PUBLIC', label: 'Public', description: 'Anyone can read' },
-  { value: 'PRIVATE', label: 'Private', description: 'Only you' },
-  { value: 'FRIENDS', label: 'Friends Only', description: 'You + friends' },
-] as const;
-
-type ExistingBook = {
-  id: string;
-  title: string;
-  author: string;
-  category: string;
-  genre: string;
-  description: string;
-  privacy: string;
-  coverUrl?: string | null;
-};
-
-type BookFormProps = {
-  mode: 'create' | 'edit';
-  cancelHref?: string;
-  book?: ExistingBook;
-};
+import { CATEGORIES, GENRES, PRIVACY_OPTIONS } from '@/lib/config/constants';
+import { BookFormProps } from '@/lib/types/books.types';
 
 export function BookForm({
   mode,
@@ -172,7 +125,6 @@ export function BookForm({
           onSubmit={handleSubmit(onSubmit)}
           className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-2xl p-6 md:p-8 space-y-7"
         >
-          {/* Cover upload */}
           <div className="flex flex-col items-center gap-2">
             <label className="relative group cursor-pointer">
               {coverUrl ? (
@@ -234,7 +186,6 @@ export function BookForm({
             )}
           </div>
 
-          {/* Title */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-white/75">
               Book Title <span className="text-red-400">*</span>
@@ -250,7 +201,6 @@ export function BookForm({
             )}
           </div>
 
-          {/* Author */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-white/75">
               Author Name <span className="text-red-400">*</span>
@@ -266,7 +216,6 @@ export function BookForm({
             )}
           </div>
 
-          {/* Category + Genre */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-white/75">
@@ -312,7 +261,6 @@ export function BookForm({
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-white/75">
               Description <span className="text-red-400">*</span>
@@ -330,18 +278,33 @@ export function BookForm({
                 <span />
               )}
               <p className="text-xs shrink-0 ml-2">
-                <span className={descWords > 200 ? 'text-red-400' : descWords > 180 ? 'text-yellow-500' : 'text-white/30'}>
+                <span
+                  className={
+                    descWords > 200
+                      ? 'text-red-400'
+                      : descWords > 180
+                        ? 'text-yellow-500'
+                        : 'text-white/30'
+                  }
+                >
                   {descWords}/200 words
                 </span>
                 <span className="text-white/20 mx-1.5">·</span>
-                <span className={descChars > 1200 ? 'text-red-400' : descChars > 1080 ? 'text-yellow-500' : 'text-white/30'}>
+                <span
+                  className={
+                    descChars > 1200
+                      ? 'text-red-400'
+                      : descChars > 1080
+                        ? 'text-yellow-500'
+                        : 'text-white/30'
+                  }
+                >
                   {descChars}/1200 chars
                 </span>
               </p>
             </div>
           </div>
 
-          {/* Privacy */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-white/75">
               Privacy <span className="text-red-400">*</span>
