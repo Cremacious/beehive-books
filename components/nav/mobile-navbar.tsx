@@ -45,20 +45,19 @@ export function MobileNavbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-4 shadow-lg">
-        {/* Logo */}
         <Link href="/home" className="flex items-center gap-2 shrink-0">
-          <span className="text-xl leading-none">🐝</span>
+         
           <span className="text-white font-bold text-base tracking-tight mainFont">
             Beehive<span className="text-[#FFC300]">Books</span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-3">
           <button
-            className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
+            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
             aria-label="Notifications"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-6 h-6" />
           </button>
 
           <Link href={avatarHref} className="p-1">
@@ -81,10 +80,10 @@ export function MobileNavbar() {
 
           <button
             onClick={() => setDrawerOpen(true)}
-            className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
+            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
             aria-label="Open menu"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-6 h-6" />
           </button>
         </div>
       </header>
@@ -105,14 +104,13 @@ export function MobileNavbar() {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#2a2a2a]">
           <div className="flex items-center gap-2">
-            <span className="text-xl leading-none">🐝</span>
             <span className="text-white font-bold text-base tracking-tight mainFont">
               Beehive<span className="text-[#FFC300]">Books</span>
             </span>
           </div>
           <button
             onClick={closeDrawer}
-            className="p-1.5 rounded-full text-white/40 hover:text-white hover:bg-white/8 transition-all"
+            className="p-1.5 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 transition-all"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -141,12 +139,10 @@ export function MobileNavbar() {
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-white text-sm font-semibold truncate leading-tight">
+              <p className="text-white font-semibold truncate leading-tight">
                 {user.username ?? user.firstName ?? 'User'}
               </p>
-              <p className="text-white/40 text-xs truncate mt-0.5">
-                @{user.username ?? user.firstName?.toLowerCase() ?? '…'}
-              </p>
+             
             </div>
           </Link>
         )}
@@ -203,7 +199,7 @@ export function MobileNavbar() {
             <Link
               href="/settings/profile"
               onClick={closeDrawer}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 border border-[#2a2a2a] hover:border-white/10 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#2a2a2a] hover:border-white/70 transition-all"
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -213,7 +209,7 @@ export function MobileNavbar() {
                 signOut({ redirectUrl: '/' });
                 closeDrawer();
               }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-400/10 border border-[#2a2a2a] hover:border-red-400/20 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#2a2a2a] hover:border-red-400/20 transition-all"
             >
               <LogOut className="w-4 h-4" />
               Sign out
