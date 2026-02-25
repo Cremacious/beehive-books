@@ -2,24 +2,89 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, SlidersHorizontal, BookOpen, Plus } from 'lucide-react';
+import Image from 'next/image';
+import {
+  Search,
+  SlidersHorizontal,
+  BookOpen,
+  Plus,
+  LayoutGrid,
+  List,
+  MessageSquare,
+} from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
 import type { Book } from '@/lib/types/books.types';
 
 type SortOption = 'date-added' | 'title' | 'author';
+type PrivacyFilter = 'ALL' | 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
+type ViewMode = 'grid' | 'list';
+
+const PRIVACY_TABS: { value: PrivacyFilter; label: string }[] = [
+  { value: 'ALL', label: 'All' },
+  { value: 'PUBLIC', label: 'Public' },
+  { value: 'FRIENDS', label: 'Friends' },
+  { value: 'PRIVATE', label: 'Private' },
+];
+
+function BookListItem({ book }: { book: Book }) {
+  return (
+    <Link
+      href={`/library/${book.id}`}
+      className="group flex gap-4 rounded-lg bg-[#202020] border border-[#2a2a2a] p-3 hover:border-[#FFC300]/25 hover:bg-[#232323] transition-all duration-200"
+    >
+      <div className="relative w-14 shrink-0 aspect-2/3 rounded-md bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+        {book.coverUrl ? (
+          <Image
+            src={book.coverUrl}
+            alt={book.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <BookOpen className="w-5 h-5 text-white/10" />
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0 flex flex-col justify-between gap-1">
+        <div className="min-w-0">
+          <h3 className="text-base font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors">
+            {book.title}
+          </h3>
+          <p className="text-sm text-white truncate">{book.author}</p>
+        </div>
+
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
+          <span className="px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium">
+            {book.genre}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function BookGrid({ books }: { books: Book[] }) {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortOption>('date-added');
+  const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilter>('ALL');
+  const [view, setView] = useState<ViewMode>('grid');
   const [page, setPage] = useState(1);
 
   const PAGE_SIZE = 12;
 
+  const privacyCounts = useMemo(() => {
+    const counts: Record<string, number> = { ALL: books.length };
+    for (const b of books) {
+      counts[b.privacy] = (counts[b.privacy] ?? 0) + 1;
+    }
+    return counts;
+  }, [books]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const result = q
+    let result = q
       ? books.filter(
           (b) =>
             b.title.toLowerCase().includes(q) ||
@@ -28,12 +93,16 @@ export default function BookGrid({ books }: { books: Book[] }) {
         )
       : [...books];
 
+    if (privacyFilter !== 'ALL') {
+      result = result.filter((b) => b.privacy === privacyFilter);
+    }
+
     if (sort === 'title') result.sort((a, b) => a.title.localeCompare(b.title));
     if (sort === 'author')
       result.sort((a, b) => a.author.localeCompare(b.author));
 
     return result;
-  }, [books, query, sort]);
+  }, [books, query, sort, privacyFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const displayed = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -46,17 +115,21 @@ export default function BookGrid({ books }: { books: Book[] }) {
     setSort(s);
     setPage(1);
   };
+  const handlePrivacy = (p: PrivacyFilter) => {
+    setPrivacyFilter(p);
+    setPage(1);
+  };
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5">
-          <BookOpen className="w-9 h-9 text-white/15" />
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-xl bg-[#252525] flex items-center justify-center mb-4">
+          <BookOpen className="w-7 h-7 text-white/15" />
         </div>
         <h2 className="text-lg font-semibold text-white/55 mb-2">
           No books yet
         </h2>
-        <p className="text-sm text-white/30 mb-6 max-w-xs">
+        <p className="text-sm text-white/30 mb-5 max-w-xs">
           Start writing by creating your first book.
         </p>
         <Button asChild>
@@ -71,59 +144,129 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
           <input
             type="text"
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by title, author, or genre…"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
-        <div className="relative">
-          <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
-          <select
-            value={sort}
-            onChange={(e) => handleSort(e.target.value as SortOption)}
-            className="pl-9 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white/60 focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
-          >
-            <option value="date-added">Date Added</option>
-            <option value="title">Title (A–Z)</option>
-            <option value="author">Author (A–Z)</option>
-          </select>
+
+        <div className="flex gap-2">
+          <div className="relative">
+            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-500 pointer-events-none" />
+            <select
+              value={sort}
+              onChange={(e) => handleSort(e.target.value as SortOption)}
+              className="pl-9 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
+            >
+              <option value="date-added">Date Added</option>
+              <option value="title">Title (A–Z)</option>
+              <option value="author">Author (A–Z)</option>
+            </select>
+          </div>
+
+          <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden">
+            <button
+              onClick={() => setView('grid')}
+              title="Grid view"
+              className={`px-3 py-2.5 flex items-center transition-colors ${
+                view === 'grid'
+                  ? 'bg-[#FFC300]/15 text-[#FFC300]'
+                  : 'bg-[#252525] text-white hover:text-yellow-500'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setView('list')}
+              title="List view"
+              className={`px-3 py-2.5 flex items-center border-l border-[#2a2a2a] transition-colors ${
+                view === 'list'
+                  ? 'bg-[#FFC300]/15 text-[#FFC300]'
+                  : 'bg-[#252525] text-white hover:text-yellow-500'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        {PRIVACY_TABS.map(({ value, label }) => {
+          const count = privacyCounts[value] ?? 0;
+          if (value !== 'ALL' && count === 0) return null;
+          return (
+            <button
+              key={value}
+              onClick={() => handlePrivacy(value)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                privacyFilter === value
+                  ? 'bg-[#FFC300] text-black'
+                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
+              }`}
+            >
+              {label}
+              <span
+                className={`text-[10px] ${
+                  privacyFilter === value ? 'text-black/60' : 'text-white/25'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-white/10 mb-3" />
           <p className="text-sm text-white/40 mb-1">
-            No results for &ldquo;{query}&rdquo;
+            {query ? (
+              <>No results for &ldquo;{query}&rdquo;</>
+            ) : (
+              'No books in this category'
+            )}
           </p>
           <button
-            onClick={() => setQuery('')}
+            onClick={() => {
+              setQuery('');
+              setPrivacyFilter('ALL');
+            }}
             className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"
           >
-            Clear search
+            Clear filters
           </button>
         </div>
       )}
 
       {displayed.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {displayed.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
+          {view === 'grid' ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {displayed.map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {displayed.map((book) => (
+                <BookListItem key={book.id} book={book} />
+              ))}
+            </div>
+          )}
 
           <Pagination
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
-            className="mt-10"
+            className="mt-8"
           />
         </>
       )}
