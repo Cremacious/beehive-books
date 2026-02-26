@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { and, eq, or } from 'drizzle-orm';
+import type { AnyColumn } from 'drizzle-orm';
 import { db } from '@/db';
 import { users, books, readingLists, friendships } from '@/db/schema';
 
@@ -49,7 +50,7 @@ export async function getUserProfileAction(username: string) {
       ? (['PUBLIC', 'FRIENDS'] as const)
       : (['PUBLIC'] as const);
 
-  const privacyFilter = (col: typeof books.privacy) =>
+  const privacyFilter = (col: AnyColumn) =>
     visiblePrivacies
       ? or(...visiblePrivacies.map((p) => eq(col, p)))
       : undefined;
