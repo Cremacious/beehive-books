@@ -14,12 +14,12 @@ import {
   Lightbulb,
   BookMarked,
   User,
-  Bell,
   Menu,
   X,
   Settings,
   LogOut,
 } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 const navItems = [
   { href: '/home',          label: 'Feed',          icon: Home },
@@ -55,12 +55,10 @@ export function MobileNavbar() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <button
-            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
-            aria-label="Notifications"
-          >
-            <Bell className="w-6 h-6" />
-          </button>
+          <NotificationBell
+            panelPosition="below"
+            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all flex items-center justify-center"
+          />
 
           <Link href={avatarHref} className="p-1">
             {user?.imageUrl ? (

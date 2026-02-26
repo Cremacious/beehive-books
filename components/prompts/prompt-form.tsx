@@ -7,39 +7,51 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { Search, X, Loader2, Users, Globe, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { promptSchema, type PromptFormData } from '@/lib/validations/prompt.schema';
+import {
+  promptSchema,
+  type PromptFormData,
+} from '@/lib/validations/prompt.schema';
 import {
   createPromptAction,
   updatePromptAction,
 } from '@/lib/actions/prompt.actions';
-import type { PromptDetail, PromptUser } from '@/lib/types/prompt.types';
+import type { PromptDetail } from '@/lib/types/prompt.types';
 import type { FriendUser } from '@/lib/actions/friend.actions';
 
 interface Props {
-  mode:    'create' | 'edit';
+  mode: 'create' | 'edit';
   prompt?: PromptDetail;
   friends: FriendUser[];
 }
 
 function FriendAvatar({ user }: { user: FriendUser }) {
-  const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || '?';
+  const name =
+    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+    user.username ||
+    '?';
   return (
     <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
       {user.imageUrl ? (
-        <Image src={user.imageUrl} alt={name} width={28} height={28} className="w-full h-full object-cover" />
+        <Image
+          src={user.imageUrl}
+          alt={name}
+          width={28}
+          height={28}
+          className="w-full h-full object-cover"
+        />
       ) : (
-        <span className="text-[9px] font-bold text-[#FFC300]">{(name[0] || '?').toUpperCase()}</span>
+        <span className="text-[9px] font-bold text-[#FFC300]">
+          {(name[0] || '?').toUpperCase()}
+        </span>
       )}
     </div>
   );
 }
 
-/** Format a Date object as YYYY-MM-DD for <input type="date"> */
 function toDateInputValue(d: Date): string {
   return d.toISOString().split('T')[0];
 }
 
-/** Tomorrow's date as a default */
 function defaultEndDate(): string {
   const d = new Date();
   d.setDate(d.getDate() + 7);
@@ -51,7 +63,6 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   const [serverError, setServerError] = useState('');
   const [inviteSearch, setInviteSearch] = useState('');
 
-  // Pre-populate invited friend IDs for edit mode
   const initialInvited = prompt?.invites.map((i) => i.user.clerkId) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
 
@@ -63,18 +74,21 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   } = useForm<PromptFormData>({
     resolver: zodResolver(promptSchema),
     defaultValues: {
-      title:       prompt?.title       ?? '',
+      title: prompt?.title ?? '',
       description: prompt?.description ?? '',
-      endDate:     prompt ? toDateInputValue(prompt.endDate) : defaultEndDate(),
-      isPublic:    prompt?.isPublic    ?? false,
+      endDate: prompt ? toDateInputValue(prompt.endDate) : defaultEndDate(),
+      isPublic: prompt?.isPublic ?? false,
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const isPublicValue = watch('isPublic');
 
   function toggleInvite(clerkId: string) {
     setInvitedIds((prev) =>
-      prev.includes(clerkId) ? prev.filter((id) => id !== clerkId) : [...prev, clerkId],
+      prev.includes(clerkId)
+        ? prev.filter((id) => id !== clerkId)
+        : [...prev, clerkId],
     );
   }
 
@@ -110,31 +124,37 @@ export function PromptForm({ mode, prompt, friends }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-
-      {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-1.5">Title</label>
+        <label className="block text-sm font-medium text-white/80 mb-1.5">
+          Title
+        </label>
         <input
           {...register('title')}
           placeholder="e.g. Write a scene where two strangers share an umbrella…"
           className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
-        {errors.title && <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>}
+        {errors.title && (
+          <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
+        )}
       </div>
 
-      {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-1.5">Description</label>
+        <label className="block text-sm font-medium text-white/80 mb-1.5">
+          Description
+        </label>
         <textarea
           {...register('description')}
           rows={4}
           placeholder="Describe the creative challenge, set the scene, give inspiration…"
           className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
-        {errors.description && <p className="mt-1 text-xs text-red-400">{errors.description.message}</p>}
+        {errors.description && (
+          <p className="mt-1 text-xs text-red-400">
+            {errors.description.message}
+          </p>
+        )}
       </div>
 
-      {/* End Date */}
       <div>
         <label className="block text-sm font-medium text-white/80 mb-1.5">
           Challenge Deadline
@@ -143,15 +163,18 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           type="date"
           {...register('endDate')}
           min={toDateInputValue(new Date(Date.now() + 86400000))}
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all [color-scheme:dark]"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
         />
-        {errors.endDate && <p className="mt-1 text-xs text-red-400">{errors.endDate.message as string}</p>}
+        {errors.endDate && (
+          <p className="mt-1 text-xs text-red-400">
+            {errors.endDate.message as string}
+          </p>
+        )}
         <p className="mt-1.5 text-xs text-white/70">
           Entries will be revealed to all participants when the deadline passes.
         </p>
       </div>
 
-      {/* Visibility toggle */}
       <div className="flex items-start gap-4 p-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
@@ -176,11 +199,10 @@ export function PromptForm({ mode, prompt, friends }: Props) {
             {...register('isPublic')}
             className="sr-only peer"
           />
-          <div className="w-9 h-5 bg-[#333] rounded-full peer peer-checked:bg-[#FFC300] transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4" />
+          <div className="w-9 h-5 bg-[#333] rounded-full peer peer-checked:bg-[#FFC300] transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4" />
         </label>
       </div>
 
-      {/* Friend invite picker */}
       {!isPublicValue && (
         <div>
           <label className="block text-sm font-medium text-white/80 mb-1.5">
@@ -194,10 +216,11 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           </label>
 
           {friends.length === 0 ? (
-            <p className="text-sm text-white/70 py-3">You have no friends to invite yet.</p>
+            <p className="text-sm text-white/70 py-3">
+              You have no friends to invite yet.
+            </p>
           ) : (
             <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden">
-              {/* Search */}
               <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#2a2a2a]">
                 <Search className="w-3.5 h-3.5 text-white/70 shrink-0" />
                 <input
@@ -207,14 +230,19 @@ export function PromptForm({ mode, prompt, friends }: Props) {
                   className="flex-1 bg-transparent text-sm text-white placeholder-white/25 focus:outline-none"
                 />
               </div>
-              {/* Friend list */}
+
               <ul className="max-h-48 overflow-y-auto">
                 {filteredFriends.length === 0 ? (
-                  <li className="px-4 py-3 text-sm text-white/70">No matches</li>
+                  <li className="px-4 py-3 text-sm text-white/70">
+                    No matches
+                  </li>
                 ) : (
                   filteredFriends.map((f) => {
                     const selected = invitedIds.includes(f.clerkId);
-                    const name = [f.firstName, f.lastName].filter(Boolean).join(' ') || f.username || 'Unknown';
+                    const name =
+                      [f.firstName, f.lastName].filter(Boolean).join(' ') ||
+                      f.username ||
+                      'Unknown';
                     return (
                       <li key={f.clerkId}>
                         <button
@@ -226,13 +254,25 @@ export function PromptForm({ mode, prompt, friends }: Props) {
                         >
                           <FriendAvatar user={f} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-white truncate">{name}</p>
-                            {f.username && <p className="text-xs text-white/70">@{f.username}</p>}
+                            <p className="text-sm text-white truncate">
+                              {name}
+                            </p>
+                            {f.username && (
+                              <p className="text-xs text-white/70">
+                                @{f.username}
+                              </p>
+                            )}
                           </div>
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                            selected ? 'bg-[#FFC300] border-[#FFC300]' : 'border-white/20'
-                          }`}>
-                            {selected && <X className="w-2.5 h-2.5 text-black" />}
+                          <div
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                              selected
+                                ? 'bg-[#FFC300] border-[#FFC300]'
+                                : 'border-white/20'
+                            }`}
+                          >
+                            {selected && (
+                              <X className="w-2.5 h-2.5 text-black" />
+                            )}
                           </div>
                         </button>
                       </li>
@@ -246,10 +286,11 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       )}
 
       {serverError && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{serverError}</p>
+        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+          {serverError}
+        </p>
       )}
 
-      {/* Actions */}
       <div className="flex items-center gap-3 pt-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}

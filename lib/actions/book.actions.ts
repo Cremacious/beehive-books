@@ -10,6 +10,7 @@ import {
   collections,
   chapterComments,
   commentLikes,
+  users,
 } from '@/db/schema';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {
@@ -18,6 +19,7 @@ import {
 } from '@/lib/validations/chapter.schema';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
+import { insertNotification } from '@/lib/notifications';
 
 export type ActionResult = { success: boolean; message: string };
 
@@ -544,6 +546,26 @@ export async function addCommentAction(
       .update(books)
       .set({ commentCount: sql`${books.commentCount} + 1` })
       .where(eq(books.id, book.id));
+
+    const actor = await db.query.users.findFirst({
+      where: eq(users.clerkId, userId),
+      columns: { username: true },
+    });
+    const link = `/library/${book.id}/${chapterId}`;
+    const meta = { actorUsername: actor?.username ?? '', bookId: book.id, chapterId };
+
+    if (parentId) {
+      const parent = await db.query.chapterComments.findFirst({
+        where: eq(chapterComments.id, parentId),
+        columns: { userId: true },
+      });
+      if (parent) {
+        void insertNotification({ recipientId: parent.userId, actorId: userId, type: 'COMMENT_REPLY', link, metadata: meta });
+      }
+    } else {
+      void insertNotification({ recipientId: book.userId, actorId: userId, type: 'CHAPTER_COMMENT', link, metadata: meta });
+    }
+
     revalidatePath(`/library/${book.id}/${chapterId}`);
     return { success: true, message: 'Comment added.' };
   } catch {
@@ -561,6 +583,12 @@ export async function toggleCommentLikeAction(
       eq(commentLikes.userId, userId),
       eq(commentLikes.commentId, commentId),
     ),
+  });
+
+  const comment = await db.query.chapterComments.findFirst({
+    where: eq(chapterComments.id, commentId),
+    columns: { userId: true, chapterId: true },
+    with: { chapter: { columns: { bookId: true } } },
   });
 
   try {
@@ -586,6 +614,19 @@ export async function toggleCommentLikeAction(
         .update(chapterComments)
         .set({ likeCount: sql`${chapterComments.likeCount} + 1` })
         .where(eq(chapterComments.id, commentId));
+      if (comment) {
+        const actor = await db.query.users.findFirst({
+          where: eq(users.clerkId, userId),
+          columns: { username: true },
+        });
+        void insertNotification({
+          recipientId: comment.userId,
+          actorId:     userId,
+          type:        'COMMENT_LIKE',
+          link:        `/library/${comment.chapter.bookId}/${comment.chapterId}`,
+          metadata:    { actorUsername: actor?.username ?? '', bookId: comment.chapter.bookId, chapterId: comment.chapterId },
+        });
+      }
       return { success: true, liked: true };
     }
   } catch {

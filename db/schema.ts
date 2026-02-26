@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, primaryKey, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, primaryKey, uniqueIndex, json } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -110,6 +110,22 @@ export const readingListBooks = pgTable('reading_list_books', {
 
 
 
+export const notifications = pgTable('notifications', {
+  id:          text('id').primaryKey().$defaultFn(() => createId()),
+  recipientId: text('recipient_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  actorId:     text('actor_id').references(() => users.clerkId, { onDelete: 'cascade' }),
+  type:        text('type', { enum: [
+    'FRIEND_REQUEST', 'FRIEND_ACCEPTED',
+    'CHAPTER_COMMENT', 'COMMENT_REPLY', 'COMMENT_LIKE',
+    'PROMPT_INVITE', 'PROMPT_ENTRY', 'PROMPT_ENDED',
+    'ENTRY_COMMENT', 'ENTRY_COMMENT_LIKE',
+  ] as const }).notNull(),
+  isRead:      boolean('is_read').notNull().default(false),
+  link:        text('link').notNull(),
+  metadata:    json('metadata').$type<Record<string, string>>().notNull().default({}),
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   books:                    many(books),
   comments:                 many(chapterComments),
@@ -123,6 +139,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   promptEntryLikes:         many(promptEntryLikes),
   promptEntryComments:      many(promptEntryComments),
   promptEntryCommentLikes:  many(promptEntryCommentLikes),
+  notifications:            many(notifications, { relationName: 'receivedNotifications' }),
 }));
 
 export const friendshipsRelations = relations(friendships, ({ one }) => ({
@@ -286,4 +303,9 @@ export const promptEntryCommentsRelations = relations(promptEntryComments, ({ on
 export const promptEntryCommentLikesRelations = relations(promptEntryCommentLikes, ({ one }) => ({
   user:    one(users,               { fields: [promptEntryCommentLikes.userId],    references: [users.clerkId] }),
   comment: one(promptEntryComments, { fields: [promptEntryCommentLikes.commentId], references: [promptEntryComments.id] }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  recipient: one(users, { fields: [notifications.recipientId], references: [users.clerkId], relationName: 'receivedNotifications' }),
+  actor:     one(users, { fields: [notifications.actorId],     references: [users.clerkId], relationName: 'sentNotifications' }),
 }));

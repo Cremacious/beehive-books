@@ -5,6 +5,7 @@ import { and, eq, ilike, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { friendships, users } from '@/db/schema';
+import { insertNotification } from '@/lib/notifications';
 
 type ActionResult = { success: boolean; message: string };
 
@@ -150,6 +151,17 @@ export async function sendFriendRequestAction(addresseeId: string): Promise<Acti
 
   try {
     await db.insert(friendships).values({ requesterId, addresseeId });
+    const actor = await db.query.users.findFirst({
+      where: eq(users.clerkId, requesterId),
+      columns: { username: true },
+    });
+    void insertNotification({
+      recipientId: addresseeId,
+      actorId:     requesterId,
+      type:        'FRIEND_REQUEST',
+      link:        '/friends',
+      metadata:    { actorUsername: actor?.username ?? '' },
+    });
     revalidatePath('/friends');
     return { success: true, message: 'Friend request sent.' };
   } catch {
@@ -184,6 +196,17 @@ export async function acceptFriendRequestAction(friendshipId: string): Promise<A
     await db.update(friendships)
       .set({ status: 'ACCEPTED', updatedAt: new Date() })
       .where(eq(friendships.id, friendshipId));
+    const actor = await db.query.users.findFirst({
+      where: eq(users.clerkId, userId),
+      columns: { username: true },
+    });
+    void insertNotification({
+      recipientId: row.requesterId,
+      actorId:     userId,
+      type:        'FRIEND_ACCEPTED',
+      link:        '/friends',
+      metadata:    { actorUsername: actor?.username ?? '' },
+    });
     revalidatePath('/friends');
     return { success: true, message: 'Friend request accepted.' };
   } catch {
