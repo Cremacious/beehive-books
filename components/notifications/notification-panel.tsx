@@ -84,7 +84,7 @@ function NotificationRow({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className={`text-sm leading-snug ${isRead ? 'text-white/50' : 'text-white'}`}>
+        <p className={`text-sm leading-snug ${isRead ? 'text-white/80' : 'text-white'}`}>
           {!isSystem && actorUsername ? (
             <>
               <Link
@@ -166,7 +166,7 @@ export function NotificationPanel({ notifications, onClose }: Props) {
         <div className="border-t border-[#2a2a2a] px-4 py-2.5">
           <button
             onClick={() => { router.push('/notifications'); onClose(); }}
-            className="w-full text-center text-sm text-white/80 hover:text-[#FFC300] py-1 transition-colors"
+            className="w-full text-center text-sm text-white hover:text-[#FFC300] py-1 transition-colors"
           >
             View all notifications
           </button>

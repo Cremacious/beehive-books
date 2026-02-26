@@ -95,7 +95,7 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
               }`}
             >
               {label}
-              <span className={`text-sm ${privacyFilter === value ? 'text-black/60' : 'text-yellow-500'}`}>
+              <span className={`text-sm ${privacyFilter === value ? 'text-black' : 'text-yellow-500'}`}>
                 {count}
               </span>
             </button>

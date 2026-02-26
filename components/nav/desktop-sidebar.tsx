@@ -42,7 +42,7 @@ export function DesktopSidebar() {
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
 
     
-        <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5 border-b border-[#2a2a2a]">
+        <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5">
           <span className="text-2xl leading-none">🐝</span>
           <span className="hidden lg:block text-white font-bold text-lg tracking-tight mainFont">
             Beehive<span className="text-[#FFC300]">Books</span>
@@ -50,7 +50,7 @@ export function DesktopSidebar() {
         </div>
 
   
-        <div className="px-2 xl:px-3 py-3 border-b border-[#2a2a2a]">
+        <div className="px-2 xl:px-3 py-3">
           <NotificationBell
             panelPosition="right"
             className="w-full flex items-center justify-center py-2 rounded-2xl bg-yellow-500/10 border-2 border-yellow-500/30 text-[#FFC300] hover:bg-yellow-500/15 transition-colors cursor-pointer"
@@ -69,7 +69,7 @@ export function DesktopSidebar() {
                     className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
                         ? 'text-[#FFC300]'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                        : 'text-white/90 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon
@@ -89,7 +89,7 @@ export function DesktopSidebar() {
                   className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                     isActive('/u')
                       ? 'text-[#FFC300]'
-                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                      : 'text-white/90 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <User

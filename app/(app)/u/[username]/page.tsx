@@ -17,6 +17,8 @@ import { FriendButton } from '@/components/friends/friend-button';
 import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
 
+//TODO: Make the user confirm before unfriending
+
 type Props = { params: Promise<{ username: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

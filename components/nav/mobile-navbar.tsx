@@ -122,7 +122,7 @@ export function MobileNavbar() {
           <Link
             href={avatarHref}
             onClick={closeDrawer}
-            className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] hover:bg-white/5 transition-all"
+            className="flex items-center gap-3 px-4 py-3  hover:bg-white/5 transition-all"
           >
             {user.imageUrl ? (
               <Image
@@ -160,7 +160,7 @@ export function MobileNavbar() {
                     className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-[15px] font-semibold transition-all ${
                       active
                         ? 'text-[#FFC300]'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                        : 'text-white/90 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon
@@ -200,7 +200,7 @@ export function MobileNavbar() {
             <Link
               href="/settings/profile"
               onClick={closeDrawer}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#2a2a2a] hover:border-white/70 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#514e4e] hover:border-white/70 transition-all"
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -210,7 +210,7 @@ export function MobileNavbar() {
                 signOut({ redirectUrl: '/' });
                 closeDrawer();
               }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#2a2a2a] hover:border-red-400/20 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#514e4e] hover:border-red-400/20 transition-all"
             >
               <LogOut className="w-4 h-4" />
               Sign out

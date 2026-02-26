@@ -40,12 +40,12 @@ export function UserSearch() {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           placeholder="Search by username or email…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
       {searched && results.length === 0 && (
-        <p className="text-sm text-white/70 text-center py-8">
+        <p className="text-sm text-white/80 text-center py-8">
           No users found for &ldquo;{query}&rdquo;
         </p>
       )}
@@ -99,7 +99,7 @@ export function UserSearch() {
       )}
 
       {!searched && (
-        <p className="text-sm text-white/70 text-center py-8">
+        <p className="text-sm text-white text-center py-8">
           Type at least 2 characters to search
         </p>
       )}

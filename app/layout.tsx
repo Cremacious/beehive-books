@@ -14,13 +14,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
       <html lang="en">
-        <body
-          className="antialiased"
-        >
+        <body className="antialiased">
           <Providers>{children}</Providers>
         </body>
       </html>
