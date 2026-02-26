@@ -32,6 +32,7 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const dbUsername = user?.publicMetadata?.username as string | undefined;
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
@@ -40,7 +41,7 @@ export function DesktopSidebar() {
     <aside className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
 
-        {/* Logo */}
+    
         <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5 border-b border-[#2a2a2a]">
           <span className="text-2xl leading-none">🐝</span>
           <span className="hidden lg:block text-white font-bold text-lg tracking-tight mainFont">
@@ -48,7 +49,7 @@ export function DesktopSidebar() {
           </span>
         </div>
 
-        {/* Notification bell — full-width yellow button */}
+  
         <div className="px-2 xl:px-3 py-3 border-b border-[#2a2a2a]">
           <NotificationBell
             panelPosition="right"
@@ -56,7 +57,7 @@ export function DesktopSidebar() {
           />
         </div>
 
-        {/* Nav links */}
+     
         <nav className="flex-1 px-2 xl:px-3 py-4 overflow-y-auto">
           <ul className="space-y-0.5 flex flex-col md:items-center lg:items-stretch">
             {navItems.map(({ href, label, icon: Icon }) => {
@@ -102,13 +103,13 @@ export function DesktopSidebar() {
           </ul>
         </nav>
 
-        {/* User section */}
+  
         <div className="px-2 xl:px-3 pb-4 pt-3 border-t border-[#2a2a2a]">
           <div className="flex items-center md:justify-center lg:justify-start gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
             {user?.imageUrl ? (
               <Image
                 src={user.imageUrl}
-                alt={user.firstName ?? 'User'}
+                alt={dbUsername ?? 'User'}
                 width={38}
                 height={38}
                 className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
@@ -116,14 +117,14 @@ export function DesktopSidebar() {
             ) : (
               <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
                 <span className="text-[#FFC300] text-sm font-bold">
-                  {user?.firstName?.[0]?.toUpperCase() ?? '?'}
+                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
                 </span>
               </div>
             )}
 
             <div className="hidden lg:block flex-1 min-w-0">
               <p className="text-white font-semibold truncate leading-tight">
-                {user?.username ?? user?.firstName ?? 'User'}
+                {dbUsername ?? 'User'}
               </p>
             </div>
 

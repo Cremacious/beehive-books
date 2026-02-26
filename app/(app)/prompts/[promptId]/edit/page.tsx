@@ -23,7 +23,7 @@ export default async function EditPromptPage({ params }: Props) {
     notFound();
   }
 
-  // Only creator can edit
+
   if (userId !== prompt.creator.clerkId) redirect(`/prompts/${promptId}`);
 
   const { friends } = await getMyFriendsDataAction();

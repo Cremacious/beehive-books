@@ -13,7 +13,7 @@ export default async function EditReadingListPage({
   const data = await getReadingListAction(listId);
   if (!data || !data.isOwner) notFound();
 
-  // const { books: _books, currentUserId: _uid, isOwner: _own, ...list } = data;
+
   const { ...list } = data;
 
   return (

@@ -10,8 +10,7 @@ import { addEntryCommentAction } from '@/lib/actions/prompt.actions';
 import type { EntryComment, EntryReply, PromptUser } from '@/lib/types/prompt.types';
 
 function displayName(user: PromptUser): string {
-  if (user.username) return user.username;
-  return [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Anonymous';
+  return user.username || 'Anonymous';
 }
 
 function initials(user: PromptUser): string {

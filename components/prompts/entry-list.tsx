@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-// import { Heart, FileText } from 'lucide-react';
-// import { usePromptStore } from '@/lib/stores/prompt-store';
 import type { PromptEntry, PromptUser } from '@/lib/types/prompt.types';
 import { Button } from '../ui/button';
 
@@ -39,8 +37,6 @@ interface Props {
 }
 
 export function EntryList({ entries, promptId }: Props) {
-  // const { optimisticLikes } = usePromptStore();
-
   if (entries.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-[#2a2a2a] py-12 text-center">
@@ -54,13 +50,6 @@ export function EntryList({ entries, promptId }: Props) {
   return (
     <div className="space-y-3">
       {entries.map((entry) => {
-        // const isLiked = optimisticLikes[entry.id] ?? entry.likedByMe;
-        // const likeCount =
-        //   entry.likeCount +
-        //   (optimisticLikes[entry.id] !== undefined
-        //     ? (optimisticLikes[entry.id] ? 1 : -1) - (entry.likedByMe ? 1 : -1)
-        //     : 0);
-
         return (
           <div
             key={entry.id}

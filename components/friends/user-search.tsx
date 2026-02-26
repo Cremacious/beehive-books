@@ -53,10 +53,7 @@ export function UserSearch() {
       {results.length > 0 && (
         <ul className="space-y-2">
           {results.map(({ user, friendStatus }) => {
-            const displayName =
-              [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-              user.username ||
-              'Unknown User';
+            const displayName = user.username || 'Unknown User';
 
             return (
               <li

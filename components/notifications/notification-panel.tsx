@@ -78,7 +78,7 @@ function NotificationRow({
         !isRead ? 'bg-white/3' : ''
       }`}
     >
-      {/* Type icon circle */}
+     
       <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
         <Icon className={`w-4 h-4 ${fg}`} />
       </div>
@@ -92,7 +92,7 @@ function NotificationRow({
                 onClick={(e) => e.stopPropagation()}
                 className="font-semibold text-[#FFC300] hover:underline"
               >
-                @{actorUsername}
+                {actorUsername}
               </Link>
               {' '}
             </>
@@ -166,7 +166,7 @@ export function NotificationPanel({ notifications, onClose }: Props) {
         <div className="border-t border-[#2a2a2a] px-4 py-2.5">
           <button
             onClick={() => { router.push('/notifications'); onClose(); }}
-            className="w-full text-center text-sm text-white/40 hover:text-[#FFC300] py-1 transition-colors"
+            className="w-full text-center text-sm text-white/80 hover:text-[#FFC300] py-1 transition-colors"
           >
             View all notifications
           </button>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import {
   getNotificationsAction,
   markAllReadAction,
@@ -30,16 +31,32 @@ export function NotificationBell({
   const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef  = useRef<HTMLDivElement>(null);
+  const pathname  = usePathname();
 
   useEffect(() => {
+    let cancelled = false;
     getNotificationsAction()
       .then(({ notifications: items, unreadCount: count }) => {
+        if (cancelled) return;
         setNotifications(items);
         setUnreadCount(count);
         setLoaded(true);
       })
-      .catch(() => setLoaded(true));
+      .catch(() => { if (!cancelled) setLoaded(true); });
+    return () => { cancelled = true; };
+  }, [pathname]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      getNotificationsAction()
+        .then(({ notifications: items, unreadCount: count }) => {
+          setNotifications(items);
+          setUnreadCount(count);
+        })
+        .catch(() => {});
+    }, 60_000);
+    return () => clearInterval(id);
   }, []);
 
   const calcStyle = useCallback((): React.CSSProperties => {

@@ -14,10 +14,7 @@ import type {
 } from '@/lib/types/comment.types';
 
 function displayName(user: CommentUser): string {
-  if (user.username) return user.username;
-  if (user.firstName || user.lastName)
-    return [user.firstName, user.lastName].filter(Boolean).join(' ');
-  return 'Anonymous';
+  return user.username || 'Anonymous';
 }
 
 function initials(user: CommentUser): string {

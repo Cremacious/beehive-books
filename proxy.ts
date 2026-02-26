@@ -12,7 +12,6 @@ const isRootRoute = createRouteMatcher(['/']);
 export default clerkMiddleware(async (auth, request) => {
   const { userId } = await auth();
 
-  // Not signed in — redirect to sign-in for protected routes
   if (!userId) {
     if (!isPublicRoute(request)) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
@@ -28,12 +27,10 @@ export default clerkMiddleware(async (auth, request) => {
 
   const onboarded = dbUser?.onboardingComplete;
 
-  // Signed in but not onboarded → redirect to onboarding
   if (!onboarded && !isOnboardingRoute(request) && !isPublicRoute(request)) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
-  // Already onboarded but visiting onboarding or root → redirect to home
   if (onboarded && (isOnboardingRoute(request) || isRootRoute(request))) {
     return NextResponse.redirect(new URL('/home', request.url));
   }

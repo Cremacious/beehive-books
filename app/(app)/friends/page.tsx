@@ -135,10 +135,7 @@ function TabLink({
 }
 
 function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
-  const name =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    '?';
+  const name = user.username || '?';
   const cls = `relative rounded-full overflow-hidden bg-[#2a2000] shrink-0 w-${size} h-${size}`;
   return (
     <div className={cls}>
@@ -160,19 +157,11 @@ function FriendCard({
 }: {
   user: FriendUser; friendshipId: string; friendStatus: FriendStatus;
 }) {
-  const displayName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    'Unknown User';
-
   return (
     <div className="flex flex-col items-center gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-center">
       <Avatar user={user} size={16} />
       <div className="min-w-0">
-        <p className="font-semibold text-white truncate">{displayName}</p>
-        {user.username && (
-          <p className="text-xs text-white/70 mt-0.5">@{user.username}</p>
-        )}
+        <p className="font-semibold text-white truncate">{user.username || 'Unknown User'}</p>
       </div>
       <div className="flex items-center gap-2 mt-1">
         <Link
@@ -192,11 +181,6 @@ function FriendCard({
 }
 
 function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: FriendStatus }) {
-  const displayName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    'Unknown User';
-
   return (
     <li className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
       <Avatar user={user} size={10} />
@@ -205,11 +189,8 @@ function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: Fr
           href={`/u/${user.username ?? user.clerkId}`}
           className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
         >
-          {displayName}
+          {user.username || 'Unknown User'}
         </Link>
-        {user.username && (
-          <p className="text-xs text-white/70">@{user.username}</p>
-        )}
       </div>
       <FriendButton targetUserId={user.clerkId} initialStatus={friendStatus} />
     </li>
