@@ -7,7 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
-import { entrySchema, type EntryFormData } from '@/lib/validations/prompt.schema';
+import {
+  entrySchema,
+  type EntryFormData,
+} from '@/lib/validations/prompt.schema';
 import { createEntryAction } from '@/lib/actions/prompt.actions';
 
 interface Props {
@@ -33,8 +36,9 @@ export function EntryForm({ promptId }: Props) {
     defaultValues: { content: '' },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const contentValue = watch('content');
-  const wordCount    = countWords(contentValue || '');
+  const wordCount = countWords(contentValue || '');
 
   async function onSubmit(data: EntryFormData) {
     setServerError('');
@@ -50,13 +54,6 @@ export function EntryForm({ promptId }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-white/80">Your Entry</label>
-          <span className="flex items-center gap-1.5 text-xs text-white/70">
-            <FileText className="w-3 h-3" />
-            {wordCount} word{wordCount !== 1 ? 's' : ''}
-          </span>
-        </div>
         <Controller
           name="content"
           control={control}
@@ -73,12 +70,14 @@ export function EntryForm({ promptId }: Props) {
         )}
       </div>
 
-      <p className="text-xs text-white/70">
+      <p className="text-sm text-white/90">
         Take your time — you can only submit one entry. Make it count!
       </p>
 
       {serverError && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{serverError}</p>
+        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+          {serverError}
+        </p>
       )}
 
       <div className="flex items-center gap-3 pt-2">
@@ -86,13 +85,9 @@ export function EntryForm({ promptId }: Props) {
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Submit Entry
         </Button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-4 py-2 rounded-xl text-sm text-white/70 hover:text-white transition-colors"
-        >
+        <Button type="button" onClick={() => router.back()} variant={'outline'}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

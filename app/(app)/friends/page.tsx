@@ -156,7 +156,7 @@ function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
 }
 
 function FriendCard({
-  user, friendshipId, friendStatus,
+  user, friendStatus,
 }: {
   user: FriendUser; friendshipId: string; friendStatus: FriendStatus;
 }) {

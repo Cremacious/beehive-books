@@ -5,7 +5,7 @@ import {
 } from '@/lib/actions/prompt.actions';
 
 interface PromptStore {
-  optimisticLikes: Record<string, boolean>; // entryId or commentId → liked state
+  optimisticLikes: Record<string, boolean>; 
   toggleEntryLike:   (entryId: string, currentlyLiked: boolean) => Promise<void>;
   toggleCommentLike: (commentId: string, currentlyLiked: boolean) => Promise<void>;
 }

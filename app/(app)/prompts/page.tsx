@@ -15,7 +15,6 @@ export default async function PromptsPage() {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
-      {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-white">Prompts</h1>
@@ -31,7 +30,7 @@ export default async function PromptsPage() {
         </Button>
       </div>
 
-      {/* Pending invites banner */}
+
       {pendingInvites.length > 0 && (
         <div className="mb-8 rounded-2xl bg-[#FFC300]/5 border border-[#FFC300]/20 p-4 space-y-3">
           <div className="flex items-center gap-2">
@@ -62,7 +61,7 @@ export default async function PromptsPage() {
         </div>
       )}
 
-      {/* Grid */}
+
       <PromptGrid prompts={prompts} />
     </div>
   );

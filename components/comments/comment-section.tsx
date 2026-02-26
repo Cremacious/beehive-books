@@ -59,7 +59,7 @@ function Avatar({
     );
   }
   return (
-    <div className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white/60 ${className}`}>
+    <div className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white ${className}`}>
       {fallback}
     </div>
   );
@@ -164,6 +164,11 @@ function CommentItem({
   const { addComment } = useCommentStore();
 
   const isLiked = optimisticLikes[comment.id] ?? comment.likedByMe;
+  const displayedCount = comment.likeCount + (
+    optimisticLikes[comment.id] !== undefined
+      ? (optimisticLikes[comment.id] ? 1 : 0) - (comment.likedByMe ? 1 : 0)
+      : 0
+  );
 
   async function handleReply() {
     if (!replyText.trim() || submitting) return;
@@ -188,22 +193,22 @@ function CommentItem({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-semibold text-white/80">{displayName(comment.user)}</span>
-            <span className="text-xs text-white/30">{timeAgo(comment.createdAt)}</span>
+            <span className="text-sm font-semibold text-white">{displayName(comment.user)}</span>
+            <span className="text-sm text-white">{timeAgo(comment.createdAt)}</span>
           </div>
-          <p className="text-sm text-white/65 leading-relaxed">{comment.content}</p>
+          <p className="text-base text-white leading-relaxed">{comment.content}</p>
           <div className="flex items-center gap-4 mt-2">
             <button
               onClick={() => currentUserId && onToggleLike(comment.id, isLiked)}
-              className={`flex items-center gap-1.5 text-xs transition-colors ${isLiked ? 'text-[#FFC300]' : 'text-white/30 hover:text-white/60'}`}
+              className={`flex items-center gap-1.5 text-sm transition-colors ${isLiked ? 'text-[#FFC300]' : 'text-white hover:text-white'}`}
             >
               <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`} />
-              {comment.likeCount}
+              {displayedCount}
             </button>
             {currentUserId && (
               <button
                 onClick={() => setShowReply(r => !r)}
-                className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                className="text-sm text-white hover:text-white transition-colors"
               >
                 Reply
               </button>
@@ -235,12 +240,12 @@ function CommentItem({
             onChange={e => setReplyText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleReply(); }}
             placeholder={`Reply to ${displayName(comment.user)}…`}
-            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-xs text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
           <button
             onClick={handleReply}
             disabled={!replyText.trim() || submitting}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors shrink-0"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors shrink-0"
           >
             {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
             Reply
@@ -263,6 +268,11 @@ function ReplyItem({
   currentUserId:   string | null;
 }) {
   const isLiked = optimisticLikes[reply.id] ?? reply.likedByMe;
+  const displayedCount = reply.likeCount + (
+    optimisticLikes[reply.id] !== undefined
+      ? (optimisticLikes[reply.id] ? 1 : 0) - (reply.likedByMe ? 1 : 0)
+      : 0
+  );
 
   return (
     <div className="flex gap-3">
@@ -274,16 +284,16 @@ function ReplyItem({
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold text-white/80">{displayName(reply.user)}</span>
-          <span className="text-xs text-white/30">{timeAgo(reply.createdAt)}</span>
+          <span className="text-sm font-semibold text-white">{displayName(reply.user)}</span>
+          <span className="text-sm text-white">{timeAgo(reply.createdAt)}</span>
         </div>
-        <p className="text-xs text-white/60 leading-relaxed">{reply.content}</p>
+        <p className="text-sm text-white leading-relaxed">{reply.content}</p>
         <button
           onClick={() => currentUserId && onToggleLike(reply.id, isLiked)}
-          className={`flex items-center gap-1 mt-1.5 text-[11px] transition-colors ${isLiked ? 'text-[#FFC300]' : 'text-white/25 hover:text-white/50'}`}
+          className={`flex items-center gap-1 mt-1.5 text-sm transition-colors ${isLiked ? 'text-[#FFC300]' : 'text-white hover:text-white'}`}
         >
           <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
-          {reply.likeCount}
+          {displayedCount}
         </button>
       </div>
     </div>

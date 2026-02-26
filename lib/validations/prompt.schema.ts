@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Form schema — endDate is a string (from <input type="date">)
 export const promptSchema = z.object({
   title: z
     .string()
@@ -22,7 +21,6 @@ export const promptSchema = z.object({
 
 export type PromptFormData = z.infer<typeof promptSchema>;
 
-// Server schema — coerces string to Date for DB insertion
 export const promptServerSchema = promptSchema.extend({
   endDate: z.coerce.date().refine(
     (d) => d > new Date(),

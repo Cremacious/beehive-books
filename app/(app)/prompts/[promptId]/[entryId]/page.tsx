@@ -15,23 +15,33 @@ export const metadata: Metadata = { title: 'Entry · Beehive Books' };
 type Props = { params: Promise<{ promptId: string; entryId: string }> };
 
 function displayName(user: PromptUser): string {
-  return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || 'Anonymous';
+  return user.username || 'Anonymous';
 }
 
 function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString('en-US', {
-    month: 'long', day: 'numeric', year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
 function UserAvatar({ user }: { user: PromptUser }) {
-  const name = displayName(user);
+  const name = user.username || '?';
   return (
     <div className="w-10 h-10 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
       {user.imageUrl ? (
-        <Image src={user.imageUrl} alt={name} width={40} height={40} className="w-full h-full object-cover" />
+        <Image
+          src={user.imageUrl}
+          alt={name}
+          width={40}
+          height={40}
+          className="w-full h-full object-cover"
+        />
       ) : (
-        <span className="text-sm font-bold text-[#FFC300]">{(name[0] || '?').toUpperCase()}</span>
+        <span className="text-base font-bold text-[#FFC300]">
+          {(name[0] || '?').toUpperCase()}
+        </span>
       )}
     </div>
   );
@@ -52,20 +62,17 @@ export default async function EntryDetailPage({ params }: Props) {
     <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto">
       <BackButton href={`/prompts/${promptId}`} label="Back to Prompt" />
 
-      {/* Entry header */}
       <div className="mt-6 mb-8 p-6 rounded-2xl bg-[#252525] border border-[#2a2a2a]">
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
             <UserAvatar user={entry.user} />
             <div>
-              <p className="font-semibold text-white">{displayName(entry.user)}</p>
-              {entry.user.username && (
-                <p className="text-xs text-white/70">@{entry.user.username}</p>
-              )}
+              <p className="text-lg font-semibold text-white">
+                {displayName(entry.user)}
+              </p>
             </div>
           </div>
 
-          {/* Like button (client island) */}
           <EntryLikeButton
             entryId={entryId}
             likeCount={entry.likeCount}
@@ -74,7 +81,7 @@ export default async function EntryDetailPage({ params }: Props) {
           />
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-white/70">
+        <div className="flex items-center gap-4 text-sm text-white">
           <span className="flex items-center gap-1">
             <FileText className="w-3.5 h-3.5" />
             {entry.wordCount} words
@@ -83,12 +90,10 @@ export default async function EntryDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Entry content */}
       <div className="prose prose-invert max-w-none mb-4">
         <EntryContent content={entry.content} />
       </div>
 
-      {/* Comments */}
       <EntryCommentSection
         entryId={entryId}
         comments={entry.comments}
