@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'My Library',
+  description: 'Your creative workspace — write, organise, and publish your books and chapters.',
+};
 import BookGrid from '@/components/library/book-grid';
 import { Button } from '@/components/ui/button';
 import { getUserBooksAction } from '@/lib/actions/book.actions';

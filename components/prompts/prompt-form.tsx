@@ -25,10 +25,7 @@ interface Props {
 }
 
 function FriendAvatar({ user }: { user: FriendUser }) {
-  const name =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    '?';
+  const name = user.username || '?';
   return (
     <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
       {user.imageUrl ? (
@@ -95,11 +92,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   const filteredFriends = friends.filter((f) => {
     if (!inviteSearch) return true;
     const q = inviteSearch.toLowerCase();
-    return (
-      f.username?.toLowerCase().includes(q) ||
-      f.firstName?.toLowerCase().includes(q) ||
-      f.lastName?.toLowerCase().includes(q)
-    );
+    return f.username?.toLowerCase().includes(q);
   });
 
   async function onSubmit(data: PromptFormData) {
@@ -131,7 +124,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
         <input
           {...register('title')}
           placeholder="e.g. Write a scene where two strangers share an umbrella…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.title && (
           <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
@@ -146,7 +139,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           {...register('description')}
           rows={4}
           placeholder="Describe the creative challenge, set the scene, give inspiration…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.description && (
           <p className="mt-1 text-xs text-red-400">
@@ -170,7 +163,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
             {errors.endDate.message as string}
           </p>
         )}
-        <p className="mt-1.5 text-xs text-white/70">
+        <p className="mt-1.5 text-sm text-white/80">
           Entries will be revealed to all participants when the deadline passes.
         </p>
       </div>
@@ -181,13 +174,13 @@ export function PromptForm({ mode, prompt, friends }: Props) {
             {isPublicValue ? (
               <Globe className="w-4 h-4 text-[#FFC300]" />
             ) : (
-              <Lock className="w-4 h-4 text-white/70" />
+              <Lock className="w-4 h-4 text-white/80" />
             )}
             <span className="text-sm font-medium text-white">
               {isPublicValue ? 'Public Challenge' : 'Private Challenge'}
             </span>
           </div>
-          <p className="text-xs text-white/70">
+          <p className="text-sm text-white/80">
             {isPublicValue
               ? 'Anyone on Beehive Books can join this challenge.'
               : 'Only people you invite can participate.'}
@@ -206,43 +199,40 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       {!isPublicValue && (
         <div>
           <label className="block text-sm font-medium text-white/80 mb-1.5">
-            <Users className="inline w-3.5 h-3.5 mr-1 text-white/70" />
+            <Users className="inline w-3.5 h-3.5 mr-1 text-white/80" />
             Invite Friends
             {invitedIds.length > 0 && (
-              <span className="ml-2 text-[11px] text-[#FFC300] font-normal">
+              <span className="ml-2 text-xs text-[#FFC300] font-normal">
                 {invitedIds.length} selected
               </span>
             )}
           </label>
 
           {friends.length === 0 ? (
-            <p className="text-sm text-white/70 py-3">
+            <p className="text-sm text-white/80 py-3">
               You have no friends to invite yet.
             </p>
           ) : (
             <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#2a2a2a]">
-                <Search className="w-3.5 h-3.5 text-white/70 shrink-0" />
+                <Search className="w-3.5 h-3.5 text-white/80 shrink-0" />
                 <input
                   value={inviteSearch}
                   onChange={(e) => setInviteSearch(e.target.value)}
                   placeholder="Search friends…"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-white/25 focus:outline-none"
+                  className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none"
                 />
               </div>
 
               <ul className="max-h-48 overflow-y-auto">
                 {filteredFriends.length === 0 ? (
-                  <li className="px-4 py-3 text-sm text-white/70">
+                  <li className="px-4 py-3 text-sm text-white/80">
                     No matches
                   </li>
                 ) : (
                   filteredFriends.map((f) => {
                     const selected = invitedIds.includes(f.clerkId);
-                    const name =
-                      [f.firstName, f.lastName].filter(Boolean).join(' ') ||
-                      f.username ||
-                      'Unknown';
+                    const name = f.username || 'Unknown';
                     return (
                       <li key={f.clerkId}>
                         <button
@@ -258,7 +248,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
                               {name}
                             </p>
                             {f.username && (
-                              <p className="text-xs text-white/70">
+                              <p className="text-sm text-white/80">
                                 @{f.username}
                               </p>
                             )}
@@ -296,13 +286,9 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {mode === 'create' ? 'Create Challenge' : 'Save Changes'}
         </Button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-4 py-2 rounded-xl text-sm text-white/70 hover:text-white transition-colors"
-        >
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

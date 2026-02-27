@@ -63,13 +63,13 @@ export function EntryList({ entries, promptId }: Props) {
                   {displayName(entry.user)}
                 </span>
                 {entry.user.username && (
-                  <span className="text-xs text-white/70"></span>
+                  <span className="text-sm text-white/80"></span>
                 )}
 
                 <Button asChild size={'sm'}>
                   <Link
                     href={`/prompts/${promptId}/${entry.id}`}
-                    className="text-xs  ml-auto"
+                    className="text-sm ml-auto"
                   >
                     Read entry →
                   </Link>

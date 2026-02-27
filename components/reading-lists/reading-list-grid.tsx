@@ -49,10 +49,10 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5">
-          <BookMarked className="w-9 h-9 text-white/15" />
+          <BookMarked className="w-9 h-9 text-white/80" />
         </div>
-        <h2 className="text-lg font-semibold text-white/55 mb-2">No reading lists yet</h2>
-        <p className="text-sm text-white/30 mb-6 max-w-xs">
+        <h2 className="text-lg font-semibold text-white mb-2">No reading lists yet</h2>
+        <p className="text-sm text-white/80 mb-6 max-w-xs">
           Create your first reading list to track books you want to read.
         </p>
         <Button asChild>
@@ -75,7 +75,7 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
           value={query}
           onChange={(e) => { setQuery(e.target.value); }}
           placeholder="Search your reading lists…"
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
@@ -88,7 +88,7 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
             <button
               key={value}
               onClick={() => setPrivacyFilter(value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 privacyFilter === value
                   ? 'bg-[#FFC300] text-black'
                   : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
@@ -106,13 +106,13 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
    
       {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/10 mb-3" />
-          <p className="text-sm text-white/40 mb-2">
+          <Search className="w-8 h-8 text-white/80 mb-3" />
+          <p className="text-sm text-white/80 mb-2">
             {query ? <>No results for &ldquo;{query}&rdquo;</> : 'No lists in this category'}
           </p>
           <button
             onClick={() => { setQuery(''); setPrivacyFilter('ALL'); }}
-            className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors"
+            className="text-sm text-[#FFC300] hover:text-[#FFC300] transition-colors"
           >
             Clear filters
           </button>

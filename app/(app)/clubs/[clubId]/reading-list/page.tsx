@@ -6,6 +6,20 @@ import { getClubAction, getClubReadingListAction } from '@/lib/actions/club.acti
 import { ListStats } from '@/components/reading-lists/list-stats';
 import { ClubBookListView } from '@/components/clubs/club-book-list-view';
 import { ClubAddBookForm } from '@/components/clubs/club-add-book-form';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ clubId: string }>;
+}): Promise<Metadata> {
+  const { clubId } = await params;
+  const club = await getClubAction(clubId);
+  return {
+    title: club ? `${club.name} — Reading List` : 'Reading List',
+    description: club ? `The shared reading list for the ${club.name} book club.` : 'Club reading list.',
+  };
+}
 
 export default async function ClubReadingListPage({
   params,

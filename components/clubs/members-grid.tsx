@@ -57,10 +57,7 @@ function MemberCard({
   const [loading, setLoading] = useState(false);
 
   const user = member.user;
-  const displayName =
-    user.firstName && user.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user.firstName ?? user.username ?? 'Unknown';
+  const displayName = user.username ?? 'Unknown';
   const initials = displayName.charAt(0).toUpperCase();
 
   useEffect(() => {
@@ -204,7 +201,7 @@ export default function MembersGrid({
     const q = query.trim().toLowerCase();
     return members.filter((m) => {
       const user = m.user;
-      const name = `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.username ?? ''}`.toLowerCase();
+      const name = (user.username ?? '').toLowerCase();
       const matchesQuery = !q || name.includes(q);
       const matchesRole = roleFilter === 'ALL' || m.role === roleFilter;
       return matchesQuery && matchesRole;

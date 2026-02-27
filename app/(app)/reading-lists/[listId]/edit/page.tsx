@@ -1,7 +1,13 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import BackButton from '@/components/shared/back-button';
 import { ReadingListForm } from '@/components/reading-lists/reading-list-form';
 import { getReadingListAction } from '@/lib/actions/reading-list.actions';
+
+export const metadata: Metadata = {
+  title: 'Edit Reading List',
+  description: 'Update your reading list on Beehive Books.',
+};
 
 export default async function EditReadingListPage({
   params,

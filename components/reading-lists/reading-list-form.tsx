@@ -124,7 +124,7 @@ export function ReadingListForm({
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">
           Description{' '}
-          <span className="text-white/70 font-normal">(optional)</span>
+          <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <textarea
           {...register('description')}
@@ -156,7 +156,7 @@ export function ReadingListForm({
                 <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-[11px] text-white/70 mt-0.5 leading-tight">
+                <span className="text-xs text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -172,7 +172,7 @@ export function ReadingListForm({
         <div>
           <label className="block text-sm font-medium text-white mb-1.5">
             Add Books{' '}
-            <span className="text-white/70 font-normal">(optional)</span>
+            <span className="text-white/80 font-normal">(optional)</span>
           </label>
 
           <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
@@ -254,12 +254,12 @@ export function ReadingListForm({
                           <p className="text-sm font-medium text-white truncate">
                             {book.title}
                           </p>
-                          <p className="text-[12px] text-white/70 truncate">
+                          <p className="text-xs text-white/80 truncate">
                             {book.author}
                           </p>
                         </div>
                         {isCR && (
-                          <span className="text-[12px] text-[#FFC300]/70 shrink-0">
+                          <span className="text-xs text-[#FFC300] shrink-0">
                             Now reading
                           </span>
                         )}
@@ -276,7 +276,7 @@ export function ReadingListForm({
                 </div>
               </>
             ) : (
-              <p className="text-sm text-white/75 text-center py-2">
+              <p className="text-sm text-white/80 text-center py-2">
                 No books added yet — you can always add them later.
               </p>
             )}
@@ -290,25 +290,13 @@ export function ReadingListForm({
         </p>
       )}
 
-      <div className="flex items-center gap-3 pt-2">
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex items-center gap-2"
-        >
-          {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-          {mode === 'create' ? 'Create List' : 'Save Changes'}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
-
-        {mode === 'edit' && (
-          <button
+      <div className="flex items-center justify-between pt-2">
+        {mode === 'edit' ? (
+          <Button
             type="button"
+            variant="destructive"
             onClick={handleDelete}
             disabled={deleting}
-            className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/20 hover:border-red-400/40 transition-all"
           >
             {deleting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -316,8 +304,19 @@ export function ReadingListForm({
               <Trash2 className="w-4 h-4" />
             )}
             Delete List
-          </button>
+          </Button>
+        ) : (
+          <div />
         )}
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {mode === 'create' ? 'Create List' : 'Save Changes'}
+          </Button>
+        </div>
       </div>
     </form>
   );

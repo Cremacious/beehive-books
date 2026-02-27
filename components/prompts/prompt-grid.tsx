@@ -61,8 +61,8 @@ export function PromptGrid({ prompts }: Props) {
     return (
       <div className="rounded-2xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-20 text-center">
         <Lightbulb className="w-10 h-10 text-[#FFC300]/30 mx-auto mb-4" />
-        <p className="text-white/70 font-medium mb-2">No prompts yet</p>
-        <p className="text-sm text-white/70 mb-6">
+        <p className="text-white/80 font-medium mb-2">No prompts yet</p>
+        <p className="text-sm text-white/80 mb-6">
           Create your first writing challenge and invite friends!
         </p>
         <Button asChild size="sm">
@@ -109,7 +109,7 @@ export function PromptGrid({ prompts }: Props) {
 
       {paginated.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[#2a2a2a] py-12 text-center">
-          <p className="text-sm text-white/70">No prompts match this filter.</p>
+          <p className="text-sm text-white/80">No prompts match this filter.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

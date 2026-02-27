@@ -7,7 +7,10 @@ import { PromptForm } from '@/components/prompts/prompt-form';
 import { getPromptAction } from '@/lib/actions/prompt.actions';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
 
-export const metadata: Metadata = { title: 'Edit Prompt · Beehive Books' };
+export const metadata: Metadata = {
+  title: 'Edit Challenge',
+  description: 'Edit the details of your writing challenge.',
+};
 
 type Props = { params: Promise<{ promptId: string }> };
 

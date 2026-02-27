@@ -16,7 +16,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { clubId } = await params;
   const club = await getClubAction(clubId);
-  return { title: club ? club.name : 'Book Club' };
+  return {
+    title: club ? club.name : 'Book Club',
+    description: club
+      ? `Join the ${club.name} book club on Beehive Books — read, discuss, and connect with members.`
+      : 'A book club on Beehive Books.',
+  };
 }
 
 export default async function ClubDashboardPage({

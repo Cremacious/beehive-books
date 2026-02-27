@@ -5,31 +5,31 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#FFC300]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-[#1e1e1e]",
   {
     variants: {
       variant: {
         default:
-          "bg-yellow-500 text-slate-800 font-bold shadow-lg hover:bg-yellow-600 cursor-pointer",
+          "bg-[#FFC300] text-black font-bold hover:bg-[#FFD54F] active:bg-[#e0ac01] cursor-pointer",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 cursor-pointer",
         outline:
-          "border border-[#9b9b9b] bg-transparent text-white hover:border-[#FFC300]/40 hover:text-[#FFC300] hover:bg-[#FFC300]/5 cursor-pointer",
+          "border border-white/20 bg-transparent text-white hover:border-[#FFC300]/50 hover:text-[#FFC300] hover:bg-[#FFC300]/8 cursor-pointer",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-[#2a2a2a] text-white border border-[#3a3a3a] hover:bg-[#333] hover:border-[#444] cursor-pointer",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "text-white/80 hover:text-white hover:bg-white/8 cursor-pointer",
+        link: "text-[#FFC300] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        default: "h-10 px-5 py-2 has-[>svg]:px-4",
         xs: "h-6 gap-1 px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        sm: "h-9 gap-1.5 px-4 has-[>svg]:px-3",
+        lg: "h-11 px-7 has-[>svg]:px-5",
+        icon: "size-10",
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        "icon-sm": "size-9",
+        "icon-lg": "size-11",
       },
     },
     defaultVariants: {

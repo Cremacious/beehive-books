@@ -176,7 +176,7 @@ export default function ClubForm({
                   >
                     {label}
                   </span>
-                  <span className="text-[11px] text-white/80 leading-tight block mt-0.5">
+                  <span className="text-xs text-white/80 leading-tight block mt-0.5">
                     {desc}
                   </span>
                 </div>
@@ -284,25 +284,13 @@ export default function ClubForm({
         </p>
       )}
 
-      <div className="flex items-center gap-3 pt-2">
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex items-center gap-2"
-        >
-          {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-          {mode === 'create' ? 'Create Club' : 'Save Changes'}
-        </Button>
-        <Button type="button" variant="outline" asChild>
-          <a href={cancelHref}>Cancel</a>
-        </Button>
-
-        {mode === 'edit' && (
-          <button
+      <div className="flex items-center justify-between pt-2">
+        {mode === 'edit' ? (
+          <Button
             type="button"
+            variant="destructive"
             onClick={handleDelete}
             disabled={deleting}
-            className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/20 hover:border-red-400/40 transition-all"
           >
             {deleting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -310,8 +298,19 @@ export default function ClubForm({
               <Trash2 className="w-4 h-4" />
             )}
             Delete Club
-          </button>
+          </Button>
+        ) : (
+          <div />
         )}
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="outline" asChild>
+            <a href={cancelHref}>Cancel</a>
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {mode === 'create' ? 'Create Club' : 'Save Changes'}
+          </Button>
+        </div>
       </div>
     </form>
   );

@@ -6,7 +6,10 @@ import BackButton from '@/components/shared/back-button';
 import { EntryForm } from '@/components/prompts/entry-form';
 import { getPromptAction } from '@/lib/actions/prompt.actions';
 
-export const metadata: Metadata = { title: 'Write Entry · Beehive Books' };
+export const metadata: Metadata = {
+  title: 'Write Entry',
+  description: 'Write and submit your entry for this challenge.',
+};
 
 type Props = { params: Promise<{ promptId: string }> };
 

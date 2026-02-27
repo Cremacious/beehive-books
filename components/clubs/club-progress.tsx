@@ -13,14 +13,14 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
   const isMod = club.myRole === 'OWNER' || club.myRole === 'MODERATOR';
   const isMember = club.isMember;
 
-  // Book editing (mods only)
+
   const [editingBook, setEditingBook] = useState(false);
   const [bookTitle, setBookTitle] = useState(club.currentBook ?? '');
   const [bookAuthor, setBookAuthor] = useState(club.currentBookAuthor ?? '');
   const [savingBook, setSavingBook] = useState(false);
   const [bookError, setBookError] = useState('');
 
-  // Progress editing (all members)
+ 
   const [editingProgress, setEditingProgress] = useState(false);
   const [currentPage, setCurrentPage] = useState(String(club.currentPage ?? 0));
   const [totalPages, setTotalPages] = useState(String(club.totalPages ?? ''));
@@ -122,7 +122,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
-          <p className="text-[11px] text-white/50">
+          <p className="text-xs text-white/80">
             Tip: set a book to &quot;Currently Reading&quot; in the reading list to auto-sync here.
           </p>
           {bookError && <p className="text-xs text-red-400">{bookError}</p>}
@@ -180,7 +180,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
           {Number(totalPages) > 0 && (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-white/60">Preview</span>
+                <span className="text-xs text-white/80">Preview</span>
                 <span className="text-xs font-semibold text-[#FFC300]">{computedPercent}%</span>
               </div>
               <div className="w-full bg-[#1e1e1e] rounded-full h-2">
@@ -224,7 +224,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{club.currentBook}</p>
                   {club.currentBookAuthor && (
-                    <p className="text-xs text-white/70 truncate mt-0.5">
+                    <p className="text-xs text-white/80 truncate mt-0.5">
                       by {club.currentBookAuthor}
                     </p>
                   )}
@@ -232,7 +232,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 {isMember && !editingProgress && (
                   <button
                     onClick={() => setEditingProgress(true)}
-                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-white/60 hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all"
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-white/80 hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all"
                   >
                     <Edit2 className="w-3 h-3" />
                     Update Progress
@@ -246,7 +246,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                   style={{ width: `${club.progressPercent ?? 0}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-xs text-white/60">
+              <div className="flex items-center justify-between text-xs text-white/80">
                 {club.totalPages ? (
                   <span>
                     Page {club.currentPage} of {club.totalPages}
@@ -262,10 +262,10 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
           ) : (
             <div className="py-8 flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-3">
-                <BookOpen className="w-6 h-6 text-white/40" />
+                <BookOpen className="w-6 h-6 text-white/80" />
               </div>
               <h4 className="text-sm font-semibold text-white mb-1">No book selected</h4>
-              <p className="text-xs text-white/60 mb-4 max-w-xs">
+              <p className="text-xs text-white/80 mb-4 max-w-xs">
                 Set a book to &quot;Currently Reading&quot; in the reading list, or mods can set one manually above.
               </p>
               {isMod && (

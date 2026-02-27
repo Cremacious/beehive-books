@@ -10,9 +10,21 @@ import { EntryLikeButton } from '@/components/prompts/entry-like-button';
 import { getEntryAction } from '@/lib/actions/prompt.actions';
 import type { PromptUser } from '@/lib/types/prompt.types';
 
-export const metadata: Metadata = { title: 'Entry · Beehive Books' };
-
 type Props = { params: Promise<{ promptId: string; entryId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { promptId, entryId } = await params;
+  try {
+    const entry = await getEntryAction(promptId, entryId);
+    const author = entry.user.username || 'Anonymous';
+    return {
+      title: `Entry by ${author}`,
+      description: `Read ${author}'s entry on Beehive Books.`,
+    };
+  } catch {
+    return { title: 'Entry' };
+  }
+}
 
 function displayName(user: PromptUser): string {
   return user.username || 'Anonymous';

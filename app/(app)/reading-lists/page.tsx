@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Plus, BookMarked, BookOpen, CheckCircle2 } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Reading Lists',
+  description: 'Track your reading journey — organise books into lists and monitor your progress.',
+};
 import { Button } from '@/components/ui/button';
 import { ReadingListGrid } from '@/components/reading-lists/reading-list-grid';
 import { getUserReadingListsAction } from '@/lib/actions/reading-list.actions';
@@ -19,8 +25,8 @@ export default async function ReadingListsPage() {
     <div className="px-4 py-8 md:px-8 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Reading Lists</h1>
-          <p className="mt-0.5 text-sm text-white/45">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">Reading Lists</h1>
+          <p className="mt-0.5 text-base text-white/80">
             Track your reading journey
           </p>
         </div>
@@ -35,7 +41,7 @@ export default async function ReadingListsPage() {
       {lists.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-8">
           <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4 flex flex-col gap-3">
-            <BookMarked className="w-4 h-4 text-[#FFC300]/70" />
+            <BookMarked className="w-4 h-4 text-[#FFC300]/80" />
             <div>
               <p className="text-xl font-bold text-white leading-none">
                 {lists.length}
@@ -46,7 +52,7 @@ export default async function ReadingListsPage() {
             </div>
           </div>
           <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4 flex flex-col gap-3">
-            <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
+            <BookOpen className="w-4 h-4 text-[#FFC300]/80" />
             <div>
               <p className="text-xl font-bold text-white leading-none">
                 {formatNumber(totalBooks)}

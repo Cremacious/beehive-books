@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Flag, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { endPromptEarlyAction } from '@/lib/actions/prompt.actions';
 
 export function EndPromptButton({ promptId }: { promptId: string }) {
@@ -19,18 +20,14 @@ export function EndPromptButton({ promptId }: { promptId: string }) {
   }
 
   return (
-    <button
+    <Button
+      variant="outline"
       onClick={handleEnd}
       onBlur={() => setConfirm(false)}
       disabled={loading}
-      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-        confirm
-          ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-          : 'bg-white/5 text-white/70 border border-[#333] hover:bg-yellow-500/10 hover:text-yellow-400 hover:border-yellow-500/30'
-      }`}
     >
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Flag className="w-4 h-4" />}
       {confirm ? 'End challenge?' : 'End Early'}
-    </button>
+    </Button>
   );
 }

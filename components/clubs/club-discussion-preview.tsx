@@ -30,7 +30,7 @@ function AuthorAvatar({ author }: { author: ClubDiscussionWithAuthor['author'] }
   }
   return (
     <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-      <span className="text-[10px] font-semibold text-[#FFC300]">{initials}</span>
+      <span className="text-xs font-semibold text-[#FFC300]">{initials}</span>
     </div>
   );
 }

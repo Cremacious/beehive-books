@@ -1,6 +1,9 @@
 import ClubForm from '@/components/clubs/club-form';
 
-export const metadata = { title: 'Create a Book Club' };
+export const metadata = {
+  title: 'Create a Book Club',
+  description: 'Start a new book club and bring readers together around the books you love.',
+};
 
 export default function CreateClubPage() {
   return (

@@ -3,7 +3,10 @@ import BackButton from '@/components/shared/back-button';
 import { PromptForm } from '@/components/prompts/prompt-form';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
 
-export const metadata: Metadata = { title: 'New Challenge · Beehive Books' };
+export const metadata: Metadata = {
+  title: 'New Challenge',
+  description: 'Create a new writing challenge and invite friends to participate.',
+};
 
 export default async function CreatePromptPage() {
   const { friends } = await getMyFriendsDataAction();

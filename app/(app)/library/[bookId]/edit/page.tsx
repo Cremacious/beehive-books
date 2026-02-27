@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BookForm } from '@/components/library/book-form';
 import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
+
+export const metadata: Metadata = {
+  title: 'Edit Book',
+  description: 'Edit your book details on Beehive Books.',
+};
 
 export default async function EditBookPage({
   params,

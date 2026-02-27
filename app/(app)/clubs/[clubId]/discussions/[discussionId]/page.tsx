@@ -2,6 +2,26 @@ import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { getClubAction, getClubDiscussionByIdAction } from '@/lib/actions/club.actions';
 import DiscussionThread from '@/components/clubs/discussion-thread';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ clubId: string; discussionId: string }>;
+}): Promise<Metadata> {
+  const { clubId, discussionId } = await params;
+  const [club, discussion] = await Promise.all([
+    getClubAction(clubId),
+    getClubDiscussionByIdAction(clubId, discussionId),
+  ]);
+  return {
+    title: discussion ? discussion.title : 'Discussion',
+    description:
+      club && discussion
+        ? `${discussion.title} — a discussion in the ${club.name} book club.`
+        : 'Club discussion.',
+  };
+}
 
 export default async function DiscussionThreadPage({
   params,

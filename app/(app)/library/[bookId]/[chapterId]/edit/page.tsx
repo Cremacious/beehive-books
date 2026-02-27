@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ChapterForm } from '@/components/library/chapter-form';
 import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
+
+export const metadata: Metadata = {
+  title: 'Edit Chapter',
+  description: 'Edit your chapter on Beehive Books.',
+};
 
 export default async function EditChapterPage({
   params,

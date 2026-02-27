@@ -9,7 +9,7 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5">
-          <Users className="w-9 h-9 text-white/15" />
+          <Users className="w-9 h-9 text-white/80" />
         </div>
         <h2 className="text-lg font-semibold text-white/80 mb-2">
           You haven&apos;t joined any clubs yet

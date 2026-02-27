@@ -9,7 +9,10 @@ import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
 
 //TODO: Make the user confirm before unfriending
 
-export const metadata: Metadata = { title: 'Friends · Beehive Books' };
+export const metadata: Metadata = {
+  title: 'Friends',
+  description: 'Connect with other writers and readers — manage your friends, requests, and discover new people.',
+};
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 

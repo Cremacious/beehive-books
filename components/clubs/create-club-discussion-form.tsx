@@ -50,8 +50,8 @@ export default function CreateClubDiscussionForm({ clubId }: { clubId: string })
         {errors.content && <p className="text-xs text-red-400 mt-1">{errors.content.message}</p>}
       </div>
       {error && <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{error}</p>}
-      <div className="flex gap-3">
-        <Button type="submit" disabled={isSubmitting} className="flex items-center gap-2">
+      <div className="flex items-center gap-3 pt-2">
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Post Discussion
         </Button>

@@ -9,6 +9,26 @@ import ChapterList from '@/components/library/chapter-list';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ bookId: string }>;
+}): Promise<Metadata> {
+  const { bookId } = await params;
+  try {
+    const book = await getBookWithChaptersAction(bookId);
+    return {
+      title: book.title,
+      description: book.description
+        ? book.description.slice(0, 155)
+        : `Read ${book.title} on Beehive Books.`,
+    };
+  } catch {
+    return { title: 'Book' };
+  }
+}
 
 export default async function BookPage({
   params,

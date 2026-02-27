@@ -461,13 +461,13 @@ export function BookForm({
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center justify-between pt-2">
             {isEdit ? (
               <Button
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                variant={'destructive'}
+                variant="destructive"
               >
                 {isDeleting
                   ? 'Deleting…'
@@ -480,7 +480,7 @@ export function BookForm({
             )}
 
             <div className="flex items-center gap-3">
-              <Button asChild variant={'outline'}>
+              <Button asChild variant="outline">
                 <Link href={cancelHref}>Cancel</Link>
               </Button>
               <Button type="submit" disabled={isSubmitting || uploading}>

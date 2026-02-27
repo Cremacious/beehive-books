@@ -23,7 +23,10 @@ type Props = { params: Promise<{ username: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
-  return { title: `@${username} · Beehive Books` };
+  return {
+    title: `@${username}`,
+    description: `View ${username}'s profile on Beehive Books — their books, reading lists, and more.`,
+  };
 }
 
 export default async function UserProfilePage({ params }: Props) {

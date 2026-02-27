@@ -16,9 +16,22 @@ import {
 } from '@/lib/actions/prompt.actions';
 import type { PromptUser } from '@/lib/types/prompt.types';
 
-export const metadata: Metadata = { title: 'Prompt · Beehive Books' };
-
 type Props = { params: Promise<{ promptId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { promptId } = await params;
+  try {
+    const prompt = await getPromptAction(promptId);
+    return {
+      title: prompt.title,
+      description: prompt.description
+        ? prompt.description.slice(0, 155)
+        : `A writing challenge on Beehive Books.`,
+    };
+  } catch {
+    return { title: 'Challenge' };
+  }
+}
 
 function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString('en-US', {

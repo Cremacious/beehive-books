@@ -21,10 +21,7 @@ function formatCountdown(endDate: Date): string {
 }
 
 function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
-  const name =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    '?';
+  const name = user.username || '?';
   const cls = `w-${size} h-${size} rounded-full shrink-0 overflow-hidden bg-[#2a2000] flex items-center justify-center`;
   return (
     <div className={cls}>
@@ -37,7 +34,7 @@ function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
           className="w-full h-full object-cover"
         />
       ) : (
-        <span className="text-[10px] font-bold text-[#FFC300]">
+        <span className="text-xs font-bold text-[#FFC300]">
           {(name[0] || '?').toUpperCase()}
         </span>
       )}
@@ -74,7 +71,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
       <div className="flex flex-col gap-3 p-4 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+            className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
               isEnded
                 ? 'bg-white/10 text-white'
                 : 'bg-[#FFC300]/10 text-[#FFC300]'
@@ -82,17 +79,17 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
           >
             {isEnded ? 'Ended' : 'Active'}
           </span>
-          <span className="text-[11px] font-medium text-white/80 uppercase tracking-wider">
+          <span className="text-xs font-medium text-white/80 uppercase tracking-wider">
             {prompt.isPublic ? 'Public' : 'Private'}
           </span>
           {prompt.myInviteStatus && (
-            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-white/70">
+            <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-white/80">
               {prompt.myInviteStatus === 'PENDING' ? 'Invited' : 'Joined'}
             </span>
           )}
         </div>
 
-        <h3 className=" font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#FFC300] transition-colors">
+        <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#FFC300] transition-colors">
           {prompt.title}
         </h3>
 
@@ -114,7 +111,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
               {prompt.entryCount}
             </span>
             <span
-              className={`flex items-center gap-1 text-sm ${isEnded ? 'text-white/80' : 'text-[#FFC300]/70'}`}
+              className={`flex items-center gap-1 text-sm ${isEnded ? 'text-white/80' : 'text-[#FFC300]'}`}
             >
               {isEnded ? (
                 <Trophy className="w-4 h-4" />

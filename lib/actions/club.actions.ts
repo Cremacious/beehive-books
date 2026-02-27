@@ -331,7 +331,7 @@ export async function getClubMembersAction(clubId: string): Promise<ClubMemberWi
   return members as ClubMemberWithUser[];
 }
 
-// Set the club's current book (mods only); resets page progress
+
 export async function updateClubBookAction(
   clubId: string,
   currentBook: string,
@@ -357,7 +357,7 @@ export async function updateClubBookAction(
   }
 }
 
-// Update reading progress by page number (any member)
+
 export async function updateClubProgressAction(
   clubId: string,
   currentPage: number,
@@ -805,7 +805,7 @@ export async function updateBookStatusAction(
   await requireClubMod(clubId);
   try {
     if (status === 'IN_PROGRESS') {
-      // Enforce one active book: bump all other IN_PROGRESS books back to NOT_STARTED
+
       await db
         .update(clubReadingListBooks)
         .set({ status: 'NOT_STARTED' })
@@ -817,7 +817,7 @@ export async function updateBookStatusAction(
           ),
         );
 
-      // Fetch the book being set to IN_PROGRESS so we can sync the club's current book
+
       const [book] = await db
         .select({ title: clubReadingListBooks.title, author: clubReadingListBooks.author })
         .from(clubReadingListBooks)

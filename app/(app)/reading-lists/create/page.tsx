@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import BackButton from '@/components/shared/back-button';
 import { ReadingListForm } from '@/components/reading-lists/reading-list-form';
+
+export const metadata: Metadata = {
+  title: 'New Reading List',
+  description: 'Create a new reading list to track your books on Beehive Books.',
+};
 
 export default function CreateReadingListPage() {
   return (

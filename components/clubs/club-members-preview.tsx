@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import type { ClubMemberWithUser } from '@/lib/types/club.types';
 
 function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
-  const name = member.user.firstName ?? member.user.username ?? '?';
+  const name = member.user.username ?? '?';
   const initials = name.charAt(0).toUpperCase();
   return (
     <div className="relative" title={member.user.username ?? name}>

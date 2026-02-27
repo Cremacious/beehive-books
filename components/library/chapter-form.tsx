@@ -294,7 +294,7 @@ export function ChapterForm({
             </div>
           )}
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-2">
             {isEdit ? (
               <Button
                 type="button"
@@ -314,12 +314,7 @@ export function ChapterForm({
 
             <div className="flex items-center gap-3">
               <Button asChild variant="outline">
-                <Link
-                  href={cancelHref}
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/6 transition-all duration-200"
-                >
-                  Cancel
-                </Link>
+                <Link href={cancelHref}>Cancel</Link>
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (

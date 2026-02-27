@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/nextjs';
 import { usePromptStore } from '@/lib/stores/prompt-store';
 import { addEntryCommentAction } from '@/lib/actions/prompt.actions';
@@ -97,7 +98,7 @@ function ReplyItem({
         imageUrl={reply.user.imageUrl}
         alt={displayName(reply.user)}
         fallback={initials(reply.user)}
-        className="w-7 h-7 text-[10px]"
+        className="w-7 h-7 text-xs"
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
@@ -224,7 +225,7 @@ function CommentItem({
 
       {showReply && (
         <div className="ml-11 mt-3 flex gap-2">
-          <CurrentUserAvatar className="w-7 h-7 text-[10px]" />
+          <CurrentUserAvatar className="w-7 h-7 text-xs" />
           <input
             autoFocus
             value={replyText}
@@ -233,16 +234,16 @@ function CommentItem({
               if (e.key === 'Enter') handleReply();
             }}
             placeholder={`Reply to ${displayName(comment.user)}…`}
-            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
-          <button
+          <Button
+            size="sm"
             onClick={handleReply}
             disabled={!replyText.trim() || submitting}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors shrink-0"
           >
             {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
             Reply
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -297,17 +298,16 @@ export function EntryCommentSection({
               }}
               rows={2}
               placeholder="Leave a comment…"
-              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
             />
             <div className="flex justify-end">
-              <button
+              <Button
                 onClick={handleSubmit}
                 disabled={!commentText.trim() || submitting}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Submit
-              </button>
+              </Button>
             </div>
           </div>
         </div>

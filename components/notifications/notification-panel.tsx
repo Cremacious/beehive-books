@@ -140,7 +140,7 @@ export function NotificationPanel({ notifications, onClose }: Props) {
           <Bell className="w-4 h-4 text-[#FFC300]" />
           <h3 className="text-sm font-semibold text-white">Notifications</h3>
           {unread > 0 && (
-            <span className="bg-[#FFC300] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+            <span className="bg-[#FFC300] text-black text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
               {unread}
             </span>
           )}

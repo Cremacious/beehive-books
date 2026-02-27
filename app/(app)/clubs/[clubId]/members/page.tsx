@@ -4,6 +4,20 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { getClubAction, getClubMembersAction } from '@/lib/actions/club.actions';
 import MembersGrid from '@/components/clubs/members-grid';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ clubId: string }>;
+}): Promise<Metadata> {
+  const { clubId } = await params;
+  const club = await getClubAction(clubId);
+  return {
+    title: club ? `${club.name} — Members` : 'Members',
+    description: club ? `See all members of the ${club.name} book club.` : 'Club members.',
+  };
+}
 
 export default async function ClubMembersPage({
   params,

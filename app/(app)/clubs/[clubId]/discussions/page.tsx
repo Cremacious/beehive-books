@@ -4,6 +4,20 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { getClubAction, getClubDiscussionsAction } from '@/lib/actions/club.actions';
 import DiscussionList from '@/components/clubs/discussion-list';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ clubId: string }>;
+}): Promise<Metadata> {
+  const { clubId } = await params;
+  const club = await getClubAction(clubId);
+  return {
+    title: club ? `${club.name} — Discussions` : 'Discussions',
+    description: club ? `Browse and join discussions in the ${club.name} book club.` : 'Club discussions.',
+  };
+}
 
 export default async function ClubDiscussionsPage({
   params,

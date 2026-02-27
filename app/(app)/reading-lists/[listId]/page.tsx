@@ -6,6 +6,23 @@ import { ListStats } from '@/components/reading-lists/list-stats';
 import { BookListView } from '@/components/reading-lists/book-list-view';
 import { AddBookForm } from '@/components/reading-lists/add-book-form';
 import { getReadingListAction } from '@/lib/actions/reading-list.actions';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ listId: string }>;
+}): Promise<Metadata> {
+  const { listId } = await params;
+  const data = await getReadingListAction(listId);
+  if (!data) return { title: 'Reading List' };
+  return {
+    title: data.title,
+    description: data.description
+      ? data.description.slice(0, 155)
+      : `A reading list on Beehive Books.`,
+  };
+}
 
 export default async function ReadingListPage({
   params,

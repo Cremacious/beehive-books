@@ -5,7 +5,10 @@ import { ArrowLeft } from 'lucide-react';
 import { getClubAction } from '@/lib/actions/club.actions';
 import CreateClubDiscussionForm from '@/components/clubs/create-club-discussion-form';
 
-export const metadata = { title: 'New Discussion' };
+export const metadata = {
+  title: 'New Discussion',
+  description: 'Start a new discussion thread in your book club.',
+};
 
 export default async function CreateDiscussionPage({
   params,

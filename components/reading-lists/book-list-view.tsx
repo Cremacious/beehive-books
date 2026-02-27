@@ -81,7 +81,7 @@ function BookRow({
             {book.title}
           </p>
         </div>
-        <p className="text-xs text-white/70 truncate mt-0.5">{book.author}</p>
+        <p className="text-sm text-white/80 truncate mt-0.5">{book.author}</p>
       </div>
 
       {isOwner && (
@@ -115,7 +115,7 @@ function BookRow({
               >
                 <BookOpen
                   className={`w-4 h-4 shrink-0 ${
-                    isCurrentlyReading ? 'text-[#FFC300]' : 'text-white/40'
+                    isCurrentlyReading ? 'text-[#FFC300]' : 'text-white/80'
                   }`}
                 />
                 {isCurrentlyReading
@@ -131,9 +131,9 @@ function BookRow({
                 className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
               >
                 {optimisticRead ? (
-                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/40" />
+                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/80" />
                 ) : (
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white/40" />
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white/80" />
                 )}
                 Mark as {optimisticRead ? 'unread' : 'read'}
               </button>
@@ -142,7 +142,7 @@ function BookRow({
 
               <button
                 onClick={handleRemove}
-                className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
               >
                 <Trash2 className="w-3.5 h-3.5 shrink-0" />
                 Remove from list
@@ -189,10 +189,10 @@ export function BookListView({
   if (books.length === 0) {
     return (
       <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-8 flex flex-col items-center text-center mb-4">
-        <BookOpen className="w-8 h-8 text-white/10 mb-3" />
-        <p className="text-sm text-white/40">No books in this list yet.</p>
+        <BookOpen className="w-8 h-8 text-white/80 mb-3" />
+        <p className="text-sm text-white/80">No books in this list yet.</p>
         {isOwner && (
-          <p className="text-xs text-white/25 mt-1">
+          <p className="text-xs text-white/80 mt-1">
             Add books using the form below.
           </p>
         )}

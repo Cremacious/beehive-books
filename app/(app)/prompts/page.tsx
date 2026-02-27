@@ -6,7 +6,10 @@ import { PromptGrid } from '@/components/prompts/prompt-grid';
 import { InviteActions } from '@/components/prompts/invite-actions';
 import { getMyPromptsAction } from '@/lib/actions/prompt.actions';
 
-export const metadata: Metadata = { title: 'Prompts · Beehive Books' };
+export const metadata: Metadata = {
+  title: 'Prompts',
+  description: 'Discover and join creative writing challenges. Submit entries and compete with other writers.',
+};
 
 export default async function PromptsPage() {
   const prompts = await getMyPromptsAction();

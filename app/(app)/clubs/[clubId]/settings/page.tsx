@@ -5,7 +5,10 @@ import { ArrowLeft } from 'lucide-react';
 import { getClubAction } from '@/lib/actions/club.actions';
 import EditClubForm from '@/components/clubs/edit-club-form';
 
-export const metadata = { title: 'Club Settings' };
+export const metadata = {
+  title: 'Club Settings',
+  description: 'Manage your book club settings, name, description, and privacy.',
+};
 
 export default async function ClubSettingsPage({
   params,

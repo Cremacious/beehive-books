@@ -2,7 +2,10 @@ import { auth } from '@clerk/nextjs/server';
 import { getAllUserClubsAction } from '@/lib/actions/club.actions';
 import MyClubs from '@/components/clubs/my-clubs';
 
-export const metadata = { title: 'Book Clubs' };
+export const metadata = {
+  title: 'Book Clubs',
+  description: 'Join and host book clubs — read together, discuss, and share your thoughts with a group.',
+};
 
 export default async function ClubsPage() {
   const { userId } = await auth();
