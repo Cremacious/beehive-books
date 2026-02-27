@@ -15,6 +15,7 @@ import {
   User,
   Settings,
   LogOut,
+  Hexagon,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 
@@ -24,6 +25,7 @@ const navItems = [
   { href: '/library',       label: 'Library',       icon: Library },
   { href: '/friends',       label: 'Friends',       icon: Users2 },
   { href: '/clubs',         label: 'Clubs',         icon: Users },
+  { href: '/hive',          label: 'Hive',          icon: Hexagon },
   { href: '/prompts',       label: 'Prompts',       icon: Lightbulb },
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
 ] as const;

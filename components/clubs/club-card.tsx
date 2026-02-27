@@ -78,9 +78,9 @@ export default function ClubCard({ club }: { club: ClubWithMembership }) {
       )}
 
 
-      <div className="mt-auto flex items-center justify-between text-xs text-white/80">
+      <div className="mt-auto flex items-center justify-between text-sm text-white/80">
         <div className="flex items-center gap-1">
-          <Users className="w-3.5 h-3.5" />
+          <Users className="w-5 h-5" />
           <span>
             {club.memberCount} member{club.memberCount !== 1 ? 's' : ''}
           </span>

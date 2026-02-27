@@ -13,14 +13,12 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
   const isMod = club.myRole === 'OWNER' || club.myRole === 'MODERATOR';
   const isMember = club.isMember;
 
-
   const [editingBook, setEditingBook] = useState(false);
   const [bookTitle, setBookTitle] = useState(club.currentBook ?? '');
   const [bookAuthor, setBookAuthor] = useState(club.currentBookAuthor ?? '');
   const [savingBook, setSavingBook] = useState(false);
   const [bookError, setBookError] = useState('');
 
- 
   const [editingProgress, setEditingProgress] = useState(false);
   const [currentPage, setCurrentPage] = useState(String(club.currentPage ?? 0));
   const [totalPages, setTotalPages] = useState(String(club.totalPages ?? ''));
@@ -29,7 +27,10 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
 
   const computedPercent =
     totalPages && Number(totalPages) > 0
-      ? Math.min(100, Math.round((Number(currentPage) / Number(totalPages)) * 100))
+      ? Math.min(
+          100,
+          Math.round((Number(currentPage) / Number(totalPages)) * 100),
+        )
       : 0;
 
   const handleSaveBook = async () => {
@@ -85,25 +86,31 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
 
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
-
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-sm font-semibold text-white">Current Club Book</h3>
+          <h3 className="text-sm font-semibold text-white">
+            Current Club Book
+          </h3>
         </div>
         {isMod && !editingBook && !editingProgress && (
-          <Button onClick={() => setEditingBook(true)} variant="outline" size="sm">
+          <Button
+            onClick={() => setEditingBook(true)}
+            variant="outline"
+            size="sm"
+          >
             <BookMarked className="w-4 h-4 text-[#FFC300]" />
             Change Book
           </Button>
         )}
       </div>
 
-
       {editingBook && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-white/80 mb-1">Book Title</label>
+            <label className="block text-xs text-white/80 mb-1">
+              Book Title
+            </label>
             <input
               type="text"
               value={bookTitle}
@@ -122,8 +129,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
-          <p className="text-xs text-white/80">
-            Tip: set a book to &quot;Currently Reading&quot; in the reading list to auto-sync here.
+          <p className="text-sm text-white/80">
+            Tip: set a book to &quot;Currently Reading&quot; in the reading list
+            to auto-sync here.
           </p>
           {bookError && <p className="text-xs text-red-400">{bookError}</p>}
           <div className="flex items-center gap-2">
@@ -131,16 +139,20 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               type="button"
               onClick={handleSaveBook}
               disabled={savingBook || !bookTitle.trim()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
             >
-              {savingBook ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              {savingBook ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Check className="w-3.5 h-3.5" />
+              )}
               Save
             </button>
             <button
               type="button"
               onClick={handleCancelBook}
               disabled={savingBook}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-xs hover:text-white hover:border-[#4a4a4a] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-sm hover:text-white hover:border-[#4a4a4a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
               Cancel
@@ -153,7 +165,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs text-white/80 mb-1">Current Page</label>
+              <label className="block text-xs text-white/80 mb-1">
+                Current Page
+              </label>
               <input
                 type="number"
                 min={0}
@@ -165,7 +179,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/80 mb-1">Total Pages</label>
+              <label className="block text-xs text-white/80 mb-1">
+                Total Pages
+              </label>
               <input
                 type="number"
                 min={1}
@@ -181,7 +197,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-white/80">Preview</span>
-                <span className="text-xs font-semibold text-[#FFC300]">{computedPercent}%</span>
+                <span className="text-xs font-semibold text-[#FFC300]">
+                  {computedPercent}%
+                </span>
               </div>
               <div className="w-full bg-[#1e1e1e] rounded-full h-2">
                 <div
@@ -192,7 +210,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
             </div>
           )}
 
-          {progressError && <p className="text-xs text-red-400">{progressError}</p>}
+          {progressError && (
+            <p className="text-xs text-red-400">{progressError}</p>
+          )}
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -200,7 +220,11 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               disabled={savingProgress}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
             >
-              {savingProgress ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              {savingProgress ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Check className="w-3.5 h-3.5" />
+              )}
               Save
             </button>
             <button
@@ -222,7 +246,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
             <>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{club.currentBook}</p>
+                  <p className="text-sm font-medium text-white truncate">
+                    {club.currentBook}
+                  </p>
                   {club.currentBookAuthor && (
                     <p className="text-xs text-white/80 truncate mt-0.5">
                       by {club.currentBookAuthor}
@@ -232,9 +258,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 {isMember && !editingProgress && (
                   <button
                     onClick={() => setEditingProgress(true)}
-                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-white/80 hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all"
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm  hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all font-semibold text-white"
                   >
-                    <Edit2 className="w-3 h-3" />
+                    <Edit2 className="w-4 h-4 text-[#FFC300]" />
                     Update Progress
                   </button>
                 )}
@@ -264,9 +290,12 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               <div className="w-12 h-12 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-3">
                 <BookOpen className="w-6 h-6 text-white/80" />
               </div>
-              <h4 className="text-sm font-semibold text-white mb-1">No book selected</h4>
+              <h4 className="text-sm font-semibold text-white mb-1">
+                No book selected
+              </h4>
               <p className="text-xs text-white/80 mb-4 max-w-xs">
-                Set a book to &quot;Currently Reading&quot; in the reading list, or mods can set one manually above.
+                Set a book to &quot;Currently Reading&quot; in the reading list,
+                or mods can set one manually above.
               </p>
               {isMod && (
                 <button

@@ -8,31 +8,38 @@ function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
   const name = member.user.username ?? '?';
   const initials = name.charAt(0).toUpperCase();
   return (
-    <div className="relative" title={member.user.username ?? name}>
-      {member.user.imageUrl ? (
-        <Image
-          src={member.user.imageUrl}
-          alt={name}
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full object-cover border-2 border-[#252525]"
-        />
-      ) : (
-        <div className="w-10 h-10 rounded-full bg-[#FFC300]/20 flex items-center justify-center border-2 border-[#252525]">
-          <span className="text-sm font-semibold text-[#FFC300]">{initials}</span>
-        </div>
-      )}
-      {member.role === 'OWNER' && (
-        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FFC300] flex items-center justify-center">
-          <Crown className="w-2.5 h-2.5 text-black" />
-        </div>
-      )}
-      {member.role === 'MODERATOR' && (
-        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
-          <Shield className="w-2.5 h-2.5 text-white" />
-        </div>
-      )}
-    </div>
+    <Link href={`/u/${member.userId}`}>
+      <div
+        className="relative cursor-pointer"
+        title={member.user.username ?? name}
+      >
+        {member.user.imageUrl ? (
+          <Image
+            src={member.user.imageUrl}
+            alt={name}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full object-cover border-2 border-[#252525]"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-[#FFC300]/20 flex items-center justify-center border-2 border-[#252525]">
+            <span className="text-sm font-semibold text-[#FFC300]">
+              {initials}
+            </span>
+          </div>
+        )}
+        {member.role === 'OWNER' && (
+          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FFC300] flex items-center justify-center">
+            <Crown className="w-2.5 h-2.5 text-black" />
+          </div>
+        )}
+        {member.role === 'MODERATOR' && (
+          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
+            <Shield className="w-2.5 h-2.5 text-white" />
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }
 
@@ -56,8 +63,7 @@ export default function ClubMembersPreview({
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-[#FFC300]" />
           <h3 className="text-base font-semibold text-white">
-            Members{' '}
-            <span className="font-normal text-white/80">({total})</span>
+            Members <span className="font-normal text-white/80">({total})</span>
           </h3>
         </div>
         <Button variant="outline" size="sm" asChild>

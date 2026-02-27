@@ -11,7 +11,14 @@ export type NotificationType =
   | 'ENTRY_COMMENT_LIKE'
   | 'CLUB_INVITE'
   | 'CLUB_DISCUSSION'
-  | 'CLUB_REPLY';
+  | 'CLUB_REPLY'
+  | 'HIVE_INVITE'
+  | 'HIVE_CHAPTER_CLAIMED'
+  | 'HIVE_SPRINT_STARTED'
+  | 'HIVE_MILESTONE'
+  | 'HIVE_COMMENT'
+  | 'HIVE_POLL'
+  | 'HIVE_BETA_REVIEW';
 
 export type NotificationItem = {
   id:        string;

@@ -23,7 +23,7 @@ export function ExpandableDescription({ text }: { text: string }) {
       {(isClamped || expanded) && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="text-xs text-yellow-500 hover:text-yellow-400 mt-1.5 transition-colors"
+          className=" text-yellow-500 hover:text-yellow-400 mt-1.5 transition-colors"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>

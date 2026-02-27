@@ -14,6 +14,10 @@ import {
   CornerDownRight,
   Users,
   BookOpen,
+  Hexagon,
+  Trophy,
+  Timer,
+  VoteIcon,
 } from 'lucide-react';
 import { markAllReadAction } from '@/lib/actions/notification.actions';
 import type { NotificationItem, NotificationType } from '@/lib/types/notification.types';
@@ -40,9 +44,16 @@ function messageBody(type: NotificationType): string {
     case 'PROMPT_ENDED':      return 'A prompt you joined has ended';
     case 'ENTRY_COMMENT':     return 'commented on your entry';
     case 'ENTRY_COMMENT_LIKE':return 'liked your comment';
-    case 'CLUB_INVITE':       return 'invited you to a book club';
-    case 'CLUB_DISCUSSION':   return 'posted a new discussion in your club';
-    case 'CLUB_REPLY':        return 'replied to your discussion';
+    case 'CLUB_INVITE':            return 'invited you to a book club';
+    case 'CLUB_DISCUSSION':        return 'posted a new discussion in your club';
+    case 'CLUB_REPLY':             return 'replied to your discussion';
+    case 'HIVE_INVITE':            return 'invited you to a hive';
+    case 'HIVE_CHAPTER_CLAIMED':   return 'claimed a chapter in the hive';
+    case 'HIVE_SPRINT_STARTED':    return 'started a writing sprint';
+    case 'HIVE_MILESTONE':         return 'earned a hive milestone';
+    case 'HIVE_COMMENT':           return 'commented in the hive';
+    case 'HIVE_POLL':              return 'created a new poll';
+    case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
   }
 }
 
@@ -60,9 +71,16 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'PROMPT_ENDED':       return { Icon: Clock,           bg: 'bg-white/10',      fg: 'text-white/80'   };
     case 'ENTRY_COMMENT':      return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'ENTRY_COMMENT_LIKE': return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
-    case 'CLUB_INVITE':        return { Icon: Users,           bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
-    case 'CLUB_DISCUSSION':    return { Icon: BookOpen,        bg: 'bg-amber-500/20',  fg: 'text-amber-400'  };
-    case 'CLUB_REPLY':         return { Icon: CornerDownRight, bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
+    case 'CLUB_INVITE':          return { Icon: Users,           bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
+    case 'CLUB_DISCUSSION':      return { Icon: BookOpen,        bg: 'bg-amber-500/20',  fg: 'text-amber-400'  };
+    case 'CLUB_REPLY':           return { Icon: CornerDownRight, bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
+    case 'HIVE_INVITE':          return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_CHAPTER_CLAIMED': return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_SPRINT_STARTED':  return { Icon: Timer,           bg: 'bg-orange-500/20', fg: 'text-orange-400' };
+    case 'HIVE_MILESTONE':       return { Icon: Trophy,          bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_COMMENT':         return { Icon: MessageCircle,   bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_POLL':            return { Icon: VoteIcon,        bg: 'bg-purple-500/20', fg: 'text-purple-400' };
+    case 'HIVE_BETA_REVIEW':     return { Icon: BookOpen,        bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
   }
 }
 

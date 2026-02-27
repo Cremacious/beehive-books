@@ -3,7 +3,14 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Search, Crown, Shield, Check, MoreVertical, Loader2 } from 'lucide-react';
+import {
+  Search,
+  Crown,
+  Shield,
+  Check,
+  MoreVertical,
+  Loader2,
+} from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
 import type { ClubMemberWithUser, ClubRole } from '@/lib/types/club.types';
 
@@ -101,8 +108,10 @@ function MemberCard({
   };
 
   return (
-    <div className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#3a3a3a] transition-all">
-    
+    <div
+      onClick={() => router.push(`/u/${member.userId}`)}
+      className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#3a3a3a] transition-all cursor-pointer"
+    >
       {user.imageUrl ? (
         <Image
           src={user.imageUrl}
@@ -113,25 +122,23 @@ function MemberCard({
         />
       ) : (
         <div className="w-11 h-11 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-          <span className="text-base font-semibold text-[#FFC300]">{initials}</span>
+          <span className="text-base font-semibold text-[#FFC300]">
+            {initials}
+          </span>
         </div>
       )}
 
-  
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">{displayName}</p>
-        {user.username && (
-          <p className="text-xs text-white/80 truncate">@{user.username}</p>
-        )}
+        <p className=" font-medium text-white truncate">{displayName}</p>
+
         <div className="mt-1 flex items-center gap-1.5 flex-wrap">
           <RoleBadge role={member.role} />
-          <span className="text-[11px] text-white/80">
+          <span className="text-sm text-white/80">
             Joined {new Date(member.joinedAt).toLocaleDateString()}
           </span>
         </div>
       </div>
 
- 
       {canManage && (
         <div className="relative shrink-0" ref={menuRef}>
           {loading ? (
@@ -140,7 +147,10 @@ function MemberCard({
             </div>
           ) : (
             <button
-              onClick={() => setShowMenu((v) => !v)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu((v) => !v);
+              }}
               className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all"
             >
               <MoreVertical className="w-4 h-4" />
@@ -151,7 +161,10 @@ function MemberCard({
             <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
               {myRole === 'OWNER' && member.role === 'MEMBER' && (
                 <button
-                  onClick={handlePromote}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePromote();
+                  }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
                   <Shield className="w-4 h-4 text-blue-400 shrink-0" />
@@ -160,7 +173,10 @@ function MemberCard({
               )}
               {myRole === 'OWNER' && member.role === 'MODERATOR' && (
                 <button
-                  onClick={handleDemote}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDemote();
+                  }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
                   <Check className="w-4 h-4 text-green-400 shrink-0" />
@@ -169,7 +185,10 @@ function MemberCard({
               )}
               <div className="my-1 border-t border-[#2a2a2a]" />
               <button
-                onClick={handleRemove}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove();
+                }}
                 className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
               >
                 Remove from Club
@@ -218,7 +237,6 @@ export default function MembersGrid({
 
   return (
     <div>
-  
       <div className="relative mb-4">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
         <input
@@ -230,7 +248,6 @@ export default function MembersGrid({
         />
       </div>
 
-     
       <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
         {ROLE_TABS.map(({ value, label }) => {
           const count = roleCounts[value] ?? 0;
