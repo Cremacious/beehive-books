@@ -31,7 +31,6 @@ export async function syncUser() {
     })
     .returning({ onboardingComplete: users.onboardingComplete, username: users.username });
 
-  // Sync any missing publicMetadata fields back to Clerk in a single call
   const missingOnboarding = dbUser?.onboardingComplete && !user.publicMetadata?.onboardingComplete;
   const missingUsername   = dbUser?.username && !user.publicMetadata?.username;
 

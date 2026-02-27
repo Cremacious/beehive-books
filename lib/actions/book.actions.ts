@@ -217,8 +217,6 @@ export async function getChapterWithContextAction(chapterId: string) {
     }),
   ]);
 
-  // Build flat reading order: uncategorized chapters first, then each
-  // collection's chapters in collection order.
   const uncategorized = allChapters.filter((c) => !c.collectionId);
   const flatOrder = [
     ...uncategorized,
@@ -462,7 +460,7 @@ export async function deleteCollectionAction(
 ): Promise<ActionResult> {
   await requireBookOwner(bookId);
   try {
-    // Find chapters being deleted so we can adjust book totals
+  
     const toDelete = await db.query.chapters.findMany({
       where: eq(chapters.collectionId, collectionId),
       columns: { wordCount: true },

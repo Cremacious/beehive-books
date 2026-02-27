@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, FolderOpen, Loader2 } from 'lucide-react';
+import { AlertTriangle, FileText, FolderOpen, Loader2, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
@@ -18,6 +18,7 @@ import {
   deleteChapterAction,
 } from '@/lib/actions/book.actions';
 import { ChapterFormProps } from '@/lib/types/books.types';
+import { parseSingleChapterDocxAction } from '@/lib/actions/docx.actions';
 export function ChapterForm({
   mode,
   cancelHref,
@@ -31,11 +32,17 @@ export function ChapterForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [contentMode, setContentMode] = useState<'write' | 'upload'>('write');
+  const [docxParsing, setDocxParsing] = useState(false);
+  const [docxError, setDocxError] = useState('');
+  const [docxFileName, setDocxFileName] = useState('');
 
   const {
     register,
     handleSubmit,
     control,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ChapterFormData>({
     resolver: zodResolver(chapterSchema),
@@ -46,6 +53,38 @@ export function ChapterForm({
       collectionId: chapter?.collectionId ?? null,
     },
   });
+
+  const currentTitle = watch('title');
+
+  async function handleDocxUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setDocxError('');
+    setDocxParsing(true);
+    setDocxFileName(file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const result = await parseSingleChapterDocxAction(formData);
+
+    setDocxParsing(false);
+
+    if (!result.success) {
+      setDocxError(result.message);
+      setDocxFileName('');
+      return;
+    }
+
+    setValue('content', result.content, { shouldValidate: true });
+
+    if (result.title && !currentTitle?.trim()) {
+      setValue('title', result.title, { shouldValidate: true });
+    }
+
+    setContentMode('write');
+  }
 
   async function onSubmit(data: ChapterFormData) {
     setServerError('');
@@ -165,6 +204,75 @@ export function ChapterForm({
               </div>
             )}
           </div>
+
+          {!isEdit && (
+            <div className="rounded-xl border border-[#2a2a2a] overflow-hidden flex">
+              <button
+                type="button"
+                onClick={() => { setContentMode('write'); setDocxError(''); }}
+                className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
+                  contentMode === 'write'
+                    ? 'bg-[#FFC300]/10 text-[#FFC300]'
+                    : 'text-white/45 hover:text-white/65 hover:bg-white/4'
+                }`}
+              >
+                Write
+              </button>
+              <button
+                type="button"
+                onClick={() => { setContentMode('upload'); setDocxError(''); }}
+                className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-[#2a2a2a] ${
+                  contentMode === 'upload'
+                    ? 'bg-[#FFC300]/10 text-[#FFC300]'
+                    : 'text-white/45 hover:text-white/65 hover:bg-white/4'
+                }`}
+              >
+                Upload DOCX
+              </button>
+            </div>
+          )}
+
+          {!isEdit && contentMode === 'upload' && (
+            <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-4">
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-white/75">Upload a .docx file</p>
+                <p className="text-xs text-white/40">
+                  The document content will become the chapter body. If the document starts with a
+                  Heading 1, that text will be suggested as the chapter title (only if you have not
+                  already filled in a title).
+                </p>
+              </div>
+
+              <label className="flex flex-col items-center justify-center gap-3 w-full h-32 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+                {docxParsing ? (
+                  <Loader2 className="w-6 h-6 text-[#FFC300]/50 animate-spin" />
+                ) : docxFileName ? (
+                  <>
+                    <FileText className="w-6 h-6 text-[#FFC300]/70" />
+                    <span className="text-xs text-white/60">{docxFileName}</span>
+                    <span className="text-[10px] text-white/30">Click to replace</span>
+                  </>
+                ) : (
+                  <>
+                    <UploadCloud className="w-6 h-6 text-white/25" />
+                    <span className="text-xs text-white/35">Click to select a .docx file</span>
+                    <span className="text-[10px] text-white/20">Max 10 MB</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  className="sr-only"
+                  disabled={docxParsing}
+                  onChange={handleDocxUpload}
+                />
+              </label>
+
+              {docxError && (
+                <p className="text-xs text-red-400">{docxError}</p>
+              )}
+            </div>
+          )}
 
           <Controller
             name="content"

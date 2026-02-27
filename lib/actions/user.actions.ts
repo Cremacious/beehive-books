@@ -9,8 +9,7 @@ import { users, books, readingLists, friendships } from '@/db/schema';
 export async function getUserProfileAction(username: string) {
   const { userId: currentUserId } = await auth();
 
-  // Primary lookup by username; fall back to clerkId for backward-compat
-  // (old nav links used the Clerk ID before publicMetadata.username was set).
+
   let profileUser = await db.query.users.findFirst({
     where: eq(users.username, username),
   });
@@ -25,7 +24,7 @@ export async function getUserProfileAction(username: string) {
 
   const isOwnProfile = currentUserId === profileUser.clerkId;
 
-  // Determine if the viewer is a confirmed friend of the profile owner
+
   let isFriend = false;
   if (currentUserId && !isOwnProfile) {
     const f = await db.query.friendships.findFirst({
@@ -40,10 +39,7 @@ export async function getUserProfileAction(username: string) {
     isFriend = !!f;
   }
 
-  // Privacy tiers:
-  //   own profile  → all
-  //   friend       → PUBLIC + FRIENDS
-  //   everyone else → PUBLIC only
+
   const visiblePrivacies = isOwnProfile
     ? undefined // no filter
     : isFriend

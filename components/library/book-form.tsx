@@ -6,15 +6,17 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Upload, Loader2, X } from 'lucide-react';
+import { AlertTriangle, BookOpen, ChevronDown, ChevronUp, FileText, Loader2, Upload, UploadCloud, X } from 'lucide-react';
 import { createId } from '@paralleldrive/cuid2';
 import { Button } from '@/components/ui/button';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {
   createBookAction,
+  createChapterAction,
   updateBookAction,
   deleteBookAction,
 } from '@/lib/actions/book.actions';
+import { parseDocxAction, type ParsedChapter } from '@/lib/actions/docx.actions';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { CATEGORIES, GENRES, PRIVACY_OPTIONS } from '@/lib/config/constants';
 import { BookFormProps } from '@/lib/types/books.types';
@@ -35,6 +37,11 @@ export function BookForm({
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [serverError, setServerError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [bookDocxOpen, setBookDocxOpen] = useState(false);
+  const [bookDocxFileName, setBookDocxFileName] = useState('');
+  const [bookDocxError, setBookDocxError] = useState('');
+  const [bookDocxChapterCount, setBookDocxChapterCount] = useState<number | null>(null);
+  const [parsedChapters, setParsedChapters] = useState<ParsedChapter[] | null>(null);
 
   const { upload, uploading } = useCloudinaryUpload('covers', presetId);
 
@@ -64,6 +71,29 @@ export function BookForm({
     ? descriptionValue.trim().split(/\s+/).filter(Boolean).length
     : 0;
 
+  async function handleBookDocxSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBookDocxError('');
+    setBookDocxChapterCount(null);
+    setParsedChapters(null);
+    setBookDocxFileName(file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    const result = await parseDocxAction(formData);
+
+    if (!result.success) {
+      setBookDocxError(result.message);
+      setBookDocxFileName('');
+      return;
+    }
+
+    setParsedChapters(result.chapters);
+    setBookDocxChapterCount(result.chapters.length);
+  }
+
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,15 +106,30 @@ export function BookForm({
     let result;
     if (isEdit && book) {
       result = await updateBookAction(book.id, data, coverUrl);
-    } else {
-      result = await createBookAction(data, coverUrl ?? undefined, presetId);
+      if (result.success) router.push(`/library/${book.id}`);
+      else setServerError(result.message);
+      return;
     }
 
-    if (result.success) {
-      router.push(isEdit ? `/library/${book!.id}` : '/library');
-    } else {
+    result = await createBookAction(data, coverUrl ?? undefined, presetId);
+
+    if (!result.success) {
       setServerError(result.message);
+      return;
     }
+
+    if (parsedChapters && parsedChapters.length > 0) {
+      for (const chapter of parsedChapters) {
+        await createChapterAction(presetId, {
+          title: chapter.title,
+          content: chapter.content,
+          authorNotes: '',
+          collectionId: null,
+        });
+      }
+    }
+
+    router.push('/library');
   }
 
   async function handleDelete() {
@@ -331,6 +376,85 @@ export function BookForm({
             </div>
           </div>
 
+          {!isEdit && (
+            <div className="rounded-xl border border-[#2a2a2a] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setBookDocxOpen((o) => !o)}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/55 hover:text-white/75 hover:bg-white/3 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[#FFC300]/50" />
+                  Upload full book from DOCX
+                  <span className="text-[11px] text-white/30">(optional)</span>
+                </span>
+                {bookDocxOpen
+                  ? <ChevronUp className="w-4 h-4" />
+                  : <ChevronDown className="w-4 h-4" />
+                }
+              </button>
+
+              {bookDocxOpen && (
+                <div className="px-4 pb-4 space-y-4 border-t border-[#2a2a2a]">
+                  <div className="mt-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-2">
+                    <p className="text-xs font-semibold text-[#FFC300]/80 uppercase tracking-wide">
+                      Formatting Requirements
+                    </p>
+                    <ul className="space-y-1.5 text-xs text-white/50">
+                      <li>• Each chapter must start with a <strong className="text-white/70">Heading 1</strong> style in Word or Google Docs — not just bold or large text.</li>
+                      <li>• The Heading 1 text becomes the chapter title in Beehive.</li>
+                      <li>• Do <strong className="text-white/70">not</strong> use Heading 1 anywhere else in the document — only for chapter titles.</li>
+                      <li>• All other content (paragraphs, Heading 2–6, lists, etc.) is preserved as chapter body.</li>
+                      <li>• Any content before the first Heading 1 (e.g. a title page) will be ignored.</li>
+                    </ul>
+                    <p className="text-[11px] text-white/30 pt-1">
+                      Example: Chapter 1 → <span className="text-white/45">Heading 1: &quot;The Beginning&quot;</span> · Chapter 2 → <span className="text-white/45">Heading 1: &quot;The Conflict&quot;</span>
+                    </p>
+                  </div>
+
+                  <label className="flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+                    {bookDocxFileName ? (
+                      <>
+                        <FileText className="w-5 h-5 text-[#FFC300]/70" />
+                        <span className="text-xs text-white/60">{bookDocxFileName}</span>
+                        {bookDocxChapterCount !== null && (
+                          <span className="text-[11px] text-[#FFC300]/60">
+                            {bookDocxChapterCount} chapter{bookDocxChapterCount !== 1 ? 's' : ''} found — click to replace
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-5 h-5 text-white/25" />
+                        <span className="text-xs text-white/35">Select a .docx file</span>
+                        <span className="text-[10px] text-white/20">Max 10 MB · Heading 1 per chapter</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      className="sr-only"
+                      onChange={handleBookDocxSelect}
+                    />
+                  </label>
+
+                  {bookDocxError && (
+                    <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
+                      <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                      <p className="text-sm text-red-400">{bookDocxError}</p>
+                    </div>
+                  )}
+
+                  {bookDocxChapterCount !== null && bookDocxChapterCount > 0 && (
+                    <p className="text-xs text-white/35">
+                      When you click &quot;Create Book&quot;, the book will be saved first, then all {bookDocxChapterCount} chapter{bookDocxChapterCount !== 1 ? 's' : ''} will be imported automatically.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {serverError && (
             <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
               <p className="text-sm text-red-400">{serverError}</p>
@@ -363,7 +487,9 @@ export function BookForm({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />{' '}
-                    {isEdit ? 'Saving…' : 'Creating…'}
+                    {parsedChapters && parsedChapters.length > 0
+                      ? 'Creating book & importing chapters…'
+                      : isEdit ? 'Saving…' : 'Creating…'}
                   </>
                 ) : isEdit ? (
                   'Save Changes'

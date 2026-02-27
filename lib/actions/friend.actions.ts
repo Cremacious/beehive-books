@@ -14,17 +14,12 @@ async function requireAuth() {
   return userId;
 }
 
-/* ─── Status type ───────────────────────────────────────────────────────────── */
-
 export type FriendStatus =
   | { status: 'NONE' }
-  | { status: 'PENDING_SENT';     friendshipId: string }
+  | { status: 'PENDING_SENT'; friendshipId: string }
   | { status: 'PENDING_RECEIVED'; friendshipId: string }
-  | { status: 'FRIENDS';          friendshipId: string };
+  | { status: 'FRIENDS'; friendshipId: string };
 
-/* ─── Helpers ───────────────────────────────────────────────────────────────── */
-
-/** Returns the friendship row (any status) between two users, regardless of direction. */
 async function findFriendship(a: string, b: string) {
   return db.query.friendships.findFirst({
     where: or(
@@ -34,9 +29,9 @@ async function findFriendship(a: string, b: string) {
   });
 }
 
-/* ─── Read actions ──────────────────────────────────────────────────────────── */
-
-export async function getFriendshipStatusAction(targetUserId: string): Promise<FriendStatus> {
+export async function getFriendshipStatusAction(
+  targetUserId: string,
+): Promise<FriendStatus> {
   const { userId } = await auth();
   if (!userId || userId === targetUserId) return { status: 'NONE' };
 
@@ -46,43 +41,64 @@ export async function getFriendshipStatusAction(targetUserId: string): Promise<F
   if (f.status === 'ACCEPTED') return { status: 'FRIENDS', friendshipId: f.id };
   if (f.status === 'PENDING') {
     return f.requesterId === userId
-      ? { status: 'PENDING_SENT',     friendshipId: f.id }
+      ? { status: 'PENDING_SENT', friendshipId: f.id }
       : { status: 'PENDING_RECEIVED', friendshipId: f.id };
   }
   return { status: 'NONE' };
 }
 
 export type FriendUser = {
-  clerkId:   string;
-  username:  string | null;
+  clerkId: string;
+  username: string | null;
   firstName: string | null;
-  lastName:  string | null;
-  imageUrl:  string | null;
+  lastName: string | null;
+  imageUrl: string | null;
 };
 
 export async function getMyFriendsDataAction() {
   const userId = await requireAuth();
 
   const all = await db.query.friendships.findMany({
-    where: or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+    where: or(
+      eq(friendships.requesterId, userId),
+      eq(friendships.addresseeId, userId),
+    ),
     with: {
-      requester: { columns: { clerkId: true, username: true, firstName: true, lastName: true, imageUrl: true } },
-      addressee: { columns: { clerkId: true, username: true, firstName: true, lastName: true, imageUrl: true } },
+      requester: {
+        columns: {
+          clerkId: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          imageUrl: true,
+        },
+      },
+      addressee: {
+        columns: {
+          clerkId: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          imageUrl: true,
+        },
+      },
     },
     orderBy: (f, { desc }) => [desc(f.updatedAt)],
   });
 
-  const friends:          Array<{ friendshipId: string; user: FriendUser }> = [];
-  const receivedRequests: Array<{ friendshipId: string; user: FriendUser }> = [];
-  const sentRequests:     Array<{ friendshipId: string; user: FriendUser }> = [];
+  const friends: Array<{ friendshipId: string; user: FriendUser }> = [];
+  const receivedRequests: Array<{ friendshipId: string; user: FriendUser }> =
+    [];
+  const sentRequests: Array<{ friendshipId: string; user: FriendUser }> = [];
 
   for (const f of all) {
     const other = f.requesterId === userId ? f.addressee : f.requester;
     if (f.status === 'ACCEPTED') {
       friends.push({ friendshipId: f.id, user: other });
     } else if (f.status === 'PENDING') {
-      if (f.addresseeId === userId) receivedRequests.push({ friendshipId: f.id, user: other });
-      else                          sentRequests.push({ friendshipId: f.id, user: other });
+      if (f.addresseeId === userId)
+        receivedRequests.push({ friendshipId: f.id, user: other });
+      else sentRequests.push({ friendshipId: f.id, user: other });
     }
   }
 
@@ -90,11 +106,13 @@ export async function getMyFriendsDataAction() {
 }
 
 export type SearchResult = {
-  user:         FriendUser & { email: string };
+  user: FriendUser & { email: string };
   friendStatus: FriendStatus;
 };
 
-export async function searchUsersAction(query: string): Promise<SearchResult[]> {
+export async function searchUsersAction(
+  query: string,
+): Promise<SearchResult[]> {
   const { userId } = await auth();
   if (!userId || query.trim().length < 2) return [];
 
@@ -105,12 +123,22 @@ export async function searchUsersAction(query: string): Promise<SearchResult[]> 
       ne(users.clerkId, userId),
       or(ilike(users.username, like), ilike(users.email, like)),
     ),
-    columns: { clerkId: true, username: true, firstName: true, lastName: true, imageUrl: true, email: true },
+    columns: {
+      clerkId: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+      imageUrl: true,
+      email: true,
+    },
     limit: 15,
   });
 
   const myFriendships = await db.query.friendships.findMany({
-    where: or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+    where: or(
+      eq(friendships.requesterId, userId),
+      eq(friendships.addresseeId, userId),
+    ),
   });
 
   return results.map((u) => {
@@ -125,9 +153,10 @@ export async function searchUsersAction(query: string): Promise<SearchResult[]> 
       if (f.status === 'ACCEPTED') {
         friendStatus = { status: 'FRIENDS', friendshipId: f.id };
       } else if (f.status === 'PENDING') {
-        friendStatus = f.requesterId === userId
-          ? { status: 'PENDING_SENT',     friendshipId: f.id }
-          : { status: 'PENDING_RECEIVED', friendshipId: f.id };
+        friendStatus =
+          f.requesterId === userId
+            ? { status: 'PENDING_SENT', friendshipId: f.id }
+            : { status: 'PENDING_RECEIVED', friendshipId: f.id };
       }
     }
 
@@ -135,17 +164,19 @@ export async function searchUsersAction(query: string): Promise<SearchResult[]> 
   });
 }
 
-/* ─── Mutation actions ──────────────────────────────────────────────────────── */
-
-export async function sendFriendRequestAction(addresseeId: string): Promise<ActionResult> {
+export async function sendFriendRequestAction(
+  addresseeId: string,
+): Promise<ActionResult> {
   const requesterId = await requireAuth();
   if (requesterId === addresseeId)
     return { success: false, message: "You can't add yourself." };
 
   const existing = await findFriendship(requesterId, addresseeId);
   if (existing) {
-    if (existing.status === 'ACCEPTED') return { success: false, message: 'Already friends.' };
-    if (existing.status === 'PENDING')  return { success: false, message: 'Request already pending.' };
+    if (existing.status === 'ACCEPTED')
+      return { success: false, message: 'Already friends.' };
+    if (existing.status === 'PENDING')
+      return { success: false, message: 'Request already pending.' };
   }
 
   try {
@@ -157,10 +188,16 @@ export async function sendFriendRequestAction(addresseeId: string): Promise<Acti
   }
 }
 
-export async function cancelFriendRequestAction(friendshipId: string): Promise<ActionResult> {
+export async function cancelFriendRequestAction(
+  friendshipId: string,
+): Promise<ActionResult> {
   const userId = await requireAuth();
   const row = await db.query.friendships.findFirst({
-    where: and(eq(friendships.id, friendshipId), eq(friendships.requesterId, userId), eq(friendships.status, 'PENDING')),
+    where: and(
+      eq(friendships.id, friendshipId),
+      eq(friendships.requesterId, userId),
+      eq(friendships.status, 'PENDING'),
+    ),
   });
   if (!row) return { success: false, message: 'Request not found.' };
 
@@ -173,15 +210,22 @@ export async function cancelFriendRequestAction(friendshipId: string): Promise<A
   }
 }
 
-export async function acceptFriendRequestAction(friendshipId: string): Promise<ActionResult> {
+export async function acceptFriendRequestAction(
+  friendshipId: string,
+): Promise<ActionResult> {
   const userId = await requireAuth();
   const row = await db.query.friendships.findFirst({
-    where: and(eq(friendships.id, friendshipId), eq(friendships.addresseeId, userId), eq(friendships.status, 'PENDING')),
+    where: and(
+      eq(friendships.id, friendshipId),
+      eq(friendships.addresseeId, userId),
+      eq(friendships.status, 'PENDING'),
+    ),
   });
   if (!row) return { success: false, message: 'Request not found.' };
 
   try {
-    await db.update(friendships)
+    await db
+      .update(friendships)
       .set({ status: 'ACCEPTED', updatedAt: new Date() })
       .where(eq(friendships.id, friendshipId));
     revalidatePath('/friends');
@@ -191,10 +235,16 @@ export async function acceptFriendRequestAction(friendshipId: string): Promise<A
   }
 }
 
-export async function rejectFriendRequestAction(friendshipId: string): Promise<ActionResult> {
+export async function rejectFriendRequestAction(
+  friendshipId: string,
+): Promise<ActionResult> {
   const userId = await requireAuth();
   const row = await db.query.friendships.findFirst({
-    where: and(eq(friendships.id, friendshipId), eq(friendships.addresseeId, userId), eq(friendships.status, 'PENDING')),
+    where: and(
+      eq(friendships.id, friendshipId),
+      eq(friendships.addresseeId, userId),
+      eq(friendships.status, 'PENDING'),
+    ),
   });
   if (!row) return { success: false, message: 'Request not found.' };
 
@@ -207,13 +257,18 @@ export async function rejectFriendRequestAction(friendshipId: string): Promise<A
   }
 }
 
-export async function removeFriendAction(friendshipId: string): Promise<ActionResult> {
+export async function removeFriendAction(
+  friendshipId: string,
+): Promise<ActionResult> {
   const userId = await requireAuth();
   const row = await db.query.friendships.findFirst({
     where: and(
       eq(friendships.id, friendshipId),
       eq(friendships.status, 'ACCEPTED'),
-      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      or(
+        eq(friendships.requesterId, userId),
+        eq(friendships.addresseeId, userId),
+      ),
     ),
   });
   if (!row) return { success: false, message: 'Friendship not found.' };
