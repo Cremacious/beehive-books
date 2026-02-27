@@ -7,6 +7,8 @@ import { FriendButton } from '@/components/friends/friend-button';
 import { UserSearch } from '@/components/friends/user-search';
 import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
 
+//TODO: Make the user confirm before unfriending
+
 export const metadata: Metadata = { title: 'Friends · Beehive Books' };
 
 type Props = { searchParams: Promise<{ tab?: string }> };
@@ -61,7 +63,7 @@ export default async function FriendsPage({ searchParams }: Props) {
         <div className="space-y-8">
         
           <div>
-            <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
               Incoming ({receivedRequests.length})
             </h2>
             {receivedRequests.length === 0 ? (
@@ -81,7 +83,7 @@ export default async function FriendsPage({ searchParams }: Props) {
 
        
           <div>
-            <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
               Sent ({sentRequests.length})
             </h2>
             {sentRequests.length === 0 ? (
@@ -120,7 +122,7 @@ function TabLink({
       className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
         active
           ? 'bg-[#FFC300] text-black'
-          : 'text-white/70 hover:text-white hover:bg-white/5'
+          : 'text-white hover:text-white hover:bg-white/5'
       }`}
     >
       {icon}
@@ -135,10 +137,7 @@ function TabLink({
 }
 
 function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
-  const name =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    '?';
+  const name = user.username || '?';
   const cls = `relative rounded-full overflow-hidden bg-[#2a2000] shrink-0 w-${size} h-${size}`;
   return (
     <div className={cls}>
@@ -156,23 +155,15 @@ function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
 }
 
 function FriendCard({
-  user, friendshipId, friendStatus,
+  user, friendStatus,
 }: {
   user: FriendUser; friendshipId: string; friendStatus: FriendStatus;
 }) {
-  const displayName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    'Unknown User';
-
   return (
-    <div className="flex flex-col items-center gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-center">
+    <div className="flex flex-col items-center gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-white/30 text-center">
       <Avatar user={user} size={16} />
       <div className="min-w-0">
-        <p className="font-semibold text-white truncate">{displayName}</p>
-        {user.username && (
-          <p className="text-xs text-white/70 mt-0.5">@{user.username}</p>
-        )}
+        <p className="font-semibold text-white truncate">{user.username || 'Unknown User'}</p>
       </div>
       <div className="flex items-center gap-2 mt-1">
         <Link
@@ -181,22 +172,17 @@ function FriendCard({
         >
           View Profile
         </Link>
-        <FriendButton
+        {/* <FriendButton
           targetUserId={user.clerkId}
           initialStatus={friendStatus}
           compact
-        />
+        /> */}
       </div>
     </div>
   );
 }
 
 function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: FriendStatus }) {
-  const displayName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-    user.username ||
-    'Unknown User';
-
   return (
     <li className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
       <Avatar user={user} size={10} />
@@ -205,11 +191,8 @@ function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: Fr
           href={`/u/${user.username ?? user.clerkId}`}
           className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
         >
-          {displayName}
+          {user.username || 'Unknown User'}
         </Link>
-        {user.username && (
-          <p className="text-xs text-white/70">@{user.username}</p>
-        )}
       </div>
       <FriendButton targetUserId={user.clerkId} initialStatus={friendStatus} />
     </li>
@@ -219,7 +202,7 @@ function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: Fr
 function Empty({ message, cta }: { message: string; cta?: { href: string; label: string } }) {
   return (
     <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-12 text-center">
-      <p className="text-sm text-white/70 mb-3">{message}</p>
+      <p className="text-sm text-white/80 mb-3">{message}</p>
       {cta && (
         <Link
           href={cta.href}

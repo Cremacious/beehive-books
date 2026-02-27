@@ -16,6 +16,7 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 const navItems = [
   { href: '/home',          label: 'Feed',          icon: Home },
@@ -31,6 +32,7 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const dbUsername = user?.publicMetadata?.username as string | undefined;
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
@@ -38,13 +40,24 @@ export function DesktopSidebar() {
   return (
     <aside className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
-        <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5 border-b border-[#2a2a2a]">
+
+    
+        <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5">
           <span className="text-2xl leading-none">🐝</span>
           <span className="hidden lg:block text-white font-bold text-lg tracking-tight mainFont">
             Beehive<span className="text-[#FFC300]">Books</span>
           </span>
         </div>
 
+  
+        <div className="px-2 xl:px-3 py-3">
+          <NotificationBell
+            panelPosition="right"
+            className="w-full flex items-center justify-center py-2 rounded-2xl bg-yellow-500/10 border-2 border-yellow-500/30 text-[#FFC300] hover:bg-yellow-500/15 transition-colors cursor-pointer"
+          />
+        </div>
+
+     
         <nav className="flex-1 px-2 xl:px-3 py-4 overflow-y-auto">
           <ul className="space-y-0.5 flex flex-col md:items-center lg:items-stretch">
             {navItems.map(({ href, label, icon: Icon }) => {
@@ -56,7 +69,7 @@ export function DesktopSidebar() {
                     className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
                         ? 'text-[#FFC300]'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                        : 'text-white/90 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon
@@ -76,7 +89,7 @@ export function DesktopSidebar() {
                   className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                     isActive('/u')
                       ? 'text-[#FFC300]'
-                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                      : 'text-white/90 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <User
@@ -90,12 +103,13 @@ export function DesktopSidebar() {
           </ul>
         </nav>
 
+  
         <div className="px-2 xl:px-3 pb-4 pt-3 border-t border-[#2a2a2a]">
           <div className="flex items-center md:justify-center lg:justify-start gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
             {user?.imageUrl ? (
               <Image
                 src={user.imageUrl}
-                alt={user.firstName ?? 'User'}
+                alt={dbUsername ?? 'User'}
                 width={38}
                 height={38}
                 className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
@@ -103,16 +117,15 @@ export function DesktopSidebar() {
             ) : (
               <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
                 <span className="text-[#FFC300] text-sm font-bold">
-                  {user?.firstName?.[0]?.toUpperCase() ?? '?'}
+                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
                 </span>
               </div>
             )}
 
             <div className="hidden lg:block flex-1 min-w-0">
               <p className="text-white font-semibold truncate leading-tight">
-                {user?.username ?? user?.firstName ?? 'User'}
+                {dbUsername ?? 'User'}
               </p>
-             
             </div>
 
             <div className="hidden lg:flex items-center gap-0.5 shrink-0">
@@ -133,6 +146,7 @@ export function DesktopSidebar() {
             </div>
           </div>
         </div>
+
       </div>
     </aside>
   );

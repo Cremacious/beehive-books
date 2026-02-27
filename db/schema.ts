@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, primaryKey, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, primaryKey, uniqueIndex, json } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -110,13 +110,36 @@ export const readingListBooks = pgTable('reading_list_books', {
 
 
 
+export const notifications = pgTable('notifications', {
+  id:          text('id').primaryKey().$defaultFn(() => createId()),
+  recipientId: text('recipient_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  actorId:     text('actor_id').references(() => users.clerkId, { onDelete: 'cascade' }),
+  type:        text('type', { enum: [
+    'FRIEND_REQUEST', 'FRIEND_ACCEPTED',
+    'CHAPTER_COMMENT', 'COMMENT_REPLY', 'COMMENT_LIKE',
+    'PROMPT_INVITE', 'PROMPT_ENTRY', 'PROMPT_ENDED',
+    'ENTRY_COMMENT', 'ENTRY_COMMENT_LIKE',
+  ] as const }).notNull(),
+  isRead:      boolean('is_read').notNull().default(false),
+  link:        text('link').notNull(),
+  metadata:    json('metadata').$type<Record<string, string>>().notNull().default({}),
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
-  books:            many(books),
-  comments:         many(chapterComments),
-  commentLikes:     many(commentLikes),
-  readingLists:     many(readingLists),
-  sentRequests:     many(friendships, { relationName: 'sentRequests' }),
-  receivedRequests: many(friendships, { relationName: 'receivedRequests' }),
+  books:                    many(books),
+  comments:                 many(chapterComments),
+  commentLikes:             many(commentLikes),
+  readingLists:             many(readingLists),
+  sentRequests:             many(friendships, { relationName: 'sentRequests' }),
+  receivedRequests:         many(friendships, { relationName: 'receivedRequests' }),
+  promptsCreated:           many(prompts),
+  promptInvites:            many(promptInvites),
+  promptEntries:            many(promptEntries),
+  promptEntryLikes:         many(promptEntryLikes),
+  promptEntryComments:      many(promptEntryComments),
+  promptEntryCommentLikes:  many(promptEntryCommentLikes),
+  notifications:            many(notifications, { relationName: 'receivedNotifications' }),
 }));
 
 export const friendshipsRelations = relations(friendships, ({ one }) => ({
@@ -173,4 +196,116 @@ export const readingListsRelations = relations(readingLists, ({ one, many }) => 
 
 export const readingListBooksRelations = relations(readingListBooks, ({ one }) => ({
   readingList: one(readingLists, { fields: [readingListBooks.readingListId], references: [readingLists.id] }),
+}));
+
+/* ─── Prompts ────────────────────────────────────────────────────────────── */
+
+export const prompts = pgTable('prompts', {
+  id:         text('id').primaryKey().$defaultFn(() => createId()),
+  creatorId:  text('creator_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  title:      text('title').notNull(),
+  description: text('description').notNull(),
+  endDate:    timestamp('end_date').notNull(),
+  isPublic:   boolean('is_public').notNull().default(false),
+  status:     text('status', { enum: ['ACTIVE', 'ENDED'] }).notNull().default('ACTIVE'),
+  entryCount: integer('entry_count').notNull().default(0),
+  createdAt:  timestamp('created_at').defaultNow().notNull(),
+  updatedAt:  timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const promptInvites = pgTable('prompt_invites', {
+  id:       text('id').primaryKey().$defaultFn(() => createId()),
+  promptId: text('prompt_id').notNull().references(() => prompts.id, { onDelete: 'cascade' }),
+  userId:   text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  status:   text('status', { enum: ['PENDING', 'ACCEPTED'] }).notNull().default('PENDING'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('unique_prompt_invite_idx').on(table.promptId, table.userId),
+]);
+
+export const promptEntries = pgTable('prompt_entries', {
+  id:        text('id').primaryKey().$defaultFn(() => createId()),
+  promptId:  text('prompt_id').notNull().references(() => prompts.id, { onDelete: 'cascade' }),
+  userId:    text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  content:   text('content').notNull(),
+  wordCount: integer('word_count').notNull().default(0),
+  likeCount: integer('like_count').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('unique_prompt_entry_idx').on(table.promptId, table.userId),
+]);
+
+export const promptEntryLikes = pgTable('prompt_entry_likes', {
+  userId:  text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  entryId: text('entry_id').notNull().references(() => promptEntries.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.userId, table.entryId] }),
+]);
+
+export const promptEntryComments = pgTable('prompt_entry_comments', {
+  id:        text('id').primaryKey().$defaultFn(() => createId()),
+  entryId:   text('entry_id').notNull().references(() => promptEntries.id, { onDelete: 'cascade' }),
+  userId:    text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  parentId:  text('parent_id'),
+  content:   text('content').notNull(),
+  likeCount: integer('like_count').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const promptEntryCommentLikes = pgTable('prompt_entry_comment_likes', {
+  userId:    text('user_id').notNull().references(() => users.clerkId, { onDelete: 'cascade' }),
+  commentId: text('comment_id').notNull().references(() => promptEntryComments.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.userId, table.commentId] }),
+]);
+
+/* ─── Prompt Relations ───────────────────────────────────────────────────── */
+
+export const promptsRelations = relations(prompts, ({ one, many }) => ({
+  creator: one(users, { fields: [prompts.creatorId], references: [users.clerkId] }),
+  invites: many(promptInvites),
+  entries: many(promptEntries),
+}));
+
+export const promptInvitesRelations = relations(promptInvites, ({ one }) => ({
+  prompt: one(prompts, { fields: [promptInvites.promptId], references: [prompts.id] }),
+  user:   one(users,   { fields: [promptInvites.userId],   references: [users.clerkId] }),
+}));
+
+export const promptEntriesRelations = relations(promptEntries, ({ one, many }) => ({
+  prompt:   one(prompts, { fields: [promptEntries.promptId], references: [prompts.id] }),
+  user:     one(users,   { fields: [promptEntries.userId],   references: [users.clerkId] }),
+  comments: many(promptEntryComments),
+  likes:    many(promptEntryLikes),
+}));
+
+export const promptEntryLikesRelations = relations(promptEntryLikes, ({ one }) => ({
+  user:  one(users,         { fields: [promptEntryLikes.userId],  references: [users.clerkId] }),
+  entry: one(promptEntries, { fields: [promptEntryLikes.entryId], references: [promptEntries.id] }),
+}));
+
+export const promptEntryCommentsRelations = relations(promptEntryComments, ({ one, many }) => ({
+  entry:   one(promptEntries,      { fields: [promptEntryComments.entryId], references: [promptEntries.id] }),
+  user:    one(users,              { fields: [promptEntryComments.userId],  references: [users.clerkId] }),
+  parent:  one(promptEntryComments, {
+    fields:       [promptEntryComments.parentId],
+    references:   [promptEntryComments.id],
+    relationName: 'promptReplies',
+  }),
+  replies: many(promptEntryComments, { relationName: 'promptReplies' }),
+  likes:   many(promptEntryCommentLikes),
+}));
+
+export const promptEntryCommentLikesRelations = relations(promptEntryCommentLikes, ({ one }) => ({
+  user:    one(users,               { fields: [promptEntryCommentLikes.userId],    references: [users.clerkId] }),
+  comment: one(promptEntryComments, { fields: [promptEntryCommentLikes.commentId], references: [promptEntryComments.id] }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  recipient: one(users, { fields: [notifications.recipientId], references: [users.clerkId], relationName: 'receivedNotifications' }),
+  actor:     one(users, { fields: [notifications.actorId],     references: [users.clerkId], relationName: 'sentNotifications' }),
 }));

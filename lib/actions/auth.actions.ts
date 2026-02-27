@@ -1,6 +1,6 @@
 'use server';
 
-import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -14,18 +14,12 @@ export async function completeOnboarding(
   const { userId } = await auth();
   if (!userId) return { error: 'Not authenticated.' };
 
-  const user = await currentUser();
-  if (!user) return { error: 'Not authenticated.' };
 
-  const baseUsername = user.emailAddresses[0]?.emailAddress?.split('@')[0];
-  const username = baseUsername
-    ? `${baseUsername}_${userId.slice(-4)}`
-    : `user_${userId.slice(-4)}`;
-  if (!username) {
-    return { error: 'Unable to generate username. Please contact support.' };
-  }
+  const username = (formData.get('username') as string | null)?.trim();
+  if (!username) return { error: 'Username is required.' };
 
   try {
+ 
     await syncUser();
 
     const client = await clerkClient();
@@ -36,7 +30,6 @@ export async function completeOnboarding(
         await client.users.updateUserProfileImage(userId, { file: imageFile });
       } catch (imageErr) {
         console.error('Failed to upload profile image:', imageErr);
-
       }
     }
 

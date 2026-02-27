@@ -14,12 +14,12 @@ import {
   Lightbulb,
   BookMarked,
   User,
-  Bell,
   Menu,
   X,
   Settings,
   LogOut,
 } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 const navItems = [
   { href: '/home',          label: 'Feed',          icon: Home },
@@ -42,7 +42,8 @@ export function MobileNavbar() {
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  const avatarHref = `/u/${(user?.publicMetadata?.username as string | undefined) ?? user?.id ?? ''}`;
+  const dbUsername = user?.publicMetadata?.username as string | undefined;
+  const avatarHref = `/u/${dbUsername ?? user?.id ?? ''}`;
 
   return (
     <>
@@ -55,18 +56,16 @@ export function MobileNavbar() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <button
-            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
-            aria-label="Notifications"
-          >
-            <Bell className="w-6 h-6" />
-          </button>
+          <NotificationBell
+            panelPosition="below"
+            className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all flex items-center justify-center"
+          />
 
           <Link href={avatarHref} className="p-1">
             {user?.imageUrl ? (
               <Image
                 src={user.imageUrl}
-                alt={user.firstName ?? 'User'}
+                alt={dbUsername ?? 'User'}
                 width={30}
                 height={30}
                 className="w-7.5 h-7.5 rounded-full object-cover ring-2 ring-[#FFC300]/25"
@@ -74,7 +73,7 @@ export function MobileNavbar() {
             ) : (
               <div className="w-7.5 h-7.5 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/25">
                 <span className="text-[#FFC300] text-xs font-bold">
-                  {user?.firstName?.[0]?.toUpperCase() ?? '?'}
+                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
                 </span>
               </div>
             )}
@@ -123,12 +122,12 @@ export function MobileNavbar() {
           <Link
             href={avatarHref}
             onClick={closeDrawer}
-            className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] hover:bg-white/5 transition-all"
+            className="flex items-center gap-3 px-4 py-3  hover:bg-white/5 transition-all"
           >
             {user.imageUrl ? (
               <Image
                 src={user.imageUrl}
-                alt={user.firstName ?? 'User'}
+                alt={dbUsername ?? 'User'}
                 width={40}
                 height={40}
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
@@ -136,13 +135,13 @@ export function MobileNavbar() {
             ) : (
               <div className="w-10 h-10 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
                 <span className="text-[#FFC300] text-sm font-bold">
-                  {user.firstName?.[0]?.toUpperCase() ?? '?'}
+                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
                 </span>
               </div>
             )}
             <div className="min-w-0">
               <p className="text-white font-semibold truncate leading-tight">
-                {user.username ?? user.firstName ?? 'User'}
+                {dbUsername ?? 'User'}
               </p>
              
             </div>
@@ -161,7 +160,7 @@ export function MobileNavbar() {
                     className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-[15px] font-semibold transition-all ${
                       active
                         ? 'text-[#FFC300]'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                        : 'text-white/90 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <Icon
@@ -201,7 +200,7 @@ export function MobileNavbar() {
             <Link
               href="/settings/profile"
               onClick={closeDrawer}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#2a2a2a] hover:border-white/70 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#514e4e] hover:border-white/70 transition-all"
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -211,7 +210,7 @@ export function MobileNavbar() {
                 signOut({ redirectUrl: '/' });
                 closeDrawer();
               }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#2a2a2a] hover:border-red-400/20 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#514e4e] hover:border-red-400/20 transition-all"
             >
               <LogOut className="w-4 h-4" />
               Sign out

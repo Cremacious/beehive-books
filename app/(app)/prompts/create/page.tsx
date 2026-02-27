@@ -1,0 +1,25 @@
+import type { Metadata } from 'next';
+import BackButton from '@/components/shared/back-button';
+import { PromptForm } from '@/components/prompts/prompt-form';
+import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
+
+export const metadata: Metadata = { title: 'New Challenge · Beehive Books' };
+
+export default async function CreatePromptPage() {
+  const { friends } = await getMyFriendsDataAction();
+
+  return (
+    <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto">
+      <BackButton href="/prompts" label="Prompts" />
+
+      <div className="mt-6 mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-white">New Challenge</h1>
+        <p className="mt-1 text-base text-white/70">
+          Set a writing prompt, invite friends, and let the creativity flow.
+        </p>
+      </div>
+
+      <PromptForm mode="create" friends={friends.map((f) => f.user)} />
+    </div>
+  );
+}
