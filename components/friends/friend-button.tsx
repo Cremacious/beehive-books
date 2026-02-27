@@ -71,7 +71,7 @@ export function FriendButton({
         title="Cancel request"
       >
         Cancel 
-        {/* <Clock className={icon(compact)} /> */}
+   
         {!compact && <span>{isPending ? 'Cancelling…' : 'Request Sent'}</span>}
       </button>
     );

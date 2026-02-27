@@ -3,15 +3,30 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Bold, Italic, Underline, Heading1, Heading2, List, ListOrdered, Quote, Undo, Redo } from 'lucide-react';
+import {
+  Bold,
+  Italic,
+  Underline,
+  Heading1,
+  Heading2,
+  List,
+  ListOrdered,
+  Quote,
+  Undo,
+  Redo,
+} from 'lucide-react';
 
 type Props = {
-  content?:  string;
+  content?: string;
   onChange?: (html: string) => void;
   editable?: boolean;
 };
 
-export function RichTextEditor({ content = '', onChange, editable = true }: Props) {
+export function RichTextEditor({
+  content = '',
+  onChange,
+  editable = true,
+}: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -48,7 +63,6 @@ export function RichTextEditor({ content = '', onChange, editable = true }: Prop
 
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl overflow-hidden">
-  
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-[#2a2a2a] flex-wrap">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -75,14 +89,18 @@ export function RichTextEditor({ content = '', onChange, editable = true }: Prop
         <Divider />
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           active={editor.isActive('heading', { level: 1 })}
           title="Heading 1"
         >
           <Heading1 className="w-3.5 h-3.5" />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           active={editor.isActive('heading', { level: 2 })}
           title="Heading 2"
         >
@@ -135,7 +153,6 @@ export function RichTextEditor({ content = '', onChange, editable = true }: Prop
         </span>
       </div>
 
-      {/* Editor area */}
       <EditorContent
         editor={editor}
         className="min-h-105 p-6

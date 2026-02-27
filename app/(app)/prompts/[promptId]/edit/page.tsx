@@ -37,7 +37,7 @@ export default async function EditPromptPage({ params }: Props) {
         <p className="mt-1 text-sm text-white/70">Update the details of your prompt.</p>
       </div>
 
-      {/* Warning if entries exist */}
+   
       {prompt.entryCount > 0 && (
         <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
           <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />

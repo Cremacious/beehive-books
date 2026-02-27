@@ -15,12 +15,12 @@ type Props = { searchParams: Promise<{ tab?: string }> };
 
 export default async function FriendsPage({ searchParams }: Props) {
   const { tab = 'friends' } = await searchParams;
-  const { friends, receivedRequests, sentRequests } = await getMyFriendsDataAction();
+  const { friends, receivedRequests, sentRequests } =
+    await getMyFriendsDataAction();
   const pendingCount = receivedRequests.length;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 md:px-8">
-  
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white">Friends</h1>
         <p className="mt-1 text-sm text-white/70">
@@ -28,13 +28,27 @@ export default async function FriendsPage({ searchParams }: Props) {
         </p>
       </div>
 
-
       <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-fit">
-        <TabLink href="/friends?tab=friends"  active={tab === 'friends'}  icon={<Users2 className="w-4 h-4" />}  label={`Friends${friends.length > 0 ? ` (${friends.length})` : ''}`} />
-        <TabLink href="/friends?tab=requests" active={tab === 'requests'} icon={<UserPlus className="w-4 h-4" />} label="Requests" badge={pendingCount} />
-        <TabLink href="/friends?tab=find"     active={tab === 'find'}     icon={<Search className="w-4 h-4" />}   label="Find People" />
+        <TabLink
+          href="/friends?tab=friends"
+          active={tab === 'friends'}
+          icon={<Users2 className="w-4 h-4" />}
+          label={`Friends${friends.length > 0 ? ` (${friends.length})` : ''}`}
+        />
+        <TabLink
+          href="/friends?tab=requests"
+          active={tab === 'requests'}
+          icon={<UserPlus className="w-4 h-4" />}
+          label="Requests"
+          badge={pendingCount}
+        />
+        <TabLink
+          href="/friends?tab=find"
+          active={tab === 'find'}
+          icon={<Search className="w-4 h-4" />}
+          label="Find People"
+        />
       </div>
-
 
       {tab === 'friends' && (
         <>
@@ -58,10 +72,8 @@ export default async function FriendsPage({ searchParams }: Props) {
         </>
       )}
 
-     
       {tab === 'requests' && (
         <div className="space-y-8">
-        
           <div>
             <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
               Incoming ({receivedRequests.length})
@@ -81,7 +93,6 @@ export default async function FriendsPage({ searchParams }: Props) {
             )}
           </div>
 
-       
           <div>
             <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
               Sent ({sentRequests.length})
@@ -103,18 +114,23 @@ export default async function FriendsPage({ searchParams }: Props) {
         </div>
       )}
 
-   
       {tab === 'find' && <UserSearch />}
     </div>
   );
 }
 
-
-
 function TabLink({
-  href, active, icon, label, badge,
+  href,
+  active,
+  icon,
+  label,
+  badge,
 }: {
-  href: string; active: boolean; icon: React.ReactNode; label: string; badge?: number;
+  href: string;
+  active: boolean;
+  icon: React.ReactNode;
+  label: string;
+  badge?: number;
 }) {
   return (
     <Link
@@ -128,7 +144,9 @@ function TabLink({
       {icon}
       <span>{label}</span>
       {!!badge && badge > 0 && (
-        <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center ${active ? 'bg-black text-[#FFC300]' : 'bg-[#FFC300] text-black'}`}>
+        <span
+          className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center ${active ? 'bg-black text-[#FFC300]' : 'bg-[#FFC300] text-black'}`}
+        >
           {badge > 9 ? '9+' : badge}
         </span>
       )}
@@ -155,15 +173,19 @@ function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
 }
 
 function FriendCard({
-  user, friendStatus,
+  user,
 }: {
-  user: FriendUser; friendshipId: string; friendStatus: FriendStatus;
+  user: FriendUser;
+  friendshipId: string;
+  friendStatus: FriendStatus;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-white/30 text-center">
       <Avatar user={user} size={16} />
       <div className="min-w-0">
-        <p className="font-semibold text-white truncate">{user.username || 'Unknown User'}</p>
+        <p className="font-semibold text-white truncate">
+          {user.username || 'Unknown User'}
+        </p>
       </div>
       <div className="flex items-center gap-2 mt-1">
         <Link
@@ -172,17 +194,18 @@ function FriendCard({
         >
           View Profile
         </Link>
-        {/* <FriendButton
-          targetUserId={user.clerkId}
-          initialStatus={friendStatus}
-          compact
-        /> */}
       </div>
     </div>
   );
 }
 
-function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: FriendStatus }) {
+function RequestRow({
+  user,
+  friendStatus,
+}: {
+  user: FriendUser;
+  friendStatus: FriendStatus;
+}) {
   return (
     <li className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
       <Avatar user={user} size={10} />
@@ -199,7 +222,13 @@ function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: Fr
   );
 }
 
-function Empty({ message, cta }: { message: string; cta?: { href: string; label: string } }) {
+function Empty({
+  message,
+  cta,
+}: {
+  message: string;
+  cta?: { href: string; label: string };
+}) {
   return (
     <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-12 text-center">
       <p className="text-sm text-white/80 mb-3">{message}</p>

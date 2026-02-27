@@ -12,6 +12,8 @@ import {
   FileText,
   Clock,
   CornerDownRight,
+  Users,
+  BookOpen,
 } from 'lucide-react';
 import { markAllReadAction } from '@/lib/actions/notification.actions';
 import type { NotificationItem, NotificationType } from '@/lib/types/notification.types';
@@ -38,6 +40,9 @@ function messageBody(type: NotificationType): string {
     case 'PROMPT_ENDED':      return 'A prompt you joined has ended';
     case 'ENTRY_COMMENT':     return 'commented on your entry';
     case 'ENTRY_COMMENT_LIKE':return 'liked your comment';
+    case 'CLUB_INVITE':       return 'invited you to a book club';
+    case 'CLUB_DISCUSSION':   return 'posted a new discussion in your club';
+    case 'CLUB_REPLY':        return 'replied to your discussion';
   }
 }
 
@@ -52,9 +57,12 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'COMMENT_LIKE':       return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'PROMPT_INVITE':      return { Icon: Lightbulb,       bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
     case 'PROMPT_ENTRY':       return { Icon: FileText,        bg: 'bg-orange-500/20', fg: 'text-orange-400' };
-    case 'PROMPT_ENDED':       return { Icon: Clock,           bg: 'bg-white/10',      fg: 'text-white/40'   };
+    case 'PROMPT_ENDED':       return { Icon: Clock,           bg: 'bg-white/10',      fg: 'text-white/80'   };
     case 'ENTRY_COMMENT':      return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'ENTRY_COMMENT_LIKE': return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
+    case 'CLUB_INVITE':        return { Icon: Users,           bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
+    case 'CLUB_DISCUSSION':    return { Icon: BookOpen,        bg: 'bg-amber-500/20',  fg: 'text-amber-400'  };
+    case 'CLUB_REPLY':         return { Icon: CornerDownRight, bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
   }
 }
 
@@ -78,7 +86,7 @@ function NotificationRow({
         !isRead ? 'bg-white/3' : ''
       }`}
     >
-     
+
       <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
         <Icon className={`w-4 h-4 ${fg}`} />
       </div>
@@ -99,7 +107,7 @@ function NotificationRow({
           ) : null}
           {messageBody(type)}
         </p>
-        <p className="text-xs text-white/40 mt-1">{timeAgo(createdAt)}</p>
+        <p className="text-xs text-white/80 mt-1">{timeAgo(createdAt)}</p>
       </div>
 
       {!isRead && (
@@ -151,8 +159,8 @@ export function NotificationPanel({ notifications, onClose }: Props) {
       <div className="max-h-100 overflow-y-auto divide-y divide-[#2a2a2a]">
         {notifications.length === 0 ? (
           <div className="px-4 py-10 text-center">
-            <Bell className="w-8 h-8 text-white/90 mx-auto mb-2" />
-            <p className="text-sm text-white/90">No notifications yet</p>
+            <Bell className="w-8 h-8 text-white/80 mx-auto mb-2" />
+            <p className="text-sm text-white/80">No notifications yet</p>
           </div>
         ) : (
           notifications.map((n) => (

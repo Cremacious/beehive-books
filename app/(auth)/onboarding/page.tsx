@@ -39,7 +39,7 @@ export default function OnboardingPage() {
 
         {isLoaded && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Avatar */}
+      
             <div className="flex flex-col items-center gap-3">
               <div className="relative">
                 <div className="h-32 w-32 rounded-full bg-[#2a2a2a] border-2 border-[#FFC300]/25" />
@@ -58,7 +58,7 @@ export default function OnboardingPage() {
               </span>
             </div>
 
-            {/* Username */}
+        
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-white/80">
                 Username

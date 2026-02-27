@@ -8,7 +8,10 @@ export type NotificationType =
   | 'PROMPT_ENTRY'
   | 'PROMPT_ENDED'
   | 'ENTRY_COMMENT'
-  | 'ENTRY_COMMENT_LIKE';
+  | 'ENTRY_COMMENT_LIKE'
+  | 'CLUB_INVITE'
+  | 'CLUB_DISCUSSION'
+  | 'CLUB_REPLY';
 
 export type NotificationItem = {
   id:        string;

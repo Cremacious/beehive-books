@@ -3,14 +3,14 @@ import { Globe, Users, Lock, BookMarked, BookOpen } from 'lucide-react';
 import type { ReadingList } from '@/lib/types/reading-list.types';
 
 const PRIVACY_ICONS = {
-  PUBLIC:  Globe,
+  PUBLIC: Globe,
   FRIENDS: Users,
   PRIVATE: Lock,
 } as const;
 
 function timeAgo(date: Date): string {
-  const diff  = Date.now() - new Date(date).getTime();
-  const days  = Math.floor(diff / 86_400_000);
+  const diff = Date.now() - new Date(date).getTime();
+  const days = Math.floor(diff / 86_400_000);
   if (days < 1) return 'Today';
   if (days === 1) return 'Yesterday';
   if (days < 30) return `${days}d ago`;
@@ -21,8 +21,11 @@ function timeAgo(date: Date): string {
 
 export default function ReadingListCard({ list }: { list: ReadingList }) {
   const PrivacyIcon = PRIVACY_ICONS[list.privacy];
-  const pct         = list.bookCount > 0 ? Math.round((list.readCount / list.bookCount) * 100) : 0;
-  const remaining   = list.bookCount - list.readCount;
+  const pct =
+    list.bookCount > 0
+      ? Math.round((list.readCount / list.bookCount) * 100)
+      : 0;
+  const remaining = list.bookCount - list.readCount;
 
   return (
     <Link
@@ -82,7 +85,6 @@ export default function ReadingListCard({ list }: { list: ReadingList }) {
       ) : (
         <div className="mb-3">
           <div className="h-1.5 bg-[#1a1a1a] rounded-full" />
-          {/* <p className="text-[12px] text-white/75 mt-1.5">No books added yet</p> */}
         </div>
       )}
 
