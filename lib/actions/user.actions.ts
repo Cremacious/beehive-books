@@ -44,7 +44,7 @@ export async function getUserProfileAction(username: string) {
   }
 
   const visiblePrivacies = isOwnProfile
-    ? undefined 
+    ? undefined
     : isFriend
       ? (['PUBLIC', 'FRIENDS'] as const)
       : (['PUBLIC'] as const);

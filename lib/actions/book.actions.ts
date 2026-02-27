@@ -160,7 +160,6 @@ export async function getPublicBookAction(bookId: string) {
   return book;
 }
 
-
 export async function getChapterWithContextAction(chapterId: string) {
   const { userId } = await auth();
 
@@ -465,8 +464,8 @@ export async function deleteCollectionAction(
       where: eq(chapters.collectionId, collectionId),
       columns: { wordCount: true },
     });
-    const removedWords   = toDelete.reduce((sum, c) => sum + c.wordCount, 0);
-    const removedCount   = toDelete.length;
+    const removedWords = toDelete.reduce((sum, c) => sum + c.wordCount, 0);
+    const removedCount = toDelete.length;
 
     await db.delete(chapters).where(eq(chapters.collectionId, collectionId));
 
@@ -475,8 +474,8 @@ export async function deleteCollectionAction(
         .update(books)
         .set({
           chapterCount: sql`GREATEST(${books.chapterCount} - ${removedCount}, 0)`,
-          wordCount:    sql`GREATEST(${books.wordCount} - ${removedWords}, 0)`,
-          updatedAt:    new Date(),
+          wordCount: sql`GREATEST(${books.wordCount} - ${removedWords}, 0)`,
+          updatedAt: new Date(),
         })
         .where(eq(books.id, bookId));
     }
@@ -548,7 +547,11 @@ export async function addCommentAction(
       columns: { username: true },
     });
     const link = `/library/${book.id}/${chapterId}`;
-    const meta = { actorUsername: actor?.username ?? '', bookId: book.id, chapterId };
+    const meta = {
+      actorUsername: actor?.username ?? '',
+      bookId: book.id,
+      chapterId,
+    };
 
     if (parentId) {
       const parent = await db.query.chapterComments.findFirst({
@@ -556,10 +559,22 @@ export async function addCommentAction(
         columns: { userId: true },
       });
       if (parent) {
-        void insertNotification({ recipientId: parent.userId, actorId: userId, type: 'COMMENT_REPLY', link, metadata: meta });
+        void insertNotification({
+          recipientId: parent.userId,
+          actorId: userId,
+          type: 'COMMENT_REPLY',
+          link,
+          metadata: meta,
+        });
       }
     } else {
-      void insertNotification({ recipientId: book.userId, actorId: userId, type: 'CHAPTER_COMMENT', link, metadata: meta });
+      void insertNotification({
+        recipientId: book.userId,
+        actorId: userId,
+        type: 'CHAPTER_COMMENT',
+        link,
+        metadata: meta,
+      });
     }
 
     revalidatePath(`/library/${book.id}/${chapterId}`);
@@ -617,10 +632,14 @@ export async function toggleCommentLikeAction(
         });
         void insertNotification({
           recipientId: comment.userId,
-          actorId:     userId,
-          type:        'COMMENT_LIKE',
-          link:        `/library/${comment.chapter.bookId}/${comment.chapterId}`,
-          metadata:    { actorUsername: actor?.username ?? '', bookId: comment.chapter.bookId, chapterId: comment.chapterId },
+          actorId: userId,
+          type: 'COMMENT_LIKE',
+          link: `/library/${comment.chapter.bookId}/${comment.chapterId}`,
+          metadata: {
+            actorUsername: actor?.username ?? '',
+            bookId: comment.chapter.bookId,
+            chapterId: comment.chapterId,
+          },
         });
       }
       return { success: true, liked: true };
