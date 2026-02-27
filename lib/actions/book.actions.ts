@@ -389,8 +389,6 @@ export async function reorderChaptersAction(
   }
 }
 
-/* ─── Collection Actions ───────────────────────────────────────────────────── */
-
 export async function reorderCollectionsAction(
   bookId: string,
   orderedIds: string[],
@@ -505,8 +503,6 @@ export async function assignChapterToCollectionAction(
     return { success: false, message: 'Failed to move chapter.' };
   }
 }
-
-/* ─── Comment Actions ──────────────────────────────────────────────────────── */
 
 export async function addCommentAction(
   chapterId: string,

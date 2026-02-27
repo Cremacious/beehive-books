@@ -7,7 +7,11 @@ import { Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { usePromptStore } from '@/lib/stores/prompt-store';
 import { addEntryCommentAction } from '@/lib/actions/prompt.actions';
-import type { EntryComment, EntryReply, PromptUser } from '@/lib/types/prompt.types';
+import type {
+  EntryComment,
+  EntryReply,
+  PromptUser,
+} from '@/lib/types/prompt.types';
 
 function displayName(user: PromptUser): string {
   return user.username || 'Anonymous';
@@ -18,18 +22,24 @@ function initials(user: PromptUser): string {
 }
 
 function timeAgo(date: Date): string {
-  const diff  = Date.now() - new Date(date).getTime();
-  const mins  = Math.floor(diff / 60000);
-  if (mins < 60)   return `${mins}m`;
+  const diff = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24)  return `${hours}h`;
+  if (hours < 24) return `${hours}h`;
   return `${Math.floor(hours / 24)}d`;
 }
 
 function Avatar({
-  imageUrl, alt, fallback, className,
+  imageUrl,
+  alt,
+  fallback,
+  className,
 }: {
-  imageUrl: string | null; alt: string; fallback: string; className: string;
+  imageUrl: string | null;
+  alt: string;
+  fallback: string;
+  className: string;
 }) {
   if (imageUrl) {
     return (
@@ -43,7 +53,9 @@ function Avatar({
     );
   }
   return (
-    <div className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white ${className}`}>
+    <div
+      className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white ${className}`}
+    >
       {fallback}
     </div>
   );
@@ -61,25 +73,23 @@ function CurrentUserAvatar({ className }: { className: string }) {
   );
 }
 
-/* ─── Reply Item ──────────────────────────────────────────────────────────── */
-
 function ReplyItem({
   reply,
   optimisticLikes,
   onToggleLike,
   currentUserId,
 }: {
-  reply:           EntryReply;
+  reply: EntryReply;
   optimisticLikes: Record<string, boolean>;
-  onToggleLike:    (id: string, current: boolean) => Promise<void>;
-  currentUserId:   string | null;
+  onToggleLike: (id: string, current: boolean) => Promise<void>;
+  currentUserId: string | null;
 }) {
   const isLiked = optimisticLikes[reply.id] ?? reply.likedByMe;
-  const displayedCount = reply.likeCount + (
-    optimisticLikes[reply.id] !== undefined
+  const displayedCount =
+    reply.likeCount +
+    (optimisticLikes[reply.id] !== undefined
       ? (optimisticLikes[reply.id] ? 1 : 0) - (reply.likedByMe ? 1 : 0)
-      : 0
-  );
+      : 0);
 
   return (
     <div className="flex gap-3">
@@ -91,7 +101,9 @@ function ReplyItem({
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-semibold text-white">{displayName(reply.user)}</span>
+          <span className="text-sm font-semibold text-white">
+            {displayName(reply.user)}
+          </span>
           <span className="text-sm text-white">{timeAgo(reply.createdAt)}</span>
         </div>
         <p className="text-sm text-white leading-relaxed">{reply.content}</p>
@@ -109,8 +121,6 @@ function ReplyItem({
   );
 }
 
-/* ─── Comment Item ────────────────────────────────────────────────────────── */
-
 function CommentItem({
   comment,
   entryId,
@@ -119,28 +129,32 @@ function CommentItem({
   onToggleLike,
   onReplyAdded,
 }: {
-  comment:         EntryComment;
-  entryId:         string;
-  currentUserId:   string | null;
+  comment: EntryComment;
+  entryId: string;
+  currentUserId: string | null;
   optimisticLikes: Record<string, boolean>;
-  onToggleLike:    (id: string, current: boolean) => Promise<void>;
-  onReplyAdded:    () => void;
+  onToggleLike: (id: string, current: boolean) => Promise<void>;
+  onReplyAdded: () => void;
 }) {
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const isLiked = optimisticLikes[comment.id] ?? comment.likedByMe;
-  const displayedCount = comment.likeCount + (
-    optimisticLikes[comment.id] !== undefined
+  const displayedCount =
+    comment.likeCount +
+    (optimisticLikes[comment.id] !== undefined
       ? (optimisticLikes[comment.id] ? 1 : 0) - (comment.likedByMe ? 1 : 0)
-      : 0
-  );
+      : 0);
 
   async function handleReply() {
     if (!replyText.trim() || submitting) return;
     setSubmitting(true);
-    const result = await addEntryCommentAction(entryId, replyText.trim(), comment.id);
+    const result = await addEntryCommentAction(
+      entryId,
+      replyText.trim(),
+      comment.id,
+    );
     setSubmitting(false);
     if (result.success) {
       setReplyText('');
@@ -160,10 +174,16 @@ function CommentItem({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-semibold text-white">{displayName(comment.user)}</span>
-            <span className="text-sm text-white">{timeAgo(comment.createdAt)}</span>
+            <span className="text-sm font-semibold text-white">
+              {displayName(comment.user)}
+            </span>
+            <span className="text-sm text-white">
+              {timeAgo(comment.createdAt)}
+            </span>
           </div>
-          <p className="text-base text-white leading-relaxed">{comment.content}</p>
+          <p className="text-base text-white leading-relaxed">
+            {comment.content}
+          </p>
           <div className="flex items-center gap-4 mt-2">
             <button
               onClick={() => currentUserId && onToggleLike(comment.id, isLiked)}
@@ -171,7 +191,9 @@ function CommentItem({
                 isLiked ? 'text-[#FFC300]' : 'text-white hover:text-white'
               }`}
             >
-              <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`} />
+              <Heart
+                className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`}
+              />
               {displayedCount}
             </button>
             {currentUserId && (
@@ -207,7 +229,9 @@ function CommentItem({
             autoFocus
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleReply(); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleReply();
+            }}
             placeholder={`Reply to ${displayName(comment.user)}…`}
             className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
@@ -225,20 +249,22 @@ function CommentItem({
   );
 }
 
-/* ─── Main Section ────────────────────────────────────────────────────────── */
-
 interface Props {
-  entryId:       string;
-  comments:      EntryComment[];
+  entryId: string;
+  comments: EntryComment[];
   currentUserId: string | null;
 }
 
-export function EntryCommentSection({ entryId, comments, currentUserId }: Props) {
+export function EntryCommentSection({
+  entryId,
+  comments,
+  currentUserId,
+}: Props) {
   const router = useRouter();
   const { toggleCommentLike, optimisticLikes } = usePromptStore();
 
   const [commentText, setCommentText] = useState('');
-  const [submitting,  setSubmitting]  = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit() {
     if (!commentText.trim() || submitting) return;
@@ -265,7 +291,10 @@ export function EntryCommentSection({ entryId, comments, currentUserId }: Props)
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit(); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey))
+                  handleSubmit();
+              }}
               rows={2}
               placeholder="Leave a comment…"
               className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"

@@ -30,8 +30,6 @@ import type {
   BookStatus,
 } from '@/lib/types/club.types';
 
-/* ─── Auth helpers ──────────────────────────────────────────────────────── */
-
 async function requireAuth() {
   const { userId } = await auth();
   if (!userId) throw new Error('Unauthorized');
@@ -61,8 +59,6 @@ async function requireClubOwner(clubId: string) {
   if (!club) throw new Error('Club not found or unauthorized');
   return { userId, club };
 }
-
-/* ─── Club CRUD ─────────────────────────────────────────────────────────── */
 
 export async function createClubAction(
   data: ClubFormData,
@@ -192,8 +188,6 @@ export async function deleteClubAction(clubId: string): Promise<ActionResult> {
     return { success: false, message: 'Failed to delete club.' };
   }
 }
-
-/* ─── Membership ────────────────────────────────────────────────────────── */
 
 export async function joinClubAction(clubId: string): Promise<ActionResult> {
   const userId = await requireAuth();
@@ -337,25 +331,51 @@ export async function getClubMembersAction(clubId: string): Promise<ClubMemberWi
   return members as ClubMemberWithUser[];
 }
 
-/* ─── Progress ──────────────────────────────────────────────────────────── */
+// Set the club's current book (mods only); resets page progress
+export async function updateClubBookAction(
+  clubId: string,
+  currentBook: string,
+  currentBookAuthor: string,
+): Promise<ActionResult> {
+  await requireClubMod(clubId);
+  try {
+    await db
+      .update(bookClubs)
+      .set({
+        currentBook: currentBook.trim() || null,
+        currentBookAuthor: currentBookAuthor.trim() || null,
+        progressPercent: 0,
+        currentPage: 0,
+        totalPages: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(bookClubs.id, clubId));
+    revalidatePath(`/clubs/${clubId}`);
+    return { success: true, message: 'Current book updated.' };
+  } catch {
+    return { success: false, message: 'Failed to update current book.' };
+  }
+}
 
+// Update reading progress by page number (any member)
 export async function updateClubProgressAction(
   clubId: string,
-  percent: number,
-  currentBook?: string,
-  currentBookAuthor?: string,
+  currentPage: number,
+  totalPages: number,
 ): Promise<ActionResult> {
-  await requireClubOwner(clubId);
+  await requireClubMember(clubId);
 
-  const clampedPercent = Math.max(0, Math.min(100, Math.round(percent)));
+  const clampedTotal = Math.max(1, Math.round(totalPages));
+  const clampedPage = Math.max(0, Math.min(clampedTotal, Math.round(currentPage)));
+  const percent = Math.min(100, Math.round((clampedPage / clampedTotal) * 100));
 
   try {
     await db
       .update(bookClubs)
       .set({
-        progressPercent: clampedPercent,
-        currentBook: currentBook ?? null,
-        currentBookAuthor: currentBookAuthor ?? null,
+        progressPercent: percent,
+        currentPage: clampedPage,
+        totalPages: clampedTotal,
         updatedAt: new Date(),
       })
       .where(eq(bookClubs.id, clubId));
@@ -365,8 +385,6 @@ export async function updateClubProgressAction(
     return { success: false, message: 'Failed to update progress.' };
   }
 }
-
-/* ─── Discussions ───────────────────────────────────────────────────────── */
 
 export async function createClubDiscussionAction(
   clubId: string,
@@ -589,8 +607,6 @@ export async function pinDiscussionAction(
   }
 }
 
-/* ─── Replies ───────────────────────────────────────────────────────────── */
-
 export async function createDiscussionReplyAction(
   clubId: string,
   discussionId: string,
@@ -710,8 +726,6 @@ export async function toggleReplyLikeAction(
   }
 }
 
-/* ─── Reading List ──────────────────────────────────────────────────────── */
-
 export async function getClubReadingListAction(clubId: string): Promise<ClubReadingListBook[]> {
   const { userId } = await auth();
 
@@ -790,10 +804,45 @@ export async function updateBookStatusAction(
 ): Promise<ActionResult> {
   await requireClubMod(clubId);
   try {
+    if (status === 'IN_PROGRESS') {
+      // Enforce one active book: bump all other IN_PROGRESS books back to NOT_STARTED
+      await db
+        .update(clubReadingListBooks)
+        .set({ status: 'NOT_STARTED' })
+        .where(
+          and(
+            eq(clubReadingListBooks.clubId, clubId),
+            eq(clubReadingListBooks.status, 'IN_PROGRESS'),
+            ne(clubReadingListBooks.id, bookId),
+          ),
+        );
+
+      // Fetch the book being set to IN_PROGRESS so we can sync the club's current book
+      const [book] = await db
+        .select({ title: clubReadingListBooks.title, author: clubReadingListBooks.author })
+        .from(clubReadingListBooks)
+        .where(and(eq(clubReadingListBooks.id, bookId), eq(clubReadingListBooks.clubId, clubId)));
+
+      if (book) {
+        await db
+          .update(bookClubs)
+          .set({
+            currentBook: book.title,
+            currentBookAuthor: book.author,
+            progressPercent: 0,
+            currentPage: 0,
+            totalPages: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(bookClubs.id, clubId));
+      }
+    }
+
     await db
       .update(clubReadingListBooks)
       .set({ status })
       .where(and(eq(clubReadingListBooks.id, bookId), eq(clubReadingListBooks.clubId, clubId)));
+
     revalidatePath(`/clubs/${clubId}/reading-list`);
     revalidatePath(`/clubs/${clubId}`);
     return { success: true, message: 'Status updated.' };

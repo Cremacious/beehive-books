@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Edit2, Loader2, X, Check } from 'lucide-react';
+import { BookOpen, Edit2, Loader2, X, Check, BookMarked } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
 import type { ClubWithMembership } from '@/lib/types/club.types';
 import { Button } from '../ui/button';
@@ -10,71 +10,106 @@ import { Button } from '../ui/button';
 export default function ClubProgress({ club }: { club: ClubWithMembership }) {
   const router = useRouter();
   const store = useClubStore();
-  const isOwner = club.myRole === 'OWNER';
+  const isMod = club.myRole === 'OWNER' || club.myRole === 'MODERATOR';
+  const isMember = club.isMember;
 
-  const [editing, setEditing] = useState(false);
+  // Book editing (mods only)
+  const [editingBook, setEditingBook] = useState(false);
   const [bookTitle, setBookTitle] = useState(club.currentBook ?? '');
   const [bookAuthor, setBookAuthor] = useState(club.currentBookAuthor ?? '');
-  const [percent, setPercent] = useState(club.progressPercent ?? 0);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [savingBook, setSavingBook] = useState(false);
+  const [bookError, setBookError] = useState('');
 
-  const handleSave = async () => {
-    setSaving(true);
-    setError('');
-    const result = await store.updateProgress(
+  // Progress editing (all members)
+  const [editingProgress, setEditingProgress] = useState(false);
+  const [currentPage, setCurrentPage] = useState(String(club.currentPage ?? 0));
+  const [totalPages, setTotalPages] = useState(String(club.totalPages ?? ''));
+  const [savingProgress, setSavingProgress] = useState(false);
+  const [progressError, setProgressError] = useState('');
+
+  const computedPercent =
+    totalPages && Number(totalPages) > 0
+      ? Math.min(100, Math.round((Number(currentPage) / Number(totalPages)) * 100))
+      : 0;
+
+  const handleSaveBook = async () => {
+    if (!bookTitle.trim()) return;
+    setSavingBook(true);
+    setBookError('');
+    const result = await store.updateCurrentBook(
       club.id,
-      percent,
-      bookTitle.trim() || undefined,
-      bookAuthor.trim() || undefined,
+      bookTitle.trim(),
+      bookAuthor.trim(),
     );
-    setSaving(false);
+    setSavingBook(false);
     if (result.success) {
-      setEditing(false);
+      setEditingBook(false);
       router.refresh();
     } else {
-      setError(result.message);
+      setBookError(result.message);
     }
   };
 
-  const handleCancel = () => {
-    setEditing(false);
+  const handleCancelBook = () => {
+    setEditingBook(false);
     setBookTitle(club.currentBook ?? '');
     setBookAuthor(club.currentBookAuthor ?? '');
-    setPercent(club.progressPercent ?? 0);
-    setError('');
+    setBookError('');
+  };
+
+  const handleSaveProgress = async () => {
+    const page = Number(currentPage);
+    const total = Number(totalPages);
+    if (!total || total < 1 || page < 0 || page > total) {
+      setProgressError('Enter a valid page number and total pages.');
+      return;
+    }
+    setSavingProgress(true);
+    setProgressError('');
+    const result = await store.updateProgress(club.id, page, total);
+    setSavingProgress(false);
+    if (result.success) {
+      setEditingProgress(false);
+      router.refresh();
+    } else {
+      setProgressError(result.message);
+    }
+  };
+
+  const handleCancelProgress = () => {
+    setEditingProgress(false);
+    setCurrentPage(String(club.currentPage ?? 0));
+    setTotalPages(String(club.totalPages ?? ''));
+    setProgressError('');
   };
 
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
+
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-sm font-semibold text-white">
-            Current Club Book
-          </h3>
+          <h3 className="text-sm font-semibold text-white">Current Club Book</h3>
         </div>
-        {isOwner && !editing && (
-          <Button onClick={() => setEditing(true)} variant="outline">
-            {' '}
-            Update
-            <Edit2 className="w-5 h-5 text-yellow-500" />
+        {isMod && !editingBook && !editingProgress && (
+          <Button onClick={() => setEditingBook(true)} variant="outline" size="sm">
+            <BookMarked className="w-4 h-4 text-[#FFC300]" />
+            Change Book
           </Button>
         )}
       </div>
 
-      {editing ? (
+
+      {editingBook && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-white/80 mb-1">
-              Book Title
-            </label>
+            <label className="block text-xs text-white/80 mb-1">Book Title</label>
             <input
               type="text"
               value={bookTitle}
               onChange={(e) => setBookTitle(e.target.value)}
               placeholder="e.g. The Name of the Wind"
-              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
           <div>
@@ -84,43 +119,27 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               value={bookAuthor}
               onChange={(e) => setBookAuthor(e.target.value)}
               placeholder="e.g. Patrick Rothfuss"
-              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
-          <div>
-            <label className="block text-xs text-white/80 mb-1">
-              Progress — {percent}%
-            </label>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={percent}
-              onChange={(e) => setPercent(Number(e.target.value))}
-              className="w-full accent-[#FFC300]"
-            />
-          </div>
-
-          {error && <p className="text-xs text-red-400">{error}</p>}
-
+          <p className="text-[11px] text-white/50">
+            Tip: set a book to &quot;Currently Reading&quot; in the reading list to auto-sync here.
+          </p>
+          {bookError && <p className="text-xs text-red-400">{bookError}</p>}
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleSave}
-              disabled={saving}
+              onClick={handleSaveBook}
+              disabled={savingBook || !bookTitle.trim()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
             >
-              {saving ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Check className="w-3.5 h-3.5" />
-              )}
+              {savingBook ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               Save
             </button>
             <button
               type="button"
-              onClick={handleCancel}
-              disabled={saving}
+              onClick={handleCancelBook}
+              disabled={savingBook}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-xs hover:text-white hover:border-[#4a4a4a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
@@ -128,41 +147,116 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
             </button>
           </div>
         </div>
-      ) : (
+      )}
+
+      {editingProgress && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-white/80 mb-1">Current Page</label>
+              <input
+                type="number"
+                min={0}
+                max={Number(totalPages) || undefined}
+                value={currentPage}
+                onChange={(e) => setCurrentPage(e.target.value)}
+                placeholder="e.g. 120"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/80 mb-1">Total Pages</label>
+              <input
+                type="number"
+                min={1}
+                value={totalPages}
+                onChange={(e) => setTotalPages(e.target.value)}
+                placeholder="e.g. 662"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              />
+            </div>
+          </div>
+
+          {Number(totalPages) > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-white/60">Preview</span>
+                <span className="text-xs font-semibold text-[#FFC300]">{computedPercent}%</span>
+              </div>
+              <div className="w-full bg-[#1e1e1e] rounded-full h-2">
+                <div
+                  className="bg-[#FFC300] h-2 rounded-full transition-all"
+                  style={{ width: `${computedPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {progressError && <p className="text-xs text-red-400">{progressError}</p>}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSaveProgress}
+              disabled={savingProgress}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
+            >
+              {savingProgress ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={handleCancelProgress}
+              disabled={savingProgress}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-xs hover:text-white hover:border-[#4a4a4a] transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!editingBook && !editingProgress && (
         <div>
           {club.currentBook ? (
             <>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {club.currentBook}
-                  </p>
+                  <p className="text-sm font-medium text-white truncate">{club.currentBook}</p>
                   {club.currentBookAuthor && (
-                    <p className="text-xs text-white/80 truncate mt-0.5">
+                    <p className="text-xs text-white/70 truncate mt-0.5">
                       by {club.currentBookAuthor}
                     </p>
                   )}
                 </div>
-                {/* {isOwner && (
+                {isMember && !editingProgress && (
                   <button
-                    onClick={() => setEditing(true)}
-                    className="ml-3 p-2 rounded-lg text-white/60 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all shrink-0"
-                    title="Update reading progress"
+                    onClick={() => setEditingProgress(true)}
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-white/60 hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    <Edit2 className="w-3 h-3" />
+                    Update Progress
                   </button>
-                )} */}
+                )}
               </div>
-              <div className="mt-3">
-                <div className="w-full bg-[#1e1e1e] rounded-full h-2">
-                  <div
-                    className="bg-[#FFC300] h-2 rounded-full transition-all"
-                    style={{ width: `${club.progressPercent ?? 0}%` }}
-                  />
-                </div>
-                <p className="text-xs text-white/80 mt-1.5 text-right">
-                  {club.progressPercent ?? 0}% complete
-                </p>
+
+              <div className="w-full bg-[#1e1e1e] rounded-full h-2 mb-1.5">
+                <div
+                  className="bg-[#FFC300] h-2 rounded-full transition-all"
+                  style={{ width: `${club.progressPercent ?? 0}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-xs text-white/60">
+                {club.totalPages ? (
+                  <span>
+                    Page {club.currentPage} of {club.totalPages}
+                  </span>
+                ) : (
+                  <span />
+                )}
+                <span className="font-semibold text-[#FFC300]">
+                  {club.progressPercent ?? 0}%
+                </span>
               </div>
             </>
           ) : (
@@ -170,16 +264,13 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               <div className="w-12 h-12 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-3">
                 <BookOpen className="w-6 h-6 text-white/40" />
               </div>
-              <h4 className="text-sm font-semibold text-white mb-1">
-                No book selected
-              </h4>
-              <p className="text-xs text-white/80 mb-4 max-w-xs">
-                Set a book for your club to track reading progress and keep
-                everyone on the same page.
+              <h4 className="text-sm font-semibold text-white mb-1">No book selected</h4>
+              <p className="text-xs text-white/60 mb-4 max-w-xs">
+                Set a book to &quot;Currently Reading&quot; in the reading list, or mods can set one manually above.
               </p>
-              {isOwner && (
+              {isMod && (
                 <button
-                  onClick={() => setEditing(true)}
+                  onClick={() => setEditingBook(true)}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#e0ac01] transition-colors"
                 >
                   <Edit2 className="w-4 h-4" />

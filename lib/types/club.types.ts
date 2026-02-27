@@ -15,6 +15,8 @@ export type BookClub = {
   currentBook: string | null;
   currentBookAuthor: string | null;
   progressPercent: number;
+  currentPage: number;
+  totalPages: number | null;
   createdAt: Date;
   updatedAt: Date;
 };

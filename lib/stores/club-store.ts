@@ -7,6 +7,7 @@ import {
   leaveClubAction,
   removeMemberAction,
   updateMemberRoleAction,
+  updateClubBookAction,
   updateClubProgressAction,
   createClubDiscussionAction,
   deleteClubDiscussionAction,
@@ -34,12 +35,8 @@ interface ClubStore {
   removeMember: (clubId: string, userId: string) => Promise<ActionResult>;
   updateMemberRole: (clubId: string, userId: string, role: 'MODERATOR' | 'MEMBER') => Promise<ActionResult>;
 
-  updateProgress: (
-    clubId: string,
-    percent: number,
-    currentBook?: string,
-    currentBookAuthor?: string,
-  ) => Promise<ActionResult>;
+  updateCurrentBook: (clubId: string, book: string, author: string) => Promise<ActionResult>;
+  updateProgress: (clubId: string, currentPage: number, totalPages: number) => Promise<ActionResult>;
 
   createDiscussion: (clubId: string, data: ClubDiscussionFormData) => Promise<ActionResult & { discussionId?: string }>;
   deleteDiscussion: (clubId: string, discussionId: string) => Promise<ActionResult>;
@@ -74,8 +71,9 @@ export const useClubStore = create<ClubStore>((set) => ({
   removeMember: (clubId, userId) => removeMemberAction(clubId, userId),
   updateMemberRole: (clubId, userId, role) => updateMemberRoleAction(clubId, userId, role),
 
-  updateProgress: (clubId, percent, book, author) =>
-    updateClubProgressAction(clubId, percent, book, author),
+  updateCurrentBook: (clubId, book, author) => updateClubBookAction(clubId, book, author),
+  updateProgress: (clubId, currentPage, totalPages) =>
+    updateClubProgressAction(clubId, currentPage, totalPages),
 
   createDiscussion: (clubId, data) => createClubDiscussionAction(clubId, data),
   deleteDiscussion: (clubId, discussionId) => deleteClubDiscussionAction(clubId, discussionId),
