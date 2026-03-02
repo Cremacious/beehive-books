@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Trash2, Globe, Lock, Users, BookOpen, Sparkles } from 'lucide-react';
+import { Plus, X, Loader2, Trash2, Globe, Lock, Users, BookOpen, Sparkles, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { hiveSchema } from '@/lib/validations/hive.schema';
@@ -53,7 +54,7 @@ const BOOK_OPTIONS = [
   },
 ];
 
-export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: HiveFormProps) {
+export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, userBooks = [] }: HiveFormProps) {
   const router = useRouter();
   const store = useHiveStore();
 
@@ -64,6 +65,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
   const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>('new');
   const [newBookTitle, setNewBookTitle] = useState('');
   const [newBookAuthor, setNewBookAuthor] = useState('');
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
   const form = useForm<HiveSchemaData>({
     resolver: zodResolver(hiveSchema) as import('react-hook-form').Resolver<HiveSchemaData>,
@@ -110,6 +112,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
       ...(mode === 'create' && bookOption === 'new' && newBookTitle && newBookAuthor
         ? { newBookTitle, newBookAuthor }
         : {}),
+      ...(mode === 'create' && bookOption === 'existing' && selectedBookId
+        ? { bookId: selectedBookId }
+        : {}),
     };
 
     if (mode === 'create') {
@@ -143,7 +148,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-     
+
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">
           Hive Name <span className="text-red-400">*</span>
@@ -156,7 +161,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
         {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
       </div>
 
-    
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">
           Description <span className="text-white/40 font-normal">(optional)</span>
@@ -172,7 +176,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
         )}
       </div>
 
-    
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">
           Genre <span className="text-white/40 font-normal">(optional)</span>
@@ -184,7 +187,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
         />
       </div>
 
-     
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">Privacy</label>
         <div className="grid grid-cols-3 gap-2">
@@ -225,7 +227,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
         )}
       </div>
 
-     
       <div>
         <label className="block text-sm font-medium text-white mb-1.5">
           Tags <span className="text-white/40 font-normal">(up to 10)</span>
@@ -281,7 +282,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
         </div>
       </div>
 
-    
       {mode === 'create' && (
         <div>
           <label className="block text-sm font-medium text-white mb-1.5">Book</label>
@@ -324,6 +324,60 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref }: Hi
                 placeholder="Author name (you or a pen name)"
                 className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
+            </div>
+          )}
+
+          {bookOption === 'existing' && (
+            <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] overflow-hidden">
+              {userBooks.length === 0 ? (
+                <div className="flex flex-col items-center gap-2 py-8 text-center px-4">
+                  <BookOpen className="w-8 h-8 text-white/20" />
+                  <p className="text-sm text-white/50">No books in your library yet.</p>
+                  <p className="text-xs text-white/30">
+                    Create a book first, or choose &ldquo;Start fresh&rdquo; to create one now.
+                  </p>
+                </div>
+              ) : (
+                <ul className="max-h-56 overflow-y-auto divide-y divide-[#2a2a2a]">
+                  {userBooks.map((book) => {
+                    const selected = selectedBookId === book.id;
+                    return (
+                      <li key={book.id}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedBookId(selected ? null : book.id)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
+                          }`}
+                        >
+                          {book.coverUrl ? (
+                            <Image
+                              src={book.coverUrl}
+                              alt={book.title}
+                              width={32}
+                              height={44}
+                              className="w-8 h-11 rounded object-cover shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+                              <BookOpen className="w-4 h-4 text-white/20" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}>
+                              {book.title}
+                            </p>
+                            <p className="text-xs text-white/50 truncate">{book.author}</p>
+                          </div>
+                          {selected && (
+                            <Check className="w-4 h-4 text-[#FFC300] shrink-0" />
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           )}
         </div>

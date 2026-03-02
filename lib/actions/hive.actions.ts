@@ -380,6 +380,85 @@ export async function getHiveMembersAction(hiveId: string): Promise<HiveMemberWi
   return members as HiveMemberWithUser[];
 }
 
+export async function linkBookToHiveAction(
+  hiveId: string,
+  bookId: string,
+): Promise<ActionResult> {
+  const { userId } = await requireHiveOwner(hiveId);
+
+  const book = await db.query.books.findFirst({
+    where: and(eq(books.id, bookId), eq(books.userId, userId)),
+  });
+  if (!book) return { success: false, message: 'Book not found in your library.' };
+
+  try {
+    await db
+      .update(hives)
+      .set({ bookId, updatedAt: new Date() })
+      .where(eq(hives.id, hiveId));
+    revalidatePath(`/hive/${hiveId}`);
+    revalidatePath(`/hive/${hiveId}/settings`);
+    return { success: true, message: 'Book linked to hive.' };
+  } catch {
+    return { success: false, message: 'Failed to link book.' };
+  }
+}
+
+export async function unlinkBookFromHiveAction(hiveId: string): Promise<ActionResult> {
+  await requireHiveOwner(hiveId);
+
+  try {
+    await db
+      .update(hives)
+      .set({ bookId: null, updatedAt: new Date() })
+      .where(eq(hives.id, hiveId));
+    revalidatePath(`/hive/${hiveId}`);
+    revalidatePath(`/hive/${hiveId}/settings`);
+    return { success: true, message: 'Book unlinked.' };
+  } catch {
+    return { success: false, message: 'Failed to unlink book.' };
+  }
+}
+
+export async function createAndLinkBookAction(
+  hiveId: string,
+  title: string,
+  author: string,
+): Promise<ActionResult> {
+  const { userId, hive } = await requireHiveOwner(hiveId);
+
+  if (!title.trim() || !author.trim()) {
+    return { success: false, message: 'Book title and author are required.' };
+  }
+
+  try {
+    const [newBook] = await db
+      .insert(books)
+      .values({
+        userId,
+        title: title.trim(),
+        author: author.trim(),
+        genre: hive.genre || 'Fiction',
+        category: 'NOVEL',
+        description: hive.description || hive.name,
+        privacy: hive.privacy === 'PUBLIC' ? 'PUBLIC' : 'PRIVATE',
+      })
+      .returning({ id: books.id });
+
+    await db
+      .update(hives)
+      .set({ bookId: newBook.id, updatedAt: new Date() })
+      .where(eq(hives.id, hiveId));
+
+    revalidatePath(`/hive/${hiveId}`);
+    revalidatePath(`/hive/${hiveId}/settings`);
+    revalidatePath('/library');
+    return { success: true, message: 'Book created and linked.' };
+  } catch {
+    return { success: false, message: 'Failed to create book.' };
+  }
+}
+
 export async function completeHiveAction(hiveId: string): Promise<ActionResult> {
   await requireHiveOwner(hiveId);
   try {

@@ -1,7 +1,11 @@
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { books } from '@/db/schema';
 import { getHiveAction } from '@/lib/actions/hive.actions';
-import HiveForm from '@/components/hive/hive-form';
+import { getUserBooksAction } from '@/lib/actions/book.actions';
+import HiveSettings from '@/components/hive/hive-settings';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -27,21 +31,25 @@ export default async function HiveSettingsPage({
   if (!hive) notFound();
   if (hive.myRole !== 'OWNER') redirect(`/hive/${hiveId}`);
 
+  const [userBooks, linkedBook] = await Promise.all([
+    getUserBooksAction(),
+    hive.bookId
+      ? db.query.books.findFirst({ where: eq(books.id, hive.bookId) })
+      : Promise.resolve(null),
+  ]);
+
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl mx-auto space-y-2">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-white">Hive Settings</h2>
-        <p className="text-sm text-white/60 mt-0.5">Manage your hive details and preferences.</p>
+        <h1 className="text-xl font-bold text-white">Settings</h1>
+        <p className="text-sm text-white/50 mt-0.5">{hive.name}</p>
       </div>
 
-      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
-        <HiveForm
-          mode="edit"
-          hiveId={hiveId}
-          defaultValues={hive}
-          cancelHref={`/hive/${hiveId}`}
-        />
-      </div>
+      <HiveSettings
+        hive={hive}
+        userBooks={userBooks}
+        linkedBook={linkedBook ?? null}
+      />
     </div>
   );
 }

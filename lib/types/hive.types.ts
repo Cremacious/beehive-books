@@ -87,11 +87,19 @@ export type HiveFormData = {
   newBookAuthor?: string;
 };
 
+export type HiveBookOption = {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl: string | null;
+};
+
 export interface HiveFormProps {
   mode: 'create' | 'edit';
   hiveId?: string;
   defaultValues?: Partial<Hive>;
   cancelHref: string;
+  userBooks?: HiveBookOption[];
 }
 
 
