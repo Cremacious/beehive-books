@@ -254,7 +254,7 @@ function SortableRow({
         {...listeners}
         className="mt-0.5 p-1 text-white hover:text-white/50 cursor-grab active:cursor-grabbing transition-colors shrink-0"
       >
-        <GripVertical className="w-4 h-4 " />
+        <GripVertical className="w-6 h-6 " />
       </button>
 
       <div
@@ -265,9 +265,9 @@ function SortableRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span
-            className={`flex items-center gap-1 text-[10px] font-medium shrink-0 ${conf.color}`}
+            className={`flex items-center gap-1 text-sm font-medium shrink-0 ${conf.color}`}
           >
-            <Icon className="w-3 h-3" />
+            <Icon className="w-4 h-4" />
             {conf.label}
           </span>
           <p className="text-sm font-medium text-white truncate">
@@ -282,24 +282,22 @@ function SortableRow({
       </div>
 
       {canEdit && (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <Button
-            onClick={() => onEdit(item)}
-       
-          >
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <Button size={'sm'} onClick={() => onEdit(item)}>
             <Pencil className="w-3.5 h-3.5" />
           </Button>
-          <button
+          <Button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-1 text-red-500 hover:text-red-400 transition-colors"
+            variant={'destructive'}
+            size={'sm'}
           >
             {deleting ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-5 h-5" />
             )}
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -377,7 +375,7 @@ export default function HiveOutlineBoard({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white">
+        <p className="text-sm text-white">
           {items.length} item{items.length !== 1 ? 's' : ''}
           {' · '}drag to reorder
         </p>

@@ -117,6 +117,23 @@ export async function getHiveAction(hiveId: string): Promise<HiveWithMembership 
 
   if (hive.privacy === 'PRIVATE' && !myRole) return null;
 
+  // When a book is linked, pull live word/chapter counts from the book itself
+  if (hive.bookId) {
+    const book = await db.query.books.findFirst({
+      where: eq(books.id, hive.bookId),
+      columns: { wordCount: true, chapterCount: true },
+    });
+    if (book) {
+      return {
+        ...hive,
+        totalWordCount: book.wordCount,
+        chapterCount: book.chapterCount,
+        myRole,
+        isMember: myRole !== null,
+      };
+    }
+  }
+
   return { ...hive, myRole, isMember: myRole !== null };
 }
 

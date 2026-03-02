@@ -54,11 +54,11 @@ export default function HiveMilestones({
       <div className="flex items-center gap-4">
         <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2 text-center">
           <p className="text-xl font-bold text-[#FFC300]">{unlockedCount}</p>
-          <p className="text-xs text-white/40">/ {allTypes.length} unlocked</p>
+          <p className="text-xs text-white">/ {allTypes.length} unlocked</p>
         </div>
         <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2 text-center">
           <p className="text-xl font-bold text-white">{milestones.length}</p>
-          <p className="text-xs text-white/40">total earned</p>
+          <p className="text-xs text-white">total earned</p>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export default function HiveMilestones({
             className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
               tab === t
                 ? 'bg-[#FFC300] text-black'
-                : 'text-white/40 hover:text-white/60'
+                : 'text-white/80 hover:text-white/60'
             }`}
           >
             {t === 'grid' ? 'All Milestones' : 'Recent Unlocks'}
@@ -196,10 +196,10 @@ export default function HiveMilestones({
           {recent.length === 0 ? (
             <div className="flex flex-col items-center py-16 text-center gap-3">
               <div className="text-4xl">🐣</div>
-              <p className="text-sm text-white/40">
+              <p className=" text-white/80">
                 No milestones unlocked yet.
               </p>
-              <p className="text-xs text-white/25 max-w-xs">
+              <p className="text-sm text-white/80 max-w-xs">
                 Milestones are earned by writing, completing chapters, and
                 participating in sprints.
               </p>

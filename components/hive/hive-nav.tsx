@@ -7,24 +7,13 @@ import {
   ListTree,
   BookOpen,
   Users,
-  MessageSquare,
   Trophy,
-  VoteIcon,
-  Timer,
-  FileText,
   Sparkles,
   Settings,
-  BookMarked,
-  FlaskConical,
   MessageCircle,
-  History,
   Target,
-  Activity,
-  Clock,
-  Network,
   Lightbulb,
 } from 'lucide-react';
-
 
 const NAV_ITEMS = [
   { href: '', label: 'Dashboard', icon: LayoutDashboard },

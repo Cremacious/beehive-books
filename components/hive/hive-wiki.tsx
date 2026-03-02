@@ -9,7 +9,6 @@ import {
   MapPin,
   Clock,
   Scroll,
-  BookMarked,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -48,7 +47,7 @@ const CATEGORIES: {
   { value: 'LOCATION', label: 'Locations', Icon: MapPin },
   { value: 'TIMELINE', label: 'Timeline', Icon: Clock },
   { value: 'LORE', label: 'Lore', Icon: Scroll },
-  { value: 'TERMINOLOGY', label: 'Terms', Icon: BookMarked },
+  // { value: 'TERMINOLOGY', label: 'Terms', Icon: BookMarked },
   { value: 'OTHER', label: 'Other', Icon: MoreHorizontal },
 ];
 
@@ -144,7 +143,6 @@ function EntryForm({
       />
 
       <div className="flex flex-wrap gap-2">
- 
         {CATEGORIES.map(({ value, label, Icon }) => (
           <button
             key={value}
@@ -455,7 +453,7 @@ export default function HiveWiki({
             ({counts.ALL})
           </span>
         </button>
-  
+
         {CATEGORIES.map(({ value, label, Icon }) => (
           <button
             key={value}
