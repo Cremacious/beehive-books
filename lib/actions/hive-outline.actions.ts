@@ -65,7 +65,7 @@ export async function createOutlineItemAction(
 
     if (!title.trim()) return { success: false, message: 'Title is required.' };
 
-    // Determine the next order value
+
     const existing = await db.query.hiveOutlineItems.findMany({
       where: and(
         eq(hiveOutlineItems.hiveId, hiveId),
@@ -144,7 +144,7 @@ export async function reorderOutlineItemsAction(
     });
     if (!membership) return { success: false, message: 'No permission.' };
 
-    // Update each item's order in parallel
+
     await Promise.all(
       orderedIds.map((id, index) =>
         db

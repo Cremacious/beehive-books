@@ -8,7 +8,6 @@ import { hiveChapterClaims, hiveMembers, hives, chapters } from '@/db/schema';
 import type {
   ActionResult,
   ClaimStatus,
-  ChapterClaim,
   ChapterWithClaim,
   HiveUser,
 } from '@/lib/types/hive.types';
@@ -28,10 +27,7 @@ async function requireHiveMember(hiveId: string) {
   return { userId, membership };
 }
 
-/**
- * Returns all chapters for the hive's linked book,
- * with their claim (if any) attached.
- */
+
 export async function getChaptersWithClaimsAction(
   hiveId: string,
 ): Promise<ChapterWithClaim[]> {
@@ -89,7 +85,7 @@ export async function claimChapterAction(
   try {
     const { userId } = await requireHiveMember(hiveId);
 
-    // Verify the chapter belongs to this hive's book
+
     const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
     if (!hive?.bookId) return { success: false, message: 'No book linked to this hive.' };
 
@@ -98,7 +94,7 @@ export async function claimChapterAction(
     });
     if (!chapter) return { success: false, message: 'Chapter not found.' };
 
-    // Check if already claimed
+
     const existing = await db.query.hiveChapterClaims.findFirst({
       where: and(
         eq(hiveChapterClaims.hiveId, hiveId),

@@ -37,10 +37,8 @@ function TimelineCard({
 
   return (
     <div className="relative flex items-start gap-4">
-      {/* Connector dot */}
       <div className="absolute left-0 top-3 w-3 h-3 rounded-full bg-[#FFC300] ring-4 ring-[#121212] z-10 shrink-0" />
 
-      {/* Card */}
       <div
         className={`ml-7 flex-1 rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 transition-all ${
           expanded ? '' : 'hover:border-[#3a3a3a]'
@@ -87,7 +85,9 @@ function TimelineCard({
           </div>
         </div>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-white/25">{formatDate(entry.createdAt)}</span>
+          <span className="text-xs text-white/25">
+            {formatDate(entry.createdAt)}
+          </span>
           <span className="text-xs text-white/25">
             by {entry.author.username ?? entry.author.firstName ?? 'User'}
           </span>
@@ -97,7 +97,11 @@ function TimelineCard({
   );
 }
 
-export default function HiveTimeline({ hiveId, entries, myRole }: HiveTimelineProps) {
+export default function HiveTimeline({
+  hiveId,
+  entries,
+  myRole,
+}: HiveTimelineProps) {
   if (entries.length === 0) {
     return (
       <div className="flex flex-col items-center py-20 text-center gap-4">
@@ -105,11 +109,14 @@ export default function HiveTimeline({ hiveId, entries, myRole }: HiveTimelinePr
           <Clock className="w-7 h-7 text-[#FFC300]/40" />
         </div>
         <div>
-          <p className="text-sm font-medium text-white/60 mb-1">No timeline events yet</p>
+          <p className="text-sm font-medium text-white/60 mb-1">
+            No timeline events yet
+          </p>
           <p className="text-xs text-white/30 max-w-xs">
             Add events from the wiki by selecting the{' '}
-            <span className="text-[#FFC300]/70">Timeline</span> category. Events appear here
-            sorted alphabetically — prefix titles with dates or chapter numbers for ordering.
+            <span className="text-[#FFC300]/70">Timeline</span> category. Events
+            appear here sorted alphabetically — prefix titles with dates or
+            chapter numbers for ordering.
           </p>
         </div>
         <Link href={`/hive/${hiveId}/wiki`}>
@@ -126,7 +133,8 @@ export default function HiveTimeline({ hiveId, entries, myRole }: HiveTimelinePr
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-white/30">
-          {entries.length} event{entries.length !== 1 ? 's' : ''} · sorted alphabetically
+          {entries.length} event{entries.length !== 1 ? 's' : ''} · sorted
+          alphabetically
         </p>
         <Link href={`/hive/${hiveId}/wiki`}>
           <Button size="sm" variant="outline">
@@ -136,9 +144,7 @@ export default function HiveTimeline({ hiveId, entries, myRole }: HiveTimelinePr
         </Link>
       </div>
 
-      {/* Timeline */}
       <div className="relative pl-1.5">
-        {/* Vertical line */}
         <div className="absolute left-1.5 top-3 bottom-3 w-px bg-[#2a2a2a]" />
 
         <div className="space-y-4">
@@ -152,8 +158,9 @@ export default function HiveTimeline({ hiveId, entries, myRole }: HiveTimelinePr
         <Clock className="w-3.5 h-3.5 text-white/30 mt-0.5 shrink-0" />
         <p className="text-xs text-white/30">
           Timeline events are wiki entries with the{' '}
-          <span className="text-[#FFC300]/60">Timeline</span> category. Prefix titles with
-          dates or chapter numbers (e.g. &quot;Year 1 — The Founding&quot;) to control order.
+          <span className="text-[#FFC300]/60">Timeline</span> category. Prefix
+          titles with dates or chapter numbers (e.g. &quot;Year 1 — The
+          Founding&quot;) to control order.
         </p>
       </div>
     </div>

@@ -56,9 +56,7 @@ export async function getVersionSnapshotsAction(
   }));
 }
 
-/**
- * Creates a named snapshot of the chapter's current content.
- */
+
 export async function createVersionSnapshotAction(
   hiveId: string,
   chapterId: string,
@@ -70,7 +68,7 @@ export async function createVersionSnapshotAction(
     if (!name.trim()) return { success: false, message: 'Snapshot name is required.' };
     if (name.length > 100) return { success: false, message: 'Name too long (max 100 chars).' };
 
-    // Verify chapter belongs to hive's book
+  
     const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
     if (!hive?.bookId) return { success: false, message: 'No book linked to this hive.' };
 
@@ -98,10 +96,6 @@ export async function createVersionSnapshotAction(
   }
 }
 
-/**
- * Restores a snapshot's content back to the chapter.
- * Only owner/moderator can restore (it's a destructive operation).
- */
 export async function restoreVersionSnapshotAction(
   hiveId: string,
   snapshotId: string,

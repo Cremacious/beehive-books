@@ -17,8 +17,16 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
-  Plus, GripVertical, Pencil, Trash2, Loader2, X, Check,
-  BookOpen, Film, Zap, StickyNote,
+  Plus,
+  GripVertical,
+  Pencil,
+  Trash2,
+  Loader2,
+  Check,
+  BookOpen,
+  Film,
+  Zap,
+  StickyNote,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +36,11 @@ import {
   reorderOutlineItemsAction,
   deleteOutlineItemAction,
 } from '@/lib/actions/hive-outline.actions';
-import type { OutlineItem, OutlineItemType, HiveRole } from '@/lib/types/hive.types';
+import type {
+  OutlineItem,
+  OutlineItemType,
+  HiveRole,
+} from '@/lib/types/hive.types';
 
 interface HiveOutlineBoardProps {
   hiveId: string;
@@ -37,30 +49,52 @@ interface HiveOutlineBoardProps {
   myRole: HiveRole;
 }
 
-const ITEM_TYPES: { value: OutlineItemType; label: string; Icon: React.ElementType; color: string }[] = [
-  { value: 'CHAPTER', label: 'Chapter', Icon: BookOpen, color: 'text-[#FFC300]' },
+const ITEM_TYPES: {
+  value: OutlineItemType;
+  label: string;
+  Icon: React.ElementType;
+  color: string;
+}[] = [
+  {
+    value: 'CHAPTER',
+    label: 'Chapter',
+    Icon: BookOpen,
+    color: 'text-[#FFC300]',
+  },
   { value: 'SCENE', label: 'Scene', Icon: Film, color: 'text-blue-400' },
   { value: 'BEAT', label: 'Beat', Icon: Zap, color: 'text-green-400' },
   { value: 'NOTE', label: 'Note', Icon: StickyNote, color: 'text-purple-400' },
 ];
 
 const PRESET_COLORS = [
-  '#FFC300', '#8B5CF6', '#10B981', '#3B82F6', '#F97316', '#EC4899',
-  '#EF4444', '#06B6D4', '#84CC16', '#F59E0B',
+  '#FFC300',
+  '#8B5CF6',
+  '#10B981',
+  '#3B82F6',
+  '#F97316',
+  '#EC4899',
+  '#EF4444',
+  '#06B6D4',
+  '#84CC16',
+  '#F59E0B',
 ];
 
 function typeConfig(type: OutlineItemType) {
   return ITEM_TYPES.find((t) => t.value === type) ?? ITEM_TYPES[0];
 }
 
-// ── Inline edit form ──────────────────────────────────────────────────────────
 function InlineForm({
   initial,
   onSave,
   onCancel,
 }: {
   initial?: OutlineItem;
-  onSave: (data: { title: string; description: string; type: OutlineItemType; color: string }) => Promise<void>;
+  onSave: (data: {
+    title: string;
+    description: string;
+    type: OutlineItemType;
+    color: string;
+  }) => Promise<void>;
   onCancel: () => void;
 }) {
   const [title, setTitle] = useState(initial?.title ?? '');
@@ -78,7 +112,6 @@ function InlineForm({
 
   return (
     <div className="rounded-2xl bg-[#2a2a2a] border border-[#FFC300]/20 p-4 space-y-3">
-      {/* Type selector */}
       <div className="flex gap-1.5 flex-wrap">
         {ITEM_TYPES.map(({ value, label, Icon, color: col }) => (
           <button
@@ -88,16 +121,17 @@ function InlineForm({
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               type === value
                 ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
-                : 'border-[#3a3a3a] bg-[#1e1e1e] text-white/50 hover:border-white/20'
+                : 'border-[#3a3a3a] bg-[#1e1e1e] text-white/90 hover:border-white/20'
             }`}
           >
-            <Icon className={`w-3 h-3 ${type === value ? 'text-[#FFC300]' : col}`} />
+            <Icon
+              className={`w-3 h-3 ${type === value ? 'text-[#FFC300]' : col}`}
+            />
             {label}
           </button>
         ))}
       </div>
 
-      {/* Title */}
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -108,22 +142,20 @@ function InlineForm({
         placeholder="Title…"
         maxLength={200}
         autoFocus
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
-      {/* Description */}
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Optional description or notes…"
         maxLength={1000}
         rows={2}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
       />
 
-      {/* Color picker */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-white/40">Color:</span>
+        <span className="text-xs text-white/90">Color:</span>
         <div className="flex gap-1.5 flex-wrap">
           {PRESET_COLORS.map((c) => (
             <button
@@ -141,11 +173,24 @@ function InlineForm({
       </div>
 
       <div className="flex items-center gap-2 justify-end">
-        <Button variant="outline" size="sm" onClick={onCancel} disabled={saving}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onCancel}
+          disabled={saving}
+        >
           Cancel
         </Button>
-        <Button size="sm" onClick={handleSave} disabled={saving || !title.trim()}>
-          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={saving || !title.trim()}
+        >
+          {saving ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <Check className="w-3.5 h-3.5" />
+          )}
           {initial ? 'Save' : 'Add'}
         </Button>
       </div>
@@ -153,7 +198,6 @@ function InlineForm({
   );
 }
 
-// ── Sortable row ──────────────────────────────────────────────────────────────
 function SortableRow({
   item,
   currentUserId,
@@ -167,15 +211,23 @@ function SortableRow({
   onEdit: (item: OutlineItem) => void;
   onDelete: (id: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: item.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
 
   const [deleting, setDeleting] = useState(false);
   const conf = typeConfig(item.type);
   const Icon = conf.Icon;
 
   const canEdit =
-    item.createdById === currentUserId || myRole === 'OWNER' || myRole === 'MODERATOR';
+    item.createdById === currentUserId ||
+    myRole === 'OWNER' ||
+    myRole === 'MODERATOR';
 
   const handleDelete = async () => {
     if (!confirm(`Delete "${item.title}"?`)) return;
@@ -197,52 +249,56 @@ function SortableRow({
       style={style}
       className="flex items-start gap-3 rounded-2xl bg-[#252525] border border-[#2a2a2a] p-3 group"
     >
-      {/* Drag handle */}
       <button
         {...attributes}
         {...listeners}
-        className="mt-0.5 p-1 text-white/20 hover:text-white/50 cursor-grab active:cursor-grabbing transition-colors shrink-0"
+        className="mt-0.5 p-1 text-white hover:text-white/50 cursor-grab active:cursor-grabbing transition-colors shrink-0"
       >
-        <GripVertical className="w-4 h-4" />
+        <GripVertical className="w-4 h-4 " />
       </button>
 
-      {/* Color dot */}
       <div
         className="w-3 h-3 rounded-full shrink-0 mt-1"
         style={{ backgroundColor: item.color }}
       />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`flex items-center gap-1 text-[10px] font-medium shrink-0 ${conf.color}`}>
+          <span
+            className={`flex items-center gap-1 text-[10px] font-medium shrink-0 ${conf.color}`}
+          >
             <Icon className="w-3 h-3" />
             {conf.label}
           </span>
-          <p className="text-sm font-medium text-white truncate">{item.title}</p>
+          <p className="text-sm font-medium text-white truncate">
+            {item.title}
+          </p>
         </div>
         {item.description && (
-          <p className="text-xs text-white/40 mt-0.5 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-white/90 mt-0.5 line-clamp-2 leading-relaxed">
             {item.description}
           </p>
         )}
       </div>
 
-      {/* Actions */}
       {canEdit && (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <button
+          <Button
             onClick={() => onEdit(item)}
-            className="p-1 text-white/30 hover:text-white/70 transition-colors"
+       
           >
             <Pencil className="w-3.5 h-3.5" />
-          </button>
+          </Button>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-1 text-white/30 hover:text-red-400 transition-colors"
+            className="p-1 text-red-500 hover:text-red-400 transition-colors"
           >
-            {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+            {deleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
           </button>
         </div>
       )}
@@ -250,7 +306,6 @@ function SortableRow({
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
 export default function HiveOutlineBoard({
   hiveId,
   initialItems,
@@ -276,7 +331,10 @@ export default function HiveOutlineBoard({
     setItems(reordered);
 
     startTransition(async () => {
-      await reorderOutlineItemsAction(hiveId, reordered.map((i) => i.id));
+      await reorderOutlineItemsAction(
+        hiveId,
+        reordered.map((i) => i.id),
+      );
     });
   };
 
@@ -295,7 +353,6 @@ export default function HiveOutlineBoard({
     );
     if (result.success) {
       setShowCreate(false);
-      // Refetch to get the new item with server-assigned id/order
       startTransition(async () => {
         const fresh = await getOutlineItemsAction(hiveId);
         setItems(fresh);
@@ -312,18 +369,15 @@ export default function HiveOutlineBoard({
     if (!editingItem) return;
     await updateOutlineItemAction(editingItem.id, data);
     setItems((prev) =>
-      prev.map((i) =>
-        i.id === editingItem.id ? { ...i, ...data } : i,
-      ),
+      prev.map((i) => (i.id === editingItem.id ? { ...i, ...data } : i)),
     );
     setEditingItem(null);
   };
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-white">
           {items.length} item{items.length !== 1 ? 's' : ''}
           {' · '}drag to reorder
         </p>
@@ -335,7 +389,6 @@ export default function HiveOutlineBoard({
         )}
       </div>
 
-      {/* Create form */}
       {showCreate && (
         <InlineForm
           onSave={handleCreate}
@@ -343,7 +396,6 @@ export default function HiveOutlineBoard({
         />
       )}
 
-      {/* Sortable list */}
       {items.length === 0 && !showCreate ? (
         <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
@@ -359,7 +411,10 @@ export default function HiveOutlineBoard({
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={items.map((i) => i.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <div className="space-y-2">
               {items.map((item) =>
                 editingItem?.id === item.id ? (
@@ -376,7 +431,9 @@ export default function HiveOutlineBoard({
                     currentUserId={currentUserId}
                     myRole={myRole}
                     onEdit={setEditingItem}
-                    onDelete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
+                    onDelete={(id) =>
+                      setItems((prev) => prev.filter((i) => i.id !== id))
+                    }
                   />
                 ),
               )}

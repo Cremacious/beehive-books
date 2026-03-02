@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Globe,
@@ -23,10 +23,12 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
+import { getPublicBookAction } from '@/lib/actions/book.actions';
 import type {
   HiveWithMembership,
   HiveMemberWithUser,
 } from '@/lib/types/hive.types';
+import type { Book } from '@/lib/types/books.types';
 
 interface HiveDashboardProps {
   hive: HiveWithMembership;
@@ -80,16 +82,22 @@ const QUICK_LINKS = [
   },
 ];
 
-export default function HiveDashboard({
-  hive,
-  members,
-}: HiveDashboardProps) {
+export default function HiveDashboard({ hive, members }: HiveDashboardProps) {
   const store = useHiveStore();
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
+  const [book, setBook] = useState<Book | null>(null);
 
   const isOwner = hive.myRole === 'OWNER';
   const isMember = hive.isMember;
+
+  useEffect(() => {
+    if (hive.bookId) {
+      getPublicBookAction(hive.bookId)
+        .then(setBook)
+        .catch(() => setBook(null));
+    }
+  }, [hive.bookId]);
 
   const handleJoin = async () => {
     const result = await store.joinHive(hive.id);
@@ -167,10 +175,10 @@ export default function HiveDashboard({
             </div>
 
             {hive.genre && (
-              <p className="text-sm text-[#FFC300]/60 mt-1">{hive.genre}</p>
+              <p className="text-sm text-[#FFC300] mt-1">{hive.genre}</p>
             )}
             {hive.description && (
-              <p className="text-sm text-white/60 mt-2 max-w-2xl leading-relaxed">
+              <p className="text-sm text-white/80 mt-2 max-w-2xl leading-relaxed">
                 {hive.description}
               </p>
             )}
@@ -212,9 +220,9 @@ export default function HiveDashboard({
 
         <div className="flex items-center gap-6 mt-5 pt-5 border-t border-[#2a2a2a] flex-wrap">
           <div className="flex items-center gap-1.5 text-sm">
-            <Users className="w-4 h-4 text-white/40" />
+            <Users className="w-4 h-4 text-white0" />
             <span className="text-white font-semibold">{hive.memberCount}</span>
-            <span className="text-white/50">
+            <span className="text-white">
               member{hive.memberCount !== 1 ? 's' : ''}
             </span>
           </div>
@@ -249,15 +257,54 @@ export default function HiveDashboard({
             </h2>
             <Link
               href={`/library/${hive.bookId}`}
-              className="text-xs text-[#FFC300] hover:underline"
+              className="text-sm text-[#FFC300] hover:underline"
             >
               Open in Library →
             </Link>
           </div>
-          <p className="text-sm text-white/60">
-            This hive is working on a book. Open it in your library to read and
-            write chapters.
-          </p>
+          {book ? (
+            <div className="flex gap-4">
+              {book.coverUrl && (
+                <Image
+                  src={book.coverUrl}
+                  alt={book.title}
+                  width={80}
+                  height={120}
+                  className="rounded-lg object-cover shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {book.title}
+                </h3>
+                {book.author && (
+                  <p className="text-sm text-white/80 mb-2">by {book.author}</p>
+                )}
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-white" />
+                    <span className="text-white font-semibold">
+                      {hive.chapterCount}
+                    </span>
+                    <span className="text-white">
+                      chapter{hive.chapterCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#FFC300] font-semibold">
+                      {hive.totalWordCount.toLocaleString()}
+                    </span>
+                    <span className="text-white">words</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-white/60">
+              This hive is working on a book. Open it in your library to read
+              and write chapters.
+            </p>
+          )}
         </div>
       ) : isMember ? (
         <div className="rounded-2xl bg-[#252525] border border-dashed border-[#2a2a2a] p-5 flex flex-col items-center text-center gap-2">
@@ -295,7 +342,7 @@ export default function HiveDashboard({
                   <p className="text-sm font-semibold text-white group-hover:text-[#FFC300] transition-colors">
                     {label}
                   </p>
-                  <p className="text-xs text-white/40 mt-0.5">{desc}</p>
+                  <p className="text-xs text-white/80 mt-0.5">{desc}</p>
                 </div>
               </Link>
             ))}

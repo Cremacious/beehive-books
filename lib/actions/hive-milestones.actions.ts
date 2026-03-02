@@ -5,7 +5,12 @@ import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveMilestones, hiveMembers } from '@/db/schema';
-import type { ActionResult, MilestoneType, MilestoneWithUser, HiveUser } from '@/lib/types/hive.types';
+import type {
+  ActionResult,
+  MilestoneType,
+  MilestoneWithUser,
+  HiveUser,
+} from '@/lib/types/hive.types';
 
 async function requireAuth() {
   const { userId } = await auth();
@@ -13,7 +18,9 @@ async function requireAuth() {
   return userId;
 }
 
-export async function getMilestonesAction(hiveId: string): Promise<MilestoneWithUser[]> {
+export async function getMilestonesAction(
+  hiveId: string,
+): Promise<MilestoneWithUser[]> {
   const { userId } = await auth();
   if (!userId) return [];
 
@@ -48,11 +55,14 @@ export async function awardMilestoneAction(
   try {
     await requireAuth();
 
-    // Verify target user is a hive member
     const membership = await db.query.hiveMembers.findFirst({
-      where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, targetUserId)),
+      where: and(
+        eq(hiveMembers.hiveId, hiveId),
+        eq(hiveMembers.userId, targetUserId),
+      ),
     });
-    if (!membership) return { success: false, message: 'User is not a hive member.' };
+    if (!membership)
+      return { success: false, message: 'User is not a hive member.' };
 
     await db
       .insert(hiveMilestones)
@@ -66,7 +76,6 @@ export async function awardMilestoneAction(
   }
 }
 
-/** Award a milestone to the currently authenticated user. Silently ignores duplicates. */
 export async function awardMyMilestoneAction(
   hiveId: string,
   type: MilestoneType,
@@ -77,7 +86,10 @@ export async function awardMyMilestoneAction(
     if (!userId) return;
 
     const membership = await db.query.hiveMembers.findFirst({
-      where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
+      where: and(
+        eq(hiveMembers.hiveId, hiveId),
+        eq(hiveMembers.userId, userId),
+      ),
     });
     if (!membership) return;
 
@@ -87,7 +99,5 @@ export async function awardMyMilestoneAction(
       .onConflictDoNothing();
 
     revalidatePath(`/hive/${hiveId}/milestones`);
-  } catch {
-    // Fire-and-forget — never throw
-  }
+  } catch {}
 }

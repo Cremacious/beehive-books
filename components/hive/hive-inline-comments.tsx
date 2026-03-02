@@ -88,7 +88,7 @@ function CommentCard({
     <div className={`rounded-2xl border p-4 space-y-2.5 transition-all ${
       isResolved ? 'bg-[#1a1a1a] border-[#252525] opacity-60' : 'bg-[#252525] border-[#2a2a2a]'
     }`}>
-      {/* Layer + status */}
+  
       <div className="flex items-center justify-between gap-2">
         <span className={`flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border ${conf.bg} ${conf.color}`}>
           <Icon className="w-3 h-3" />
@@ -124,19 +124,19 @@ function CommentCard({
         </div>
       </div>
 
-      {/* Quoted text */}
+   
       {comment.selectedText && (
-        <blockquote className="border-l-2 border-[#FFC300]/30 pl-3 text-xs text-white/40 italic leading-relaxed line-clamp-3">
+        <blockquote className="border-l-2 border-[#FFC300]/30 pl-3 text-xs text-white/80 italic leading-relaxed line-clamp-3">
           &ldquo;{comment.selectedText}&rdquo;
         </blockquote>
       )}
 
-      {/* Comment text */}
-      <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">
+   
+      <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">
         {comment.content}
       </p>
 
-      {/* Author + time */}
+   
       <div className="flex items-center gap-1.5 pt-0.5">
         {comment.author.imageUrl ? (
           <Image
@@ -151,7 +151,7 @@ function CommentCard({
             {(comment.author.username ?? comment.author.firstName ?? 'U')[0]?.toUpperCase()}
           </div>
         )}
-        <span className="text-[10px] text-white/30">
+        <span className="text-[12px] text-white">
           {comment.author.username ?? comment.author.firstName ?? 'User'}
           {' · '}
           {timeAgo(comment.createdAt)}
@@ -194,7 +194,7 @@ function AddCommentForm({
         setError(result.message);
         return;
       }
-      // Refetch comments to get the full author data
+
       const fresh = await getInlineCommentsAction(hiveId, chapterId);
       const created = fresh.find((c) => c.id === result.commentId);
       if (created) onAdded(created);
@@ -210,15 +210,15 @@ function AddCommentForm({
         </button>
       </div>
 
-      {/* Layer */}
+
       <div className="flex flex-wrap gap-1.5">
         {LAYERS.map(({ value, label, Icon, color, bg }) => (
           <button
             key={value}
             type="button"
             onClick={() => setLayer(value)}
-            className={`flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border transition-all ${
-              layer === value ? `${bg} ${color}` : 'border-[#2a2a2a] text-white/40 hover:border-white/20'
+            className={`flex items-center gap-1 text-sm font-medium px-2 py-0.5 rounded-full border transition-all ${
+              layer === value ? `${bg} ${color}` : 'border-[#2a2a2a] text-white hover:border-white/20'
             }`}
           >
             <Icon className="w-3 h-3" />
@@ -227,23 +227,23 @@ function AddCommentForm({
         ))}
       </div>
 
-      {/* Quoted text (optional) */}
+ 
       <input
         value={selectedText}
         onChange={(e) => setSelectedText(e.target.value)}
         placeholder="Text you&apos;re referencing (optional)…"
         maxLength={500}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
-      {/* Comment */}
+   
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Your comment…"
         maxLength={2000}
         rows={3}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
       />
 
       {error && (
@@ -324,19 +324,18 @@ export default function HiveInlineComments({
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
         <MessageSquare className="w-8 h-8 text-[#FFC300]/40" />
-        <p className="text-sm text-white/40">No chapters available for annotation.</p>
+        <p className="text-sm text-white/80">No chapters available for annotation.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      {/* Chapter selector */}
       <div className="flex items-center gap-3 flex-wrap">
         <select
           value={selectedChapterId ?? ''}
           onChange={(e) => e.target.value && loadChapter(e.target.value)}
-          className="flex-1 min-w-[200px] rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+          className="flex-1 min-w-50 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
         >
           {chapters.map((ch) => (
             <option key={ch.id} value={ch.id}>
@@ -352,7 +351,7 @@ export default function HiveInlineComments({
         )}
       </div>
 
-      {/* Add form */}
+  
       {showAddForm && selectedChapterId && (
         <AddCommentForm
           hiveId={hiveId}
@@ -363,7 +362,7 @@ export default function HiveInlineComments({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Chapter content (left, 3 cols) */}
+       
         <div className="lg:col-span-3">
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
             {chapterContent ? (
@@ -372,7 +371,7 @@ export default function HiveInlineComments({
                   <h3 className="text-sm font-semibold text-white">{chapterContent.title}</h3>
                 </div>
                 <div
-                  className="p-5 prose prose-invert prose-sm max-w-none text-white/70 leading-relaxed max-h-[600px] overflow-y-auto"
+                  className="p-5 prose prose-invert prose-sm max-w-none text-white leading-relaxed max-h-150 overflow-y-auto"
                   dangerouslySetInnerHTML={{ __html: chapterContent.content || '<p class="text-white/30 italic">No content yet.</p>' }}
                 />
               </>
@@ -384,15 +383,15 @@ export default function HiveInlineComments({
           </div>
         </div>
 
-        {/* Comments panel (right, 2 cols) */}
+     
         <div className="lg:col-span-2 space-y-3">
-          {/* Filters */}
+    
           <div className="space-y-2">
             <div className="flex flex-wrap gap-1">
               <button
                 onClick={() => setActiveLayer('ALL')}
-                className={`text-[10px] px-2 py-0.5 rounded-full transition-all ${
-                  activeLayer === 'ALL' ? 'bg-[#FFC300]/15 text-[#FFC300]' : 'text-white/40 hover:text-white/60'
+                className={`text-sm px-2 py-0.5 rounded-full transition-all ${
+                  activeLayer === 'ALL' ? 'bg-[#FFC300]/15 text-[#FFC300]' : 'text-white hover:text-white/60'
                 }`}
               >
                 All ({openCount} open)
@@ -403,8 +402,8 @@ export default function HiveInlineComments({
                   <button
                     key={value}
                     onClick={() => setActiveLayer(value)}
-                    className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition-all ${
-                      activeLayer === value ? `${bg} ${color}` : 'border-transparent text-white/40 hover:text-white/60'
+                    className={`flex items-center gap-1 text-sm px-2 py-0.5 rounded-full border transition-all border-white/20 ${
+                      activeLayer === value ? `${bg} ${color}` : 'border-transparent text-white hover:text-white/60'
                     }`}
                   >
                     <Icon className="w-2.5 h-2.5" />
@@ -423,12 +422,12 @@ export default function HiveInlineComments({
             )}
           </div>
 
-          {/* Comment list */}
-          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+
+          <div className="space-y-2 max-h-150 overflow-y-auto pr-1">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center py-12 text-center gap-2">
-                <MessageSquare className="w-6 h-6 text-[#FFC300]/30" />
-                <p className="text-xs text-white/30">
+                <MessageSquare className="w-6 h-6 text-[#FFC300]/80" />
+                <p className="text-sm text-white/90">
                   {comments.length === 0
                     ? 'No comments yet on this chapter.'
                     : 'No comments match the current filter.'}

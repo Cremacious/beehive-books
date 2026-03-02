@@ -4,7 +4,15 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Sparkles, Plus, Check, Loader2, Trash2, ExternalLink } from 'lucide-react';
+import {
+  BookOpen,
+  Sparkles,
+  Plus,
+  Check,
+  Loader2,
+  Trash2,
+  ExternalLink,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HiveForm from '@/components/hive/hive-form';
 import {
@@ -12,23 +20,55 @@ import {
   unlinkBookFromHiveAction,
   createAndLinkBookAction,
 } from '@/lib/actions/hive.actions';
-import type { HiveWithMembership, HiveBookOption } from '@/lib/types/hive.types';
+import type {
+  HiveWithMembership,
+  HiveBookOption,
+} from '@/lib/types/hive.types';
 
 type BookMode = 'new' | 'existing' | 'later';
 
-const BOOK_MODE_OPTIONS: { value: BookMode; label: string; desc: string; Icon: React.ElementType }[] = [
-  { value: 'new', label: 'Create new book', desc: 'Start a fresh book for this hive', Icon: Sparkles },
-  { value: 'existing', label: 'Link from library', desc: 'Choose a book you already own', Icon: BookOpen },
-  { value: 'later', label: 'Decide later', desc: 'Link a book another time', Icon: Plus },
+const BOOK_MODE_OPTIONS: {
+  value: BookMode;
+  label: string;
+  desc: string;
+  Icon: React.ElementType;
+}[] = [
+  {
+    value: 'new',
+    label: 'Create new book',
+    desc: 'Start a fresh book for this hive',
+    Icon: Sparkles,
+  },
+  {
+    value: 'existing',
+    label: 'Link from library',
+    desc: 'Choose a book you already own',
+    Icon: BookOpen,
+  },
+  {
+    value: 'later',
+    label: 'Decide later',
+    desc: 'Link a book another time',
+    Icon: Plus,
+  },
 ];
 
 interface HiveSettingsProps {
   hive: HiveWithMembership;
   userBooks: HiveBookOption[];
-  linkedBook: { id: string; title: string; author: string; coverUrl: string | null } | null;
+  linkedBook: {
+    id: string;
+    title: string;
+    author: string;
+    coverUrl: string | null;
+  } | null;
 }
 
-export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettingsProps) {
+export default function HiveSettings({
+  hive,
+  userBooks,
+  linkedBook,
+}: HiveSettingsProps) {
   const router = useRouter();
 
   const [bookMode, setBookMode] = useState<BookMode>('existing');
@@ -72,7 +112,12 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
   };
 
   const handleUnlink = async () => {
-    if (!confirm('Unlink the book from this hive? The book will remain in your library.')) return;
+    if (
+      !confirm(
+        'Unlink the book from this hive? The book will remain in your library.',
+      )
+    )
+      return;
     setUnlinking(true);
     const result = await unlinkBookFromHiveAction(hive.id);
     if (result.success) {
@@ -85,7 +130,6 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
 
   return (
     <div className="space-y-8">
-      {/* Book section */}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 space-y-4">
         <h2 className="text-base font-semibold text-white flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-[#FFC300]" />
@@ -108,8 +152,12 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{linkedBook.title}</p>
-              <p className="text-xs text-white/50 truncate">{linkedBook.author}</p>
+              <p className="text-sm font-semibold text-white truncate">
+                {linkedBook.title}
+              </p>
+              <p className="text-xs text-white/50 truncate">
+                {linkedBook.author}
+              </p>
               <Link
                 href={`/library/${linkedBook.id}`}
                 className="inline-flex items-center gap-1 text-xs text-[#FFC300] hover:underline mt-1"
@@ -123,14 +171,19 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
               onClick={handleUnlink}
               disabled={unlinking}
             >
-              {unlinking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              {unlinking ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4" />
+              )}
               Unlink
             </Button>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-white/50">
-              No book linked yet. Link or create a book so your hive has a shared workspace.
+              No book linked yet. Link or create a book so your hive has a
+              shared workspace.
             </p>
 
             <div className="grid grid-cols-3 gap-2">
@@ -145,11 +198,17 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
                       : 'border-[#2a2a2a] bg-[#1e1e1e]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${bookMode === value ? 'text-[#FFC300]' : 'text-white/60'}`} />
-                  <span className={`text-xs font-semibold ${bookMode === value ? 'text-[#FFC300]' : 'text-white'}`}>
+                  <Icon
+                    className={`w-4 h-4 ${bookMode === value ? 'text-[#FFC300]' : 'text-white/60'}`}
+                  />
+                  <span
+                    className={`text-xs font-semibold ${bookMode === value ? 'text-[#FFC300]' : 'text-white'}`}
+                  >
                     {label}
                   </span>
-                  <span className="text-xs text-white/50 leading-tight">{desc}</span>
+                  <span className="text-xs text-white/50 leading-tight">
+                    {desc}
+                  </span>
                 </button>
               ))}
             </div>
@@ -176,7 +235,9 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
                 {userBooks.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 py-8 text-center px-4">
                     <BookOpen className="w-8 h-8 text-white/20" />
-                    <p className="text-sm text-white/50">No books in your library.</p>
+                    <p className="text-sm text-white/50">
+                      No books in your library.
+                    </p>
                     <p className="text-xs text-white/30">
                       Switch to &ldquo;Create new book&rdquo; to add one now.
                     </p>
@@ -189,7 +250,9 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
                         <li key={book.id}>
                           <button
                             type="button"
-                            onClick={() => setSelectedBookId(selected ? null : book.id)}
+                            onClick={() =>
+                              setSelectedBookId(selected ? null : book.id)
+                            }
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                               selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                             }`}
@@ -208,12 +271,18 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}>
+                              <p
+                                className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}
+                              >
                                 {book.title}
                               </p>
-                              <p className="text-xs text-white/50 truncate">{book.author}</p>
+                              <p className="text-xs text-white/50 truncate">
+                                {book.author}
+                              </p>
                             </div>
-                            {selected && <Check className="w-4 h-4 text-[#FFC300] shrink-0" />}
+                            {selected && (
+                              <Check className="w-4 h-4 text-[#FFC300] shrink-0" />
+                            )}
                           </button>
                         </li>
                       );
@@ -224,7 +293,9 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
             )}
 
             {bookError && (
-              <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{bookError}</p>
+              <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+                {bookError}
+              </p>
             )}
 
             {bookMode !== 'later' && (
@@ -239,7 +310,6 @@ export default function HiveSettings({ hive, userBooks, linkedBook }: HiveSettin
         )}
       </div>
 
-      {/* Hive settings */}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 space-y-4">
         <h2 className="text-base font-semibold text-white">Hive Settings</h2>
         <HiveForm

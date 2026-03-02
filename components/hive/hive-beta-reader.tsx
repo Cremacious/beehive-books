@@ -1,15 +1,20 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import {
-  FileText, Clock, CheckCircle2, Eye, BookOpen, Loader2,
+  FileText,
+  Clock,
+  CheckCircle2,
+  Eye,
+  BookOpen,
+  Loader2,
 } from 'lucide-react';
-import {
-  getBetaChaptersAction,
-  updateBetaStatusAction,
-} from '@/lib/actions/hive-beta.actions';
-import type { BetaChapterWithStatus, BetaChapterStatus } from '@/lib/types/hive.types';
+import { updateBetaStatusAction } from '@/lib/actions/hive-beta.actions';
+import type {
+  BetaChapterWithStatus,
+  BetaChapterStatus,
+} from '@/lib/types/hive.types';
 
 interface HiveBetaReaderProps {
   hiveId: string;
@@ -27,7 +32,13 @@ const STATUS_ORDER: BetaChapterStatus[] = [
 
 const STATUS_CONFIG: Record<
   BetaChapterStatus,
-  { label: string; short: string; color: string; bg: string; Icon: React.ElementType }
+  {
+    label: string;
+    short: string;
+    color: string;
+    bg: string;
+    Icon: React.ElementType;
+  }
 > = {
   DRAFT: {
     label: 'Draft',
@@ -73,7 +84,8 @@ function ChapterRow({
   const currentStatus = chapter.betaStatus?.status ?? 'DRAFT';
   const currentIdx = STATUS_ORDER.indexOf(currentStatus);
   const nextStatus = STATUS_ORDER[(currentIdx + 1) % STATUS_ORDER.length];
-  const prevStatus: BetaChapterStatus | null = currentIdx > 0 ? STATUS_ORDER[currentIdx - 1] : null;
+  const prevStatus: BetaChapterStatus | null =
+    currentIdx > 0 ? STATUS_ORDER[currentIdx - 1] : null;
   const conf = STATUS_CONFIG[currentStatus];
   const StatusIcon = conf.Icon;
 
@@ -94,21 +106,23 @@ function ChapterRow({
   };
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all ${
-      currentStatus === 'REVIEWED'
-        ? 'bg-green-400/5 border-green-400/10'
-        : 'bg-[#252525] border-[#2a2a2a]'
-    }`}>
-      {/* Chapter number */}
+    <div
+      className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all ${
+        currentStatus === 'REVIEWED'
+          ? 'bg-green-400/5 border-green-400/10'
+          : 'bg-[#252525] border-[#2a2a2a]'
+      }`}
+    >
       <span className="text-xs text-white/30 font-mono w-8 shrink-0 text-right">
         {String(chapter.order + 1).padStart(2, '0')}
       </span>
 
-      {/* Title + word count */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium truncate ${
-          currentStatus === 'REVIEWED' ? 'text-white/50' : 'text-white'
-        }`}>
+        <p
+          className={`text-sm font-medium truncate ${
+            currentStatus === 'REVIEWED' ? 'text-white/50' : 'text-white'
+          }`}
+        >
           {chapter.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
@@ -129,15 +143,14 @@ function ChapterRow({
                   className="rounded-full"
                 />
               ) : null}
-              {chapter.betaStatus.updatedBy.username ?? chapter.betaStatus.updatedBy.firstName}
+              {chapter.betaStatus.updatedBy.username ??
+                chapter.betaStatus.updatedBy.firstName}
             </span>
           )}
         </div>
       </div>
 
-      {/* Status + controls */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Regress button */}
         {prevStatus && (
           <button
             onClick={regress}
@@ -149,7 +162,6 @@ function ChapterRow({
           </button>
         )}
 
-        {/* Status badge — click to advance */}
         <button
           onClick={advance}
           disabled={loading}
@@ -174,16 +186,19 @@ export default function HiveBetaReader({
   bookTitle,
   initialChapters,
 }: HiveBetaReaderProps) {
-  const [chapters, setChapters] = useState<BetaChapterWithStatus[]>(initialChapters);
-  const [, startTransition] = useTransition();
-  const [activeFilter, setActiveFilter] = useState<BetaChapterStatus | 'ALL'>('ALL');
+  const [chapters, setChapters] =
+    useState<BetaChapterWithStatus[]>(initialChapters);
+  // const [, startTransition] = useTransition();
+  const [activeFilter, setActiveFilter] = useState<BetaChapterStatus | 'ALL'>(
+    'ALL',
+  );
 
-  const refresh = () => {
-    startTransition(async () => {
-      const fresh = await getBetaChaptersAction(hiveId);
-      setChapters(fresh);
-    });
-  };
+  // const refresh = () => {
+  //   startTransition(async () => {
+  //     const fresh = await getBetaChaptersAction(hiveId);
+  //     setChapters(fresh);
+  //   });
+  // };
 
   const handleUpdate = (chapterId: string, status: BetaChapterStatus) => {
     setChapters((prev) =>
@@ -193,7 +208,13 @@ export default function HiveBetaReader({
               ...ch,
               betaStatus: ch.betaStatus
                 ? { ...ch.betaStatus, status }
-                : { id: '', status, updatedById: null, updatedBy: null, updatedAt: new Date() },
+                : {
+                    id: '',
+                    status,
+                    updatedById: null,
+                    updatedBy: null,
+                    updatedAt: new Date(),
+                  },
             }
           : ch,
       ),
@@ -226,7 +247,11 @@ export default function HiveBetaReader({
   }
 
   const counts = STATUS_ORDER.reduce(
-    (acc, s) => ({ ...acc, [s]: chapters.filter((c) => (c.betaStatus?.status ?? 'DRAFT') === s).length }),
+    (acc, s) => ({
+      ...acc,
+      [s]: chapters.filter((c) => (c.betaStatus?.status ?? 'DRAFT') === s)
+        .length,
+    }),
     {} as Record<BetaChapterStatus, number>,
   );
   const reviewed = counts.REVIEWED;
@@ -235,11 +260,12 @@ export default function HiveBetaReader({
   const filtered =
     activeFilter === 'ALL'
       ? chapters
-      : chapters.filter((c) => (c.betaStatus?.status ?? 'DRAFT') === activeFilter);
+      : chapters.filter(
+          (c) => (c.betaStatus?.status ?? 'DRAFT') === activeFilter,
+        );
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           {bookTitle && (
@@ -253,8 +279,7 @@ export default function HiveBetaReader({
           </p>
         </div>
 
-        {/* Progress bar */}
-        <div className="flex-1 min-w-[120px] max-w-[200px]">
+        <div className="flex-1 min-w-30 max-w-50">
           <div className="h-1.5 rounded-full bg-[#1e1e1e] overflow-hidden">
             <div
               className="h-full rounded-full bg-green-400/40 transition-all"
@@ -264,7 +289,6 @@ export default function HiveBetaReader({
         </div>
       </div>
 
-      {/* Status filter tabs */}
       <div className="flex flex-wrap gap-1.5">
         <button
           onClick={() => setActiveFilter('ALL')}
@@ -295,7 +319,6 @@ export default function HiveBetaReader({
         })}
       </div>
 
-      {/* Chapter list */}
       <div className="space-y-2">
         {filtered.map((chapter) => (
           <ChapterRow

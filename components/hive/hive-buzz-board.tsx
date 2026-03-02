@@ -62,13 +62,13 @@ function BuzzCard({
   const canDelete =
     item.authorId === currentUserId || myRole === 'OWNER' || myRole === 'MODERATOR';
 
-  const handleLike = async () => {
-    if (liking) return;
-    setLiking(true);
-    const result = await toggleBuzzLikeAction(item.id);
-    if (result.success) onLike(item.id, result.liked);
-    setLiking(false);
-  };
+  // const handleLike = async () => {
+  //   if (liking) return;
+  //   setLiking(true);
+  //   const result = await toggleBuzzLikeAction(item.id);
+  //   if (result.success) onLike(item.id, result.liked);
+  //   setLiking(false);
+  // };
 
   const handleDelete = async () => {
     if (!confirm('Delete this buzz? This cannot be undone.')) return;
@@ -80,7 +80,7 @@ function BuzzCard({
 
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3 group">
-      {/* Header */}
+   
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {item.author.imageUrl ? (
@@ -113,7 +113,7 @@ function BuzzCard({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-white/30 hover:text-red-400"
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-white hover:text-red-400"
             >
               {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
             </button>
@@ -121,12 +121,12 @@ function BuzzCard({
         </div>
       </div>
 
-      {/* Content */}
-      <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap break-words">
+    
+      <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap wrap-break-word">
         {item.content}
       </p>
 
-      {/* Media */}
+    
       {item.mediaUrl && (
         <a
           href={item.mediaUrl}
@@ -138,8 +138,8 @@ function BuzzCard({
         </a>
       )}
 
-      {/* Footer */}
-      <div className="flex items-center justify-end pt-0.5">
+ 
+      {/* <div className="flex items-center justify-end pt-0.5">
         <button
           onClick={handleLike}
           disabled={liking}
@@ -150,7 +150,7 @@ function BuzzCard({
           <Heart className={`w-3.5 h-3.5 ${item.likedByMe ? 'fill-current' : ''}`} />
           {item.likeCount > 0 && item.likeCount}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -187,7 +187,6 @@ function CreateBuzzForm({
         Share with the Hive
       </h3>
 
-      {/* Type picker */}
       <div className="flex flex-wrap gap-2">
         {BUZZ_TYPES.map(({ value, label, Icon, color }) => (
           <button
@@ -269,7 +268,6 @@ export default function HiveBuzzBoard({
 
   const handleCreated = () => {
     setShowCreate(false);
-    // Refetch from server to get the new item with full author data
     startTransition(async () => {
       const fresh = await getBuzzItemsAction(hiveId);
       setItems(fresh);
@@ -278,9 +276,9 @@ export default function HiveBuzzBoard({
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
+   
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white/40">
+        <p className="text-sm text-white">
           {items.length} post{items.length !== 1 ? 's' : ''}
         </p>
         {!showCreate && (
@@ -291,7 +289,7 @@ export default function HiveBuzzBoard({
         )}
       </div>
 
-      {/* Create form */}
+    
       {showCreate && (
         <CreateBuzzForm
           hiveId={hiveId}
@@ -299,7 +297,7 @@ export default function HiveBuzzBoard({
         />
       )}
 
-      {/* Item list */}
+     
       {items.length === 0 && !showCreate ? (
         <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">

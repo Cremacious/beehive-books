@@ -84,7 +84,7 @@ export async function getPollsAction(hiveId: string): Promise<PollWithResults[]>
     orderBy: [desc(hivePolls.createdAt)],
   });
 
-  // Auto-close expired polls
+ 
   const now = new Date();
   for (const poll of polls) {
     if (poll.status === 'ACTIVE' && poll.endsAt && poll.endsAt < now) {
@@ -131,7 +131,7 @@ export async function createPollAction(
       })
       .returning({ id: hivePolls.id });
 
-    // Notify all hive members
+
     const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
     const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
     const members = await db.query.hiveMembers.findMany({

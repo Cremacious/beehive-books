@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import Image from 'next/image';
 import {
-  History, Plus, RotateCcw, Trash2, Loader2, Eye, X, BookOpen, Save,
+  History, Plus, RotateCcw, Trash2, Loader2, Eye, X, Save,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -103,12 +103,12 @@ function SnapshotCard({
 
   return (
     <div className="flex items-start gap-4 rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 group">
-      {/* Icon */}
+
       <div className="w-9 h-9 rounded-xl bg-[#FFC300]/10 flex items-center justify-center shrink-0 mt-0.5">
         <Save className="w-4 h-4 text-[#FFC300]" />
       </div>
 
-      {/* Info */}
+
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-white truncate">{snapshot.name}</p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -133,7 +133,7 @@ function SnapshotCard({
         </div>
       </div>
 
-      {/* Actions */}
+ 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
         <button
           onClick={() => onPreview(snapshot)}
@@ -210,7 +210,6 @@ export default function HiveVersionHistory({
     }
     setSnapshotName('');
     setShowCreate(false);
-    // Refetch
     const fresh = await getVersionSnapshotsAction(hiveId, selectedChapterId);
     setSnapshots(fresh);
     setCreating(false);
@@ -248,12 +247,12 @@ export default function HiveVersionHistory({
       )}
 
       <div className="space-y-4">
-        {/* Toolbar */}
+   
         <div className="flex items-center gap-3 flex-wrap">
           <select
             value={selectedChapterId ?? ''}
             onChange={(e) => e.target.value && loadSnapshots(e.target.value)}
-            className="flex-1 min-w-[200px] rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 min-w-50 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
           >
             {chapters.map((ch) => (
               <option key={ch.id} value={ch.id}>
@@ -269,7 +268,7 @@ export default function HiveVersionHistory({
           )}
         </div>
 
-        {/* Create form */}
+    
         {showCreate && (
           <div className="rounded-2xl bg-[#252525] border border-[#FFC300]/20 p-4 space-y-3">
             <h4 className="text-xs font-semibold text-white flex items-center gap-2">
@@ -303,7 +302,7 @@ export default function HiveVersionHistory({
           </div>
         )}
 
-        {/* Snapshots list */}
+  
         {snapshots.length === 0 ? (
           <div className="flex flex-col items-center py-16 text-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">

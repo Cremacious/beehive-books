@@ -34,7 +34,7 @@ export async function getChatMessagesAction(
   });
   if (!membership) return [];
 
-  // Fetch newest N then reverse for chronological display
+
   const rows = await db.query.hiveChatMessages.findMany({
     where: eq(hiveChatMessages.hiveId, hiveId),
     with: { author: true },
@@ -72,7 +72,7 @@ export async function getOlderChatMessagesAction(
     limit: 9999,
   });
 
-  // Filter to messages before the anchor, take last `limit`
+
   const before = rows.filter(
     (r) => new Date(r.createdAt) < new Date(anchor.createdAt),
   );

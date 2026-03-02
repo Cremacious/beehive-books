@@ -31,12 +31,12 @@ function windowStart(type: WordGoalType): Date | null {
   }
   if (type === 'WEEKLY') {
     const d = new Date(now);
-    const day = d.getDay(); // 0=Sun
+    const day = d.getDay(); 
     d.setDate(d.getDate() - day);
     d.setHours(0, 0, 0, 0);
     return d;
   }
-  return null; // TOTAL — no window
+  return null; 
 }
 
 export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
@@ -53,7 +53,7 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
     orderBy: [desc(hiveWordGoals.createdAt)],
   });
 
-  // For each goal compute currentWords
+ 
   const result: WordGoal[] = await Promise.all(
     goals.map(async (g) => {
       const type = g.type as WordGoalType;

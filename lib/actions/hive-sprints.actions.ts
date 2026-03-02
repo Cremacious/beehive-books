@@ -128,7 +128,7 @@ export async function startSprintAction(
       return { success: false, message: 'Invalid duration.' };
     }
 
-    // Check no active sprint
+
     const existing = await db.query.hiveSprints.findFirst({
       where: and(eq(hiveSprints.hiveId, hiveId), eq(hiveSprints.status, 'ACTIVE')),
     });
@@ -139,7 +139,7 @@ export async function startSprintAction(
       .values({ hiveId, startedById: userId, durationMinutes })
       .returning({ id: hiveSprints.id });
 
-    // Auto-join starter
+ 
     await db.insert(hiveSprintParticipants).values({
       sprintId: sprint.id,
       userId,
@@ -244,7 +244,7 @@ export async function endSprintAction(hiveId: string, sprintId: string): Promise
       membership.role === 'MODERATOR';
     if (!canEnd) return { success: false, message: 'No permission to end this sprint.' };
 
-    // Determine winner = participant with most words written
+
     let winnerId: string | null = null;
     let best = -1;
     for (const p of sprint.participants) {

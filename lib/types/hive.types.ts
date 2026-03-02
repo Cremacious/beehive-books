@@ -103,7 +103,7 @@ export interface HiveFormProps {
 }
 
 
-// ── Chat ──────────────────────────────────────────────────────────────────────
+
 export type ChatMessageWithAuthor = {
   id: string;
   hiveId: string;
@@ -114,7 +114,7 @@ export type ChatMessageWithAuthor = {
   author: HiveUser;
 };
 
-// ── Polls ─────────────────────────────────────────────────────────────────────
+
 export type PollWithResults = {
   id: string;
   hiveId: string;
@@ -131,7 +131,7 @@ export type PollWithResults = {
   mySelectedOptions: number[] | null;
 };
 
-// ── Buzz ──────────────────────────────────────────────────────────────────────
+
 export type BuzzItemWithAuthor = {
   id: string;
   hiveId: string;
@@ -145,7 +145,7 @@ export type BuzzItemWithAuthor = {
   likedByMe: boolean;
 };
 
-// ── Style Guide ───────────────────────────────────────────────────────────────
+
 export type StyleGuideDoc = {
   id: string;
   hiveId: string;
@@ -155,7 +155,7 @@ export type StyleGuideDoc = {
   updatedAt: Date;
 };
 
-// ── Word Goals ────────────────────────────────────────────────────────────────
+
 export type WordGoal = {
   id: string;
   hiveId: string;
@@ -166,7 +166,6 @@ export type WordGoal = {
   endDate: Date | null;
   isActive: boolean;
   createdAt: Date;
-  /** Words logged toward this goal (computed based on type + date window) */
   currentWords: number;
 };
 
@@ -180,7 +179,7 @@ export type WordLog = {
   user: HiveUser;
 };
 
-// ── Sprints ───────────────────────────────────────────────────────────────────
+
 export type SprintParticipant = {
   id: string;
   sprintId: string;
@@ -189,7 +188,7 @@ export type SprintParticipant = {
   wordsAfter: number | null;
   joinedAt: Date;
   user: HiveUser;
-  wordsWritten: number | null; // wordsAfter - wordsBefore, null until submitted
+  wordsWritten: number | null; 
 };
 
 export type SprintWithParticipants = {
@@ -207,7 +206,7 @@ export type SprintWithParticipants = {
   participants: SprintParticipant[];
 };
 
-// ── Milestones ────────────────────────────────────────────────────────────────
+
 export type MilestoneWithUser = {
   id: string;
   hiveId: string;
@@ -218,7 +217,7 @@ export type MilestoneWithUser = {
   user: HiveUser;
 };
 
-// ── Beta Reading ──────────────────────────────────────────────────────────────
+
 export type BetaChapterWithStatus = {
   id: string;
   bookId: string;
@@ -234,7 +233,6 @@ export type BetaChapterWithStatus = {
   } | null;
 };
 
-// ── Inline Comments ───────────────────────────────────────────────────────────
 export type InlineCommentStatus = 'OPEN' | 'RESOLVED';
 
 export type InlineComment = {
@@ -252,7 +250,7 @@ export type InlineComment = {
   author: HiveUser;
 };
 
-// ── Version Snapshots ─────────────────────────────────────────────────────────
+
 export type VersionSnapshot = {
   id: string;
   hiveId: string;
@@ -265,7 +263,7 @@ export type VersionSnapshot = {
   author: HiveUser;
 };
 
-// ── Wiki ──────────────────────────────────────────────────────────────────────
+
 export type WikiEntryWithAuthor = {
   id: string;
   hiveId: string;
@@ -279,7 +277,7 @@ export type WikiEntryWithAuthor = {
   author: HiveUser;
 };
 
-// ── Outline ───────────────────────────────────────────────────────────────────
+
 export type OutlineItem = {
   id: string;
   hiveId: string;
@@ -295,7 +293,7 @@ export type OutlineItem = {
   updatedAt: Date;
 };
 
-// ── Chapter Claiming ──────────────────────────────────────────────────────────
+
 export type ChapterClaim = {
   id: string;
   hiveId: string;
@@ -324,7 +322,7 @@ export type MilestoneInfo = {
   threshold?: number;
 };
 
-// ── Activity Feed ─────────────────────────────────────────────────────────────
+
 export type ActivityEventType =
   | 'WORD_LOG'
   | 'MILESTONE'
@@ -344,7 +342,7 @@ export type ActivityEvent = {
   meta: Record<string, string | number>;
 };
 
-// ── Prompts Integration ────────────────────────────────────────────────────────
+
 export type HivePromptCard = {
   id: string;
   title: string;

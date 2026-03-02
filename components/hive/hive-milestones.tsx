@@ -3,7 +3,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { MILESTONE_INFO } from '@/lib/types/hive.types';
-import type { MilestoneWithUser, HiveRole, MilestoneType } from '@/lib/types/hive.types';
+import type {
+  MilestoneWithUser,
+  HiveRole,
+  MilestoneType,
+} from '@/lib/types/hive.types';
 
 interface HiveMilestonesProps {
   initialMilestones: MilestoneWithUser[];
@@ -29,7 +33,6 @@ export default function HiveMilestones({
   const [tab, setTab] = useState<Tab>('grid');
   const [filter, setFilter] = useState<MilestoneType | null>(null);
 
-  // Group by type
   const byType: Partial<Record<MilestoneType, MilestoneWithUser[]>> = {};
   for (const m of milestones) {
     if (!byType[m.type]) byType[m.type] = [];
@@ -38,14 +41,16 @@ export default function HiveMilestones({
 
   const allTypes = Object.keys(MILESTONE_INFO) as MilestoneType[];
   const recent = [...milestones].sort(
-    (a, b) => new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime(),
+    (a, b) =>
+      new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime(),
   );
 
-  const unlockedCount = allTypes.filter((t) => (byType[t]?.length ?? 0) > 0).length;
+  const unlockedCount = allTypes.filter(
+    (t) => (byType[t]?.length ?? 0) > 0,
+  ).length;
 
   return (
     <div className="space-y-4">
-      {/* Header stats */}
       <div className="flex items-center gap-4">
         <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2 text-center">
           <p className="text-xl font-bold text-[#FFC300]">{unlockedCount}</p>
@@ -57,7 +62,6 @@ export default function HiveMilestones({
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-[#1e1e1e] w-fit">
         {(['grid', 'feed'] as const).map((t) => (
           <button
@@ -74,7 +78,6 @@ export default function HiveMilestones({
         ))}
       </div>
 
-      {/* Grid tab */}
       {tab === 'grid' && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -110,23 +113,25 @@ export default function HiveMilestones({
                   </p>
                   {unlocked && (
                     <div className="flex -space-x-1 mt-2 items-center">
-                      {earners.slice(0, 5).map((e) =>
-                        e.user.imageUrl ? (
-                          <Image
-                            key={e.id}
-                            src={e.user.imageUrl}
-                            alt=""
-                            width={16}
-                            height={16}
-                            className="rounded-full ring-1 ring-[#1e1e1e]"
-                          />
-                        ) : (
-                          <div
-                            key={e.id}
-                            className="w-4 h-4 rounded-full bg-[#FFC300]/30 ring-1 ring-[#1e1e1e]"
-                          />
-                        ),
-                      )}
+                      {earners
+                        .slice(0, 5)
+                        .map((e) =>
+                          e.user.imageUrl ? (
+                            <Image
+                              key={e.id}
+                              src={e.user.imageUrl}
+                              alt=""
+                              width={16}
+                              height={16}
+                              className="rounded-full ring-1 ring-[#1e1e1e]"
+                            />
+                          ) : (
+                            <div
+                              key={e.id}
+                              className="w-4 h-4 rounded-full bg-[#FFC300]/30 ring-1 ring-[#1e1e1e]"
+                            />
+                          ),
+                        )}
                       {earners.length > 5 && (
                         <span className="text-xs text-white/30 pl-2">
                           +{earners.length - 5}
@@ -139,7 +144,6 @@ export default function HiveMilestones({
             })}
           </div>
 
-          {/* Earner detail panel */}
           {filter && (
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3">
               <div className="flex items-center gap-3">
@@ -148,7 +152,9 @@ export default function HiveMilestones({
                   <p className="text-sm font-semibold text-white">
                     {MILESTONE_INFO[filter].label}
                   </p>
-                  <p className="text-xs text-white/40">{MILESTONE_INFO[filter].description}</p>
+                  <p className="text-xs text-white/40">
+                    {MILESTONE_INFO[filter].description}
+                  </p>
                 </div>
               </div>
               {(byType[filter] ?? []).length === 0 ? (
@@ -185,16 +191,17 @@ export default function HiveMilestones({
         </>
       )}
 
-      {/* Feed tab */}
       {tab === 'feed' && (
         <div>
           {recent.length === 0 ? (
             <div className="flex flex-col items-center py-16 text-center gap-3">
               <div className="text-4xl">🐣</div>
-              <p className="text-sm text-white/40">No milestones unlocked yet.</p>
+              <p className="text-sm text-white/40">
+                No milestones unlocked yet.
+              </p>
               <p className="text-xs text-white/25 max-w-xs">
-                Milestones are earned by writing, completing chapters, and participating in
-                sprints.
+                Milestones are earned by writing, completing chapters, and
+                participating in sprints.
               </p>
             </div>
           ) : (
@@ -208,7 +215,9 @@ export default function HiveMilestones({
                   >
                     <span className="text-xl shrink-0">{info.icon}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white">{info.label}</p>
+                      <p className="text-sm font-medium text-white">
+                        {info.label}
+                      </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         {m.user.imageUrl && (
                           <Image

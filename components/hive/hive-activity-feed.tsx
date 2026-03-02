@@ -31,7 +31,10 @@ function timeAgo(date: Date): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(date).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return new Date(date).toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 function dayLabel(date: Date): string {
@@ -43,7 +46,10 @@ function dayLabel(date: Date): string {
   if (diffDays === 0) return 'Today';
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays} days ago`;
-  return new Date(date).toLocaleDateString([], { month: 'long', day: 'numeric' });
+  return new Date(date).toLocaleDateString([], {
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 const EVENT_CONFIG: Record<
@@ -66,8 +72,7 @@ const EVENT_CONFIG: Record<
     icon: Trophy,
     color: 'text-[#FFC300]',
     bg: 'bg-[#FFC300]/10',
-    describe: (meta, name) =>
-      `${name} earned "${meta.label}"`,
+    describe: (meta, name) => `${name} earned "${meta.label}"`,
   },
   SPRINT_STARTED: {
     icon: Zap,
@@ -118,7 +123,6 @@ function EventRow({ event }: { event: ActivityEvent }) {
 
   return (
     <div className="flex items-start gap-3 py-2.5">
-      {/* Avatar */}
       <div className="relative shrink-0">
         {event.user.imageUrl ? (
           <Image
@@ -138,7 +142,6 @@ function EventRow({ event }: { event: ActivityEvent }) {
         </div>
       </div>
 
-      {/* Text */}
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white/75 leading-snug">
           {event.type === 'MILESTONE' && (
@@ -148,13 +151,17 @@ function EventRow({ event }: { event: ActivityEvent }) {
         </p>
       </div>
 
-      {/* Time */}
-      <span className="text-xs text-white/25 shrink-0 mt-0.5">{timeAgo(event.timestamp)}</span>
+      <span className="text-xs text-white/25 shrink-0 mt-0.5">
+        {timeAgo(event.timestamp)}
+      </span>
     </div>
   );
 }
 
-export default function HiveActivityFeed({ hiveId, initialEvents }: HiveActivityFeedProps) {
+export default function HiveActivityFeed({
+  hiveId,
+  initialEvents,
+}: HiveActivityFeedProps) {
   const [events, setEvents] = useState<ActivityEvent[]>(initialEvents);
   const [refreshing, startTransition] = useTransition();
 
@@ -165,7 +172,6 @@ export default function HiveActivityFeed({ hiveId, initialEvents }: HiveActivity
     });
   };
 
-  // Group events by day label
   const groups: { label: string; events: ActivityEvent[] }[] = [];
   for (const ev of events) {
     const label = dayLabel(ev.timestamp);
@@ -181,14 +187,17 @@ export default function HiveActivityFeed({ hiveId, initialEvents }: HiveActivity
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-white/30">
-          {events.length} event{events.length !== 1 ? 's' : ''} in the last 30 days
+          {events.length} event{events.length !== 1 ? 's' : ''} in the last 30
+          days
         </p>
         <button
           onClick={refresh}
           disabled={refreshing}
           className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`}
+          />
           Refresh
         </button>
       </div>
@@ -198,7 +207,8 @@ export default function HiveActivityFeed({ hiveId, initialEvents }: HiveActivity
           <div className="text-4xl">🐝</div>
           <p className="text-sm text-white/40">No activity yet.</p>
           <p className="text-xs text-white/25 max-w-xs">
-            Events like word logs, milestones, sprints, and chapter claims will appear here.
+            Events like word logs, milestones, sprints, and chapter claims will
+            appear here.
           </p>
         </div>
       ) : (

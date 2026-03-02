@@ -172,7 +172,7 @@ function ActiveSprint({
 
   return (
     <div className="space-y-4">
-      {/* Timer */}
+ 
       <div className="rounded-2xl bg-[#252525] border border-[#FFC300]/20 p-6 text-center">
         <div className="flex items-center justify-center gap-2 mb-2 text-xs text-[#FFC300] font-semibold uppercase tracking-wider">
           <Zap className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ function ActiveSprint({
         </div>
       </div>
 
-      {/* Participants */}
+
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider flex items-center gap-2">
@@ -222,7 +222,6 @@ function ActiveSprint({
         )}
       </div>
 
-      {/* Join form */}
       {!hasJoined && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3">
           <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
@@ -252,7 +251,7 @@ function ActiveSprint({
         </div>
       )}
 
-      {/* Submit form */}
+
       {hasJoined && !hasSubmitted && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3">
           <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
@@ -290,7 +289,6 @@ function ActiveSprint({
         </div>
       )}
 
-      {/* Submitted confirmation */}
       {hasJoined && hasSubmitted && (
         <div className="rounded-2xl bg-green-500/10 border border-green-500/20 p-4 text-center">
           <Check className="w-5 h-5 text-green-400 mx-auto mb-1" />
@@ -306,7 +304,7 @@ function ActiveSprint({
         </div>
       )}
 
-      {/* End sprint */}
+
       {canEnd && (
         <Button
           variant="outline"
@@ -340,7 +338,7 @@ export default function HiveSprint({
   const [pastSprints, setPastSprints] = useState<SprintWithParticipants[]>(initialPastSprints);
   const [, startTransition] = useTransition();
 
-  // Start sprint form
+
   const [duration, setDuration] = useState<(typeof DURATIONS)[number]>(25);
   const [wordsBeforeInput, setWordsBeforeInput] = useState('0');
   const [starting, setStarting] = useState(false);
@@ -387,7 +385,7 @@ export default function HiveSprint({
 
   return (
     <div className="space-y-6">
-      {/* Start sprint */}
+
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 space-y-4">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
           <Timer className="w-4 h-4 text-[#FFC300]" />
@@ -434,7 +432,7 @@ export default function HiveSprint({
         </Button>
       </div>
 
-      {/* Past sprints */}
+ 
       {pastSprints.length > 0 ? (
         <div className="space-y-3">
           <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">

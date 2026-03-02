@@ -56,7 +56,7 @@ export default function HiveStyleGuideEditor({
 
   return (
     <div className="space-y-4">
-      {/* Header bar */}
+
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 min-w-0">
           <FileText className="w-4 h-4 text-[#FFC300] shrink-0" />
@@ -89,7 +89,7 @@ export default function HiveStyleGuideEditor({
         <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{error}</p>
       )}
 
-      {/* Editor */}
+
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <RichTextEditor
           content={content}

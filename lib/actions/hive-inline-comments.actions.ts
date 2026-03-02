@@ -64,7 +64,7 @@ export async function getInlineCommentsAction(
   }));
 }
 
-/** Returns the chapter content (HTML) for display in the comment viewer. */
+
 export async function getChapterContentAction(
   hiveId: string,
   chapterId: string,
@@ -77,7 +77,7 @@ export async function getChapterContentAction(
   });
   if (!membership) return null;
 
-  // Verify chapter belongs to hive's book
+
   const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
   if (!hive?.bookId) return null;
 

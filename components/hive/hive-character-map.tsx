@@ -16,7 +16,6 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, '').trim();
 }
 
-// Tag colors cycle
 const TAG_COLORS = [
   'bg-[#FFC300]/15 text-[#FFC300]/80',
   'bg-blue-500/15 text-blue-400',
@@ -55,18 +54,20 @@ function CharacterCard({
       onClick={() => onSelect(isSelected ? null : character.id)}
     >
       <div className="p-4">
-        {/* Avatar */}
         <div className="w-10 h-10 rounded-xl bg-[#FFC300]/20 flex items-center justify-center mb-3 text-sm font-bold text-[#FFC300]">
           {initials}
         </div>
 
-        <h3 className="text-sm font-semibold text-white mb-1">{character.title}</h3>
+        <h3 className="text-sm font-semibold text-white mb-1">
+          {character.title}
+        </h3>
 
         {preview && (
-          <p className="text-xs text-white/40 leading-relaxed line-clamp-3 mb-3">{preview}</p>
+          <p className="text-xs text-white/40 leading-relaxed line-clamp-3 mb-3">
+            {preview}
+          </p>
         )}
 
-        {/* Tags */}
         {character.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {character.tags.slice(0, 4).map((tag, i) => (
@@ -80,13 +81,14 @@ function CharacterCard({
               </span>
             ))}
             {character.tags.length > 4 && (
-              <span className="text-xs text-white/30">+{character.tags.length - 4}</span>
+              <span className="text-xs text-white/30">
+                +{character.tags.length - 4}
+              </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Expanded detail */}
       {isSelected && (
         <div className="border-t border-[#FFC300]/20 px-4 py-3 flex items-center justify-between">
           <p className="text-xs text-white/30">
@@ -110,7 +112,10 @@ function CharacterCard({
   );
 }
 
-export default function HiveCharacterMap({ hiveId, characters, myRole }: HiveCharacterMapProps) {
+export default function HiveCharacterMap({
+  hiveId,
+  characters,
+}: HiveCharacterMapProps) {
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -128,11 +133,14 @@ export default function HiveCharacterMap({ hiveId, characters, myRole }: HiveCha
           <Users className="w-7 h-7 text-[#FFC300]/40" />
         </div>
         <div>
-          <p className="text-sm font-medium text-white/60 mb-1">No characters yet</p>
+          <p className="text-sm font-medium text-white/60 mb-1">
+            No characters yet
+          </p>
           <p className="text-xs text-white/30 max-w-xs">
             Add characters from the wiki by selecting the{' '}
-            <span className="text-[#FFC300]/70">Character</span> category. Use tags to indicate
-            relationships (e.g. &ldquo;sister:aria&rdquo;, &ldquo;enemy&rdquo;).
+            <span className="text-[#FFC300]/70">Character</span> category. Use
+            tags to indicate relationships (e.g. &ldquo;sister:aria&rdquo;,
+            &ldquo;enemy&rdquo;).
           </p>
         </div>
         <Link href={`/hive/${hiveId}/wiki`}>
@@ -147,7 +155,6 @@ export default function HiveCharacterMap({ hiveId, characters, myRole }: HiveCha
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" />
@@ -180,7 +187,9 @@ export default function HiveCharacterMap({ hiveId, characters, myRole }: HiveCha
       </p>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-white/30 text-center py-12">No characters match your search.</p>
+        <p className="text-sm text-white/30 text-center py-12">
+          No characters match your search.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((c) => (
