@@ -14,6 +14,11 @@ import {
   FileText,
   Sparkles,
   Settings,
+  BookMarked,
+  FlaskConical,
+  MessageCircle,
+  History,
+  Target,
 } from 'lucide-react';
 
 
@@ -21,7 +26,12 @@ const NAV_ITEMS = [
   { href: '', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/outline', label: 'Outline', icon: ListTree },
   { href: '/wiki', label: 'Wiki', icon: BookOpen },
+  { href: '/chapters', label: 'Chapters', icon: BookMarked },
+  { href: '/beta', label: 'Beta', icon: FlaskConical },
+  { href: '/comments', label: 'Annotations', icon: MessageCircle },
+  { href: '/history', label: 'History', icon: History },
   { href: '/style-guide', label: 'Style Guide', icon: FileText },
+  { href: '/word-goals', label: 'Word Goals', icon: Target },
   { href: '/milestones', label: 'Milestones', icon: Trophy },
   { href: '/sprint', label: 'Sprint', icon: Timer },
   { href: '/polls', label: 'Polls', icon: VoteIcon },

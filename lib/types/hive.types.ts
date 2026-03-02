@@ -103,6 +103,219 @@ export interface HiveFormProps {
 }
 
 
+// ── Chat ──────────────────────────────────────────────────────────────────────
+export type ChatMessageWithAuthor = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  content: string;
+  parentId: string | null;
+  createdAt: Date;
+  author: HiveUser;
+};
+
+// ── Polls ─────────────────────────────────────────────────────────────────────
+export type PollWithResults = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  question: string;
+  options: string[];
+  isMultiChoice: boolean;
+  endsAt: Date | null;
+  status: PollStatus;
+  createdAt: Date;
+  author: HiveUser;
+  totalVotes: number;
+  optionCounts: number[];
+  mySelectedOptions: number[] | null;
+};
+
+// ── Buzz ──────────────────────────────────────────────────────────────────────
+export type BuzzItemWithAuthor = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  content: string;
+  type: BuzzType;
+  mediaUrl: string | null;
+  likeCount: number;
+  createdAt: Date;
+  author: HiveUser;
+  likedByMe: boolean;
+};
+
+// ── Style Guide ───────────────────────────────────────────────────────────────
+export type StyleGuideDoc = {
+  id: string;
+  hiveId: string;
+  content: string;
+  updatedById: string | null;
+  updatedBy: HiveUser | null;
+  updatedAt: Date;
+};
+
+// ── Word Goals ────────────────────────────────────────────────────────────────
+export type WordGoal = {
+  id: string;
+  hiveId: string;
+  createdById: string | null;
+  type: WordGoalType;
+  targetWords: number;
+  startDate: Date;
+  endDate: Date | null;
+  isActive: boolean;
+  createdAt: Date;
+  /** Words logged toward this goal (computed based on type + date window) */
+  currentWords: number;
+};
+
+export type WordLog = {
+  id: string;
+  hiveId: string;
+  userId: string;
+  chapterId: string | null;
+  wordsAdded: number;
+  loggedAt: Date;
+  user: HiveUser;
+};
+
+// ── Sprints ───────────────────────────────────────────────────────────────────
+export type SprintParticipant = {
+  id: string;
+  sprintId: string;
+  userId: string;
+  wordsBefore: number;
+  wordsAfter: number | null;
+  joinedAt: Date;
+  user: HiveUser;
+  wordsWritten: number | null; // wordsAfter - wordsBefore, null until submitted
+};
+
+export type SprintWithParticipants = {
+  id: string;
+  hiveId: string;
+  startedById: string;
+  durationMinutes: number;
+  startTime: Date;
+  endTime: Date | null;
+  status: SprintStatus;
+  winnerId: string | null;
+  createdAt: Date;
+  startedBy: HiveUser;
+  winner: HiveUser | null;
+  participants: SprintParticipant[];
+};
+
+// ── Milestones ────────────────────────────────────────────────────────────────
+export type MilestoneWithUser = {
+  id: string;
+  hiveId: string;
+  userId: string;
+  type: MilestoneType;
+  unlockedAt: Date;
+  metadata: Record<string, string>;
+  user: HiveUser;
+};
+
+// ── Beta Reading ──────────────────────────────────────────────────────────────
+export type BetaChapterWithStatus = {
+  id: string;
+  bookId: string;
+  title: string;
+  order: number;
+  wordCount: number;
+  betaStatus: {
+    id: string;
+    status: BetaChapterStatus;
+    updatedById: string | null;
+    updatedBy: HiveUser | null;
+    updatedAt: Date;
+  } | null;
+};
+
+// ── Inline Comments ───────────────────────────────────────────────────────────
+export type InlineCommentStatus = 'OPEN' | 'RESOLVED';
+
+export type InlineComment = {
+  id: string;
+  hiveId: string;
+  chapterId: string;
+  authorId: string;
+  selectionStart: number;
+  selectionEnd: number;
+  selectedText: string;
+  content: string;
+  layer: AnnotationLayer;
+  status: InlineCommentStatus;
+  createdAt: Date;
+  author: HiveUser;
+};
+
+// ── Version Snapshots ─────────────────────────────────────────────────────────
+export type VersionSnapshot = {
+  id: string;
+  hiveId: string;
+  chapterId: string;
+  authorId: string;
+  name: string;
+  content: string;
+  wordCount: number;
+  createdAt: Date;
+  author: HiveUser;
+};
+
+// ── Wiki ──────────────────────────────────────────────────────────────────────
+export type WikiEntryWithAuthor = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  title: string;
+  content: string;
+  category: WikiCategory;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  author: HiveUser;
+};
+
+// ── Outline ───────────────────────────────────────────────────────────────────
+export type OutlineItem = {
+  id: string;
+  hiveId: string;
+  createdById: string | null;
+  title: string;
+  description: string;
+  type: OutlineItemType;
+  order: number;
+  parentId: string | null;
+  color: string;
+  assignedToId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// ── Chapter Claiming ──────────────────────────────────────────────────────────
+export type ChapterClaim = {
+  id: string;
+  hiveId: string;
+  chapterId: string;
+  userId: string;
+  status: ClaimStatus;
+  claimedAt: Date;
+  completedAt: Date | null;
+  claimer: HiveUser;
+};
+
+export type ChapterWithClaim = {
+  id: string;
+  bookId: string;
+  title: string;
+  order: number;
+  wordCount: number;
+  claim: ChapterClaim | null;
+};
+
 export type MilestoneInfo = {
   type: MilestoneType;
   label: string;

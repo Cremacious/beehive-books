@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { getHiveAction } from '@/lib/actions/hive.actions';
-import { getBuzzItemsAction } from '@/lib/actions/hive-buzz.actions';
-import HiveBuzzBoard from '@/components/hive/hive-buzz-board';
+import { getWordGoalsAction, getWordLogsAction } from '@/lib/actions/hive-word-goals.actions';
+import HiveWordGoals from '@/components/hive/hive-word-goals';
 
-export const metadata = { title: 'Buzz Board' };
+export const metadata = { title: 'Word Goals' };
 
-export default async function HiveBuzzPage({
+export default async function HiveWordGoalsPage({
   params,
 }: {
   params: Promise<{ hiveId: string }>;
@@ -18,13 +18,16 @@ export default async function HiveBuzzPage({
   const hive = await getHiveAction(hiveId);
   if (!hive || !hive.isMember) notFound();
 
-  const initialItems = await getBuzzItemsAction(hiveId);
+  const [initialGoals, initialLogs] = await Promise.all([
+    getWordGoalsAction(hiveId),
+    getWordLogsAction(hiveId),
+  ]);
 
   return (
-    <HiveBuzzBoard
+    <HiveWordGoals
       hiveId={hiveId}
-      initialItems={initialItems}
-      currentUserId={userId}
+      initialGoals={initialGoals}
+      initialLogs={initialLogs}
       myRole={hive.myRole ?? 'CONTRIBUTOR'}
     />
   );

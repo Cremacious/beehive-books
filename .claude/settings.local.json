@@ -6,10 +6,16 @@
       "Bash(npx tsc --noEmit)",
       "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/\")",
       "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/\\\\[hiveId\\\\]/\")",
-      "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/settings/\")"
+      "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/settings/\")",
+      "Bash(ls /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/hive/[hiveId]/)",
+      "Bash(ls -1 /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/hive/[hiveId]/)",
+      "Bash(grep -l \"hiveBeta\\\\|hiveInlineComments\\\\|hiveVersionSnapshots\" /c/Code/personal/beehive-books-online/lib/actions/*.ts)",
+      "Bash(ls -la \"c:\\\\Code\\\\personal\\\\beehive-books-online\\\\app\\\\\\(app\\)\\\\hive\\\\[hiveId]\")",
+      "Read(//c/Code/personal/beehive-books-online/**)"
     ],
     "additionalDirectories": [
-      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings"
+      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",
+      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]"
     ]
   }
 }
