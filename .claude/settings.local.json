@@ -11,7 +11,9 @@
       "Bash(ls -1 /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/hive/[hiveId]/)",
       "Bash(grep -l \"hiveBeta\\\\|hiveInlineComments\\\\|hiveVersionSnapshots\" /c/Code/personal/beehive-books-online/lib/actions/*.ts)",
       "Bash(ls -la \"c:\\\\Code\\\\personal\\\\beehive-books-online\\\\app\\\\\\(app\\)\\\\hive\\\\[hiveId]\")",
-      "Read(//c/Code/personal/beehive-books-online/**)"
+      "Read(//c/Code/personal/beehive-books-online/**)",
+      "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/prompts/\")",
+      "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/\")"
     ],
     "additionalDirectories": [
       "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",

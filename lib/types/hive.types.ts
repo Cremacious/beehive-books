@@ -324,6 +324,36 @@ export type MilestoneInfo = {
   threshold?: number;
 };
 
+// ── Activity Feed ─────────────────────────────────────────────────────────────
+export type ActivityEventType =
+  | 'WORD_LOG'
+  | 'MILESTONE'
+  | 'SPRINT_STARTED'
+  | 'SPRINT_ENDED'
+  | 'CHAPTER_CLAIMED'
+  | 'CHAPTER_COMPLETED'
+  | 'WIKI_ENTRY'
+  | 'INLINE_COMMENT';
+
+export type ActivityEvent = {
+  id: string;
+  type: ActivityEventType;
+  userId: string;
+  timestamp: Date;
+  user: HiveUser;
+  meta: Record<string, string | number>;
+};
+
+// ── Prompts Integration ────────────────────────────────────────────────────────
+export type HivePromptCard = {
+  id: string;
+  title: string;
+  description: string;
+  endDate: Date;
+  entryCount: number;
+  createdAt: Date;
+};
+
 export const MILESTONE_INFO: Record<MilestoneType, MilestoneInfo> = {
   FIRST_CELL: {
     type: 'FIRST_CELL',

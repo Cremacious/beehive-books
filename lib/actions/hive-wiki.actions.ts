@@ -2,7 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveWikiEntries, hiveMembers } from '@/db/schema';
 import type { ActionResult, WikiCategory, WikiEntryWithAuthor, HiveUser } from '@/lib/types/hive.types';
@@ -20,6 +20,38 @@ async function requireHiveMember(hiveId: string) {
   });
   if (!membership) throw new Error('Not a member of this hive');
   return { userId, membership };
+}
+
+export async function getWikiEntriesByCategoryAction(
+  hiveId: string,
+  category: WikiCategory,
+): Promise<WikiEntryWithAuthor[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership) return [];
+
+  const entries = await db.query.hiveWikiEntries.findMany({
+    where: and(eq(hiveWikiEntries.hiveId, hiveId), eq(hiveWikiEntries.category, category)),
+    with: { author: true },
+    orderBy: [asc(hiveWikiEntries.title)],
+  });
+
+  return entries.map((e) => ({
+    id: e.id,
+    hiveId: e.hiveId,
+    authorId: e.authorId,
+    title: e.title,
+    content: e.content,
+    category: e.category as WikiCategory,
+    tags: e.tags as string[],
+    createdAt: e.createdAt,
+    updatedAt: e.updatedAt,
+    author: e.author as HiveUser,
+  }));
 }
 
 export async function getWikiEntriesAction(hiveId: string): Promise<WikiEntryWithAuthor[]> {

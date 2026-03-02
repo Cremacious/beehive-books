@@ -19,6 +19,10 @@ import {
   MessageCircle,
   History,
   Target,
+  Activity,
+  Clock,
+  Network,
+  Lightbulb,
 } from 'lucide-react';
 
 
@@ -38,6 +42,10 @@ const NAV_ITEMS = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/buzz', label: 'Buzz Board', icon: Sparkles },
   { href: '/members', label: 'Members', icon: Users },
+  { href: '/activity', label: 'Activity', icon: Activity },
+  { href: '/timeline', label: 'Timeline', icon: Clock },
+  { href: '/character-map', label: 'Characters', icon: Network },
+  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
 ] as const;
 
 interface HiveNavProps {
