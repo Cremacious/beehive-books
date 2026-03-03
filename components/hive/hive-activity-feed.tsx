@@ -12,6 +12,10 @@ import {
   MessageCircle,
   Zap,
   RefreshCw,
+  ListTree,
+  Target,
+  Sparkles,
+  UserPlus,
 } from 'lucide-react';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import type { ActivityEvent, ActivityEventType } from '@/lib/types/hive.types';
@@ -113,6 +117,35 @@ const EVENT_CONFIG: Record<
     bg: 'bg-pink-400/10',
     describe: (meta, name) =>
       `${name} left a ${String(meta.layer).toLowerCase()} annotation`,
+  },
+  OUTLINE_ITEM: {
+    icon: ListTree,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-400/10',
+    describe: (meta, name) => `${name} added "${meta.title}" to the outline`,
+  },
+  WORD_GOAL: {
+    icon: Target,
+    color: 'text-rose-400',
+    bg: 'bg-rose-400/10',
+    describe: (meta, name) => {
+      const label = String(meta.goalType).charAt(0) + String(meta.goalType).slice(1).toLowerCase();
+      return `${name} set a ${label} word goal — ${Number(meta.targetWords).toLocaleString()} words`;
+    },
+  },
+  BUZZ_ITEM: {
+    icon: Sparkles,
+    color: 'text-violet-400',
+    bg: 'bg-violet-400/10',
+    describe: (meta, name) =>
+      `${name} posted a ${String(meta.buzzType).toLowerCase()} to the Buzz Board`,
+  },
+  MEMBER_JOINED: {
+    icon: UserPlus,
+    color: 'text-teal-400',
+    bg: 'bg-teal-400/10',
+    describe: (meta, name) =>
+      `${name} joined the hive as a ${String(meta.role).charAt(0) + String(meta.role).slice(1).toLowerCase()}`,
   },
 };
 
