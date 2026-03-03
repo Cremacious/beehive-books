@@ -11,6 +11,9 @@ import {
   hiveChapterClaims,
   hiveWikiEntries,
   hiveInlineComments,
+  hiveOutlineItems,
+  hiveWordGoals,
+  hiveBuzzItems,
 } from '@/db/schema';
 import {
   MILESTONE_INFO,
@@ -35,7 +38,18 @@ export async function getHiveActivityAction(
 
   const cutoff = new Date(Date.now() - THIRTY_DAYS);
 
-  const [wordLogs, milestones, sprints, claims, wikiEntries, comments] = await Promise.all([
+  const [
+    wordLogs,
+    milestones,
+    sprints,
+    claims,
+    wikiEntries,
+    comments,
+    outlineItems,
+    wordGoals,
+    buzzItems,
+    newMembers,
+  ] = await Promise.all([
     db.query.hiveWordLogs.findMany({
       where: and(eq(hiveWordLogs.hiveId, hiveId), gte(hiveWordLogs.loggedAt, cutoff)),
       with: { user: true },
@@ -76,6 +90,30 @@ export async function getHiveActivityAction(
       ),
       with: { author: true },
       orderBy: [desc(hiveInlineComments.createdAt)],
+      limit: 10,
+    }),
+    db.query.hiveOutlineItems.findMany({
+      where: and(eq(hiveOutlineItems.hiveId, hiveId), gte(hiveOutlineItems.createdAt, cutoff)),
+      with: { createdBy: true },
+      orderBy: [desc(hiveOutlineItems.createdAt)],
+      limit: 10,
+    }),
+    db.query.hiveWordGoals.findMany({
+      where: and(eq(hiveWordGoals.hiveId, hiveId), gte(hiveWordGoals.createdAt, cutoff)),
+      with: { createdBy: true },
+      orderBy: [desc(hiveWordGoals.createdAt)],
+      limit: 10,
+    }),
+    db.query.hiveBuzzItems.findMany({
+      where: and(eq(hiveBuzzItems.hiveId, hiveId), gte(hiveBuzzItems.createdAt, cutoff)),
+      with: { author: true },
+      orderBy: [desc(hiveBuzzItems.createdAt)],
+      limit: 10,
+    }),
+    db.query.hiveMembers.findMany({
+      where: and(eq(hiveMembers.hiveId, hiveId), gte(hiveMembers.joinedAt, cutoff)),
+      with: { user: true },
+      orderBy: [desc(hiveMembers.joinedAt)],
       limit: 10,
     }),
   ]);
@@ -150,6 +188,52 @@ export async function getHiveActivityAction(
       timestamp: ic.createdAt,
       user: ic.author as HiveUser,
       meta: { layer: ic.layer },
+    });
+  }
+
+  for (const o of outlineItems) {
+    if (!o.createdBy) continue;
+    events.push({
+      id: `oi-${o.id}`,
+      type: 'OUTLINE_ITEM',
+      userId: o.createdById ?? '',
+      timestamp: o.createdAt,
+      user: o.createdBy as HiveUser,
+      meta: { title: o.title, itemType: o.type },
+    });
+  }
+
+  for (const g of wordGoals) {
+    if (!g.createdBy) continue;
+    events.push({
+      id: `wg-${g.id}`,
+      type: 'WORD_GOAL',
+      userId: g.createdById ?? '',
+      timestamp: g.createdAt,
+      user: g.createdBy as HiveUser,
+      meta: { goalType: g.type, targetWords: g.targetWords },
+    });
+  }
+
+  for (const b of buzzItems) {
+    events.push({
+      id: `bi-${b.id}`,
+      type: 'BUZZ_ITEM',
+      userId: b.authorId,
+      timestamp: b.createdAt,
+      user: b.author as HiveUser,
+      meta: { buzzType: b.type },
+    });
+  }
+
+  for (const mem of newMembers) {
+    events.push({
+      id: `mb-${mem.id}`,
+      type: 'MEMBER_JOINED',
+      userId: mem.userId,
+      timestamp: mem.joinedAt,
+      user: mem.user as HiveUser,
+      meta: { role: mem.role },
     });
   }
 

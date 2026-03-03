@@ -8,6 +8,7 @@ import {
   Loader2,
   Flame,
   Calendar,
+  CalendarDays,
   Trophy,
   X,
   TrendingUp,
@@ -58,6 +59,11 @@ const GOAL_TYPE_META: Record<
     label: 'Weekly',
     icon: <Calendar className="w-3 h-3" />,
     color: 'text-blue-400',
+  },
+  MONTHLY: {
+    label: 'Monthly',
+    icon: <CalendarDays className="w-3 h-3" />,
+    color: 'text-purple-400',
   },
   TOTAL: {
     label: 'Total',
@@ -187,6 +193,7 @@ export default function HiveWordGoals({
   const [goalType, setGoalType] = useState<WordGoalType>('WEEKLY');
   const [targetInput, setTargetInput] = useState('');
   const [endDateInput, setEndDateInput] = useState('');
+  const [monthInput, setMonthInput] = useState('');
   const [createError, setCreateError] = useState('');
   const [creating, setCreating] = useState(false);
 
@@ -230,13 +237,17 @@ export default function HiveWordGoals({
       setCreateError('Target must be a positive number.');
       return;
     }
+    if (goalType === 'MONTHLY' && !monthInput) {
+      setCreateError('Please select a month.');
+      return;
+    }
     setCreateError('');
     setCreating(true);
     const result = await createWordGoalAction(
       hiveId,
       goalType,
       n,
-      endDateInput || undefined,
+      goalType === 'MONTHLY' ? monthInput : (endDateInput || undefined),
     );
     setCreating(false);
     if (!result.success) {
@@ -245,6 +256,7 @@ export default function HiveWordGoals({
     }
     setTargetInput('');
     setEndDateInput('');
+    setMonthInput('');
     setShowCreate(false);
     refresh();
   };
@@ -308,12 +320,12 @@ export default function HiveWordGoals({
    
               New word goal
             </h4>
-            <div className="flex gap-2">
-              {(['DAILY', 'WEEKLY', 'TOTAL'] as const).map((t) => (
+            <div className="grid grid-cols-2 gap-2">
+              {(['DAILY', 'WEEKLY', 'MONTHLY', 'TOTAL'] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setGoalType(t)}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className={`py-1.5 rounded-lg text-xs font-medium transition-all ${
                     goalType === t
                       ? 'bg-[#FFC300] text-black'
                       : 'bg-[#1e1e1e] text-white hover:text-white/70'
@@ -331,17 +343,31 @@ export default function HiveWordGoals({
               placeholder="Target words (e.g. 10000)"
               className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
-            <div>
-              <label className="text-xs text-white mb-1 block">
-                End date (optional)
-              </label>
-              <input
-                type="date"
-                value={endDateInput}
-                onChange={(e) => setEndDateInput(e.target.value)}
-                className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
-              />
-            </div>
+            {goalType === 'MONTHLY' ? (
+              <div>
+                <label className="text-xs text-white mb-1 block">
+                  Month
+                </label>
+                <input
+                  type="month"
+                  value={monthInput}
+                  onChange={(e) => setMonthInput(e.target.value)}
+                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                />
+              </div>
+            ) : (
+              <div>
+                <label className="text-xs text-white mb-1 block">
+                  End date (optional)
+                </label>
+                <input
+                  type="date"
+                  value={endDateInput}
+                  onChange={(e) => setEndDateInput(e.target.value)}
+                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                />
+              </div>
+            )}
             {createError && (
               <p className="text-xs text-red-400">{createError}</p>
             )}
@@ -360,7 +386,7 @@ export default function HiveWordGoals({
               <Button
                 size="sm"
                 onClick={handleCreate}
-                disabled={creating || !targetInput}
+                disabled={creating || !targetInput || (goalType === 'MONTHLY' && !monthInput)}
               >
                 {creating ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

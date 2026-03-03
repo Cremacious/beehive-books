@@ -2,7 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, desc, eq, gte, sum } from 'drizzle-orm';
+import { and, desc, eq, gte, lte, sum } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveWordGoals, hiveWordLogs, hiveMembers } from '@/db/schema';
 import type { ActionResult, WordGoalType, WordGoal, WordLog, HiveUser } from '@/lib/types/hive.types';
@@ -22,21 +22,20 @@ async function requireHiveMember(hiveId: string) {
   return { userId, membership };
 }
 
-function windowStart(type: WordGoalType): Date | null {
+/** Auto-deactivate any MONTHLY goals whose endDate is in the past. */
+async function expireMonthlyGoals(hiveId: string) {
   const now = new Date();
-  if (type === 'DAILY') {
-    const d = new Date(now);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }
-  if (type === 'WEEKLY') {
-    const d = new Date(now);
-    const day = d.getDay(); 
-    d.setDate(d.getDate() - day);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }
-  return null; 
+  await db
+    .update(hiveWordGoals)
+    .set({ isActive: false })
+    .where(
+      and(
+        eq(hiveWordGoals.hiveId, hiveId),
+        eq(hiveWordGoals.isActive, true),
+        eq(hiveWordGoals.type, 'MONTHLY'),
+        lte(hiveWordGoals.endDate, now),
+      ),
+    );
 }
 
 export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
@@ -48,19 +47,42 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
   });
   if (!membership) return [];
 
+  // Expire any monthly goals whose period has ended before fetching
+  await expireMonthlyGoals(hiveId);
+
   const goals = await db.query.hiveWordGoals.findMany({
     where: eq(hiveWordGoals.hiveId, hiveId),
     orderBy: [desc(hiveWordGoals.createdAt)],
   });
 
- 
   const result: WordGoal[] = await Promise.all(
     goals.map(async (g) => {
       const type = g.type as WordGoalType;
-      const start = windowStart(type);
+
+      // Build date window for word count aggregation
+      let windowFrom: Date | null = null;
+      let windowTo: Date | null = null;
+
+      if (type === 'DAILY') {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        windowFrom = d;
+      } else if (type === 'WEEKLY') {
+        const d = new Date();
+        const day = d.getDay();
+        d.setDate(d.getDate() - day);
+        d.setHours(0, 0, 0, 0);
+        windowFrom = d;
+      } else if (type === 'MONTHLY') {
+        // Count only logs within the goal's calendar month
+        windowFrom = g.startDate;
+        windowTo = g.endDate;
+      }
+      // TOTAL: no window (count all logs for hive)
 
       const conditions = [eq(hiveWordLogs.hiveId, hiveId)];
-      if (start) conditions.push(gte(hiveWordLogs.loggedAt, start));
+      if (windowFrom) conditions.push(gte(hiveWordLogs.loggedAt, windowFrom));
+      if (windowTo) conditions.push(lte(hiveWordLogs.loggedAt, windowTo));
 
       const [agg] = await db
         .select({ total: sum(hiveWordLogs.wordsAdded) })
@@ -134,6 +156,9 @@ export async function logWordsAction(
       wordsAdded,
     });
 
+    // Expire any monthly goals whose period has now ended
+    await expireMonthlyGoals(hiveId);
+
     revalidatePath(`/hive/${hiveId}/word-goals`);
     return { success: true, message: `Logged ${wordsAdded.toLocaleString()} words!` };
   } catch {
@@ -145,7 +170,9 @@ export async function createWordGoalAction(
   hiveId: string,
   type: WordGoalType,
   targetWords: number,
-  endDate?: string,
+  /** For DAILY/WEEKLY/TOTAL: optional end date string (ISO date).
+   *  For MONTHLY: a "YYYY-MM" string (e.g. "2026-03"). */
+  endDateOrMonth?: string,
 ): Promise<ActionResult> {
   try {
     const { userId, membership } = await requireHiveMember(hiveId);
@@ -157,12 +184,34 @@ export async function createWordGoalAction(
       return { success: false, message: 'Target must be a positive number.' };
     }
 
+    let startDate: Date | undefined;
+    let endDate: Date | null = null;
+
+    if (type === 'MONTHLY') {
+      if (!endDateOrMonth) {
+        return { success: false, message: 'A month must be selected for monthly goals.' };
+      }
+      const [yearStr, monthStr] = endDateOrMonth.split('-');
+      const year = parseInt(yearStr, 10);
+      const month = parseInt(monthStr, 10); // 1-12
+      if (!year || !month || month < 1 || month > 12) {
+        return { success: false, message: 'Invalid month selected.' };
+      }
+      // startDate = first day of month at midnight
+      startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
+      // endDate = last millisecond of the month (day 0 of the next month = last day of this month)
+      endDate = new Date(year, month, 0, 23, 59, 59, 999);
+    } else {
+      endDate = endDateOrMonth ? new Date(endDateOrMonth) : null;
+    }
+
     await db.insert(hiveWordGoals).values({
       hiveId,
       createdById: userId,
       type,
       targetWords,
-      endDate: endDate ? new Date(endDate) : null,
+      ...(startDate ? { startDate } : {}),
+      endDate,
     });
 
     revalidatePath(`/hive/${hiveId}/word-goals`);

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import { getHiveAction, getHiveMembersAction } from '@/lib/actions/hive.actions';
+import { getHiveAction } from '@/lib/actions/hive.actions';
+import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import HiveDashboard from '@/components/hive/hive-dashboard';
 import type { Metadata } from 'next';
 
@@ -30,9 +31,13 @@ export default async function HiveDashboardPage({
   const hive = await getHiveAction(hiveId);
   if (!hive) notFound();
 
-  const members = await getHiveMembersAction(hiveId);
+  const initialActivity = await getHiveActivityAction(hiveId);
 
   return (
-    <HiveDashboard hive={hive} members={members} currentUserId={userId ?? null} />
+    <HiveDashboard
+      hive={hive}
+      initialActivity={initialActivity}
+      currentUserId={userId ?? null}
+    />
   );
 }

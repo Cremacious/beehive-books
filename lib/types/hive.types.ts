@@ -6,7 +6,7 @@ export type BetaChapterStatus = 'DRAFT' | 'READY_FOR_REVIEW' | 'IN_REVIEW' | 'RE
 export type AnnotationLayer = 'GRAMMAR' | 'PLOT' | 'TONE' | 'CONTINUITY' | 'GENERAL';
 export type OutlineItemType = 'CHAPTER' | 'SCENE' | 'BEAT' | 'NOTE';
 export type WikiCategory = 'CHARACTER' | 'LOCATION' | 'TIMELINE' | 'LORE' | 'TERMINOLOGY' | 'OTHER';
-export type WordGoalType = 'DAILY' | 'WEEKLY' | 'TOTAL';
+export type WordGoalType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'TOTAL';
 export type SprintStatus = 'ACTIVE' | 'COMPLETED';
 export type PollStatus = 'ACTIVE' | 'CLOSED';
 export type BuzzType = 'INSPIRATION' | 'MEME' | 'PLAYLIST' | 'MOOD' | 'OTHER';
@@ -331,7 +331,11 @@ export type ActivityEventType =
   | 'CHAPTER_CLAIMED'
   | 'CHAPTER_COMPLETED'
   | 'WIKI_ENTRY'
-  | 'INLINE_COMMENT';
+  | 'INLINE_COMMENT'
+  | 'OUTLINE_ITEM'
+  | 'WORD_GOAL'
+  | 'BUZZ_ITEM'
+  | 'MEMBER_JOINED';
 
 export type ActivityEvent = {
   id: string;

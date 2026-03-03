@@ -975,7 +975,7 @@ export const hiveWordGoals = pgTable('hive_word_goals', {
   createdById: text('created_by_id').references(() => users.clerkId, {
     onDelete: 'set null',
   }),
-  type: text('type', { enum: ['DAILY', 'WEEKLY', 'TOTAL'] })
+  type: text('type', { enum: ['DAILY', 'WEEKLY', 'MONTHLY', 'TOTAL'] })
     .notNull()
     .default('TOTAL'),
   targetWords: integer('target_words').notNull(),
