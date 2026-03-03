@@ -47,8 +47,8 @@ export function DesktopSidebar() {
 
     
         <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5">
-          <span className="text-2xl leading-none">🐝</span>
-          <span className="hidden lg:block text-white font-bold text-lg tracking-tight mainFont">
+        
+          <span className="hidden lg:block text-white font-bold text-3xl tracking-tight mainFont">
             Beehive<span className="text-[#FFC300]">Books</span>
           </span>
         </div>

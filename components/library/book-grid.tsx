@@ -174,7 +174,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
           <input
@@ -187,12 +187,12 @@ export default function BookGrid({ books }: { books: Book[] }) {
         </div>
 
         <div className="flex gap-3">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500 pointer-events-none" />
             <select
               value={sort}
               onChange={(e) => handleSort(e.target.value as SortOption)}
-              className="pl-10 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
             >
               <option value="date-added">Date Added</option>
               <option value="title">Title (A–Z)</option>
@@ -200,7 +200,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
             </select>
           </div>
 
-          <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden">
+          <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden shrink-0">
             <button
               onClick={() => setView('grid')}
               title="Grid view"
@@ -224,6 +224,14 @@ export default function BookGrid({ books }: { books: Book[] }) {
               <List className="w-5 h-5" />
             </button>
           </div>
+
+          <Link
+            href="/library/create"
+            className="flex mainFont items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            New Book
+          </Link>
         </div>
       </div>
 

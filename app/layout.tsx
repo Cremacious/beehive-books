@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
-import { Fredoka } from 'next/font/google';
+import { Comfortaa } from 'next/font/google';
 import { Providers } from '@/app/providers';
 import './globals.css';
 
-const fredoka = Fredoka({
+const comfortaa = Comfortaa({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-fredoka',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-comfortaa',
   display: 'swap',
 });
 
@@ -34,7 +34,7 @@ export default async function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
-      <html lang="en" className={fredoka.variable}>
+      <html lang="en" className={comfortaa.variable}>
         <body className="antialiased">
           <Providers>{children}</Providers>
         </body>
