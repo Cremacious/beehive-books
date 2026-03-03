@@ -347,7 +347,7 @@ export default function HiveDashboard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-3xl">🐝</span>
-              <h1 className="text-2xl font-bold text-white">{hive.name}</h1>
+              <h1 className="text-2xl font-bold text-white mainFont">{hive.name}</h1>
 
               {hive.privacy === 'PUBLIC' ? (
                 <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">
@@ -475,7 +475,7 @@ export default function HiveDashboard({
       {hive.bookId ? (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2 mainFont">
               <BookOpen className="w-4 h-4 text-[#FFC300]" />
               The Book
             </h2>
@@ -498,7 +498,7 @@ export default function HiveDashboard({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-white mb-1">{book.title}</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 mainFont">{book.title}</h3>
                 {book.author && (
                   <p className="text-sm text-white/80 mb-2">by {book.author}</p>
                 )}
@@ -546,7 +546,7 @@ export default function HiveDashboard({
       {isMember && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2 mainFont">
               <Activity className="w-4 h-4 text-[#FFC300]" />
               Recent Activity
             </h2>

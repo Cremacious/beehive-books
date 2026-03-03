@@ -30,7 +30,7 @@ export default async function ClubSettingsPage({
       >
         <ArrowLeft className="w-4 h-4" /> Back to {club.name}
       </Link>
-      <h1 className="text-2xl font-bold text-white mb-6">Club Settings</h1>
+      <h1 className="text-2xl font-bold text-white mb-6 mainFont">Club Settings</h1>
       <div className="bg-[#1e1e1e] rounded-2xl border border-[#2a2a2a] p-6">
         <EditClubForm club={club} />
       </div>

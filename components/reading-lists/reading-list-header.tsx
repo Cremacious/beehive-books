@@ -20,7 +20,7 @@ export function ReadingListHeader({ list, isOwner }: ReadingListHeaderProps) {
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 mb-6">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl md:text-2xl font-bold text-[#FFC300] leading-tight mb-2">
+          <h1 className="text-xl md:text-2xl font-bold text-[#FFC300] leading-tight mb-2 mainFont">
             {list.title}
           </h1>
           <div className="flex items-center gap-1.5 mb-3">

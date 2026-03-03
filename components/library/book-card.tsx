@@ -24,7 +24,7 @@ export default function BookCard({ book }: { book: Book }) {
 
       <div className="flex flex-col flex-1 px-3 pt-3 pb-3 gap-1.5">
         <div>
-          <h3 className="text-base font-semibold text-yellow-500 leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors duration-200">
+          <h3 className="text-base font-semibold text-yellow-500 leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors duration-200 mainFont">
             {book.title}
           </h3>
           <p className="text-sm text-white truncate mt-0.5">{book.author}</p>

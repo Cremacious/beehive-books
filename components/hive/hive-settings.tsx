@@ -131,7 +131,7 @@ export default function HiveSettings({
   return (
     <div className="space-y-8">
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 space-y-4">
-        <h2 className="text-base font-semibold text-white flex items-center gap-2">
+        <h2 className="text-base font-semibold text-white flex items-center gap-2 mainFont">
           <BookOpen className="w-4 h-4 text-[#FFC300]" />
           Hive Book
         </h2>
@@ -311,7 +311,7 @@ export default function HiveSettings({
       </div>
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 space-y-4">
-        <h2 className="text-base font-semibold text-white">Hive Settings</h2>
+        <h2 className="text-base font-semibold text-white mainFont">Hive Settings</h2>
         <HiveForm
           mode="edit"
           hiveId={hive.id}

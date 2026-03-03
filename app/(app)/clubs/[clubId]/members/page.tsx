@@ -42,7 +42,7 @@ export default async function ClubMembersPage({
       </Link>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Members</h1>
+          <h1 className="text-2xl font-bold text-white mainFont">Members</h1>
           <p className="text-white/80 text-sm mt-0.5">
             {club.memberCount} {club.memberCount === 1 ? 'member' : 'members'}
           </p>

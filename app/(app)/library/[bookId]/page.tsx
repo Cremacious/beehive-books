@@ -74,7 +74,7 @@ export default async function BookPage({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h1 className="text-2xl md:text-3xl font-bold text-yellow-500 leading-tight">
+                  <h1 className="text-2xl md:text-3xl font-bold text-yellow-500 leading-tight mainFont">
                     {book.title}
                   </h1>
                   <p className="text-base text-white mt-1.5">

@@ -32,7 +32,7 @@ export default function DiscussionList({
       
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-white">Discussions</h2>
+          <h2 className="text-lg font-semibold text-white mainFont">Discussions</h2>
           <p className="text-sm text-white/80 mt-0.5">
             {total} discussion{total !== 1 ? 's' : ''}
           </p>

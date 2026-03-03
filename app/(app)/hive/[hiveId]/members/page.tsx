@@ -32,7 +32,7 @@ export default async function HiveMembersPage({
   return (
     <div className="max-w-2xl">
       <div className="mb-5">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-white mainFont">
           Members
         </h2>
         <p className="text-sm text-white/60 mt-0.5">

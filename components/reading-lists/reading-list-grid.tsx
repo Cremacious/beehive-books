@@ -51,7 +51,7 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
         <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5">
           <BookMarked className="w-9 h-9 text-white/80" />
         </div>
-        <h2 className="text-lg font-semibold text-white mb-2">No reading lists yet</h2>
+        <h2 className="text-lg font-semibold text-white mb-2 mainFont">No reading lists yet</h2>
         <p className="text-sm text-white/80 mb-6 max-w-xs">
           Create your first reading list to track books you want to read.
         </p>

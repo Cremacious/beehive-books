@@ -145,7 +145,7 @@ export default async function PromptDetailPage({ params }: Props) {
           </div>
 
  
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight mainFont">
             {prompt.title}
           </h1>
 
@@ -260,7 +260,7 @@ export default async function PromptDetailPage({ params }: Props) {
 
       {isEnded && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 mainFont">
           
             Entries ({entries.length})
           </h2>

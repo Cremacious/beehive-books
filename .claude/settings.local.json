@@ -14,7 +14,11 @@
       "Read(//c/Code/personal/beehive-books-online/**)",
       "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/prompts/\")",
       "Bash(ls -la \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/\")",
-      "Bash(grep -n \"imageUrl\" /c/Code/personal/beehive-books-online/lib/actions/*.ts)"
+      "Bash(grep -n \"imageUrl\" /c/Code/personal/beehive-books-online/lib/actions/*.ts)",
+      "Bash(xargs grep -l \"font-geist\\\\|Geist\")",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -l \"mainFont\")",
+      "Bash(npm ls tailwindcss)"
     ],
     "additionalDirectories": [
       "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",

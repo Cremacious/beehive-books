@@ -13,7 +13,7 @@ export default function CreateReadingListPage() {
       <BackButton href="/reading-lists" label="Reading Lists" className="mb-6" />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">New Reading List</h1>
+        <h1 className="text-2xl font-bold text-white mainFont">New Reading List</h1>
         <p className="text-sm text-white/45 mt-1">
           Create a list to track books you want to read.
         </p>

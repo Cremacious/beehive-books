@@ -282,7 +282,7 @@ export function EntryCommentSection({
 
   return (
     <section className="mt-14">
-      <h2 className="text-base font-semibold text-white mb-6 flex items-center gap-2">
+      <h2 className="text-base font-semibold text-white mb-6 flex items-center gap-2 mainFont">
         <MessageSquare className="w-4 h-4 text-yellow-500" />
         {comments.length} Comment{comments.length !== 1 ? 's' : ''}
       </h2>

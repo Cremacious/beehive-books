@@ -20,7 +20,7 @@ export default async function PromptsPage() {
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white">Prompts</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">Prompts</h1>
           <p className="mt-1 text-base text-white/70">
             Creative challenges and writing competitions
           </p>

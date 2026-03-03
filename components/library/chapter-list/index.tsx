@@ -191,7 +191,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
       <div className="px-5 py-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-yellow-500">Chapters</h2>
+          <h2 className="text-lg font-semibold text-yellow-500 mainFont">Chapters</h2>
           <div className="flex items-center gap-2">
             {reorderMode ? (
               <>

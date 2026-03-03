@@ -48,7 +48,7 @@ function BookListItem({ book }: { book: Book }) {
 
       <div className="flex-1 min-w-0 flex flex-col justify-between gap-1">
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors">
+          <h3 className="text-lg font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors mainFont">
             {book.title}
           </h3>
           <p className="text-base text-white truncate">{book.author}</p>
@@ -64,6 +64,22 @@ function BookListItem({ book }: { book: Book }) {
   );
 }
 
+const PLACEHOLDER_COUNT = 10;
+
+function Placeholder() {
+  return (
+    <div className="flex flex-col rounded-lg border-2 border-dashed border-[#FFC300]/25 bg-[#1a1a1a] overflow-hidden">
+      <div className="relative w-full aspect-2/3 flex items-center justify-center">
+        <BookOpen className="w-8 h-8 text-[#FFC300]/15" />
+      </div>
+      <div className="px-3 pt-3 pb-3">
+        {/* <div className="h-4 w-3/4 rounded bg-[#FFC300]/8 mb-2" />
+        <div className="h-3 w-1/2 rounded bg-[#FFC300]/5" /> */}
+      </div>
+    </div>
+  );
+}
+
 export default function BookGrid({ books }: { books: Book[] }) {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortOption>('date-added');
@@ -71,7 +87,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
   const [view, setView] = useState<ViewMode>('grid');
   const [page, setPage] = useState(1);
 
-  const PAGE_SIZE = 12;
+  const PAGE_SIZE = 10;
 
   const privacyCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: books.length };
@@ -121,19 +137,34 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-20 h-20 rounded-xl bg-[#252525] flex items-center justify-center mb-6">
-          <BookOpen className="w-9 h-9 text-white/15" />
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="grid grid-cols-3 gap-2 mb-8">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div
+              key={i}
+              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
+            >
+              <BookOpen
+                className={`w-5 h-5 ${
+                  i % 3 === 1 ? 'text-[#FFC300]/25' : 'text-[#FFC300]/10'
+                }`}
+              />
+            </div>
+          ))}
         </div>
-        <h2 className="text-xl font-semibold text-white/55 mb-3">
-          No books yet
+
+        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+          Your hive is empty!
         </h2>
-        <p className="text-base text-white/30 mb-6 max-w-xs">
-          Start writing by creating your first book.
+
+        <p className=" text-white/80 mb-8 max-w-sm">
+          Upload your first book and watch your library bloom into a buzzing
+          archive of stories.
         </p>
-        <Button asChild>
+
+        <Button asChild size="lg">
           <Link href="/library/create">
-            <Plus />
+            <Plus className="w-5 h-5" />
             Create your first book
           </Link>
         </Button>
@@ -248,10 +279,15 @@ export default function BookGrid({ books }: { books: Book[] }) {
       {displayed.length > 0 && (
         <>
           {view === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5  gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {displayed.map((book) => (
                 <BookCard key={book.id} book={book} />
               ))}
+              {displayed.length < PLACEHOLDER_COUNT &&
+                Array.from(
+                  { length: PLACEHOLDER_COUNT - displayed.length },
+                  (_, i) => <Placeholder key={`ph-${i}`} />,
+                )}
             </div>
           ) : (
             <div className="flex flex-col gap-1.5">

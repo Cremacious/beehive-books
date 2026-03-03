@@ -11,7 +11,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
         <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5 text-4xl">
           🐝
         </div>
-        <h2 className="text-lg font-semibold text-white/80 mb-2">
+        <h2 className="text-lg font-semibold text-white/80 mb-2 mainFont">
           You haven&apos;t joined any hives yet
         </h2>
         <p className="text-sm text-white/60 mb-6 max-w-xs">
@@ -39,7 +39,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
     <div>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-semibold text-white">My Hives</h2>
+          <h2 className="text-lg font-semibold text-white mainFont">My Hives</h2>
           <p className="text-sm text-white/60 mt-0.5">
             {hives.length} hive{hives.length !== 1 ? 's' : ''}
           </p>

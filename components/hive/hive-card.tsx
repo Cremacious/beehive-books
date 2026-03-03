@@ -12,7 +12,7 @@ export default function HiveCard({ hive }: { hive: HiveWithMembership }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-lg">🐝</span>
-            <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors">
+            <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
               {hive.name}
             </h3>
           </div>

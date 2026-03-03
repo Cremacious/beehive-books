@@ -45,7 +45,7 @@ export default async function ClubDiscussionsPage({
         <ArrowLeft className="w-4 h-4" /> Back to {club.name}
       </Link>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Discussions</h1>
+        <h1 className="text-2xl font-bold text-white mainFont">Discussions</h1>
       </div>
       <DiscussionList
         discussions={discussions}

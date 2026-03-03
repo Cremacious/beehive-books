@@ -35,7 +35,7 @@ export default function ReadingListCard({ list }: { list: ReadingList }) {
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <BookMarked className="w-5 h-5 text-[#FFC300]/80 shrink-0" />
-          <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors">
+          <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
             {list.title}
           </h3>
         </div>

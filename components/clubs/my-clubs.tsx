@@ -11,7 +11,7 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
         <div className="w-20 h-20 rounded-2xl bg-[#252525] flex items-center justify-center mb-5">
           <Users className="w-9 h-9 text-white/80" />
         </div>
-        <h2 className="text-lg font-semibold text-white/80 mb-2">
+        <h2 className="text-lg font-semibold text-white/80 mb-2 mainFont">
           You haven&apos;t joined any clubs yet
         </h2>
         <p className="text-sm text-white/80 mb-6 max-w-xs">
@@ -39,7 +39,7 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
     <div>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-semibold text-white">My Clubs</h2>
+          <h2 className="text-lg font-semibold text-white mainFont">My Clubs</h2>
           <p className="text-sm text-white/80 mt-0.5">
             {clubs.length} club{clubs.length !== 1 ? 's' : ''}
           </p>

@@ -11,7 +11,7 @@ export default function ClubCard({ club }: { club: ClubWithMembership }) {
     
       <div className="flex items-start gap-3 mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors">
+          <h3 className="text-base font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
             {club.name}
           </h3>
 

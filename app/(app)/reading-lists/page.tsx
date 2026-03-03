@@ -25,7 +25,7 @@ export default async function ReadingListsPage() {
     <div className="px-4 py-8 md:px-8 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white">Reading Lists</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">Reading Lists</h1>
           <p className="mt-0.5 text-base text-white/80">
             Track your reading journey
           </p>

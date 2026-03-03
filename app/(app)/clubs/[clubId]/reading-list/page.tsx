@@ -45,7 +45,7 @@ export default async function ClubReadingListPage({
       >
         <ArrowLeft className="w-4 h-4" /> Back to {club.name}
       </Link>
-      <h1 className="text-2xl font-bold text-white mb-2">Reading List</h1>
+      <h1 className="text-2xl font-bold text-white mb-2 mainFont">Reading List</h1>
       <p className="text-white/80 text-sm mb-6">{club.name}&apos;s shared reading list</p>
 
       <ListStats bookCount={bookCount} readCount={readCount} />

@@ -140,7 +140,7 @@ export default function DiscussionThread({
           </div>
         </div>
 
-        <h1 className="text-xl font-bold text-white mb-3 leading-snug">
+        <h1 className="text-xl font-bold text-white mb-3 leading-snug mainFont">
           {discussion.title}
         </h1>
 
@@ -211,7 +211,7 @@ export default function DiscussionThread({
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-white mb-3">
+        <h2 className="text-base font-semibold text-white mb-3 mainFont">
           {discussion.replies.length} Repl
           {discussion.replies.length !== 1 ? 'ies' : 'y'}
         </h2>

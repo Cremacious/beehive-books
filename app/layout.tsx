@@ -1,8 +1,16 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
+import { Fredoka } from 'next/font/google';
 import { Providers } from '@/app/providers';
 import './globals.css';
+
+const fredoka = Fredoka({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-fredoka',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -26,7 +34,7 @@ export default async function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
-      <html lang="en">
+      <html lang="en" className={fredoka.variable}>
         <body className="antialiased">
           <Providers>{children}</Providers>
         </body>

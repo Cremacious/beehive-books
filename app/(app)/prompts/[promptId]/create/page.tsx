@@ -49,7 +49,7 @@ export default async function CreateEntryPage({ params }: Props) {
       <BackButton href={`/prompts/${promptId}`} label="Back to Prompt" />
 
       <div className="mt-6 mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Write Your Entry</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mainFont">Write Your Entry</h1>
         <p className="mt-1 text-white">
           You can only submit one entry — make it count!
         </p>
@@ -58,7 +58,7 @@ export default async function CreateEntryPage({ params }: Props) {
 
       <div className="mb-8 p-5 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a]">
         <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">The Challenge</h2>
-        <h3 className="text-base font-semibold text-white mb-2">{prompt.title}</h3>
+        <h3 className="text-base font-semibold text-white mb-2 mainFont">{prompt.title}</h3>
         <p className="text-sm text-white/80 leading-relaxed">{prompt.description}</p>
         <div className="flex items-center gap-1.5 mt-3 text-xs text-[#FFC300]/70">
           <Clock className="w-3.5 h-3.5" />

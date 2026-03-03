@@ -17,7 +17,7 @@ export default async function CreateHivePage() {
   return (
     <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2 mainFont">
           <span className="text-3xl">🐝</span>
           Create a Hive
         </h1>

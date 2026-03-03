@@ -89,7 +89,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
           )}
         </div>
 
-        <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#FFC300] transition-colors">
+        <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#FFC300] transition-colors mainFont">
           {prompt.title}
         </h3>
 

@@ -30,7 +30,7 @@ export default async function CreateDiscussionPage({
       >
         <ArrowLeft className="w-4 h-4" /> Back to Discussions
       </Link>
-      <h1 className="text-2xl font-bold text-white mb-6">Start a Discussion</h1>
+      <h1 className="text-2xl font-bold text-white mb-6 mainFont">Start a Discussion</h1>
       <div className="bg-[#1e1e1e] rounded-2xl border border-[#2a2a2a] p-6">
         <CreateClubDiscussionForm clubId={clubId} />
       </div>

@@ -64,7 +64,7 @@ export default function DiscussionListItem({
 
    
       <Link href={`/clubs/${clubId}/discussions/${discussion.id}`}>
-        <h3 className="text-base font-semibold text-white hover:text-[#FFC300] transition-colors mb-2 leading-snug">
+        <h3 className="text-base font-semibold text-white hover:text-[#FFC300] transition-colors mb-2 leading-snug mainFont">
           {discussion.title}
         </h3>
       </Link>

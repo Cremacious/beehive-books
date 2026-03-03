@@ -36,7 +36,7 @@ export default function ClubDashboard({
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold text-white">{club.name}</h1>
+              <h1 className="text-2xl font-bold text-white mainFont">{club.name}</h1>
 
               {club.privacy === 'PUBLIC' ? (
                 <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">

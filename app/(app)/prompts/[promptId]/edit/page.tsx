@@ -36,7 +36,7 @@ export default async function EditPromptPage({ params }: Props) {
       <BackButton href={`/prompts/${promptId}`} label="Back to Prompt" />
 
       <div className="mt-6 mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Edit Challenge</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mainFont">Edit Challenge</h1>
         <p className="mt-1 text-sm text-white/70">Update the details of your prompt.</p>
       </div>
 

@@ -157,7 +157,7 @@ export function BookForm({
     <div className="px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-white mainFont">
             {isEdit ? 'Edit Book' : 'New Book'}
           </h1>
           <p className="mt-1 text-sm text-white/45">
