@@ -22,15 +22,16 @@ import {
   Hexagon,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import logoImage from '@/public/logo.png';
 
 const navItems = [
-  { href: '/home',          label: 'Feed',          icon: Home },
-  { href: '/explore',       label: 'Explore',       icon: Compass },
-  { href: '/library',       label: 'Library',       icon: Library },
-  { href: '/friends',       label: 'Friends',       icon: Users2 },
-  { href: '/clubs',         label: 'Clubs',         icon: Users },
-  { href: '/hive',          label: 'Hive',          icon: Hexagon },
-  { href: '/prompts',       label: 'Prompts',       icon: Lightbulb },
+  { href: '/home', label: 'Feed', icon: Home },
+  { href: '/explore', label: 'Explore', icon: Compass },
+  { href: '/library', label: 'Library', icon: Library },
+  { href: '/friends', label: 'Friends', icon: Users2 },
+  { href: '/clubs', label: 'Clubs', icon: Users },
+  { href: '/hive', label: 'Hive', icon: Hexagon },
+  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
 ] as const;
 
@@ -52,11 +53,14 @@ export function MobileNavbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-4 shadow-lg">
-        <Link href="/home" className="flex items-center gap-2 shrink-0">
-         
-          <span className="text-white font-bold text-base tracking-tight mainFont">
-            Beehive<span className="text-[#FFC300]">Books</span>
-          </span>
+        <Link href="/home" className="flex items-center shrink-0">
+          <Image
+            src={logoImage}
+            alt="Beehive Books"
+            height={32}
+            width={120}
+            priority
+          />
         </Link>
 
         <div className="flex items-center gap-3">
@@ -108,11 +112,7 @@ export function MobileNavbar() {
         }`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#2a2a2a]">
-          <div className="flex items-center gap-2">
-            <span className="text-white font-bold text-base tracking-tight mainFont">
-              Beehive<span className="text-[#FFC300]">Books</span>
-            </span>
-          </div>
+          <Image src={logoImage} alt="Beehive Books" height={32} width={120} />
           <button
             onClick={closeDrawer}
             className="p-1.5 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 transition-all"
@@ -147,7 +147,6 @@ export function MobileNavbar() {
               <p className="text-white font-semibold truncate leading-tight">
                 {dbUsername ?? 'User'}
               </p>
-             
             </div>
           </Link>
         )}

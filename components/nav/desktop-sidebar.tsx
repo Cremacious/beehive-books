@@ -19,7 +19,6 @@ import {
   Hexagon,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
-
 const navItems = [
   { href: '/home',          label: 'Feed',          icon: Home },
   { href: '/explore',       label: 'Explore',       icon: Compass },
@@ -30,6 +29,7 @@ const navItems = [
   { href: '/prompts',       label: 'Prompts',       icon: Lightbulb },
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
 ] as const;
+import logoImage from '@/public/logo.png'
 
 export function DesktopSidebar() {
   const pathname = usePathname();
@@ -46,11 +46,15 @@ export function DesktopSidebar() {
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
 
     
-        <div className="flex items-center gap-2.5 md:justify-center lg:justify-start px-4 xl:px-5 py-5">
-        
-          <span className="hidden lg:block text-white font-bold text-3xl tracking-tight mainFont">
-            Beehive<span className="text-[#FFC300]">Books</span>
-          </span>
+        <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-5">
+          <Image
+            src={logoImage}
+            alt="Beehive Books"
+            height={50}
+            width={150200}
+            className="hidden lg:block"
+            priority
+          />
         </div>
 
   
