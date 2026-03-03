@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import { useCommentStore } from '@/lib/stores/comment-store';
 import type {
   CommentUser,
@@ -23,9 +24,10 @@ function initials(user: CommentUser): string {
 
 function CurrentUserAvatar({ className }: { className: string }) {
   const { user } = useUser();
+  const avatarUrl = useCurrentUserImage();
   return (
     <Avatar
-      imageUrl={user?.imageUrl ?? null}
+      imageUrl={avatarUrl}
       alt="You"
       fallback={(user?.username ?? 'Y').slice(0, 2).toUpperCase()}
       className={className}

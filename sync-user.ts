@@ -1,4 +1,5 @@
 import { currentUser, clerkClient } from '@clerk/nextjs/server';
+import { sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 
@@ -25,7 +26,8 @@ export async function syncUser() {
         email,
         firstName: user.firstName,
         lastName:  user.lastName,
-        imageUrl:  user.imageUrl,
+     
+        imageUrl: sql`COALESCE(${users.imageUrl}, EXCLUDED.image_url)`,
         updatedAt: new Date(),
       },
     })

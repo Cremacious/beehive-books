@@ -5,7 +5,13 @@ import { revalidatePath } from 'next/cache';
 import { and, desc, eq, gte, lte, sum } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveWordGoals, hiveWordLogs, hiveMembers } from '@/db/schema';
-import type { ActionResult, WordGoalType, WordGoal, WordLog, HiveUser } from '@/lib/types/hive.types';
+import type {
+  ActionResult,
+  WordGoalType,
+  WordGoal,
+  WordLog,
+  HiveUser,
+} from '@/lib/types/hive.types';
 
 async function requireAuth() {
   const { userId } = await auth();
@@ -47,7 +53,6 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
   });
   if (!membership) return [];
 
-  // Expire any monthly goals whose period has ended before fetching
   await expireMonthlyGoals(hiveId);
 
   const goals = await db.query.hiveWordGoals.findMany({
@@ -59,7 +64,6 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
     goals.map(async (g) => {
       const type = g.type as WordGoalType;
 
-      // Build date window for word count aggregation
       let windowFrom: Date | null = null;
       let windowTo: Date | null = null;
 
@@ -74,11 +78,9 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
         d.setHours(0, 0, 0, 0);
         windowFrom = d;
       } else if (type === 'MONTHLY') {
-        // Count only logs within the goal's calendar month
         windowFrom = g.startDate;
         windowTo = g.endDate;
       }
-      // TOTAL: no window (count all logs for hive)
 
       const conditions = [eq(hiveWordLogs.hiveId, hiveId)];
       if (windowFrom) conditions.push(gte(hiveWordLogs.loggedAt, windowFrom));
@@ -107,7 +109,10 @@ export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
   return result;
 }
 
-export async function getWordLogsAction(hiveId: string, limit = 20): Promise<WordLog[]> {
+export async function getWordLogsAction(
+  hiveId: string,
+  limit = 20,
+): Promise<WordLog[]> {
   const { userId } = await auth();
   if (!userId) return [];
 
@@ -146,7 +151,10 @@ export async function logWordsAction(
       return { success: false, message: 'Enter a positive number of words.' };
     }
     if (wordsAdded > 100000) {
-      return { success: false, message: 'Word count seems too high (max 100,000).' };
+      return {
+        success: false,
+        message: 'Word count seems too high (max 100,000).',
+      };
     }
 
     await db.insert(hiveWordLogs).values({
@@ -156,11 +164,13 @@ export async function logWordsAction(
       wordsAdded,
     });
 
-    // Expire any monthly goals whose period has now ended
     await expireMonthlyGoals(hiveId);
 
     revalidatePath(`/hive/${hiveId}/word-goals`);
-    return { success: true, message: `Logged ${wordsAdded.toLocaleString()} words!` };
+    return {
+      success: true,
+      message: `Logged ${wordsAdded.toLocaleString()} words!`,
+    };
   } catch {
     return { success: false, message: 'Failed to log words.' };
   }
@@ -170,15 +180,19 @@ export async function createWordGoalAction(
   hiveId: string,
   type: WordGoalType,
   targetWords: number,
-  /** For DAILY/WEEKLY/TOTAL: optional end date string (ISO date).
-   *  For MONTHLY: a "YYYY-MM" string (e.g. "2026-03"). */
+
   endDateOrMonth?: string,
 ): Promise<ActionResult> {
   try {
     const { userId, membership } = await requireHiveMember(hiveId);
 
-    const canCreate = membership.role === 'OWNER' || membership.role === 'MODERATOR';
-    if (!canCreate) return { success: false, message: 'Only owners and moderators can create goals.' };
+    const canCreate =
+      membership.role === 'OWNER' || membership.role === 'MODERATOR';
+    if (!canCreate)
+      return {
+        success: false,
+        message: 'Only owners and moderators can create goals.',
+      };
 
     if (!Number.isInteger(targetWords) || targetWords < 1) {
       return { success: false, message: 'Target must be a positive number.' };
@@ -189,17 +203,20 @@ export async function createWordGoalAction(
 
     if (type === 'MONTHLY') {
       if (!endDateOrMonth) {
-        return { success: false, message: 'A month must be selected for monthly goals.' };
+        return {
+          success: false,
+          message: 'A month must be selected for monthly goals.',
+        };
       }
       const [yearStr, monthStr] = endDateOrMonth.split('-');
       const year = parseInt(yearStr, 10);
-      const month = parseInt(monthStr, 10); // 1-12
+      const month = parseInt(monthStr, 10); 
       if (!year || !month || month < 1 || month > 12) {
         return { success: false, message: 'Invalid month selected.' };
       }
-      // startDate = first day of month at midnight
+
       startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
-      // endDate = last millisecond of the month (day 0 of the next month = last day of this month)
+
       endDate = new Date(year, month, 0, 23, 59, 59, 999);
     } else {
       endDate = endDateOrMonth ? new Date(endDateOrMonth) : null;
@@ -221,7 +238,9 @@ export async function createWordGoalAction(
   }
 }
 
-export async function deactivateWordGoalAction(goalId: string): Promise<ActionResult> {
+export async function deactivateWordGoalAction(
+  goalId: string,
+): Promise<ActionResult> {
   try {
     const userId = await requireAuth();
 
@@ -231,12 +250,19 @@ export async function deactivateWordGoalAction(goalId: string): Promise<ActionRe
     if (!goal) return { success: false, message: 'Goal not found.' };
 
     const membership = await db.query.hiveMembers.findFirst({
-      where: and(eq(hiveMembers.hiveId, goal.hiveId), eq(hiveMembers.userId, userId)),
+      where: and(
+        eq(hiveMembers.hiveId, goal.hiveId),
+        eq(hiveMembers.userId, userId),
+      ),
     });
-    const canDeactivate = membership?.role === 'OWNER' || membership?.role === 'MODERATOR';
+    const canDeactivate =
+      membership?.role === 'OWNER' || membership?.role === 'MODERATOR';
     if (!canDeactivate) return { success: false, message: 'No permission.' };
 
-    await db.update(hiveWordGoals).set({ isActive: false }).where(eq(hiveWordGoals.id, goalId));
+    await db
+      .update(hiveWordGoals)
+      .set({ isActive: false })
+      .where(eq(hiveWordGoals.id, goalId));
     revalidatePath(`/hive/${goal.hiveId}/word-goals`);
     return { success: true, message: 'Goal deactivated.' };
   } catch {

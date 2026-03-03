@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/nextjs';
+import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import { usePromptStore } from '@/lib/stores/prompt-store';
 import { addEntryCommentAction } from '@/lib/actions/prompt.actions';
 import type {
@@ -64,9 +65,10 @@ function Avatar({
 
 function CurrentUserAvatar({ className }: { className: string }) {
   const { user } = useUser();
+  const avatarUrl = useCurrentUserImage();
   return (
     <Avatar
-      imageUrl={user?.imageUrl ?? null}
+      imageUrl={avatarUrl}
       alt="You"
       fallback={(user?.username ?? 'Y').slice(0, 2).toUpperCase()}
       className={className}

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
+import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import {
   Home,
   Compass,
@@ -35,6 +36,7 @@ export function DesktopSidebar() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const dbUsername = user?.publicMetadata?.username as string | undefined;
+  const avatarUrl = useCurrentUserImage();
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
@@ -108,9 +110,9 @@ export function DesktopSidebar() {
   
         <div className="px-2 xl:px-3 pb-4 pt-3 border-t border-[#2a2a2a]">
           <div className="flex items-center md:justify-center lg:justify-start gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
-            {user?.imageUrl ? (
+            {avatarUrl ? (
               <Image
-                src={user.imageUrl}
+                src={avatarUrl}
                 alt={dbUsername ?? 'User'}
                 width={38}
                 height={38}

@@ -6,6 +6,16 @@ import type { AnyColumn } from 'drizzle-orm';
 import { db } from '@/db';
 import { users, books, readingLists, friendships } from '@/db/schema';
 
+export async function getCurrentUserImageUrlAction(): Promise<string | null> {
+  const { userId } = await auth();
+  if (!userId) return null;
+  const row = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: { imageUrl: true },
+  });
+  return row?.imageUrl ?? null;
+}
+
 export async function getUserProfileAction(username: string) {
   const { userId: currentUserId } = await auth();
 

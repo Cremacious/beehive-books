@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
+import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import {
   Home,
   Compass,
@@ -46,6 +47,7 @@ export function MobileNavbar() {
 
   const dbUsername = user?.publicMetadata?.username as string | undefined;
   const avatarHref = `/u/${dbUsername ?? user?.id ?? ''}`;
+  const avatarUrl = useCurrentUserImage();
 
   return (
     <>
@@ -64,9 +66,9 @@ export function MobileNavbar() {
           />
 
           <Link href={avatarHref} className="p-1">
-            {user?.imageUrl ? (
+            {avatarUrl ? (
               <Image
-                src={user.imageUrl}
+                src={avatarUrl}
                 alt={dbUsername ?? 'User'}
                 width={30}
                 height={30}
@@ -126,9 +128,9 @@ export function MobileNavbar() {
             onClick={closeDrawer}
             className="flex items-center gap-3 px-4 py-3  hover:bg-white/5 transition-all"
           >
-            {user.imageUrl ? (
+            {avatarUrl ? (
               <Image
-                src={user.imageUrl}
+                src={avatarUrl}
                 alt={dbUsername ?? 'User'}
                 width={40}
                 height={40}
