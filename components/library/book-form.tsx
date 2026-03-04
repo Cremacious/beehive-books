@@ -6,7 +6,17 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, BookOpen, ChevronDown, ChevronUp, FileText, Loader2, Upload, UploadCloud, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Loader2,
+  Upload,
+  UploadCloud,
+  X,
+} from 'lucide-react';
 import { createId } from '@paralleldrive/cuid2';
 import { Button } from '@/components/ui/button';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
@@ -16,10 +26,17 @@ import {
   updateBookAction,
   deleteBookAction,
 } from '@/lib/actions/book.actions';
-import { parseDocxAction, type ParsedChapter } from '@/lib/actions/docx.actions';
+import {
+  parseDocxAction,
+  type ParsedChapter,
+} from '@/lib/actions/docx.actions';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { CATEGORIES, GENRES, PRIVACY_OPTIONS } from '@/lib/config/constants';
-import { BookFormProps, DRAFT_STATUS_LABELS, type DraftStatus } from '@/lib/types/books.types';
+import {
+  BookFormProps,
+  DRAFT_STATUS_LABELS,
+  type DraftStatus,
+} from '@/lib/types/books.types';
 
 export function BookForm({
   mode,
@@ -40,8 +57,12 @@ export function BookForm({
   const [bookDocxOpen, setBookDocxOpen] = useState(false);
   const [bookDocxFileName, setBookDocxFileName] = useState('');
   const [bookDocxError, setBookDocxError] = useState('');
-  const [bookDocxChapterCount, setBookDocxChapterCount] = useState<number | null>(null);
-  const [parsedChapters, setParsedChapters] = useState<ParsedChapter[] | null>(null);
+  const [bookDocxChapterCount, setBookDocxChapterCount] = useState<
+    number | null
+  >(null);
+  const [parsedChapters, setParsedChapters] = useState<ParsedChapter[] | null>(
+    null,
+  );
 
   const { upload, uploading } = useCloudinaryUpload('covers', presetId);
 
@@ -61,7 +82,8 @@ export function BookForm({
       description: book?.description ?? '',
       privacy: (book?.privacy as BookFormData['privacy']) ?? 'PRIVATE',
       explorable: book?.explorable ?? false,
-      draftStatus: (book?.draftStatus as BookFormData['draftStatus']) ?? 'FIRST_DRAFT',
+      draftStatus:
+        (book?.draftStatus as BookFormData['draftStatus']) ?? 'FIRST_DRAFT',
     },
   });
 
@@ -382,18 +404,27 @@ export function BookForm({
 
           {/* Draft Status */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white/75">Draft Status</label>
+            <label className="text-sm font-medium text-white/75">
+              Draft Status
+            </label>
             <select
               value={draftStatus}
-              onChange={(e) => setValue('draftStatus', e.target.value as DraftStatus)}
+              onChange={(e) =>
+                setValue('draftStatus', e.target.value as DraftStatus)
+              }
               className={inputClass + ' appearance-none'}
             >
-              {(Object.entries(DRAFT_STATUS_LABELS) as [DraftStatus, string][]).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+              {(
+                Object.entries(DRAFT_STATUS_LABELS) as [DraftStatus, string][]
+              ).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
             <p className="text-xs text-white/30">
-              Track which revision your book is on. Drafts show a status label on your book page.
+              Track which revision your book is on. Drafts show a status label
+              on your book page.
             </p>
           </div>
 
@@ -402,7 +433,8 @@ export function BookForm({
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white/75">Explorable</p>
               <p className="text-xs text-white/35 mt-0.5">
-                List this book on the Explore page so all users can discover it. Enabling this will make the book public.
+                List this book on the Explore page so all users can discover it.
+                Enabling this will make the book public.
               </p>
             </div>
             <button
@@ -436,10 +468,11 @@ export function BookForm({
                   Upload full book from DOCX
                   <span className="text-[11px] text-white/30">(optional)</span>
                 </span>
-                {bookDocxOpen
-                  ? <ChevronUp className="w-4 h-4" />
-                  : <ChevronDown className="w-4 h-4" />
-                }
+                {bookDocxOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
               </button>
 
               {bookDocxOpen && (
@@ -449,14 +482,39 @@ export function BookForm({
                       Formatting Requirements
                     </p>
                     <ul className="space-y-1.5 text-xs text-white/50">
-                      <li>• Each chapter must start with a <strong className="text-white/70">Heading 1</strong> style in Word or Google Docs — not just bold or large text.</li>
-                      <li>• The Heading 1 text becomes the chapter title in Beehive.</li>
-                      <li>• Do <strong className="text-white/70">not</strong> use Heading 1 anywhere else in the document — only for chapter titles.</li>
-                      <li>• All other content (paragraphs, Heading 2–6, lists, etc.) is preserved as chapter body.</li>
-                      <li>• Any content before the first Heading 1 (e.g. a title page) will be ignored.</li>
+                      <li>
+                        • Each chapter must start with a{' '}
+                        <strong className="text-white/70">Heading 1</strong>{' '}
+                        style in Word or Google Docs — not just bold or large
+                        text.
+                      </li>
+                      <li>
+                        • The Heading 1 text becomes the chapter title in
+                        Beehive.
+                      </li>
+                      <li>
+                        • Do <strong className="text-white/70">not</strong> use
+                        Heading 1 anywhere else in the document — only for
+                        chapter titles.
+                      </li>
+                      <li>
+                        • All other content (paragraphs, Heading 2–6, lists,
+                        etc.) is preserved as chapter body.
+                      </li>
+                      <li>
+                        • Any content before the first Heading 1 (e.g. a title
+                        page) will be ignored.
+                      </li>
                     </ul>
                     <p className="text-[11px] text-white/30 pt-1">
-                      Example: Chapter 1 → <span className="text-white/45">Heading 1: &quot;The Beginning&quot;</span> · Chapter 2 → <span className="text-white/45">Heading 1: &quot;The Conflict&quot;</span>
+                      Example: Chapter 1 →{' '}
+                      <span className="text-white/45">
+                        Heading 1: &quot;The Beginning&quot;
+                      </span>{' '}
+                      · Chapter 2 →{' '}
+                      <span className="text-white/45">
+                        Heading 1: &quot;The Conflict&quot;
+                      </span>
                     </p>
                   </div>
 
@@ -464,18 +522,26 @@ export function BookForm({
                     {bookDocxFileName ? (
                       <>
                         <FileText className="w-5 h-5 text-[#FFC300]/70" />
-                        <span className="text-xs text-white/60">{bookDocxFileName}</span>
+                        <span className="text-xs text-white/60">
+                          {bookDocxFileName}
+                        </span>
                         {bookDocxChapterCount !== null && (
                           <span className="text-[11px] text-[#FFC300]/60">
-                            {bookDocxChapterCount} chapter{bookDocxChapterCount !== 1 ? 's' : ''} found — click to replace
+                            {bookDocxChapterCount} chapter
+                            {bookDocxChapterCount !== 1 ? 's' : ''} found —
+                            click to replace
                           </span>
                         )}
                       </>
                     ) : (
                       <>
                         <UploadCloud className="w-5 h-5 text-white/25" />
-                        <span className="text-xs text-white/35">Select a .docx file</span>
-                        <span className="text-[10px] text-white/20">Max 10 MB · Heading 1 per chapter</span>
+                        <span className="text-xs text-white/35">
+                          Select a .docx file
+                        </span>
+                        <span className="text-[10px] text-white/20">
+                          Max 10 MB · Heading 1 per chapter
+                        </span>
                       </>
                     )}
                     <input
@@ -493,11 +559,15 @@ export function BookForm({
                     </div>
                   )}
 
-                  {bookDocxChapterCount !== null && bookDocxChapterCount > 0 && (
-                    <p className="text-xs text-white/35">
-                      When you click &quot;Create Book&quot;, the book will be saved first, then all {bookDocxChapterCount} chapter{bookDocxChapterCount !== 1 ? 's' : ''} will be imported automatically.
-                    </p>
-                  )}
+                  {bookDocxChapterCount !== null &&
+                    bookDocxChapterCount > 0 && (
+                      <p className="text-xs text-white/35">
+                        When you click &quot;Create Book&quot;, the book will be
+                        saved first, then all {bookDocxChapterCount} chapter
+                        {bookDocxChapterCount !== 1 ? 's' : ''} will be imported
+                        automatically.
+                      </p>
+                    )}
                 </div>
               )}
             </div>
@@ -537,7 +607,9 @@ export function BookForm({
                     <Loader2 className="w-4 h-4 animate-spin" />{' '}
                     {parsedChapters && parsedChapters.length > 0
                       ? 'Creating book & importing chapters…'
-                      : isEdit ? 'Saving…' : 'Creating…'}
+                      : isEdit
+                        ? 'Saving…'
+                        : 'Creating…'}
                   </>
                 ) : isEdit ? (
                   'Save Changes'
