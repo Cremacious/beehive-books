@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Plus, Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Bell } from 'lucide-react';
 import { PromptGrid } from '@/components/prompts/prompt-grid';
 import { InviteActions } from '@/components/prompts/invite-actions';
 import { getMyPromptsAction } from '@/lib/actions/prompt.actions';
 
 export const metadata: Metadata = {
   title: 'Prompts',
-  description: 'Discover and join creative writing challenges. Submit entries and compete with other writers.',
+  description:
+    'Discover and join creative writing challenges. Submit entries and compete with other writers.',
 };
 
 export default async function PromptsPage() {
@@ -18,28 +18,26 @@ export default async function PromptsPage() {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">Prompts</h1>
-          <p className="mt-1 text-base text-white/70">
-            Creative challenges and writing competitions
-          </p>
-        </div>
-        <Button asChild size="sm">
-          <Link href="/prompts/create">
-            <Plus />
-            New Challenge
-          </Link>
-        </Button>
+      <div className="mb-8">
+        <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-[0.15em] mb-2">
+          Creative Workspace
+        </p>
+        <h1 className="text-3xl font-bold text-white mainFont">
+          My Writing Prompts
+        </h1>
+        <p className="mt-2 text-sm text-white/80 max-w-sm leading-relaxed">
+          Discover and join creative writing challenges. Submit entries and
+          compete with other writers.
+        </p>
       </div>
-
 
       {pendingInvites.length > 0 && (
         <div className="mb-8 rounded-2xl bg-[#FFC300]/5 border border-[#FFC300]/20 p-4 space-y-3">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-[#FFC300]" />
             <span className="text-sm font-semibold text-[#FFC300]">
-              {pendingInvites.length} pending invite{pendingInvites.length !== 1 ? 's' : ''}
+              {pendingInvites.length} pending invite
+              {pendingInvites.length !== 1 ? 's' : ''}
             </span>
           </div>
           {pendingInvites.map((p) => (
@@ -63,7 +61,6 @@ export default async function PromptsPage() {
           ))}
         </div>
       )}
-
 
       <PromptGrid prompts={prompts} />
     </div>

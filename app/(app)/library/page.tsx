@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'My Library',
   description:
-    'Your creative workspace — write, organise, and publish your books and chapters.',
+    'Your creative workspace — write, organize, and publish your books and chapters.',
 };
 import BookGrid from '@/components/library/book-grid';
 import { getUserBooksAction } from '@/lib/actions/book.actions';

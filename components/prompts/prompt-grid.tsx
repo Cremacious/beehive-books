@@ -2,37 +2,63 @@
 
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
-import { Plus, Lightbulb } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Search, SlidersHorizontal, Plus, Lightbulb } from 'lucide-react';
 import Pagination from '@/components/shared/pagination';
 import { PromptCard } from './prompt-card';
 import type { PromptCard as PromptCardType } from '@/lib/types/prompt.types';
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 6;
 
 type SortOption = 'newest' | 'ending-soon' | 'most-entries';
-type FilterOption = 'all' | 'active' | 'ended';
+type StatusFilter = 'all' | 'active' | 'ended';
+
+const STATUS_TABS: { value: StatusFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'ended', label: 'Ended' },
+];
 
 interface Props {
   prompts: PromptCardType[];
 }
 
+function PromptPlaceholder() {
+  return (
+    <div className="rounded-xl border-2 border-dashed border-[#FFC300]/15 bg-[#1a1a1a] h-44 flex items-center justify-center">
+      <Lightbulb className="w-8 h-8 text-[#FFC300]/10" />
+    </div>
+  );
+}
+
 export function PromptGrid({ prompts }: Props) {
+  const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortOption>('newest');
-  const [filter, setFilter] = useState<FilterOption>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [page, setPage] = useState(1);
 
-  const filtered = useMemo(() => {
-    let list = [...prompts];
+  const now = useMemo(() => new Date(), []);
 
-    if (filter === 'active')
-      list = list.filter(
-        (p) => p.status === 'ACTIVE' && p.endDate > new Date(),
-      );
-    if (filter === 'ended')
-      list = list.filter(
-        (p) => p.status === 'ENDED' || p.endDate <= new Date(),
-      );
+  const statusCounts = useMemo(() => {
+    const active = prompts.filter(
+      (p) => p.status === 'ACTIVE' && p.endDate > now,
+    ).length;
+    return { all: prompts.length, active, ended: prompts.length - active };
+  }, [prompts, now]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = q
+      ? prompts.filter(
+          (p) =>
+            p.title.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q),
+        )
+      : [...prompts];
+
+    if (statusFilter === 'active')
+      list = list.filter((p) => p.status === 'ACTIVE' && p.endDate > now);
+    if (statusFilter === 'ended')
+      list = list.filter((p) => p.status === 'ENDED' || p.endDate <= now);
 
     if (sort === 'newest')
       list.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -42,89 +68,160 @@ export function PromptGrid({ prompts }: Props) {
       list.sort((a, b) => b.entryCount - a.entryCount);
 
     return list;
-  }, [prompts, sort, filter]);
+  }, [prompts, query, sort, statusFilter, now]);
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const displayed = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  function handleFilter(f: FilterOption) {
-    setFilter(f);
-    setPage(1);
-  }
+  const handleSearch = (q: string) => { setQuery(q); setPage(1); };
+  const handleSort = (s: SortOption) => { setSort(s); setPage(1); };
+  const handleStatus = (s: StatusFilter) => { setStatusFilter(s); setPage(1); };
 
-  function handleSort(s: SortOption) {
-    setSort(s);
-    setPage(1);
-  }
-
+  // ─── Empty state ─────────────────────────────────────────────────────────────
   if (prompts.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-20 text-center">
-        <Lightbulb className="w-10 h-10 text-[#FFC300]/30 mx-auto mb-4" />
-        <p className="text-white/80 font-medium mb-2">No prompts yet</p>
-        <p className="text-sm text-white/80 mb-6">
-          Create your first writing challenge and invite friends!
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="grid grid-cols-3 gap-2 mb-8">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div
+              key={i}
+              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
+            >
+              <Lightbulb
+                className={`w-6 h-6 ${
+                  i % 3 === 1 ? 'text-[#FFC300]/30' : 'text-[#FFC300]/10'
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+          No prompts yet!
+        </h2>
+        <p className="text-white/80 mb-8 max-w-sm">
+          Create your first writing challenge and invite friends to compete.
         </p>
-        <Button asChild size="sm">
-          <Link href="/prompts/create">
-            <Plus className="w-4 h-4" />
-            Create Prompt
-          </Link>
-        </Button>
+        <Link
+          href="/prompts/create"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          Create a Prompt
+        </Link>
       </div>
     );
   }
 
+  // ─── Main view ────────────────────────────────────────────────────────────────
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
-          {(['all', 'active', 'ended'] as FilterOption[]).map((f) => (
-            <button
-              key={f}
-              onClick={() => handleFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${
-                filter === f
-                  ? 'bg-[#FFC300] text-black'
-                  : 'text-white hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {f === 'all'
-                ? `All (${prompts.length})`
-                : f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
+    <>
+      {/* Search + sort + create row */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="flex-1 relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by title or description…"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          />
         </div>
 
-        <select
-          value={sort}
-          onChange={(e) => handleSort(e.target.value as SortOption)}
-          className="ml-auto px-3 py-1.5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
-        >
-          <option value="newest">Newest</option>
-          <option value="ending-soon">Ending Soon</option>
-          <option value="most-entries">Most Entries</option>
-        </select>
+        <div className="flex gap-3">
+          <div className="relative flex-1 sm:flex-none">
+            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500 pointer-events-none" />
+            <select
+              value={sort}
+              onChange={(e) => handleSort(e.target.value as SortOption)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white focus:outline-none focus:border-[#FFC300]/40 transition-all appearance-none cursor-pointer"
+            >
+              <option value="newest">Newest</option>
+              <option value="ending-soon">Ending Soon</option>
+              <option value="most-entries">Most Entries</option>
+            </select>
+          </div>
+
+          <Link
+            href="/prompts/create"
+            className="flex mainFont items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            New Challenge
+          </Link>
+        </div>
       </div>
 
-      {paginated.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2a2a2a] py-12 text-center">
-          <p className="text-sm text-white/80">No prompts match this filter.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {paginated.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} />
-          ))}
+      {/* Status filter tabs */}
+      <div className="flex gap-3 mb-8 overflow-x-auto pb-1">
+        {STATUS_TABS.map(({ value, label }) => {
+          const count = statusCounts[value];
+          if (value !== 'all' && count === 0) return null;
+          return (
+            <button
+              key={value}
+              onClick={() => handleStatus(value)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                statusFilter === value
+                  ? 'bg-[#FFC300] text-black'
+                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
+              }`}
+            >
+              {label}
+              <span
+                className={`text-sm ${
+                  statusFilter === value ? 'text-black/60' : 'text-yellow-500'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* No filter results */}
+      {displayed.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Search className="w-8 h-8 text-white/10 mb-3" />
+          <p className="text-sm text-white/40 mb-1">
+            {query ? (
+              <>No results for &ldquo;{query}&rdquo;</>
+            ) : (
+              'No prompts in this category'
+            )}
+          </p>
+          <button
+            onClick={() => { setQuery(''); setStatusFilter('all'); }}
+            className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"
+          >
+            Clear filters
+          </button>
         </div>
       )}
 
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        className="mt-8"
-      />
-    </div>
+      {/* Grid + placeholders + pagination */}
+      {displayed.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayed.map((prompt) => (
+              <PromptCard key={prompt.id} prompt={prompt} />
+            ))}
+            {displayed.length < PAGE_SIZE &&
+              Array.from(
+                { length: PAGE_SIZE - displayed.length },
+                (_, i) => <PromptPlaceholder key={`ph-${i}`} />,
+              )}
+          </div>
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            className="mt-8"
+          />
+        </>
+      )}
+    </>
   );
 }

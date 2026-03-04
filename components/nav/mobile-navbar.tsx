@@ -28,11 +28,11 @@ const navItems = [
   { href: '/home', label: 'Feed', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
-  { href: '/friends', label: 'Friends', icon: Users2 },
+  { href: '/hive', label: 'Hives', icon: Hexagon },
   { href: '/clubs', label: 'Clubs', icon: Users },
-  { href: '/hive', label: 'Hive', icon: Hexagon },
   { href: '/prompts', label: 'Prompts', icon: Lightbulb },
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
+  { href: '/friends', label: 'Friends', icon: Users2 },
 ] as const;
 
 export function MobileNavbar() {
