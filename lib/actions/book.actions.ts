@@ -124,10 +124,12 @@ export async function createBookAction(
     return { success: false, message: parsed.error.issues[0].message };
 
   try {
+    const values = parsed.data;
     await db.insert(books).values({
       ...(presetId ? { id: presetId } : {}),
       userId,
-      ...parsed.data,
+      ...values,
+      privacy: values.explorable ? 'PUBLIC' : values.privacy,
       coverUrl: coverUrl || null,
     });
     revalidatePath('/library');
@@ -152,10 +154,12 @@ export async function updateBookAction(
   }
 
   try {
+    const values = parsed.data;
     await db
       .update(books)
       .set({
-        ...parsed.data,
+        ...values,
+        privacy: values.explorable ? 'PUBLIC' : values.privacy,
         coverUrl: coverUrl ?? book.coverUrl,
         updatedAt: new Date(),
       })

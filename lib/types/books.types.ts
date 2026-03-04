@@ -1,5 +1,16 @@
 export type Privacy = 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
 
+export type DraftStatus = 'FIRST_DRAFT' | 'SECOND_DRAFT' | 'THIRD_DRAFT' | 'FOURTH_DRAFT' | 'FIFTH_DRAFT' | 'COMPLETED';
+
+export const DRAFT_STATUS_LABELS: Record<DraftStatus, string> = {
+  FIRST_DRAFT:  'First Draft',
+  SECOND_DRAFT: 'Second Draft',
+  THIRD_DRAFT:  'Third Draft',
+  FOURTH_DRAFT: 'Fourth Draft',
+  FIFTH_DRAFT:  'Fifth Draft',
+  COMPLETED:    'Completed',
+};
+
 export type Book = {
   id: string;
   title: string;
@@ -8,6 +19,8 @@ export type Book = {
   category: string;
   description: string;
   privacy: Privacy;
+  explorable: boolean;
+  draftStatus: DraftStatus;
   wordCount: number;
   commentCount: number;
   chapterCount: number;
@@ -40,6 +53,8 @@ export type ExistingBook = {
   genre: string;
   description: string;
   privacy: string;
+  explorable: boolean;
+  draftStatus: DraftStatus;
   coverUrl?: string | null;
 };
 

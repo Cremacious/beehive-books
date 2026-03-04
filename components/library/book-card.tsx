@@ -2,6 +2,7 @@ import { BookOpen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Book } from '@/lib/types/books.types';
+import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
 
 export default function BookCard({ book }: { book: Book }) {
   return (
@@ -30,9 +31,16 @@ export default function BookCard({ book }: { book: Book }) {
           <p className="text-sm text-white truncate mt-0.5">{book.author}</p>
         </div>
 
-        <span className="self-start px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium truncate max-w-full">
-          {book.genre}
-        </span>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium truncate max-w-full">
+            {book.genre}
+          </span>
+          {book.draftStatus !== 'COMPLETED' && (
+            <span className="px-2 py-1 rounded-full bg-white/5 text-white/40 text-sm font-medium">
+              {DRAFT_STATUS_LABELS[book.draftStatus]}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

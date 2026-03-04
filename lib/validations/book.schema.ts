@@ -15,6 +15,8 @@ export const bookSchema = z.object({
     ),
   privacy:     z.enum(['PUBLIC', 'PRIVATE', 'FRIENDS']),
   coverUrl:    z.string().url().optional().or(z.literal('')),
+  explorable:  z.boolean(),
+  draftStatus: z.enum(['FIRST_DRAFT', 'SECOND_DRAFT', 'THIRD_DRAFT', 'FOURTH_DRAFT', 'FIFTH_DRAFT', 'COMPLETED']),
 });
 
 export type BookFormData = z.infer<typeof bookSchema>;

@@ -9,6 +9,7 @@ import ChapterList from '@/components/library/chapter-list';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
+import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -106,6 +107,11 @@ export default async function BookPage({
                 <Badge className="capitalize" variant="secondary">
                   {book.privacy.toLowerCase()}
                 </Badge>
+                {book.draftStatus !== 'COMPLETED' && (
+                  <Badge variant="secondary">
+                    {DRAFT_STATUS_LABELS[book.draftStatus]}
+                  </Badge>
+                )}
               </div>
 
               <ExpandableDescription text={book.description} />

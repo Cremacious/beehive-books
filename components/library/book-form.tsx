@@ -19,7 +19,7 @@ import {
 import { parseDocxAction, type ParsedChapter } from '@/lib/actions/docx.actions';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { CATEGORIES, GENRES, PRIVACY_OPTIONS } from '@/lib/config/constants';
-import { BookFormProps } from '@/lib/types/books.types';
+import { BookFormProps, DRAFT_STATUS_LABELS, type DraftStatus } from '@/lib/types/books.types';
 
 export function BookForm({
   mode,
@@ -60,11 +60,15 @@ export function BookForm({
       genre: book?.genre ?? '',
       description: book?.description ?? '',
       privacy: (book?.privacy as BookFormData['privacy']) ?? 'PRIVATE',
+      explorable: book?.explorable ?? false,
+      draftStatus: (book?.draftStatus as BookFormData['draftStatus']) ?? 'FIRST_DRAFT',
     },
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const privacy = watch('privacy');
+  const explorable = watch('explorable');
+  const draftStatus = watch('draftStatus');
   const descriptionValue = watch('description') ?? '';
   const descChars = descriptionValue.length;
   const descWords = descriptionValue.trim()
@@ -374,6 +378,50 @@ export function BookForm({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Draft Status */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-white/75">Draft Status</label>
+            <select
+              value={draftStatus}
+              onChange={(e) => setValue('draftStatus', e.target.value as DraftStatus)}
+              className={inputClass + ' appearance-none'}
+            >
+              {(Object.entries(DRAFT_STATUS_LABELS) as [DraftStatus, string][]).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+            <p className="text-xs text-white/30">
+              Track which revision your book is on. Drafts show a status label on your book page.
+            </p>
+          </div>
+
+          {/* Explorable */}
+          <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white/75">Explorable</p>
+              <p className="text-xs text-white/35 mt-0.5">
+                List this book on the Explore page so all users can discover it. Enabling this will make the book public.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const next = !explorable;
+                setValue('explorable', next);
+                if (next) setValue('privacy', 'PUBLIC');
+              }}
+              className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+                explorable ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                  explorable ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
           </div>
 
           {!isEdit && (
