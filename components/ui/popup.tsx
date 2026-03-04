@@ -7,10 +7,10 @@ import { X } from 'lucide-react';
 interface PopupProps {
   open: boolean;
   onClose: () => void;
-  /** Optional title shown in the header bar */
+
   title?: string;
   children: React.ReactNode;
-  /** Controls the max-width of the panel. Defaults to 'lg'. */
+
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
@@ -29,7 +29,6 @@ export default function Popup({
   children,
   maxWidth = 'lg',
 }: PopupProps) {
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -39,7 +38,6 @@ export default function Popup({
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // Lock body scroll
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -53,14 +51,12 @@ export default function Popup({
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
@@ -68,7 +64,6 @@ export default function Popup({
         onClick={(e) => e.stopPropagation()}
         className={`relative w-full ${MAX_WIDTH_CLASS[maxWidth]} max-h-[85vh] flex flex-col rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-2xl`}
       >
-        {/* Header — always shown so the close button is always reachable */}
         <div className="flex items-center gap-3 px-5 py-3.5 border-b border-[#2a2a2a] shrink-0">
           {title && (
             <h2 className="flex-1 text-sm font-semibold text-white truncate">
@@ -84,10 +79,7 @@ export default function Popup({
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-5 py-4">
-          {children}
-        </div>
+        <div className="overflow-y-auto flex-1 px-5 py-4">{children}</div>
       </div>
     </div>,
     document.body,

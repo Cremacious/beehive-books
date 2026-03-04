@@ -10,6 +10,10 @@ import { getUserBooksAction } from '@/lib/actions/book.actions';
 
 // TODO: Allow users to make a custom book order.
 //TODO: Make 5 books the limit for free users
+//TODO: Create a way to mark books as first draft vs final draft, and allow users to filter by that.
+//TODO: Create share button component
+//TODO: Add QR code functionality
+//TODO: Export as DOCX
 
 export default async function LibraryPage() {
   const books = await getUserBooksAction();
@@ -20,12 +24,10 @@ export default async function LibraryPage() {
         <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-[0.15em] mb-2">
           Writing Workspace
         </p>
-        <h1 className="text-3xl font-bold text-white mainFont">
-          My Library
-        </h1>
+        <h1 className="text-3xl font-bold text-white mainFont">My Library</h1>
         <p className="mt-2 text-sm text-white/80 max-w-sm leading-relaxed">
-          The home for your writing. Upload books, build out chapters, and
-          shape your stories from first draft to final page.
+          The home for your writing. Upload books, build out chapters, and shape
+          your stories from first draft to final page.
         </p>
       </div>
       <BookGrid books={books} />

@@ -260,7 +260,6 @@ export async function deleteGroupAction(groupId: string): Promise<ActionResult> 
       membership?.role === 'MODERATOR';
     if (!canDelete) return { success: false, message: 'No permission.' };
 
-    // Ungroup children first
     await db
       .update(hiveOutlineItems)
       .set({ parentId: null, updatedAt: new Date() })

@@ -77,7 +77,7 @@ export function PromptGrid({ prompts }: Props) {
   const handleSort = (s: SortOption) => { setSort(s); setPage(1); };
   const handleStatus = (s: StatusFilter) => { setStatusFilter(s); setPage(1); };
 
-  // ─── Empty state ─────────────────────────────────────────────────────────────
+
   if (prompts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -112,10 +112,10 @@ export function PromptGrid({ prompts }: Props) {
     );
   }
 
-  // ─── Main view ────────────────────────────────────────────────────────────────
+ 
   return (
     <>
-      {/* Search + sort + create row */}
+  
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
@@ -152,7 +152,7 @@ export function PromptGrid({ prompts }: Props) {
         </div>
       </div>
 
-      {/* Status filter tabs */}
+  
       <div className="flex gap-3 mb-8 overflow-x-auto pb-1">
         {STATUS_TABS.map(({ value, label }) => {
           const count = statusCounts[value];
@@ -180,7 +180,7 @@ export function PromptGrid({ prompts }: Props) {
         })}
       </div>
 
-      {/* No filter results */}
+   
       {displayed.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-white/10 mb-3" />
@@ -200,7 +200,7 @@ export function PromptGrid({ prompts }: Props) {
         </div>
       )}
 
-      {/* Grid + placeholders + pagination */}
+   
       {displayed.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

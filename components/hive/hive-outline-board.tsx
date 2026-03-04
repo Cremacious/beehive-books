@@ -82,7 +82,7 @@ function typeConfig(type: OutlineItemType) {
   return ITEM_TYPES.find((t) => t.value === type) ?? ITEM_TYPES[0];
 }
 
-// ─── Group name form ───────────────────────────────────────────────────────────
+
 function GroupForm({
   initial,
   onSave,
@@ -146,7 +146,7 @@ function GroupForm({
   );
 }
 
-// ─── Item inline form ─────────────────────────────────────────────────────────
+
 function ItemForm({
   initial,
   onSave,
@@ -237,7 +237,7 @@ function ItemForm({
   );
 }
 
-// ─── Sortable item row ─────────────────────────────────────────────────────────
+
 function SortableItemRow({
   item,
   currentUserId,
@@ -331,7 +331,7 @@ function SortableItemRow({
   );
 }
 
-// ─── Drag overlay ghost ───────────────────────────────────────────────────────
+
 function DragGhost({ item }: { item: OutlineItem }) {
   const conf = typeConfig(item.type);
   const Icon = conf.Icon;
@@ -348,7 +348,7 @@ function DragGhost({ item }: { item: OutlineItem }) {
   );
 }
 
-// ─── Group card ────────────────────────────────────────────────────────────────
+
 function SortableGroupCard({
   group,
   children: childItems,
@@ -412,7 +412,7 @@ function SortableGroupCard({
       }}
       className="rounded-2xl border border-[#3a3a3a] bg-[#1e1e1e] overflow-hidden"
     >
-      {/* Group header */}
+  
       <div className="flex items-center gap-2 px-3 py-2.5 bg-[#252525] group">
         <button
           {...attributes}
@@ -451,14 +451,14 @@ function SortableGroupCard({
         )}
       </div>
 
-      {/* Group children */}
+    
       {!collapsed && (
         <div className="p-2 space-y-2">
           <SortableContext items={childIds} strategy={verticalListSortingStrategy}>
             {childItems.map((item) =>
               editingItemId === item.id ? (
                 <div key={item.id} className="px-1">
-                  {/* edit form rendered by parent */}
+           
                 </div>
               ) : (
                 <SortableItemRow
@@ -494,7 +494,7 @@ function SortableGroupCard({
   );
 }
 
-// ─── Main board ────────────────────────────────────────────────────────────────
+
 export default function HiveOutlineBoard({
   hiveId,
   initialItems,
@@ -520,12 +520,12 @@ export default function HiveOutlineBoard({
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
-  // Derived
+
   const groups = items.filter((i) => i.type === 'GROUP');
   const ungrouped = items.filter((i) => i.type !== 'GROUP' && i.parentId === null);
   const activeItem = activeId ? items.find((i) => i.id === activeId) ?? null : null;
 
-  // ─── Drag handlers ───────────────────────────────────────────────────────────
+
   const handleDragStart = (event: DragStartEvent) => {
     const id = event.active.id as string;
     const item = itemsRef.current.find((i) => i.id === id);
@@ -538,23 +538,23 @@ export default function HiveOutlineBoard({
     if (!over || active.id === over.id) return;
 
     const activeItem = itemsRef.current.find((i) => i.id === active.id);
-    if (!activeItem || activeItem.type === 'GROUP') return; // groups only reorder at top level
+    if (!activeItem || activeItem.type === 'GROUP') return; 
 
     const overId = over.id as string;
     const overItem = itemsRef.current.find((i) => i.id === overId);
 
-    // Determine target container
+   
     let targetParentId: string | null = null;
 
     if (overItem?.type === 'GROUP') {
-      // Dragging onto a group header → put into that group
+      
       targetParentId = overItem.id;
     } else if (overItem) {
-      // Dragging onto another item → inherit its parentId
+
       targetParentId = overItem.parentId;
     }
 
-    if (activeItem.parentId === targetParentId) return; // same container, no-op
+    if (activeItem.parentId === targetParentId) return; 
 
     setItems((prev) =>
       prev.map((i) => i.id === active.id ? { ...i, parentId: targetParentId } : i),
@@ -575,7 +575,7 @@ export default function HiveOutlineBoard({
     const originalParentId = dragStartParentIdRef.current;
 
     if (activeItem.type === 'GROUP') {
-      // Reorder groups + ungrouped at top level
+   
       const topLevel = current.filter((i) => i.type === 'GROUP' || i.parentId === null);
       const oldIdx = topLevel.findIndex((i) => i.id === active.id);
       const newIdx = topLevel.findIndex((i) => i.id === over.id);
@@ -593,7 +593,7 @@ export default function HiveOutlineBoard({
       return;
     }
 
-    // Item reorder within container
+ 
     const container = current.filter((i) => i.type !== 'GROUP' && i.parentId === newParentId);
     const oldIdx = container.findIndex((i) => i.id === active.id);
     const overInContainer = container.findIndex((i) => i.id === over.id);
@@ -620,7 +620,7 @@ export default function HiveOutlineBoard({
     });
   };
 
-  // ─── CRUD handlers ────────────────────────────────────────────────────────────
+
   const handleCreateItem = async (data: { title: string; description: string; type: OutlineItemType; color: string }) => {
     const result = await createOutlineItemAction(hiveId, data.title, data.description, data.type, data.color);
     if (result.success) {
@@ -685,8 +685,7 @@ export default function HiveOutlineBoard({
     setItems((prev) => prev.filter((i) => i.id !== id));
   };
 
-  // ─── Top-level sortable ids ───────────────────────────────────────────────────
-  // Groups + ungrouped items at root level participate in the top-level SortableContext
+
   const topLevelIds = [
     ...groups.map((g) => g.id),
     ...ungrouped.map((u) => u.id),
@@ -696,7 +695,7 @@ export default function HiveOutlineBoard({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+   
       <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-sm text-white/60">
           {totalItems} item{totalItems !== 1 ? 's' : ''} · {groups.length} group{groups.length !== 1 ? 's' : ''} · drag to reorder
@@ -717,7 +716,7 @@ export default function HiveOutlineBoard({
         </div>
       </div>
 
-      {/* Group form */}
+ 
       {showCreateGroup && (
         <GroupForm onSave={handleCreateGroup} onCancel={() => setShowCreateGroup(false)} />
       )}
@@ -729,12 +728,12 @@ export default function HiveOutlineBoard({
         />
       )}
 
-      {/* Ungrouped item create form */}
+   
       {showCreate && (
         <ItemForm onSave={handleCreateItem} onCancel={() => setShowCreate(false)} />
       )}
 
-      {/* Empty state */}
+ 
       {items.length === 0 && !showCreate && !showCreateGroup ? (
         <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
@@ -754,7 +753,7 @@ export default function HiveOutlineBoard({
         >
           <SortableContext items={topLevelIds} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
-              {/* Render groups and ungrouped items in order */}
+   
               {topLevelIds.map((id) => {
                 const item = items.find((i) => i.id === id);
                 if (!item) return null;
@@ -764,7 +763,7 @@ export default function HiveOutlineBoard({
                     .filter((i) => i.type !== 'GROUP' && i.parentId === item.id)
                     .sort((a, b) => a.order - b.order);
 
-                  if (editingGroup?.id === item.id) return null; // form shown above
+                  if (editingGroup?.id === item.id) return null; 
 
                   return (
                     <SortableGroupCard
@@ -786,7 +785,7 @@ export default function HiveOutlineBoard({
                   );
                 }
 
-                // Ungrouped item
+              
                 if (editingItem?.id === item.id) {
                   return (
                     <ItemForm

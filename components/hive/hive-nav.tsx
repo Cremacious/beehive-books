@@ -107,7 +107,7 @@ export default function HiveNav({ hiveId, isOwner }: HiveNavProps) {
         )}
       </div>
 
-      {/* ── Desktop: tab row ── */}
+    
       <div className="hidden sm:flex gap-1 flex-wrap">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
