@@ -18,7 +18,9 @@ export type NotificationType =
   | 'HIVE_MILESTONE'
   | 'HIVE_COMMENT'
   | 'HIVE_POLL'
-  | 'HIVE_BETA_REVIEW';
+  | 'HIVE_BETA_REVIEW'
+  | 'HIVE_INVITE_PENDING'
+  | 'HIVE_ACTIVITY';
 
 export type NotificationItem = {
   id:        string;

@@ -202,6 +202,8 @@ export const notifications = pgTable('notifications', {
       'HIVE_COMMENT',
       'HIVE_POLL',
       'HIVE_BETA_REVIEW',
+      'HIVE_INVITE_PENDING',
+      'HIVE_ACTIVITY',
     ] as const,
   }).notNull(),
   isRead: boolean('is_read').notNull().default(false),
@@ -211,6 +213,7 @@ export const notifications = pgTable('notifications', {
     .notNull()
     .default({}),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -231,6 +234,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   clubDiscussions: many(clubDiscussions),
   clubDiscussionReplies: many(clubDiscussionReplies),
   hiveMemberships: many(hiveMembers),
+  hiveInvitesReceived: many(hiveInvites, { relationName: 'receivedHiveInvites' }),
 }));
 
 export const friendshipsRelations = relations(friendships, ({ one }) => ({
@@ -804,6 +808,37 @@ export const hiveMembers = pgTable(
   (t) => [uniqueIndex('unique_hive_member_idx').on(t.hiveId, t.userId)],
 );
 
+export const hiveInvites = pgTable(
+  'hive_invites',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    hiveId: text('hive_id')
+      .notNull()
+      .references(() => hives.id, { onDelete: 'cascade' }),
+    invitedUserId: text('invited_user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    invitedByUserId: text('invited_by_user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    role: text('role', {
+      enum: ['MODERATOR', 'CONTRIBUTOR', 'BETA_READER'],
+    })
+      .notNull()
+      .default('CONTRIBUTOR'),
+    status: text('status', {
+      enum: ['PENDING', 'ACCEPTED', 'DECLINED'],
+    })
+      .notNull()
+      .default('PENDING'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('unique_hive_invite_idx').on(t.hiveId, t.invitedUserId)],
+);
+
 export const hiveChapterClaims = pgTable(
   'hive_chapter_claims',
   {
@@ -1180,6 +1215,7 @@ export const hivesRelations = relations(hives, ({ one, many }) => ({
   owner: one(users, { fields: [hives.ownerId], references: [users.clerkId] }),
   book: one(books, { fields: [hives.bookId], references: [books.id] }),
   members: many(hiveMembers),
+  invites: many(hiveInvites),
   outlineItems: many(hiveOutlineItems),
   wikiEntries: many(hiveWikiEntries),
   chapterClaims: many(hiveChapterClaims),
@@ -1195,6 +1231,20 @@ export const hivesRelations = relations(hives, ({ one, many }) => ({
 export const hiveMembersRelations = relations(hiveMembers, ({ one }) => ({
   hive: one(hives, { fields: [hiveMembers.hiveId], references: [hives.id] }),
   user: one(users, { fields: [hiveMembers.userId], references: [users.clerkId] }),
+}));
+
+export const hiveInvitesRelations = relations(hiveInvites, ({ one }) => ({
+  hive: one(hives, { fields: [hiveInvites.hiveId], references: [hives.id] }),
+  invitedUser: one(users, {
+    fields: [hiveInvites.invitedUserId],
+    references: [users.clerkId],
+    relationName: 'receivedHiveInvites',
+  }),
+  invitedBy: one(users, {
+    fields: [hiveInvites.invitedByUserId],
+    references: [users.clerkId],
+    relationName: 'sentHiveInvites',
+  }),
 }));
 
 export const hiveChapterClaimsRelations = relations(hiveChapterClaims, ({ one }) => ({

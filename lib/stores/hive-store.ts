@@ -6,6 +6,8 @@ import {
   joinHiveAction,
   leaveHiveAction,
   inviteMemberAction,
+  acceptHiveInviteAction,
+  declineHiveInviteAction,
   removeMemberFromHiveAction,
   updateMemberRoleAction,
   completeHiveAction,
@@ -21,7 +23,9 @@ interface HiveStore {
   leaveHive: (hiveId: string) => Promise<ActionResult>;
   completeHive: (hiveId: string) => Promise<ActionResult>;
 
-  inviteMember: (hiveId: string, userId: string, role?: HiveRole) => Promise<ActionResult>;
+  inviteMember: (hiveId: string, userId: string, role?: Exclude<HiveRole, 'OWNER'>) => Promise<ActionResult>;
+  acceptHiveInvite: (inviteId: string) => Promise<ActionResult & { hiveId?: string }>;
+  declineHiveInvite: (inviteId: string) => Promise<ActionResult>;
   removeMember: (hiveId: string, userId: string) => Promise<ActionResult>;
   updateMemberRole: (
     hiveId: string,
@@ -40,6 +44,8 @@ export const useHiveStore = create<HiveStore>(() => ({
   completeHive: (hiveId) => completeHiveAction(hiveId),
 
   inviteMember: (hiveId, userId, role) => inviteMemberAction(hiveId, userId, role),
+  acceptHiveInvite: (inviteId) => acceptHiveInviteAction(inviteId),
+  declineHiveInvite: (inviteId) => declineHiveInviteAction(inviteId),
   removeMember: (hiveId, userId) => removeMemberFromHiveAction(hiveId, userId),
   updateMemberRole: (hiveId, userId, role) => updateMemberRoleAction(hiveId, userId, role),
 }));

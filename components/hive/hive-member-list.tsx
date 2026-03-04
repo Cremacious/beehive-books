@@ -10,11 +10,13 @@ import {
   Eye,
   MoreHorizontal,
   UserMinus,
+  UserPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { useRouter } from 'next/navigation';
-import type { HiveMemberWithUser, HiveRole } from '@/lib/types/hive.types';
+import HiveInvitePicker from '@/components/hive/hive-invite-picker';
+import type { HiveMemberWithUser, HiveRole, InvitableFriend } from '@/lib/types/hive.types';
 
 const ROLE_ICONS: Record<HiveRole, React.ReactNode> = {
   OWNER: <Crown className="w-3.5 h-3.5 text-[#FFC300]" />,
@@ -48,6 +50,7 @@ interface HiveMemberListProps {
   hiveId: string;
   myRole: HiveRole | null;
   currentUserId: string | null;
+  invitableFriends?: InvitableFriend[];
 }
 
 export default function HiveMemberList({
@@ -55,11 +58,13 @@ export default function HiveMemberList({
   hiveId,
   myRole,
   currentUserId,
+  invitableFriends = [],
 }: HiveMemberListProps) {
   const store = useHiveStore();
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showInvitePicker, setShowInvitePicker] = useState(false);
 
   const canManage = myRole === 'OWNER' || myRole === 'MODERATOR';
 
@@ -83,7 +88,40 @@ export default function HiveMemberList({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+    
+      {canManage && (
+        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
+          <button
+            onClick={() => setShowInvitePicker((v) => !v)}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-white hover:bg-white/5 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4 text-[#FFC300]" />
+              Invite Friends
+            </span>
+            {invitableFriends.length > 0 && (
+              <span className="text-xs text-white/40">
+                {invitableFriends.length} available
+              </span>
+            )}
+          </button>
+          {showInvitePicker && (
+            <div className="px-4 pb-4 border-t border-[#2a2a2a]">
+              <div className="pt-3">
+                <HiveInvitePicker
+                  hiveId={hiveId}
+                  friends={invitableFriends}
+                  onInvited={() => router.refresh()}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+
+      <div className="space-y-2">
       {members.map((member) => {
         const isMe = member.userId === currentUserId;
         const canEditThis =
@@ -198,6 +236,7 @@ export default function HiveMemberList({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

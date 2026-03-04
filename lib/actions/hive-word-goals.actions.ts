@@ -28,7 +28,7 @@ async function requireHiveMember(hiveId: string) {
   return { userId, membership };
 }
 
-/** Auto-deactivate any MONTHLY goals whose endDate is in the past. */
+
 async function expireMonthlyGoals(hiveId: string) {
   const now = new Date();
   await db

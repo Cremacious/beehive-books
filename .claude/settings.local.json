@@ -18,7 +18,10 @@
       "Bash(xargs grep -l \"font-geist\\\\|Geist\")",
       "Bash(xargs cat)",
       "Bash(xargs grep -l \"mainFont\")",
-      "Bash(npm ls tailwindcss)"
+      "Bash(npm ls tailwindcss)",
+      "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/\")",
+      "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/\")",
+      "Bash(npx drizzle-kit push)"
     ],
     "additionalDirectories": [
       "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",

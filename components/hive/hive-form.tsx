@@ -407,7 +407,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {mode === 'create' ? 'Create Hive 🐝' : 'Save Changes'}
+            {mode === 'create' ? 'Create Hive' : 'Save Changes'}
           </Button>
         </div>
       </div>

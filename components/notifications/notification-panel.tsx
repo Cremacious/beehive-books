@@ -32,7 +32,7 @@ function timeAgo(date: Date): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function messageBody(type: NotificationType): string {
+function messageBody(type: NotificationType, metadata?: Record<string, string>): string {
   switch (type) {
     case 'FRIEND_REQUEST':    return 'sent you a friend request';
     case 'FRIEND_ACCEPTED':   return 'accepted your friend request';
@@ -48,12 +48,14 @@ function messageBody(type: NotificationType): string {
     case 'CLUB_DISCUSSION':        return 'posted a new discussion in your club';
     case 'CLUB_REPLY':             return 'replied to your discussion';
     case 'HIVE_INVITE':            return 'invited you to a hive';
+    case 'HIVE_INVITE_PENDING':    return 'invited you to join a hive';
     case 'HIVE_CHAPTER_CLAIMED':   return 'claimed a chapter in the hive';
     case 'HIVE_SPRINT_STARTED':    return 'started a writing sprint';
     case 'HIVE_MILESTONE':         return 'earned a hive milestone';
     case 'HIVE_COMMENT':           return 'commented in the hive';
     case 'HIVE_POLL':              return 'created a new poll';
     case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
+    case 'HIVE_ACTIVITY':          return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
   }
 }
 
@@ -75,6 +77,8 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'CLUB_DISCUSSION':      return { Icon: BookOpen,        bg: 'bg-amber-500/20',  fg: 'text-amber-400'  };
     case 'CLUB_REPLY':           return { Icon: CornerDownRight, bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
     case 'HIVE_INVITE':          return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_INVITE_PENDING':  return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'HIVE_ACTIVITY':        return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
     case 'HIVE_CHAPTER_CLAIMED': return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
     case 'HIVE_SPRINT_STARTED':  return { Icon: Timer,           bg: 'bg-orange-500/20', fg: 'text-orange-400' };
     case 'HIVE_MILESTONE':       return { Icon: Trophy,          bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
@@ -123,7 +127,7 @@ function NotificationRow({
               {' '}
             </>
           ) : null}
-          {messageBody(type)}
+          {messageBody(type, metadata)}
         </p>
         <p className="text-xs text-white/80 mt-1">{timeAgo(createdAt)}</p>
       </div>

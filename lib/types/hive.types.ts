@@ -33,6 +33,25 @@ export type MilestoneType =
 
 export type ActionResult = { success: boolean; message: string };
 
+export type HiveInviteStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
+
+export type PendingHiveInvite = {
+  id: string;
+  hiveId: string;
+  hiveName: string;
+  hiveCoverUrl: string | null;
+  role: Exclude<HiveRole, 'OWNER'>;
+  invitedBy: { username: string | null; imageUrl: string | null };
+  createdAt: Date;
+};
+
+export type InvitableFriend = {
+  clerkId: string;
+  username: string | null;
+  firstName: string | null;
+  imageUrl: string | null;
+};
+
 export type HiveUser = {
   clerkId: string;
   username: string | null;

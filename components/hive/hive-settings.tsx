@@ -12,9 +12,11 @@ import {
   Loader2,
   Trash2,
   ExternalLink,
+  UserPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HiveForm from '@/components/hive/hive-form';
+import HiveInvitePicker from '@/components/hive/hive-invite-picker';
 import {
   linkBookToHiveAction,
   unlinkBookFromHiveAction,
@@ -23,6 +25,7 @@ import {
 import type {
   HiveWithMembership,
   HiveBookOption,
+  InvitableFriend,
 } from '@/lib/types/hive.types';
 
 type BookMode = 'new' | 'existing' | 'later';
@@ -62,15 +65,18 @@ interface HiveSettingsProps {
     author: string;
     coverUrl: string | null;
   } | null;
+  invitableFriends?: InvitableFriend[];
 }
 
 export default function HiveSettings({
   hive,
   userBooks,
   linkedBook,
+  invitableFriends = [],
 }: HiveSettingsProps) {
   const router = useRouter();
 
+  const [showInvitePicker, setShowInvitePicker] = useState(false);
   const [bookMode, setBookMode] = useState<BookMode>('existing');
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -306,6 +312,34 @@ export default function HiveSettings({
                 </Button>
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
+        <button
+          onClick={() => setShowInvitePicker((v) => !v)}
+          className="w-full flex items-center justify-between gap-3 px-6 py-4 text-sm font-semibold text-white hover:bg-white/5 transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <UserPlus className="w-4 h-4 text-[#FFC300]" />
+            Invite Members
+          </span>
+          {invitableFriends.length > 0 && (
+            <span className="text-xs text-white/40">
+              {invitableFriends.length} friend{invitableFriends.length !== 1 ? 's' : ''} available
+            </span>
+          )}
+        </button>
+        {showInvitePicker && (
+          <div className="px-6 pb-6 border-t border-[#2a2a2a]">
+            <div className="pt-4">
+              <HiveInvitePicker
+                hiveId={hive.id}
+                friends={invitableFriends}
+                onInvited={() => router.refresh()}
+              />
+            </div>
           </div>
         )}
       </div>

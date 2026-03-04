@@ -2,9 +2,9 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { hives, hiveMembers, books, users } from '@/db/schema';
+import { hives, hiveMembers, hiveInvites, books, users, friendships } from '@/db/schema';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import { insertNotification } from '@/lib/notifications';
 import type {
@@ -13,6 +13,8 @@ import type {
   ActionResult,
   HiveWithMembership,
   HiveMemberWithUser,
+  PendingHiveInvite,
+  InvitableFriend,
 } from '@/lib/types/hive.types';
 
 async function requireAuth() {
@@ -281,39 +283,240 @@ export async function leaveHiveAction(hiveId: string): Promise<ActionResult> {
 export async function inviteMemberAction(
   hiveId: string,
   targetUserId: string,
-  role: HiveRole = 'CONTRIBUTOR',
+  role: Exclude<HiveRole, 'OWNER'> = 'CONTRIBUTOR',
 ): Promise<ActionResult> {
   const { userId } = await requireHiveMod(hiveId);
 
   const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
   if (!hive) return { success: false, message: 'Hive not found.' };
 
-  const existing = await db.query.hiveMembers.findFirst({
+  const existingMember = await db.query.hiveMembers.findFirst({
     where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, targetUserId)),
   });
-  if (existing) return { success: false, message: 'User is already a member.' };
+  if (existingMember) return { success: false, message: 'User is already a member.' };
 
   try {
-    await db.insert(hiveMembers).values({ hiveId, userId: targetUserId, role });
-    await db
-      .update(hives)
-      .set({ memberCount: sql`${hives.memberCount} + 1`, updatedAt: new Date() })
-      .where(eq(hives.id, hiveId));
+   
+    const existingInvite = await db.query.hiveInvites.findFirst({
+      where: and(eq(hiveInvites.hiveId, hiveId), eq(hiveInvites.invitedUserId, targetUserId)),
+    });
+
+    if (existingInvite?.status === 'PENDING') {
+      return { success: false, message: 'User already has a pending invite.' };
+    }
+
+    if (existingInvite) {
+      await db
+        .update(hiveInvites)
+        .set({ status: 'PENDING', role, invitedByUserId: userId, updatedAt: new Date() })
+        .where(eq(hiveInvites.id, existingInvite.id));
+    } else {
+      await db.insert(hiveInvites).values({
+        hiveId,
+        invitedUserId: targetUserId,
+        invitedByUserId: userId,
+        role,
+      });
+    }
 
     const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
     void insertNotification({
       recipientId: targetUserId,
       actorId: userId,
-      type: 'HIVE_INVITE',
-      link: `/hive/${hiveId}`,
+      type: 'HIVE_INVITE_PENDING',
+      link: '/hive',
       metadata: { actorUsername: actor?.username ?? '', hiveName: hive.name, hiveId },
     });
 
+    revalidatePath('/hive');
     revalidatePath(`/hive/${hiveId}/members`);
-    return { success: true, message: 'Member invited.' };
+    return { success: true, message: 'Invite sent.' };
   } catch {
-    return { success: false, message: 'Failed to invite member.' };
+    return { success: false, message: 'Failed to send invite.' };
   }
+}
+
+export async function acceptHiveInviteAction(
+  inviteId: string,
+): Promise<ActionResult & { hiveId?: string }> {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { success: false, message: 'Unauthorized.' };
+
+    const invite = await db.query.hiveInvites.findFirst({
+      where: and(
+        eq(hiveInvites.id, inviteId),
+        eq(hiveInvites.invitedUserId, userId),
+        eq(hiveInvites.status, 'PENDING'),
+      ),
+      with: { hive: { columns: { id: true, name: true, ownerId: true } } },
+    });
+    if (!invite) return { success: false, message: 'Invite not found or already handled.' };
+
+    const alreadyMember = await db.query.hiveMembers.findFirst({
+      where: and(eq(hiveMembers.hiveId, invite.hiveId), eq(hiveMembers.userId, userId)),
+    });
+    if (alreadyMember) {
+      await db
+        .update(hiveInvites)
+        .set({ status: 'ACCEPTED', updatedAt: new Date() })
+        .where(eq(hiveInvites.id, inviteId));
+      return { success: true, message: 'Already a member.', hiveId: invite.hiveId };
+    }
+
+    await db
+      .update(hiveInvites)
+      .set({ status: 'ACCEPTED', updatedAt: new Date() })
+      .where(eq(hiveInvites.id, inviteId));
+
+    await db.insert(hiveMembers).values({
+      hiveId: invite.hiveId,
+      userId,
+      role: invite.role as HiveRole,
+    });
+
+    await db
+      .update(hives)
+      .set({ memberCount: sql`${hives.memberCount} + 1`, updatedAt: new Date() })
+      .where(eq(hives.id, invite.hiveId));
+
+    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    void insertNotification({
+      recipientId: invite.hive.ownerId,
+      actorId: userId,
+      type: 'HIVE_INVITE',
+      link: `/hive/${invite.hiveId}/members`,
+      metadata: {
+        actorUsername: actor?.username ?? '',
+        hiveName: invite.hive.name,
+        hiveId: invite.hiveId,
+      },
+    });
+
+    revalidatePath('/hive');
+    revalidatePath(`/hive/${invite.hiveId}`);
+    revalidatePath(`/hive/${invite.hiveId}/members`);
+    return { success: true, message: 'Invite accepted.', hiveId: invite.hiveId };
+  } catch {
+    return { success: false, message: 'Failed to accept invite.' };
+  }
+}
+
+export async function declineHiveInviteAction(
+  inviteId: string,
+): Promise<ActionResult> {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { success: false, message: 'Unauthorized.' };
+
+    const invite = await db.query.hiveInvites.findFirst({
+      where: and(
+        eq(hiveInvites.id, inviteId),
+        eq(hiveInvites.invitedUserId, userId),
+        eq(hiveInvites.status, 'PENDING'),
+      ),
+    });
+    if (!invite) return { success: false, message: 'Invite not found.' };
+
+    await db
+      .update(hiveInvites)
+      .set({ status: 'DECLINED', updatedAt: new Date() })
+      .where(eq(hiveInvites.id, inviteId));
+
+    revalidatePath('/hive');
+    return { success: true, message: 'Invite declined.' };
+  } catch {
+    return { success: false, message: 'Failed to decline invite.' };
+  }
+}
+
+export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const invites = await db.query.hiveInvites.findMany({
+    where: and(
+      eq(hiveInvites.invitedUserId, userId),
+      eq(hiveInvites.status, 'PENDING'),
+    ),
+    with: {
+      hive: { columns: { id: true, name: true, coverUrl: true } },
+      invitedBy: { columns: { username: true, imageUrl: true } },
+    },
+    orderBy: [desc(hiveInvites.createdAt)],
+  });
+
+  return invites.map((inv) => ({
+    id: inv.id,
+    hiveId: inv.hiveId,
+    hiveName: inv.hive.name,
+    hiveCoverUrl: inv.hive.coverUrl,
+    role: inv.role as Exclude<HiveRole, 'OWNER'>,
+    invitedBy: {
+      username: inv.invitedBy.username,
+      imageUrl: inv.invitedBy.imageUrl,
+    },
+    createdAt: inv.createdAt,
+  }));
+}
+
+export async function getHiveFriendsForInviteAction(
+  hiveId: string,
+): Promise<InvitableFriend[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return [];
+  }
+
+
+  const friendRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+    columns: { requesterId: true, addresseeId: true },
+  });
+  const friendIds = friendRows.map((r) =>
+    r.requesterId === userId ? r.addresseeId : r.requesterId,
+  );
+  if (friendIds.length === 0) return [];
+
+
+  const members = await db.query.hiveMembers.findMany({
+    where: eq(hiveMembers.hiveId, hiveId),
+    columns: { userId: true },
+  });
+  const memberIds = new Set(members.map((m) => m.userId));
+
+
+  const pendingInvites = await db.query.hiveInvites.findMany({
+    where: and(eq(hiveInvites.hiveId, hiveId), eq(hiveInvites.status, 'PENDING')),
+    columns: { invitedUserId: true },
+  });
+  const pendingIds = new Set(pendingInvites.map((i) => i.invitedUserId));
+
+ 
+  const invitableFriendIds = friendIds.filter(
+    (id) => !memberIds.has(id) && !pendingIds.has(id),
+  );
+  if (invitableFriendIds.length === 0) return [];
+
+  const friendUsers = await db.query.users.findMany({
+    where: inArray(users.clerkId, invitableFriendIds),
+    columns: { clerkId: true, username: true, firstName: true, imageUrl: true },
+  });
+
+  return friendUsers.map((u) => ({
+    clerkId: u.clerkId,
+    username: u.username,
+    firstName: u.firstName,
+    imageUrl: u.imageUrl,
+  }));
 }
 
 export async function removeMemberFromHiveAction(

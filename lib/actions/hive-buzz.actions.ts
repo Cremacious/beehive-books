@@ -2,9 +2,10 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, ne, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { hiveBuzzItems, hiveBuzzLikes, hiveMembers } from '@/db/schema';
+import { hiveBuzzItems, hiveBuzzLikes, hiveMembers, hives, users } from '@/db/schema';
+import { insertOrBundleHiveActivityNotification } from '@/lib/notifications';
 import type { ActionResult, BuzzItemWithAuthor, BuzzType, HiveUser } from '@/lib/types/hive.types';
 
 async function requireAuth() {
@@ -76,6 +77,32 @@ export async function createBuzzItemAction(
       .returning({ id: hiveBuzzItems.id });
 
     revalidatePath(`/hive/${hiveId}/buzz`);
+
+    void (async () => {
+      try {
+        const [hive, actor, otherMembers] = await Promise.all([
+          db.query.hives.findFirst({ where: eq(hives.id, hiveId), columns: { name: true } }),
+          db.query.users.findFirst({ where: eq(users.clerkId, userId), columns: { username: true } }),
+          db.query.hiveMembers.findMany({
+            where: and(eq(hiveMembers.hiveId, hiveId), ne(hiveMembers.userId, userId)),
+            columns: { userId: true },
+          }),
+        ]);
+        if (!hive || !actor) return;
+        await Promise.all(
+          otherMembers.map((m) =>
+            insertOrBundleHiveActivityNotification({
+              recipientId: m.userId,
+              actorId: userId,
+              hiveId,
+              hiveName: hive.name,
+              actorUsername: actor.username ?? 'A hive member',
+            }),
+          ),
+        );
+      } catch { /* non-critical */ }
+    })();
+
     return { success: true, message: 'Posted to Buzz Board.', itemId: item.id };
   } catch {
     return { success: false, message: 'Failed to post.' };
