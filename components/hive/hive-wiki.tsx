@@ -15,9 +15,9 @@ import {
   Loader2,
   X,
   Tag,
-  ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Popup from '@/components/ui/popup';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
   getWikiEntriesAction,
@@ -241,14 +241,15 @@ function EntryCard({
   myRole,
   onEdit,
   onDelete,
+  onReadMore,
 }: {
   entry: WikiEntryWithAuthor;
   currentUserId: string;
   myRole: HiveRole;
   onEdit: (entry: WikiEntryWithAuthor) => void;
   onDelete: (id: string) => void;
+  onReadMore: (entry: WikiEntryWithAuthor) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const catConf = CATEGORIES.find((c) => c.value === entry.category)!;
   const CatIcon = catConf.Icon;
@@ -305,29 +306,19 @@ function EntryCard({
       </div>
 
       {entry.content && (
-        <>
-          {expanded ? (
-            <div
-              className="text-sm text-white/70 leading-relaxed prose prose-invert prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: entry.content }}
-            />
-          ) : (
-            preview && (
-              <p className="text-sm text-white/90 leading-relaxed line-clamp-2">
-                {preview}
-              </p>
-            )
+        <div className="space-y-1">
+          {preview && (
+            <p className="text-sm text-white/70 leading-relaxed line-clamp-3">
+              {preview}
+            </p>
           )}
           <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1 text-xs text-yellow-500 hover:text-white/60 transition-colors"
+            onClick={() => onReadMore(entry)}
+            className="text-xs text-[#FFC300] hover:text-[#FFC300]/70 transition-colors"
           >
-            <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`}
-            />
-            {expanded ? 'Collapse' : 'Read more'}
+            Read more →
           </button>
-        </>
+        </div>
       )}
 
       {entry.tags.length > 0 && (
@@ -383,6 +374,7 @@ export default function HiveWiki({
     'ALL',
   );
   const [editorMode, setEditorMode] = useState<EditorMode | null>(null);
+  const [viewingEntry, setViewingEntry] = useState<WikiEntryWithAuthor | null>(null);
   const [search, setSearch] = useState('');
   const [, startTransition] = useTransition();
 
@@ -498,10 +490,77 @@ export default function HiveWiki({
               onDelete={(id) =>
                 setEntries((prev) => prev.filter((e) => e.id !== id))
               }
+              onReadMore={setViewingEntry}
             />
           ))}
         </div>
       )}
+
+      <Popup
+        open={viewingEntry !== null}
+        onClose={() => setViewingEntry(null)}
+        title={viewingEntry?.title}
+        maxWidth="xl"
+      >
+        {viewingEntry && (() => {
+          const catConf = CATEGORIES.find((c) => c.value === viewingEntry.category)!;
+          const CatIcon = catConf.Icon;
+          return (
+            <div className="space-y-4">
+              <span
+                className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[viewingEntry.category]}`}
+              >
+                <CatIcon className="w-3 h-3" />
+                {catConf.label}
+              </span>
+
+              <div
+                className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
+              />
+
+              {viewingEntry.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {viewingEntry.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] text-yellow-500"
+                    >
+                      <Tag className="w-3 h-3" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
+                {viewingEntry.author.imageUrl ? (
+                  <Image
+                    src={viewingEntry.author.imageUrl}
+                    alt={viewingEntry.author.username ?? 'User'}
+                    width={20}
+                    height={20}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[10px]">
+                    {(viewingEntry.author.username ?? viewingEntry.author.firstName ?? 'U')[0]?.toUpperCase()}
+                  </div>
+                )}
+                <span className="text-xs text-white/50">
+                  {viewingEntry.author.username ?? viewingEntry.author.firstName ?? 'User'}
+                  {' · '}
+                  {new Date(viewingEntry.updatedAt).toLocaleDateString([], {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
+      </Popup>
     </div>
   );
 }

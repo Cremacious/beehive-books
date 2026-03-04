@@ -895,7 +895,7 @@ export const hiveOutlineItems = pgTable('hive_outline_items', {
   }),
   title: text('title').notNull(),
   description: text('description').notNull().default(''),
-  type: text('type', { enum: ['CHAPTER', 'SCENE', 'BEAT', 'NOTE'] })
+  type: text('type', { enum: ['CHAPTER', 'SCENE', 'BEAT', 'NOTE', 'GROUP'] })
     .notNull()
     .default('CHAPTER'),
   order: integer('order').notNull().default(0),

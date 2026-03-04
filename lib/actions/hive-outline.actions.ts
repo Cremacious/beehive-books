@@ -186,3 +186,90 @@ export async function deleteOutlineItemAction(itemId: string): Promise<ActionRes
     return { success: false, message: 'Failed to delete item.' };
   }
 }
+
+export async function createGroupAction(
+  hiveId: string,
+  name: string,
+  color: string,
+): Promise<ActionResult & { itemId?: string }> {
+  try {
+    const { userId } = await requireHiveMember(hiveId);
+    if (!name.trim()) return { success: false, message: 'Name is required.' };
+
+    const existing = await db.query.hiveOutlineItems.findMany({
+      where: and(eq(hiveOutlineItems.hiveId, hiveId), eq(hiveOutlineItems.parentId, hiveOutlineItems.parentId)),
+    });
+    const nextOrder = existing.length;
+
+    const [group] = await db
+      .insert(hiveOutlineItems)
+      .values({
+        hiveId,
+        createdById: userId,
+        title: name.trim(),
+        description: '',
+        type: 'GROUP',
+        color,
+        parentId: null,
+        order: nextOrder,
+      })
+      .returning({ id: hiveOutlineItems.id });
+
+    revalidatePath(`/hive/${hiveId}/outline`);
+    return { success: true, message: 'Group created.', itemId: group.id };
+  } catch {
+    return { success: false, message: 'Failed to create group.' };
+  }
+}
+
+export async function moveItemToGroupAction(
+  hiveId: string,
+  itemId: string,
+  groupId: string | null,
+): Promise<ActionResult> {
+  try {
+    await requireHiveMember(hiveId);
+
+    await db
+      .update(hiveOutlineItems)
+      .set({ parentId: groupId, updatedAt: new Date() })
+      .where(and(eq(hiveOutlineItems.id, itemId), eq(hiveOutlineItems.hiveId, hiveId)));
+
+    revalidatePath(`/hive/${hiveId}/outline`);
+    return { success: true, message: 'Item moved.' };
+  } catch {
+    return { success: false, message: 'Failed to move item.' };
+  }
+}
+
+export async function deleteGroupAction(groupId: string): Promise<ActionResult> {
+  try {
+    const userId = await requireAuth();
+
+    const group = await db.query.hiveOutlineItems.findFirst({
+      where: eq(hiveOutlineItems.id, groupId),
+    });
+    if (!group || group.type !== 'GROUP') return { success: false, message: 'Group not found.' };
+
+    const membership = await db.query.hiveMembers.findFirst({
+      where: and(eq(hiveMembers.hiveId, group.hiveId), eq(hiveMembers.userId, userId)),
+    });
+    const canDelete =
+      group.createdById === userId ||
+      membership?.role === 'OWNER' ||
+      membership?.role === 'MODERATOR';
+    if (!canDelete) return { success: false, message: 'No permission.' };
+
+    // Ungroup children first
+    await db
+      .update(hiveOutlineItems)
+      .set({ parentId: null, updatedAt: new Date() })
+      .where(eq(hiveOutlineItems.parentId, groupId));
+
+    await db.delete(hiveOutlineItems).where(eq(hiveOutlineItems.id, groupId));
+    revalidatePath(`/hive/${group.hiveId}/outline`);
+    return { success: true, message: 'Group deleted.' };
+  } catch {
+    return { success: false, message: 'Failed to delete group.' };
+  }
+}
