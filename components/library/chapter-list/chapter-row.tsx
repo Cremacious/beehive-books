@@ -21,6 +21,8 @@ export function SortableChapterRow({
   reorderMode,
   indent = false,
   collections,
+  isOwner = true,
+  basePath = '/library',
   onAssignCollection,
   onDeleteChapter,
 }: {
@@ -29,6 +31,8 @@ export function SortableChapterRow({
   reorderMode: boolean;
   indent?: boolean;
   collections: Collection[];
+  isOwner?: boolean;
+  basePath?: '/library' | '/books';
   onAssignCollection: (collectionId: string | null) => void;
   onDeleteChapter: () => void;
 }) {
@@ -79,7 +83,7 @@ export function SortableChapterRow({
       {...(reorderMode ? { ...attributes, ...listeners } : {})}
       onClick={
         !reorderMode && !showMenu
-          ? () => router.push(`/library/${bookId}/${chapter.id}`)
+          ? () => router.push(`${basePath}/${bookId}/${chapter.id}`)
           : undefined
       }
       className={`flex items-center gap-4 px-5 py-4  hover:bg-[#2e2e2e] transition-colors group border-b border-[#3f3f3f] ${
@@ -113,7 +117,7 @@ export function SortableChapterRow({
           className="flex items-center gap-2 shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
-          {confirmDelete ? (
+          {isOwner && confirmDelete ? (
             <>
               <span className="text-xs text-white hidden sm:inline">
                 Delete this chapter?
@@ -146,84 +150,88 @@ export function SortableChapterRow({
           ) : (
             <>
               <Link
-                href={`/library/${bookId}/${chapter.id}`}
+                href={`${basePath}/${bookId}/${chapter.id}`}
                 className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
               >
                 Read
               </Link>
-              <Link
-                href={`/library/${bookId}/${chapter.id}/edit`}
-                className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
-              >
-                Edit
-              </Link>
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setShowMenu((v) => !v)}
-                  className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+              {isOwner && (
+                <Link
+                  href={`/library/${bookId}/${chapter.id}/edit`}
+                  className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
                 >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-                {showMenu && (
-                  <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
-                    <Link
-                      href={`/library/${bookId}/${chapter.id}`}
-                      className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
-                    >
-                      Read
-                    </Link>
-                    <Link
-                      href={`/library/${bookId}/${chapter.id}/edit`}
-                      className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
-                    >
-                      Edit
-                    </Link>
-                    <div className="sm:hidden my-1 border-t border-[#2a2a2a]" />
-                    {hasMoveItems && (
-                      <>
-                        <p className="px-3 py-1.5 text-[10px] text-white/40 uppercase tracking-wider">
-                          Move to
-                        </p>
-                        {chapter.collectionId && (
-                          <button
-                            onClick={() => {
-                              onAssignCollection(null);
-                              setShowMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
-                          >
-                            Remove from collection
-                          </button>
-                        )}
-                        {otherCollections.map((col) => (
-                          <button
-                            key={col.id}
-                            onClick={() => {
-                              onAssignCollection(col.id);
-                              setShowMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
-                          >
-                            <FolderOpen className="w-3 h-3 text-yellow-500 shrink-0" />
-                            {col.name}
-                          </button>
-                        ))}
-                        <div className="my-1 border-t border-[#2a2a2a]" />
-                      </>
-                    )}
-                    <button
-                      onClick={() => {
-                        setConfirmDelete(true);
-                        setShowMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
-                    >
-                      <Trash2 className="w-3 h-3 shrink-0" />
-                      Delete chapter
-                    </button>
-                  </div>
-                )}
-              </div>
+                  Edit
+                </Link>
+              )}
+              {isOwner && (
+                <div className="relative" ref={menuRef}>
+                  <button
+                    onClick={() => setShowMenu((v) => !v)}
+                    className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                  {showMenu && (
+                    <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+                      <Link
+                        href={`${basePath}/${bookId}/${chapter.id}`}
+                        className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                      >
+                        Read
+                      </Link>
+                      <Link
+                        href={`/library/${bookId}/${chapter.id}/edit`}
+                        className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                      >
+                        Edit
+                      </Link>
+                      <div className="sm:hidden my-1 border-t border-[#2a2a2a]" />
+                      {hasMoveItems && (
+                        <>
+                          <p className="px-3 py-1.5 text-[10px] text-white/40 uppercase tracking-wider">
+                            Move to
+                          </p>
+                          {chapter.collectionId && (
+                            <button
+                              onClick={() => {
+                                onAssignCollection(null);
+                                setShowMenu(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
+                            >
+                              Remove from collection
+                            </button>
+                          )}
+                          {otherCollections.map((col) => (
+                            <button
+                              key={col.id}
+                              onClick={() => {
+                                onAssignCollection(col.id);
+                                setShowMenu(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                            >
+                              <FolderOpen className="w-3 h-3 text-yellow-500 shrink-0" />
+                              {col.name}
+                            </button>
+                          ))}
+                          <div className="my-1 border-t border-[#2a2a2a]" />
+                        </>
+                      )}
+                      <button
+                        onClick={() => {
+                          setConfirmDelete(true);
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                      >
+                        <Trash2 className="w-3 h-3 shrink-0" />
+                        Delete chapter
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>

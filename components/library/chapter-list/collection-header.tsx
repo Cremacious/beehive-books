@@ -23,6 +23,7 @@ export function SortableCollectionHeader({
   collapsed,
   onToggleCollapse,
   onUpdated,
+  isOwner = true,
 }: {
   col: Collection & { chapters: Chapter[] };
   bookId: string;
@@ -31,6 +32,7 @@ export function SortableCollectionHeader({
   collapsed: boolean;
   onToggleCollapse: () => void;
   onUpdated: () => void;
+  isOwner?: boolean;
 }) {
   const { updateCollection, deleteCollection } = useBookStore();
   const {
@@ -87,7 +89,7 @@ export function SortableCollectionHeader({
     opacity: isDragging ? 0.4 : 1,
   };
 
-  if (renaming) {
+  if (isOwner && renaming) {
     return (
       <div
         ref={setNodeRef}
@@ -128,7 +130,7 @@ export function SortableCollectionHeader({
     );
   }
 
-  if (confirmDelete) {
+  if (isOwner && confirmDelete) {
     return (
       <div
         ref={setNodeRef}
@@ -223,41 +225,43 @@ export function SortableCollectionHeader({
           )}
         </div>
       </div>
-      <div
-        className="relative shrink-0"
-        ref={menuRef}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          onClick={() => setShowMenu((v) => !v)}
-          className="p-1 rounded text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+      {isOwner && (
+        <div
+          className="relative shrink-0"
+          ref={menuRef}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
-        {showMenu && (
-          <div className="absolute right-0 top-full mt-1 z-50 min-w-36 rounded-xl bg-[#1a1a1a] border border-[#333] shadow-xl py-1 overflow-hidden">
-            <button
-              onClick={() => {
-                setRenaming(true);
-                setShowMenu(false);
-              }}
-              className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
-            >
-              Rename
-            </button>
-            <button
-              onClick={() => {
-                setConfirmDelete(true);
-                setShowMenu(false);
-              }}
-              className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
-            >
-              Delete collection
-            </button>
-          </div>
-        )}
-      </div>
+          <button
+            type="button"
+            onClick={() => setShowMenu((v) => !v)}
+            className="p-1 rounded text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1 z-50 min-w-36 rounded-xl bg-[#1a1a1a] border border-[#333] shadow-xl py-1 overflow-hidden">
+              <button
+                onClick={() => {
+                  setRenaming(true);
+                  setShowMenu(false);
+                }}
+                className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors"
+              >
+                Rename
+              </button>
+              <button
+                onClick={() => {
+                  setConfirmDelete(true);
+                  setShowMenu(false);
+                }}
+                className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+              >
+                Delete collection
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

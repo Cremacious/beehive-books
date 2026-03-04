@@ -30,20 +30,26 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
-import { getPublicBookAction } from '@/lib/actions/book.actions';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import type {
   HiveWithMembership,
   ActivityEvent,
   ActivityEventType,
 } from '@/lib/types/hive.types';
-import type { Book } from '@/lib/types/books.types';
-import { useEffect } from 'react';
+
+type LinkedBook = {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl: string | null;
+  privacy: string;
+} | null;
 
 interface HiveDashboardProps {
   hive: HiveWithMembership;
   initialActivity: ActivityEvent[];
   currentUserId: string | null;
+  linkedBook: LinkedBook;
 }
 
 function relativeTime(date: Date): string {
@@ -297,24 +303,16 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
 export default function HiveDashboard({
   hive,
   initialActivity,
+  linkedBook,
 }: HiveDashboardProps) {
   const store = useHiveStore();
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
-  const [book, setBook] = useState<Book | null>(null);
   const [activity, setActivity] = useState<ActivityEvent[]>(initialActivity);
   const [refreshing, startRefresh] = useTransition();
 
   const isOwner = hive.myRole === 'OWNER';
   const isMember = hive.isMember;
-
-  useEffect(() => {
-    if (hive.bookId) {
-      getPublicBookAction(hive.bookId)
-        .then(setBook)
-        .catch(() => setBook(null));
-    }
-  }, [hive.bookId]);
 
   const handleJoin = async () => {
     const result = await store.joinHive(hive.id);
@@ -479,51 +477,53 @@ export default function HiveDashboard({
               <BookOpen className="w-4 h-4 text-[#FFC300]" />
               The Book
             </h2>
-            <Link
-              href={`/library/${hive.bookId}`}
-              className="text-sm text-[#FFC300] hover:underline"
-            >
-              Open in Library →
-            </Link>
+            {linkedBook && linkedBook.privacy !== 'PRIVATE' && (
+              <Link
+                href={`/books/${hive.bookId}`}
+                className="text-sm text-[#FFC300] hover:underline"
+              >
+                Open Book →
+              </Link>
+            )}
           </div>
-          {book ? (
-            <div className="flex gap-4">
-              {book.coverUrl && (
-                <Image
-                  src={book.coverUrl}
-                  alt={book.title}
-                  width={80}
-                  height={120}
-                  className="rounded-lg object-cover shrink-0"
-                />
+          <div className="flex gap-4">
+            {linkedBook?.coverUrl ? (
+              <Image
+                src={linkedBook.coverUrl}
+                alt={linkedBook.title}
+                width={80}
+                height={120}
+                className="rounded-lg object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-20 shrink-0 aspect-[2/3] rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-white/20" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-semibold text-white mb-1 mainFont">
+                {linkedBook?.title ?? 'Untitled'}
+              </h3>
+              {linkedBook?.author && (
+                <p className="text-sm text-white/80 mb-2">by {linkedBook.author}</p>
               )}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-white mb-1 mainFont">{book.title}</h3>
-                {book.author && (
-                  <p className="text-sm text-white/80 mb-2">by {book.author}</p>
-                )}
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-white/40" />
-                    <span className="text-white font-semibold">{hive.chapterCount}</span>
-                    <span className="text-white/60">
-                      chapter{hive.chapterCount !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#FFC300] font-semibold">
-                      {hive.totalWordCount.toLocaleString()}
-                    </span>
-                    <span className="text-white/60">words</span>
-                  </div>
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-white/40" />
+                  <span className="text-white font-semibold">{hive.chapterCount}</span>
+                  <span className="text-white/60">
+                    chapter{hive.chapterCount !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#FFC300] font-semibold">
+                    {hive.totalWordCount.toLocaleString()}
+                  </span>
+                  <span className="text-white/60">words</span>
                 </div>
               </div>
             </div>
-          ) : (
-            <p className="text-sm text-white/60">
-              This hive is working on a book. Open it in your library to read and write chapters.
-            </p>
-          )}
+          </div>
         </div>
       ) : isMember ? (
         <div className="rounded-2xl bg-[#252525] border border-dashed border-[#2a2a2a] p-5 flex flex-col items-center text-center gap-2">

@@ -31,10 +31,12 @@ type Props = {
   bookId: string;
   chapters: Chapter[];
   collections: Collection[];
+  isOwner?: boolean;
 };
 
-export default function ChapterList({ bookId, chapters, collections }: Props) {
+export default function ChapterList({ bookId, chapters, collections, isOwner = true }: Props) {
   const router = useRouter();
+  const basePath: '/library' | '/books' = isOwner ? '/library' : '/books';
   const {
     reorderMode,
     setReorderMode,
@@ -192,62 +194,64 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
       <div className="px-5 py-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-yellow-500 mainFont">Chapters</h2>
-          <div className="flex items-center gap-2">
-            {reorderMode ? (
-              <>
-                <Button size="sm" onClick={handleSaveOrder} disabled={saving}>
-                  {saving ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    'Save Order'
-                  )}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setReorderMode(false);
-                    setPendingChapters(null);
-                    setPendingCollections(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="hidden sm:flex"
-                  onClick={() => {
-                    setPendingChapters([...chapters]);
-                    setPendingCollections([...collections]);
-                    setReorderMode(true);
-                  }}
-                >
-                  Reorder
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="hidden sm:flex"
-                  onClick={() => setShowColInput((v) => !v)}
-                >
-                  <FolderOpen />
-                  Add Collection
-                </Button>
-                {chapters.length > 0 && (
-                  <Button asChild size="sm">
-                    <Link href={`/library/${bookId}/create-chapter`}>
-                      <Plus />
-                      Chapter
-                    </Link>
+          {isOwner && (
+            <div className="flex items-center gap-2">
+              {reorderMode ? (
+                <>
+                  <Button size="sm" onClick={handleSaveOrder} disabled={saving}>
+                    {saving ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      'Save Order'
+                    )}
                   </Button>
-                )}
-              </>
-            )}
-          </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setReorderMode(false);
+                      setPendingChapters(null);
+                      setPendingCollections(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="hidden sm:flex"
+                    onClick={() => {
+                      setPendingChapters([...chapters]);
+                      setPendingCollections([...collections]);
+                      setReorderMode(true);
+                    }}
+                  >
+                    Reorder
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="hidden sm:flex"
+                    onClick={() => setShowColInput((v) => !v)}
+                  >
+                    <FolderOpen />
+                    Add Collection
+                  </Button>
+                  {chapters.length > 0 && (
+                    <Button asChild size="sm">
+                      <Link href={`/library/${bookId}/create-chapter`}>
+                        <Plus />
+                        Chapter
+                      </Link>
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
         {reorderMode && (
           <div className="mt-3 p-3 rounded-lg bg-[#FFC300]/10 border border-[#FFC300]/20">
@@ -258,7 +262,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
             </p>
           </div>
         )}
-        {!reorderMode && (
+        {isOwner && !reorderMode && (
           <div className="flex sm:hidden items-center gap-2 mt-3">
             <Button
               size="sm"
@@ -346,6 +350,8 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   bookId={bookId}
                   reorderMode={reorderMode}
                   collections={localCollections}
+                  isOwner={isOwner}
+                  basePath={basePath}
                   onAssignCollection={(colId) =>
                     handleAssignCollection(chapter.id, colId)
                   }
@@ -364,6 +370,7 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                   collapsed={!!collapsed[col.id]}
                   onToggleCollapse={() => toggleCollapse(col.id)}
                   onUpdated={() => router.refresh()}
+                  isOwner={isOwner}
                 />
 
                 {(!collapsed[col.id] || reorderMode) && (
@@ -379,6 +386,8 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
                         reorderMode={reorderMode}
                         indent
                         collections={localCollections}
+                        isOwner={isOwner}
+                        basePath={basePath}
                         onAssignCollection={(colId) =>
                           handleAssignCollection(chapter.id, colId)
                         }
@@ -396,12 +405,14 @@ export default function ChapterList({ bookId, chapters, collections }: Props) {
           <div className="flex flex-col items-center py-16 text-center">
             <FileText className="w-10 h-10 text-white/10 mb-3" />
             <p className="text-sm text-white/35 mb-4">No chapters yet</p>
-            <Button asChild>
-              <Link href={`/library/${bookId}/create-chapter`}>
-                <Plus />
-                Add first chapter
-              </Link>
-            </Button>
+            {isOwner && (
+              <Button asChild>
+                <Link href={`/library/${bookId}/create-chapter`}>
+                  <Plus />
+                  Add first chapter
+                </Link>
+              </Button>
+            )}
           </div>
         )}
       </div>

@@ -18,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { bookId } = await params;
   try {
-    const book = await getBookWithChaptersAction(bookId);
+    const book = await getBookForViewAction(bookId);
     return {
       title: book.title,
       description: book.description
@@ -30,7 +30,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function BookPage({
+export default async function PublicBookPage({
   params,
 }: {
   params: Promise<{ bookId: string }>;
@@ -46,12 +46,10 @@ export default async function BookPage({
 
   const { chapters, collections, isOwner } = book;
 
-  //TODO: Make it so collections can be ordered. Make it so the chapters can be listed as chapter, chapter, collection, chapter, then collection in the order if the user wants.
-
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
-        <BackButton href="/library" label="My Library" className="mb-6" />
+        {/* <BackButton href="/hive" label="Back" className="mb-6" /> */}
 
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">

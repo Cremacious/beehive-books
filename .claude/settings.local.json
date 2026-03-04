@@ -21,11 +21,14 @@
       "Bash(npm ls tailwindcss)",
       "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/\")",
       "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/\")",
-      "Bash(npx drizzle-kit push)"
+      "Bash(npx drizzle-kit push)",
+      "Bash(ls -la /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/)"
     ],
     "additionalDirectories": [
       "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",
-      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]"
+      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]",
+      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\books",
+      "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\books\\[bookId]"
     ]
   }
 }

@@ -2,7 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, eq, max, sql } from 'drizzle-orm';
+import { and, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
@@ -10,6 +10,7 @@ import {
   collections,
   chapterComments,
   commentLikes,
+  friendships,
   users,
 } from '@/db/schema';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
@@ -27,6 +28,21 @@ async function requireAuth() {
   const { userId } = await auth();
   if (!userId) throw new Error('Unauthorized');
   return userId;
+}
+
+async function isFriendOf(userId: string, ownerId: string): Promise<boolean> {
+  if (userId === ownerId) return true;
+  const row = await db.query.friendships.findFirst({
+    where: and(
+      eq(friendships.status, 'ACCEPTED'),
+      or(
+        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, ownerId)),
+        and(eq(friendships.requesterId, ownerId), eq(friendships.addresseeId, userId)),
+      ),
+    ),
+    columns: { id: true },
+  });
+  return !!row;
 }
 
 async function requireBookOwner(bookId: string) {
@@ -65,6 +81,36 @@ export async function getBookWithChaptersAction(bookId: string) {
   });
   if (!book) throw new Error('Book not found or unauthorized');
   return book;
+}
+
+/** Fetch book + chapters + collections for any user. PRIVATE books are owner-only. */
+export async function getBookForViewAction(bookId: string) {
+  const { userId } = await auth();
+  const book = await db.query.books.findFirst({
+    where: eq(books.id, bookId),
+    with: {
+      chapters: { orderBy: (c, { asc }) => [asc(c.order)] },
+      collections: { orderBy: (c, { asc }) => [asc(c.order)] },
+    },
+  });
+  if (!book) throw new Error('Book not found');
+  const isOwner = book.userId === userId;
+  if (book.privacy === 'PRIVATE' && !isOwner) throw new Error('This book is private');
+  if (book.privacy === 'FRIENDS' && !isOwner) {
+    if (!userId || !(await isFriendOf(userId, book.userId))) {
+      throw new Error('This book is only available to friends');
+    }
+  }
+  return { ...book, isOwner };
+}
+
+/** Fetch basic book info for hive dashboard display — no privacy check (hive membership is the gate). */
+export async function getHiveBookAction(bookId: string) {
+  const book = await db.query.books.findFirst({
+    where: eq(books.id, bookId),
+    columns: { id: true, title: true, author: true, coverUrl: true, privacy: true },
+  });
+  return book ?? null;
 }
 
 export async function createBookAction(
@@ -154,7 +200,9 @@ export async function getPublicBookAction(bookId: string) {
     throw new Error('This book is private');
   }
   if (book.privacy === 'FRIENDS' && book.userId !== userId) {
-    throw new Error('This book is only available to friends');
+    if (!userId || !(await isFriendOf(userId, book.userId))) {
+      throw new Error('This book is only available to friends');
+    }
   }
 
   return book;
@@ -170,10 +218,13 @@ export async function getChapterWithContextAction(chapterId: string) {
   if (!chapter) throw new Error('Chapter not found');
 
   const { book } = chapter;
-  if (book.privacy === 'PRIVATE' && book.userId !== userId)
-    throw new Error('Unauthorized');
-  if (book.privacy === 'FRIENDS' && book.userId !== userId)
-    throw new Error('Unauthorized');
+  const isOwner = book.userId === userId;
+  if (book.privacy === 'PRIVATE' && !isOwner) throw new Error('Unauthorized');
+  if (book.privacy === 'FRIENDS' && !isOwner) {
+    if (!userId || !(await isFriendOf(userId, book.userId))) {
+      throw new Error('Unauthorized');
+    }
+  }
 
   const [allChapters, allCollections, comments] = await Promise.all([
     db.query.chapters.findMany({

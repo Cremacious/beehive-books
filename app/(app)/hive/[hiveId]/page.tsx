@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { getHiveAction } from '@/lib/actions/hive.actions';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
+import { getHiveBookAction } from '@/lib/actions/book.actions';
 import HiveDashboard from '@/components/hive/hive-dashboard';
 import type { Metadata } from 'next';
 
@@ -31,13 +32,17 @@ export default async function HiveDashboardPage({
   const hive = await getHiveAction(hiveId);
   if (!hive) notFound();
 
-  const initialActivity = await getHiveActivityAction(hiveId);
+  const [initialActivity, linkedBook] = await Promise.all([
+    getHiveActivityAction(hiveId),
+    hive.bookId ? getHiveBookAction(hive.bookId) : Promise.resolve(null),
+  ]);
 
   return (
     <HiveDashboard
       hive={hive}
       initialActivity={initialActivity}
       currentUserId={userId ?? null}
+      linkedBook={linkedBook}
     />
   );
 }

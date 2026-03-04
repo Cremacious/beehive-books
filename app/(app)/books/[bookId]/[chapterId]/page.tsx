@@ -20,7 +20,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function ChapterReaderPage({
+export default async function PublicChapterReaderPage({
   params,
 }: {
   params: Promise<{ bookId: string; chapterId: string }>;
@@ -34,5 +34,5 @@ export default async function ChapterReaderPage({
     notFound();
   }
 
-  return <ChapterReader bookId={bookId} data={data} basePath="/library" />;
+  return <ChapterReader bookId={bookId} data={data} basePath="/books" />;
 }

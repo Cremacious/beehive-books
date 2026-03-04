@@ -6,10 +6,9 @@ import { UserPlus, Loader2, Check, Users } from 'lucide-react';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import type { InvitableFriend, HiveRole } from '@/lib/types/hive.types';
 
-const ROLE_OPTIONS: { value: Exclude<HiveRole, 'OWNER'>; label: string }[] = [
+const ROLE_OPTIONS: { value: Exclude<HiveRole, 'OWNER' | 'BETA_READER'>; label: string }[] = [
   { value: 'CONTRIBUTOR', label: 'Contributor' },
   { value: 'MODERATOR', label: 'Moderator' },
-  { value: 'BETA_READER', label: 'Beta Reader' },
 ];
 
 interface HiveInvitePickerProps {
@@ -26,7 +25,7 @@ export default function HiveInvitePicker({
   const store = useHiveStore();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [successIds, setSuccessIds] = useState<Set<string>>(new Set());
-  const [selectedRole, setSelectedRole] = useState<Exclude<HiveRole, 'OWNER'>>('CONTRIBUTOR');
+  const [selectedRole, setSelectedRole] = useState<Exclude<HiveRole, 'OWNER' | 'BETA_READER'>>('CONTRIBUTOR');
   const [error, setError] = useState<string | null>(null);
 
   const handleInvite = async (friendId: string) => {

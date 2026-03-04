@@ -39,10 +39,9 @@ const ROLE_LABELS: Record<HiveRole, string> = {
   BETA_READER: 'Beta Reader',
 };
 
-const ASSIGNABLE_ROLES: Exclude<HiveRole, 'OWNER'>[] = [
+const ASSIGNABLE_ROLES: Exclude<HiveRole, 'OWNER' | 'BETA_READER'>[] = [
   'MODERATOR',
   'CONTRIBUTOR',
-  'BETA_READER',
 ];
 
 interface HiveMemberListProps {
