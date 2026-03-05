@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { bookId } = await params;
   try {
-    const book = await getBookWithChaptersAction(bookId);
+    const book = await getBookForViewAction(bookId);
     return {
       title: book.title,
       description: book.description

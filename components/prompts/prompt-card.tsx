@@ -4,10 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FileText, Clock, Trophy } from 'lucide-react';
-import type {
-  PromptCard as PromptCardType,
-  PromptUser,
-} from '@/lib/types/prompt.types';
+import type { PromptCard as PromptCardType, PromptUser } from '@/lib/types/prompt.types';
 
 function formatCountdown(endDate: Date): string {
   const diff = endDate.getTime() - Date.now();
@@ -22,7 +19,7 @@ function formatCountdown(endDate: Date): string {
 
 function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
   const name = user.username || '?';
-  const cls = `w-${size} h-${size} rounded-full shrink-0 overflow-hidden bg-[#2a2000] flex items-center justify-center`;
+  const cls = `w-${size} h-${size} rounded-full shrink-0 overflow-hidden bg-[#2a0050] flex items-center justify-center`;
   return (
     <div className={cls}>
       {user.imageUrl ? (
@@ -34,7 +31,7 @@ function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
           className="w-full h-full object-cover"
         />
       ) : (
-        <span className="text-xs font-bold text-[#FFC300]">
+        <span className="text-xs font-bold text-[#a855f7]">
           {(name[0] || '?').toUpperCase()}
         </span>
       )}
@@ -50,10 +47,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
 
   useEffect(() => {
     if (isEnded) return;
-    const id = setInterval(
-      () => setCountdown(formatCountdown(prompt.endDate)),
-      60_000,
-    );
+    const id = setInterval(() => setCountdown(formatCountdown(prompt.endDate)), 60_000);
     return () => clearInterval(id);
   }, [isEnded, prompt.endDate]);
 
@@ -62,24 +56,20 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
   return (
     <Link
       href={`/prompts/${prompt.id}`}
-      className="group flex flex-col rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] hover:border-[#FFC300]/30 hover:bg-[#232323] transition-all duration-200 overflow-hidden"
+      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#a855f7]/30 hover:bg-[#222222] transition-all duration-200"
     >
-      <div
-        className={`h-1 w-full ${isEnded ? 'bg-white/10' : 'bg-[#FFC300]'}`}
-      />
+      <div className={`h-0.75 w-full ${isEnded ? 'bg-white/15' : 'bg-[#a855f7]'}`} />
 
-      <div className="flex flex-col gap-3 p-4 flex-1">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col flex-1 gap-2.5 p-4">
+        <div className="flex items-center gap-2">
           <span
             className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-              isEnded
-                ? 'bg-white/10 text-white'
-                : 'bg-[#FFC300]/10 text-[#FFC300]'
+              isEnded ? 'bg-white/8 text-white/80' : 'bg-[#a855f7]/15 text-[#a855f7]'
             }`}
           >
             {isEnded ? 'Ended' : 'Active'}
           </span>
-          <span className="text-xs font-medium text-white/80 uppercase tracking-wider">
+          <span className="text-xs text-white/80 uppercase tracking-wider">
             {prompt.isPublic ? 'Public' : 'Private'}
           </span>
           {prompt.myInviteStatus && (
@@ -89,7 +79,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
           )}
         </div>
 
-        <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#FFC300] transition-colors mainFont">
+        <h3 className="text-base font-semibold text-white line-clamp-2 leading-snug group-hover:text-[#a855f7] transition-colors mainFont">
           {prompt.title}
         </h3>
 
@@ -97,26 +87,23 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
           {prompt.description}
         </p>
 
-        <div className="flex items-center justify-between pt-2 border-t border-[#2a2a2a] mt-auto">
+        <div className="flex items-center justify-between pt-3 border-t border-[#2a2a2a] mt-auto text-xs text-white/80">
           <div className="flex items-center gap-1.5">
             <UserAvatar user={prompt.creator} size={5} />
-            <span className="text-sm text-white truncate max-w-20">
-              {creatorName}
-            </span>
+            <span className="truncate max-w-20">{creatorName}</span>
           </div>
-
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-sm text-white/80">
-              <FileText className="w-4 h-4" />
+            <span className="flex items-center gap-1">
+              <FileText className="w-3.5 h-3.5" />
               {prompt.entryCount}
             </span>
             <span
-              className={`flex items-center gap-1 text-sm ${isEnded ? 'text-white/80' : 'text-[#FFC300]'}`}
+              className={`flex items-center gap-1 ${isEnded ? 'text-white/80' : 'text-[#a855f7]'}`}
             >
               {isEnded ? (
-                <Trophy className="w-4 h-4" />
+                <Trophy className="w-3.5 h-3.5" />
               ) : (
-                <Clock className="w-4 h-4" />
+                <Clock className="w-3.5 h-3.5" />
               )}
               {countdown}
             </span>

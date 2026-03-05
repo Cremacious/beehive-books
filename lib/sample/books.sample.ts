@@ -15,6 +15,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       "A story about silence, loss, and finding beauty in unexpected places. When Maya returns to her grandmother's abandoned garden after ten years away, she discovers not just overgrown roses but buried secrets that will change everything she thought she knew about her family.",
     privacy: 'PUBLIC',
+    explorable: true,
+    draftStatus: 'COMPLETED',
     wordCount: 45230,
     commentCount: 28,
     chapterCount: 6,
@@ -29,6 +31,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       'An epic journey across dying star systems as the last cartographers of the universe race to map what remains before the lights go out forever.',
     privacy: 'PUBLIC',
+    explorable: true,
+    draftStatus: 'SECOND_DRAFT',
     wordCount: 31500,
     commentCount: 14,
     chapterCount: 7,
@@ -43,6 +47,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       'Twenty-four letters written over twenty years — none of them ever mailed. A quiet love story told entirely through what was never said.',
     privacy: 'FRIENDS',
+    explorable: false,
+    draftStatus: 'COMPLETED',
     wordCount: 68400,
     commentCount: 57,
     chapterCount: 24,
@@ -57,6 +63,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       'A merchant following an ancient trade route discovers that the amber she carries contains something alive — and very old.',
     privacy: 'PRIVATE',
+    explorable: false,
+    draftStatus: 'FIRST_DRAFT',
     wordCount: 9200,
     commentCount: 0,
     chapterCount: 3,
@@ -71,6 +79,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       "A late-night radio host receives a call from someone who claims to have witnessed a murder — eighteen years ago, in the host's own home.",
     privacy: 'PUBLIC',
+    explorable: true,
+    draftStatus: 'THIRD_DRAFT',
     wordCount: 52700,
     commentCount: 41,
     chapterCount: 18,
@@ -85,6 +95,8 @@ export const SAMPLE_BOOKS: Book[] = [
     description:
       'A memoir-in-essays exploring what it means to choose quiet in a world that rewards noise.',
     privacy: 'PUBLIC',
+    explorable: false,
+    draftStatus: 'SECOND_DRAFT',
     wordCount: 28900,
     commentCount: 22,
     chapterCount: 9,
