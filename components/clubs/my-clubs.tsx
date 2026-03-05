@@ -153,7 +153,7 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
 
           <Link
             href="/clubs/create"
-            className="flex mainFont items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
+            className="flex mainFont leading-none items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
           >
             <Plus className="w-4 h-4" />
             New Club

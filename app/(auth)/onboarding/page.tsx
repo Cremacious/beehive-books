@@ -169,7 +169,7 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              <span className="text-xs text-white/40">
+              <span className="text-xs text-white/80">
                 {previewUrl
                   ? 'Tap to change photo'
                   : 'Add a profile photo (optional)'}
@@ -177,8 +177,8 @@ export default function OnboardingPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-white/80">
-                Username <span className="text-[#FFC300]">*</span>
+              <label className="block text-sm font-medium text-yellow-500 mainFont">
+                Username <span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <input
@@ -211,7 +211,7 @@ export default function OnboardingPage() {
                 </p>
               )}
               {availability === 'idle' && (
-                <p className="text-xs text-white/35">
+                <p className="text-xs text-white/80">
                   3–20 characters. Letters, numbers, and underscores only.
                 </p>
               )}

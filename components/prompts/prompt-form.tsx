@@ -118,7 +118,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Title
         </label>
         <input
@@ -132,7 +132,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Description
         </label>
         <textarea
@@ -149,7 +149,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white/80 mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Challenge Deadline
         </label>
         <input
@@ -198,8 +198,8 @@ export function PromptForm({ mode, prompt, friends }: Props) {
 
       {!isPublicValue && (
         <div>
-          <label className="block text-sm font-medium text-white/80 mb-1.5">
-            <Users className="inline w-3.5 h-3.5 mr-1 text-white/80" />
+          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+            <Users className="inline w-3.5 h-3.5 mr-1 text-yellow-500" />
             Invite Friends
             {invitedIds.length > 0 && (
               <span className="ml-2 text-xs text-[#FFC300] font-normal">

@@ -112,7 +112,7 @@ export default function ClubForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Club Name <span className="text-red-400">*</span>
         </label>
         <input
@@ -126,7 +126,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Description{' '}
           <span className="text-white/80 font-normal">(optional)</span>
         </label>
@@ -144,7 +144,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Privacy
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -190,7 +190,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Club Rules{' '}
           <span className="text-white/80 font-normal">(optional)</span>
         </label>
@@ -206,7 +206,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Tags <span className="text-white/80 font-normal">(up to 10)</span>
         </label>
         <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
@@ -264,7 +264,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Invite Friends
         </label>
         <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#252525] p-5 flex flex-col items-center justify-center text-center gap-1.5">

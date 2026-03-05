@@ -135,7 +135,7 @@ export function ChapterForm({
           <h1 className="text-2xl font-bold text-white mainFont">
             {isEdit ? 'Edit Chapter' : 'New Chapter'}
           </h1>
-          <p className="mt-1 text-sm text-white/45">
+          <p className="mt-1 text-sm text-white/80">
             {isEdit
               ? 'Update chapter details and content.'
               : 'Write and publish a new chapter.'}
@@ -145,7 +145,7 @@ export function ChapterForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/75">
+              <label className="text-sm font-medium text-yellow-500 mainFont">
                 Chapter Title <span className="text-red-400">*</span>
               </label>
               <input
@@ -160,9 +160,9 @@ export function ChapterForm({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/75">
+              <label className="text-sm font-medium text-yellow-500 mainFont">
                 Author&apos;s Notes
-                <span className="ml-2 text-xs text-white/70 font-normal">
+                <span className="ml-2 text-xs text-white/80 font-normal">
                   (optional)
                 </span>
               </label>
@@ -183,10 +183,10 @@ export function ChapterForm({
 
             {collections.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-white/75 flex items-center gap-1.5">
+                <label className="text-sm font-medium text-yellow-500 mainFont flex items-center gap-1.5">
                   <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />
                   Collection
-                  <span className="ml-1 text-xs text-white/70 font-normal">
+                  <span className="ml-1 text-xs text-white/80 font-normal">
                     (optional)
                   </span>
                 </label>
@@ -213,7 +213,7 @@ export function ChapterForm({
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
                   contentMode === 'write'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
-                    : 'text-white/45 hover:text-white/65 hover:bg-white/4'
+                    : 'text-white/80 hover:text-white hover:bg-white/4'
                 }`}
               >
                 Write
@@ -224,7 +224,7 @@ export function ChapterForm({
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-[#2a2a2a] ${
                   contentMode === 'upload'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
-                    : 'text-white/45 hover:text-white/65 hover:bg-white/4'
+                    : 'text-white/80 hover:text-white hover:bg-white/4'
                 }`}
               >
                 Upload DOCX
@@ -235,8 +235,8 @@ export function ChapterForm({
           {!isEdit && contentMode === 'upload' && (
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-white/75">Upload a .docx file</p>
-                <p className="text-xs text-white/40">
+                <p className="text-sm font-medium text-white/80">Upload a .docx file</p>
+                <p className="text-xs text-white/80">
                   The document content will become the chapter body. If the document starts with a
                   Heading 1, that text will be suggested as the chapter title (only if you have not
                   already filled in a title).
@@ -249,14 +249,14 @@ export function ChapterForm({
                 ) : docxFileName ? (
                   <>
                     <FileText className="w-6 h-6 text-[#FFC300]/70" />
-                    <span className="text-xs text-white/60">{docxFileName}</span>
-                    <span className="text-[10px] text-white/30">Click to replace</span>
+                    <span className="text-xs text-white/80">{docxFileName}</span>
+                    <span className="text-[10px] text-white/80">Click to replace</span>
                   </>
                 ) : (
                   <>
-                    <UploadCloud className="w-6 h-6 text-white/25" />
-                    <span className="text-xs text-white/35">Click to select a .docx file</span>
-                    <span className="text-[10px] text-white/20">Max 10 MB</span>
+                    <UploadCloud className="w-6 h-6 text-white/80" />
+                    <span className="text-xs text-white/80">Click to select a .docx file</span>
+                    <span className="text-[10px] text-white/80">Max 10 MB</span>
                   </>
                 )}
                 <input

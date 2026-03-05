@@ -31,7 +31,7 @@ export default function CreateClubDiscussionForm({ clubId }: { clubId: string })
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">Title <span className="text-red-400">*</span></label>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Title <span className="text-red-400">*</span></label>
         <input
           {...register('title')}
           placeholder="What do you want to discuss?"
@@ -40,7 +40,7 @@ export default function CreateClubDiscussionForm({ clubId }: { clubId: string })
         {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>}
       </div>
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">Content <span className="text-red-400">*</span></label>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Content <span className="text-red-400">*</span></label>
         <textarea
           {...register('content')}
           rows={8}

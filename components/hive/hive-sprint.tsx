@@ -228,7 +228,7 @@ function ActiveSprint({
             Join Sprint
           </h4>
           <div>
-            <label className="text-xs text-white/40 mb-1 block">
+            <label className="text-xs text-yellow-500 mainFont mb-1 block">
               Your current word count (before writing)
             </label>
             <input
@@ -258,7 +258,7 @@ function ActiveSprint({
             Submit Your Words
           </h4>
           <div>
-            <label className="text-xs text-white/40 mb-1 block">
+            <label className="text-xs text-yellow-500 mainFont mb-1 block">
               Your word count now (after writing)
             </label>
             <input
@@ -392,7 +392,7 @@ export default function HiveSprint({
           Start a Sprint
         </h3>
         <div>
-          <label className="text-xs text-white/40 mb-2 block">Duration</label>
+          <label className="text-xs text-yellow-500 mainFont mb-2 block">Duration</label>
           <div className="flex flex-wrap gap-2">
             {DURATIONS.map((d) => (
               <button
@@ -410,7 +410,7 @@ export default function HiveSprint({
           </div>
         </div>
         <div>
-          <label className="text-xs text-white/40 mb-1 block">
+          <label className="text-xs text-yellow-500 mainFont mb-1 block">
             Your starting word count
           </label>
           <input

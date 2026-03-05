@@ -363,7 +363,7 @@ function CreatePollForm({
       />
 
       <div className="space-y-2">
-        <p className="text-xs text-white/40 font-medium">Options</p>
+        <p className="text-xs text-white/80 font-medium">Options</p>
         {options.map((opt, idx) => (
           <div key={idx} className="flex items-center gap-2">
             <input
@@ -388,7 +388,7 @@ function CreatePollForm({
           <button
             type="button"
             onClick={addOption}
-            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-white/80 hover:text-white transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Add option
           </button>
@@ -409,11 +409,11 @@ function CreatePollForm({
               }`}
             />
           </div>
-          <span className="text-xs text-white/60">Allow multiple choices</span>
+          <span className="text-xs text-white/80">Allow multiple choices</span>
         </label>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-white/40">Ends</span>
+          <span className="text-xs text-white/80">Ends</span>
           <input
             type="date"
             value={endsAt}

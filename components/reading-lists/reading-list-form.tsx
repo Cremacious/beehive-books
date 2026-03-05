@@ -108,7 +108,7 @@ export function ReadingListForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           List Title <span className="text-red-400">*</span>
         </label>
         <input
@@ -122,7 +122,7 @@ export function ReadingListForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Description{' '}
           <span className="text-white/80 font-normal">(optional)</span>
         </label>
@@ -140,7 +140,7 @@ export function ReadingListForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Privacy
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -170,7 +170,7 @@ export function ReadingListForm({
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
             Add Books{' '}
             <span className="text-white/80 font-normal">(optional)</span>
           </label>
