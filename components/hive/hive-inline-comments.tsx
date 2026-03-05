@@ -708,6 +708,39 @@ export default function HiveInlineComments({
           />
         )}
 
+        {/* Mobile-only: filter + annotation list sit above the chapter content */}
+        <div className="lg:hidden space-y-3">
+          <LayerFilterDropdown
+            activeLayer={activeLayer}
+            setActiveLayer={setActiveLayer}
+            showResolved={showResolved}
+            setShowResolved={setShowResolved}
+            comments={comments}
+            openCount={openCount}
+            resolvedCount={resolvedCount}
+          />
+          <div className="space-y-2">
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center py-8 text-center gap-2">
+                <MessageSquare className="w-6 h-6 text-[#FFC300]/40" />
+                <p className="text-sm text-white/50">
+                  {comments.length === 0
+                    ? 'No annotations on this chapter yet.'
+                    : 'No annotations match the current filter.'}
+                </p>
+              </div>
+            ) : (
+              filtered.map((comment) => (
+                <AnnotationPreviewCard
+                  key={comment.id}
+                  comment={comment}
+                  onClick={() => setViewingComment(comment)}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           <div className="lg:col-span-3">
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
@@ -735,8 +768,8 @@ export default function HiveInlineComments({
             </div>
           </div>
 
-         
-          <div className="lg:col-span-2 space-y-3">
+          {/* Desktop-only sidebar: filter + annotation list */}
+          <div className="hidden lg:block lg:col-span-2 space-y-3">
             <LayerFilterDropdown
               activeLayer={activeLayer}
               setActiveLayer={setActiveLayer}
@@ -746,8 +779,6 @@ export default function HiveInlineComments({
               openCount={openCount}
               resolvedCount={resolvedCount}
             />
-
-          
             <div className="space-y-2 max-h-150 overflow-y-auto pr-1">
               {filtered.length === 0 ? (
                 <div className="flex flex-col items-center py-12 text-center gap-2">

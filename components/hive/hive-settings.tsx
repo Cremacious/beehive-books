@@ -138,7 +138,7 @@ export default function HiveSettings({
     <div className="space-y-8">
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 space-y-4">
         <h2 className="text-base font-semibold text-white flex items-center gap-2 mainFont">
-          <BookOpen className="w-4 h-4 text-[#FFC300]" />
+    
           Hive Book
         </h2>
 
@@ -154,14 +154,14 @@ export default function HiveSettings({
               />
             ) : (
               <div className="w-12 h-16 rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
-                <BookOpen className="w-5 h-5 text-white/20" />
+                <BookOpen className="w-5 h-5 text-white/80" />
               </div>
             )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">
                 {linkedBook.title}
               </p>
-              <p className="text-xs text-white/50 truncate">
+              <p className="text-xs text-white/80 truncate">
                 {linkedBook.author}
               </p>
               <Link
@@ -187,7 +187,7 @@ export default function HiveSettings({
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-white/50">
+            <p className="text-sm text-white/80">
               No book linked yet. Link or create a book so your hive has a
               shared workspace.
             </p>
@@ -205,14 +205,14 @@ export default function HiveSettings({
                   }`}
                 >
                   <Icon
-                    className={`w-4 h-4 ${bookMode === value ? 'text-[#FFC300]' : 'text-white/60'}`}
+                    className={`w-4 h-4 ${bookMode === value ? 'text-[#FFC300]' : 'text-white/80'}`}
                   />
                   <span
                     className={`text-xs font-semibold ${bookMode === value ? 'text-[#FFC300]' : 'text-white'}`}
                   >
                     {label}
                   </span>
-                  <span className="text-xs text-white/50 leading-tight">
+                  <span className="text-xs text-white/80 leading-tight">
                     {desc}
                   </span>
                 </button>
@@ -240,11 +240,11 @@ export default function HiveSettings({
               <div className="rounded-xl border border-[#2a2a2a] bg-[#1e1e1e] overflow-hidden">
                 {userBooks.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 py-8 text-center px-4">
-                    <BookOpen className="w-8 h-8 text-white/20" />
-                    <p className="text-sm text-white/50">
+                    <BookOpen className="w-8 h-8 text-white/80" />
+                    <p className="text-sm text-white/80">
                       No books in your library.
                     </p>
-                    <p className="text-xs text-white/30">
+                    <p className="text-xs text-white/80">
                       Switch to &ldquo;Create new book&rdquo; to add one now.
                     </p>
                   </div>
@@ -273,7 +273,7 @@ export default function HiveSettings({
                               />
                             ) : (
                               <div className="w-8 h-11 rounded bg-[#252525] border border-[#3a3a3a] flex items-center justify-center shrink-0">
-                                <BookOpen className="w-4 h-4 text-white/20" />
+                                <BookOpen className="w-4 h-4 text-white/80" />
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
@@ -282,7 +282,7 @@ export default function HiveSettings({
                               >
                                 {book.title}
                               </p>
-                              <p className="text-xs text-white/50 truncate">
+                              <p className="text-xs text-white/80 truncate">
                                 {book.author}
                               </p>
                             </div>
@@ -326,7 +326,7 @@ export default function HiveSettings({
             Invite Members
           </span>
           {invitableFriends.length > 0 && (
-            <span className="text-xs text-white/40">
+            <span className="text-xs text-white/80">
               {invitableFriends.length} friend{invitableFriends.length !== 1 ? 's' : ''} available
             </span>
           )}

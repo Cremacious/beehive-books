@@ -150,7 +150,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Hive Name <span className="text-red-400">*</span>
         </label>
         <input
@@ -162,8 +162,8 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Description <span className="text-white/40 font-normal">(optional)</span>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Description <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <textarea
           {...register('description')}
@@ -177,8 +177,8 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Genre <span className="text-white/40 font-normal">(optional)</span>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Genre <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <input
           {...register('genre')}
@@ -188,7 +188,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">Privacy</label>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Privacy</label>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc, Icon }) => (
             <label key={value} className="relative cursor-pointer">
@@ -207,7 +207,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
               >
                 <Icon
                   className={`w-4 h-4 shrink-0 ${
-                    privacy === value ? 'text-[#FFC300]' : 'text-white/60'
+                    privacy === value ? 'text-[#FFC300]' : 'text-white/80'
                   }`}
                 />
                 <span
@@ -217,7 +217,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/50 leading-tight block">{desc}</span>
+                <span className="text-xs text-white/80 leading-tight block">{desc}</span>
               </div>
             </label>
           ))}
@@ -228,8 +228,8 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Tags <span className="text-white/40 font-normal">(up to 10)</span>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Tags <span className="text-white/80 font-normal">(up to 10)</span>
         </label>
         <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
           <div className="flex gap-2">
@@ -267,7 +267,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="text-white/40 hover:text-red-400 transition-colors"
+                    className="text-white/80 hover:text-red-400 transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -275,7 +275,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
               ))}
             </div>
           ) : (
-            <p className="text-sm text-white/40 text-center py-1">
+            <p className="text-sm text-white/80 text-center py-1">
               No tags yet — tags help others find your hive.
             </p>
           )}
@@ -284,7 +284,7 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">Book</label>
+          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Book</label>
           <div className="grid grid-cols-3 gap-2 mb-3">
             {BOOK_OPTIONS.map(({ value, label, desc, Icon }) => (
               <button
@@ -298,14 +298,14 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                 }`}
               >
                 <Icon
-                  className={`w-4 h-4 ${bookOption === value ? 'text-[#FFC300]' : 'text-white/60'}`}
+                  className={`w-4 h-4 ${bookOption === value ? 'text-[#FFC300]' : 'text-white/80'}`}
                 />
                 <span
                   className={`text-xs font-semibold ${bookOption === value ? 'text-[#FFC300]' : 'text-white'}`}
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/50 leading-tight">{desc}</span>
+                <span className="text-xs text-white/80 leading-tight">{desc}</span>
               </button>
             ))}
           </div>
@@ -331,9 +331,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
             <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] overflow-hidden">
               {userBooks.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-8 text-center px-4">
-                  <BookOpen className="w-8 h-8 text-white/20" />
-                  <p className="text-sm text-white/50">No books in your library yet.</p>
-                  <p className="text-xs text-white/30">
+                  <BookOpen className="w-8 h-8 text-white/80" />
+                  <p className="text-sm text-white/80">No books in your library yet.</p>
+                  <p className="text-xs text-white/80">
                     Create a book first, or choose &ldquo;Start fresh&rdquo; to create one now.
                   </p>
                 </div>
@@ -360,14 +360,14 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                             />
                           ) : (
                             <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
-                              <BookOpen className="w-4 h-4 text-white/20" />
+                              <BookOpen className="w-4 h-4 text-white/80" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}>
                               {book.title}
                             </p>
-                            <p className="text-xs text-white/50 truncate">{book.author}</p>
+                            <p className="text-xs text-white/80 truncate">{book.author}</p>
                           </div>
                           {selected && (
                             <Check className="w-4 h-4 text-[#FFC300] shrink-0" />

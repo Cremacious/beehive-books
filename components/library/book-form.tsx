@@ -182,7 +182,7 @@ export function BookForm({
   return (
     <div className="px-4 py-8">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h1 className="text-2xl font-bold text-white mainFont">
             {isEdit ? 'Edit Book' : 'New Book'}
           </h1>
@@ -191,7 +191,7 @@ export function BookForm({
               ? 'Update your book details below.'
               : 'Fill in the details to add a book to your library.'}
           </p>
-        </div>
+        </div> */}
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -220,10 +220,10 @@ export function BookForm({
                   ) : (
                     <>
                       <Upload className="w-6 h-6 text-white/25 group-hover:text-[#FFC300]/50 transition-colors" />
-                      <span className="text-xs text-white/30 text-center px-3 leading-snug group-hover:text-white/50 transition-colors">
+                      <span className="text-xs text-white/80 text-center px-3 leading-snug group-hover:text-white/50 transition-colors">
                         Upload cover
                       </span>
-                      <span className="text-[10px] text-white/20">
+                      <span className="text-[10px] text-white/80">
                         PNG · JPG · max 5 MB
                       </span>
                     </>
@@ -252,14 +252,14 @@ export function BookForm({
               </button>
             )}
             {!coverUrl && (
-              <span className="text-xs text-white/35">
+              <span className="text-sm text-white/80">
                 Book cover (optional)
               </span>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white/75">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
               Book Title <span className="text-red-400">*</span>
             </label>
             <input
@@ -274,7 +274,7 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white/75">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
               Author Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -290,7 +290,7 @@ export function BookForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/75">
+              <label className="text-sm font-medium text-yellow-500 mainFont">
                 Category <span className="text-red-400">*</span>
               </label>
               <select
@@ -311,7 +311,7 @@ export function BookForm({
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/75">
+              <label className="text-sm font-medium text-yellow-500 mainFont">
                 Genre <span className="text-red-400">*</span>
               </label>
               <select
@@ -334,7 +334,7 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white/75">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
               Description <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -356,19 +356,19 @@ export function BookForm({
                       ? 'text-red-400'
                       : descWords > 180
                         ? 'text-yellow-500'
-                        : 'text-white/30'
+                        : 'text-white/80'
                   }
                 >
                   {descWords}/200 words
                 </span>
-                <span className="text-white/20 mx-1.5">·</span>
+                <span className="text-white/80 mx-1.5">·</span>
                 <span
                   className={
                     descChars > 1200
                       ? 'text-red-400'
                       : descChars > 1080
                         ? 'text-yellow-500'
-                        : 'text-white/30'
+                        : 'text-white/80'
                   }
                 >
                   {descChars}/1200 chars
@@ -378,7 +378,7 @@ export function BookForm({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white/75">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
               Privacy <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -390,11 +390,11 @@ export function BookForm({
                   className={`flex flex-col items-center gap-1 rounded-xl p-3 border text-center transition-all duration-200 ${
                     privacy === opt.value
                       ? 'border-[#FFC300] bg-[#FFC300]/10 text-[#FFC300]'
-                      : 'border-[#333] bg-[#1e1e1e] text-white/45 hover:border-[#444] hover:text-white/65'
+                      : 'border-[#333] bg-[#1e1e1e] text-white/85 hover:border-[#444] hover:text-white/65'
                   }`}
                 >
                   <span className="text-sm font-semibold">{opt.label}</span>
-                  <span className="text-[11px] leading-tight opacity-80">
+                  <span className="text-[12px] leading-tight opacity-80">
                     {opt.description}
                   </span>
                 </button>
@@ -402,9 +402,9 @@ export function BookForm({
             </div>
           </div>
 
-          {/* Draft Status */}
+     
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white/75">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
               Draft Status
             </label>
             <select
@@ -422,17 +422,17 @@ export function BookForm({
                 </option>
               ))}
             </select>
-            <p className="text-xs text-white/30">
+            <p className="text-sm text-white/80">
               Track which revision your book is on. Drafts show a status label
               on your book page.
             </p>
           </div>
 
-          {/* Explorable */}
+        
           <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white/75">Explorable</p>
-              <p className="text-xs text-white/35 mt-0.5">
+              <p className="text-sm font-medium text-yellow-500 mainFont">Explorable</p>
+              <p className="text-sm text-white/80 mt-0.5">
                 List this book on the Explore page so all users can discover it.
                 Enabling this will make the book public.
               </p>
@@ -461,12 +461,12 @@ export function BookForm({
               <button
                 type="button"
                 onClick={() => setBookDocxOpen((o) => !o)}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/55 hover:text-white/75 hover:bg-white/3 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/85 hover:text-white/75 hover:bg-white/3 transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-[#FFC300]/50" />
+                  <BookOpen className="w-4 h-4 text-yellow-500" />
                   Upload full book from DOCX
-                  <span className="text-[11px] text-white/30">(optional)</span>
+                  <span className="text-[11px] text-white/80">(optional)</span>
                 </span>
                 {bookDocxOpen ? (
                   <ChevronUp className="w-4 h-4" />
@@ -535,11 +535,11 @@ export function BookForm({
                       </>
                     ) : (
                       <>
-                        <UploadCloud className="w-5 h-5 text-white/25" />
-                        <span className="text-xs text-white/35">
+                        <UploadCloud className="w-5 h-5 text-white/85" />
+                        <span className="text-sm text-white/85">
                           Select a .docx file
                         </span>
-                        <span className="text-[10px] text-white/20">
+                        <span className="text-xs text-white/80">
                           Max 10 MB · Heading 1 per chapter
                         </span>
                       </>

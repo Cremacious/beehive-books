@@ -61,7 +61,10 @@ function relativeTime(date: Date): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(date).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return new Date(date).toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 function displayName(user: ActivityEvent['user']): string {
@@ -135,7 +138,9 @@ const EVENT_CONFIG: Record<
 };
 
 function eventDescription(event: ActivityEvent): React.ReactNode {
-  const name = <span className="font-semibold text-white">{displayName(event.user)}</span>;
+  const name = (
+    <span className="font-semibold text-white">{displayName(event.user)}</span>
+  );
   const m = event.meta;
 
   switch (event.type) {
@@ -162,14 +167,18 @@ function eventDescription(event: ActivityEvent): React.ReactNode {
       return (
         <>
           {name} started a{' '}
-          <span className="font-semibold text-blue-400">{m.durationMinutes} min sprint</span>
+          <span className="font-semibold text-blue-400">
+            {m.durationMinutes} min sprint
+          </span>
         </>
       );
     case 'SPRINT_ENDED':
       return (
         <>
           {name}&apos;s{' '}
-          <span className="font-semibold text-blue-400">{m.durationMinutes} min sprint</span>{' '}
+          <span className="font-semibold text-blue-400">
+            {m.durationMinutes} min sprint
+          </span>{' '}
           wrapped up
         </>
       );
@@ -225,14 +234,16 @@ function eventDescription(event: ActivityEvent): React.ReactNode {
         m.goalType === 'DAILY'
           ? 'daily'
           : m.goalType === 'WEEKLY'
-          ? 'weekly'
-          : m.goalType === 'MONTHLY'
-          ? 'monthly'
-          : 'total';
+            ? 'weekly'
+            : m.goalType === 'MONTHLY'
+              ? 'monthly'
+              : 'total';
       return (
         <>
           {name} set a{' '}
-          <span className="font-semibold text-rose-400">{goalLabel} word goal</span>
+          <span className="font-semibold text-rose-400">
+            {goalLabel} word goal
+          </span>
           {' — '}
           <span className="font-semibold text-white">
             {Number(m.targetWords).toLocaleString()} words
@@ -294,7 +305,9 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
         <p className="text-sm text-white/80 leading-relaxed">
           {eventDescription(event)}
         </p>
-        <p className="text-xs text-white/80 mt-1">{relativeTime(event.timestamp)}</p>
+        <p className="text-xs text-white/80 mt-1">
+          {relativeTime(event.timestamp)}
+        </p>
       </div>
     </div>
   );
@@ -339,13 +352,13 @@ export default function HiveDashboard({
 
   return (
     <div className="space-y-6">
-     
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-3xl">🐝</span>
-              <h1 className="text-2xl font-bold text-white mainFont">{hive.name}</h1>
+              <h1 className="text-2xl font-bold text-white mainFont">
+                {hive.name}
+              </h1>
 
               {hive.privacy === 'PUBLIC' ? (
                 <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">
@@ -443,9 +456,9 @@ export default function HiveDashboard({
 
         <div className="flex items-center gap-6 mt-5 pt-5 border-t border-[#2a2a2a] flex-wrap">
           <div className="flex items-center gap-1.5 text-sm">
-            <Users className="w-4 h-4 text-white/40" />
+            <Users className="w-4 h-4 text-yellow-500" />
             <span className="text-white font-semibold">{hive.memberCount}</span>
-            <span className="text-white/60">
+            <span className="text-white">
               member{hive.memberCount !== 1 ? 's' : ''}
             </span>
           </div>
@@ -469,7 +482,6 @@ export default function HiveDashboard({
         </div>
       </div>
 
-   
       {hive.bookId ? (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
           <div className="flex items-center justify-between mb-3">
@@ -496,7 +508,7 @@ export default function HiveDashboard({
                 className="rounded-lg object-cover shrink-0"
               />
             ) : (
-              <div className="w-20 shrink-0 aspect-[2/3] rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center">
+              <div className="w-20 shrink-0 aspect-2/3 rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-white/20" />
               </div>
             )}
@@ -505,21 +517,25 @@ export default function HiveDashboard({
                 {linkedBook?.title ?? 'Untitled'}
               </h3>
               {linkedBook?.author && (
-                <p className="text-sm text-white/80 mb-2">by {linkedBook.author}</p>
+                <p className="text-sm text-white/80 mb-2">
+                  by {linkedBook.author}
+                </p>
               )}
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-white/40" />
-                  <span className="text-white font-semibold">{hive.chapterCount}</span>
-                  <span className="text-white/60">
+          
+                  <span className="text-white font-semibold">
+                    {hive.chapterCount}
+                  </span>
+                  <span className="text-white">
                     chapter{hive.chapterCount !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[#FFC300] font-semibold">
+                  <span className="text-white font-semibold">
                     {hive.totalWordCount.toLocaleString()}
                   </span>
-                  <span className="text-white/60">words</span>
+                  <span className="text-white">words</span>
                 </div>
               </div>
             </div>
@@ -528,7 +544,9 @@ export default function HiveDashboard({
       ) : isMember ? (
         <div className="rounded-2xl bg-[#252525] border border-dashed border-[#2a2a2a] p-5 flex flex-col items-center text-center gap-2">
           <BookOpen className="w-8 h-8 text-white/30" />
-          <p className="text-sm font-medium text-white/60">No book linked yet</p>
+          <p className="text-sm font-medium text-white/60">
+            No book linked yet
+          </p>
           <p className="text-xs text-white/40">
             {isOwner
               ? 'Go to Settings to link or create a book for this hive.'
@@ -542,7 +560,6 @@ export default function HiveDashboard({
         </div>
       ) : null}
 
-     
       {isMember && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
           <div className="flex items-center justify-between mb-2">
@@ -555,21 +572,28 @@ export default function HiveDashboard({
               disabled={refreshing}
               className="flex items-center gap-1.5 text-xs text-white hover:text-white/70 transition-colors disabled:opacity-40"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`}
+              />
               Refresh
             </button>
           </div>
 
-          <p className="text-xs text-white/00 mb-4">Last 30 days of hive activity</p>
+          <p className="text-sm text-white/80 mb-4">
+            Last 30 days of hive activity
+          </p>
 
           {activity.length === 0 ? (
             <div className="flex flex-col items-center py-16 text-center gap-3">
               <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] flex items-center justify-center">
                 <GitBranch className="w-7 h-7 text-white" />
               </div>
-              <p className="text-sm font-medium text-white/40">No activity yet</p>
+              <p className="text-sm font-medium text-white/40">
+                No activity yet
+              </p>
               <p className="text-xs text-white/80 max-w-xs">
-                Activity will appear here as your hive writes, creates goals, adds wiki entries, and more.
+                Activity will appear here as your hive writes, creates goals,
+                adds wiki entries, and more.
               </p>
             </div>
           ) : (
@@ -578,7 +602,8 @@ export default function HiveDashboard({
                 <ActivityFeedItem key={event.id} event={event} />
               ))}
               <p className="text-xs text-white/80 text-center pt-4">
-                Showing {activity.length} event{activity.length !== 1 ? 's' : ''} from the last 30 days
+                Showing {activity.length} event
+                {activity.length !== 1 ? 's' : ''} from the last 30 days
               </p>
             </div>
           )}

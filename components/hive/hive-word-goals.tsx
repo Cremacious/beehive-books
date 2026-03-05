@@ -344,7 +344,7 @@ export default function HiveWordGoals({
               className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
             {goalType === 'MONTHLY' ? (
-              <div>
+              <div className="sm:w-1/2">
                 <label className="text-xs text-white mb-1 block">
                   Month
                 </label>
@@ -352,11 +352,13 @@ export default function HiveWordGoals({
                   type="month"
                   value={monthInput}
                   onChange={(e) => setMonthInput(e.target.value)}
-                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                  onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all cursor-pointer accent-[#FFC300] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter-[brightness(0)_saturate(100%)_invert(83%)_sepia(54%)_saturate(1018%)_hue-rotate(8deg)_brightness(101%)_contrast(97%)]"
                 />
               </div>
             ) : (
-              <div>
+              <div className="sm:w-1/2">
                 <label className="text-xs text-white mb-1 block">
                   End date (optional)
                 </label>
@@ -364,7 +366,9 @@ export default function HiveWordGoals({
                   type="date"
                   value={endDateInput}
                   onChange={(e) => setEndDateInput(e.target.value)}
-                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                  onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all cursor-pointer accent-[#FFC300] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter-[brightness(0)_saturate(100%)_invert(83%)_sepia(54%)_saturate(1018%)_hue-rotate(8deg)_brightness(101%)_contrast(97%)]"
                 />
               </div>
             )}

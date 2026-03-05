@@ -31,7 +31,7 @@ export default function HiveCard({ hive }: { hive: HiveWithMembership }) {
       <div className="flex flex-col flex-1 gap-2.5 p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-base leading-none shrink-0">🐝</span>
+
             <h3 className="text-base font-semibold text-white leading-snug truncate group-hover:text-[#FFC300] transition-colors mainFont">
               {hive.name}
             </h3>

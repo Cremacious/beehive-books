@@ -482,10 +482,10 @@ function SortableGroupCard({
           ) : (
             <button
               onClick={() => setAddingInGroup(group.id)}
-              className="w-full flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors border border-dashed border-[#3a3a3a] hover:border-white/20"
+              className="w-full flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-white/70 hover:text-white/70 hover:bg-white/5 transition-colors border border-dashed border-[#3a3a3a] hover:border-white/20"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add item to group
+              Add item to group, or drag item in/out of group
             </button>
           )}
         </div>
@@ -697,8 +697,10 @@ export default function HiveOutlineBoard({
     <div className="space-y-4">
    
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="text-sm text-white/60">
-          {totalItems} item{totalItems !== 1 ? 's' : ''} · {groups.length} group{groups.length !== 1 ? 's' : ''} · drag to reorder
+        <p className="text-sm text-white/80">
+          {totalItems} item{totalItems !== 1 ? 's' : ''} · {groups.length} group{groups.length !== 1 ? 's' : ''} · drag <span>
+            <GripVertical className="w-3 h-3 inline-block" />
+            </span> to reorder
         </p>
         <div className="flex items-center gap-2">
           {!showCreateGroup && !editingGroup && (

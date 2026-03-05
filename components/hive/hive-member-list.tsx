@@ -97,10 +97,10 @@ export default function HiveMemberList({
           >
             <span className="flex items-center gap-2">
               <UserPlus className="w-4 h-4 text-[#FFC300]" />
-              Invite Friends
+              Invite Friends (click to expand)
             </span>
             {invitableFriends.length > 0 && (
-              <span className="text-xs text-white/40">
+              <span className="text-xs text-white/80">
                 {invitableFriends.length} available
               </span>
             )}
@@ -168,7 +168,7 @@ export default function HiveMemberList({
                     .join(' ') ??
                   'Unknown'}
                 {isMe && (
-                  <span className="text-white/40 font-normal ml-1">(you)</span>
+                  <span className="text-white/80 font-normal ml-1">(you)</span>
                 )}
               </Link>
               <div

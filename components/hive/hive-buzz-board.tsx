@@ -2,12 +2,22 @@
 
 import { useState, useTransition } from 'react';
 import Image from 'next/image';
-import { Plus, Heart, Trash2, Loader2, Sparkles, Music, Smile, ImageIcon, MoreHorizontal } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Loader2,
+  Sparkles,
+  Music,
+  Smile,
+  ImageIcon,
+  MoreHorizontal,
+  ExternalLink,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Popup from '@/components/ui/popup';
 import {
   getBuzzItemsAction,
   createBuzzItemAction,
-  toggleBuzzLikeAction,
   deleteBuzzItemAction,
 } from '@/lib/actions/hive-buzz.actions';
 import type { BuzzItemWithAuthor, BuzzType, HiveRole } from '@/lib/types/hive.types';
@@ -19,12 +29,48 @@ interface HiveBuzzBoardProps {
   myRole: HiveRole;
 }
 
-const BUZZ_TYPES: { value: BuzzType; label: string; Icon: React.ElementType; color: string }[] = [
-  { value: 'INSPIRATION', label: 'Inspiration', Icon: Sparkles, color: 'text-purple-400' },
-  { value: 'MEME', label: 'Meme', Icon: Smile, color: 'text-yellow-400' },
-  { value: 'PLAYLIST', label: 'Playlist', Icon: Music, color: 'text-green-400' },
-  { value: 'MOOD', label: 'Mood', Icon: ImageIcon, color: 'text-pink-400' },
-  { value: 'OTHER', label: 'Other', Icon: MoreHorizontal, color: 'text-white/50' },
+const BUZZ_TYPES: {
+  value: BuzzType;
+  label: string;
+  Icon: React.ElementType;
+  color: string;
+  cardAccent: string;
+}[] = [
+  {
+    value: 'INSPIRATION',
+    label: 'Inspiration',
+    Icon: Sparkles,
+    color: 'text-purple-400',
+    cardAccent: 'border-purple-500/25 bg-purple-500/5',
+  },
+  {
+    value: 'MEME',
+    label: 'Meme',
+    Icon: Smile,
+    color: 'text-yellow-400',
+    cardAccent: 'border-yellow-500/25 bg-yellow-500/5',
+  },
+  {
+    value: 'PLAYLIST',
+    label: 'Playlist',
+    Icon: Music,
+    color: 'text-green-400',
+    cardAccent: 'border-green-500/25 bg-green-500/5',
+  },
+  {
+    value: 'MOOD',
+    label: 'Mood',
+    Icon: ImageIcon,
+    color: 'text-pink-400',
+    cardAccent: 'border-pink-500/25 bg-pink-500/5',
+  },
+  {
+    value: 'OTHER',
+    label: 'Other',
+    Icon: MoreHorizontal,
+    color: 'text-white/50',
+    cardAccent: 'border-[#2a2a2a] bg-[#252525]',
+  },
 ];
 
 function buzzTypeConfig(type: BuzzType) {
@@ -42,33 +88,100 @@ function timeAgo(date: Date) {
   return `${days}d ago`;
 }
 
+/** Tailwind line-clamp class based on content length so cards have variable heights. */
+function clampClass(content: string): string {
+  if (content.length < 120) return 'line-clamp-3';
+  if (content.length < 300) return 'line-clamp-5';
+  if (content.length < 600) return 'line-clamp-7';
+  return 'line-clamp-10';
+}
+
+function AuthorRow({ item, small = false }: { item: BuzzItemWithAuthor; small?: boolean }) {
+  const size = small ? 20 : 26;
+  return (
+    <div className="flex items-center gap-2 min-w-0">
+      {item.author.imageUrl ? (
+        <Image
+          src={item.author.imageUrl}
+          alt={item.author.username ?? 'User'}
+          width={size}
+          height={size}
+          className="rounded-full object-cover shrink-0"
+        />
+      ) : (
+        <div
+          style={{ width: size, height: size }}
+          className="rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 text-[#FFC300] font-bold text-[10px]"
+        >
+          {(item.author.username ?? item.author.firstName ?? 'U')[0]?.toUpperCase()}
+        </div>
+      )}
+      <div className="min-w-0">
+        <p className={`font-medium text-white truncate ${small ? 'text-[10px]' : 'text-xs'}`}>
+          {item.author.username ?? item.author.firstName ?? 'User'}
+        </p>
+        <p className="text-[10px] text-white/30">{timeAgo(item.createdAt)}</p>
+      </div>
+    </div>
+  );
+}
+
 function BuzzCard({
+  item,
+  onClick,
+}: {
+  item: BuzzItemWithAuthor;
+  onClick: () => void;
+}) {
+  const typeConf = buzzTypeConfig(item.type);
+  const Icon = typeConf.Icon;
+
+  return (
+    <div
+      onClick={onClick}
+      className={`break-inside-avoid mb-4 rounded-2xl border p-4 space-y-2.5 cursor-pointer hover:brightness-125 transition-all ${typeConf.cardAccent}`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <AuthorRow item={item} small />
+        <span
+          className={`flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 shrink-0 ${typeConf.color}`}
+        >
+          <Icon className="w-3 h-3" />
+          {typeConf.label}
+        </span>
+      </div>
+
+      <p className={`text-sm text-white/85 leading-relaxed whitespace-pre-wrap ${clampClass(item.content)}`}>
+        {item.content}
+      </p>
+
+      {item.mediaUrl && (
+        <p className={`text-[10px] text-[#FFC300]/60 truncate`}>
+          {item.mediaUrl}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function BuzzDetail({
   item,
   currentUserId,
   myRole,
-  onLike,
   onDelete,
+  onClose,
 }: {
   item: BuzzItemWithAuthor;
   currentUserId: string;
   myRole: HiveRole;
-  onLike: (id: string, liked: boolean) => void;
   onDelete: (id: string) => void;
+  onClose: () => void;
 }) {
-  const [liking, setLiking] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const typeConf = buzzTypeConfig(item.type);
   const Icon = typeConf.Icon;
   const canDelete =
     item.authorId === currentUserId || myRole === 'OWNER' || myRole === 'MODERATOR';
-
-  // const handleLike = async () => {
-  //   if (liking) return;
-  //   setLiking(true);
-  //   const result = await toggleBuzzLikeAction(item.id);
-  //   if (result.success) onLike(item.id, result.liked);
-  //   setLiking(false);
-  // };
 
   const handleDelete = async () => {
     if (!confirm('Delete this buzz? This cannot be undone.')) return;
@@ -76,81 +189,55 @@ function BuzzCard({
     await deleteBuzzItemAction(item.id);
     onDelete(item.id);
     setDeleting(false);
+    onClose();
   };
 
   return (
-    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3 group">
-   
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          {item.author.imageUrl ? (
-            <Image
-              src={item.author.imageUrl}
-              alt={item.author.username ?? 'User'}
-              width={28}
-              height={28}
-              className="rounded-full object-cover shrink-0"
-            />
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 text-[#FFC300] font-bold text-xs">
-              {(item.author.username ?? item.author.firstName ?? 'U')[0]?.toUpperCase()}
-            </div>
-          )}
-          <div className="min-w-0">
-            <p className="text-xs font-medium text-white truncate">
-              {item.author.username ?? item.author.firstName ?? 'User'}
-            </p>
-            <p className="text-[10px] text-white/30">{timeAgo(item.createdAt)}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className={`flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 ${typeConf.color}`}>
-            <Icon className="w-3 h-3" />
-            {typeConf.label}
-          </span>
-          {canDelete && (
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-white hover:text-red-400"
-            >
-              {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-            </button>
-          )}
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <AuthorRow item={item} />
+        <span
+          className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-white/5 border border-white/10 ${typeConf.color}`}
+        >
+          <Icon className="w-3.5 h-3.5" />
+          {typeConf.label}
+        </span>
       </div>
 
-    
-      <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap wrap-break-word">
+      <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">
         {item.content}
       </p>
 
-    
       {item.mediaUrl && (
         <a
           href={item.mediaUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-xs text-[#FFC300] hover:underline truncate"
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-1.5 text-xs text-[#FFC300] hover:underline break-all"
         >
+          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
           {item.mediaUrl}
         </a>
       )}
 
- 
-      {/* <div className="flex items-center justify-end pt-0.5">
-        <button
-          onClick={handleLike}
-          disabled={liking}
-          className={`flex items-center gap-1.5 text-xs transition-colors ${
-            item.likedByMe ? 'text-red-400' : 'text-white/30 hover:text-red-400'
-          }`}
-        >
-          <Heart className={`w-3.5 h-3.5 ${item.likedByMe ? 'fill-current' : ''}`} />
-          {item.likeCount > 0 && item.likeCount}
-        </button>
-      </div> */}
+      {canDelete && (
+        <div className="pt-2 border-t border-[#2a2a2a]">
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Delete
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -246,21 +333,8 @@ export default function HiveBuzzBoard({
 }: HiveBuzzBoardProps) {
   const [items, setItems] = useState<BuzzItemWithAuthor[]>(initialItems);
   const [showCreate, setShowCreate] = useState(false);
+  const [viewingItem, setViewingItem] = useState<BuzzItemWithAuthor | null>(null);
   const [, startTransition] = useTransition();
-
-  const handleLike = (id: string, liked: boolean) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              likedByMe: liked,
-              likeCount: liked ? item.likeCount + 1 : Math.max(item.likeCount - 1, 0),
-            }
-          : item,
-      ),
-    );
-  };
 
   const handleDelete = (id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
@@ -276,7 +350,6 @@ export default function HiveBuzzBoard({
 
   return (
     <div className="space-y-4">
-   
       <div className="flex items-center justify-between">
         <p className="text-sm text-white">
           {items.length} post{items.length !== 1 ? 's' : ''}
@@ -289,15 +362,10 @@ export default function HiveBuzzBoard({
         )}
       </div>
 
-    
       {showCreate && (
-        <CreateBuzzForm
-          hiveId={hiveId}
-          onDone={handleCreated}
-        />
+        <CreateBuzzForm hiveId={hiveId} onDone={handleCreated} />
       )}
 
-     
       {items.length === 0 && !showCreate ? (
         <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
@@ -308,19 +376,33 @@ export default function HiveBuzzBoard({
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
           {items.map((item) => (
             <BuzzCard
               key={item.id}
               item={item}
-              currentUserId={currentUserId}
-              myRole={myRole}
-              onLike={handleLike}
-              onDelete={handleDelete}
+              onClick={() => setViewingItem(item)}
             />
           ))}
         </div>
       )}
+
+      <Popup
+        open={viewingItem !== null}
+        onClose={() => setViewingItem(null)}
+        title="Buzz"
+        maxWidth="md"
+      >
+        {viewingItem && (
+          <BuzzDetail
+            item={viewingItem}
+            currentUserId={currentUserId}
+            myRole={myRole}
+            onDelete={handleDelete}
+            onClose={() => setViewingItem(null)}
+          />
+        )}
+      </Popup>
     </div>
   );
 }
