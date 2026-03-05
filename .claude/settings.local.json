@@ -22,7 +22,10 @@
       "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/\")",
       "Bash(ls \"c:/Code/personal/beehive-books-online/app/\\(app\\)/hive/[hiveId]/\")",
       "Bash(npx drizzle-kit push)",
-      "Bash(ls -la /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/)"
+      "Bash(ls -la /c/Code/personal/beehive-books-online/app/\\\\\\(app\\\\\\)/)",
+      "Bash(ls -la /c/Code/personal/beehive-books-online/app/'\\(app\\)'/u/)",
+      "Bash(ls -la \"/c/Code/personal/beehive-books-online/app/\\(app\\)/\")",
+      "Bash(ls -la /c/Code/personal/beehive-books-online/app/'\\(app\\)'/u/'[username]'/)"
     ],
     "additionalDirectories": [
       "c:\\Code\\personal\\beehive-books-online\\app\\(app)\\hive\\[hiveId]\\settings",

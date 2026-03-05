@@ -703,7 +703,7 @@ export default function HiveInlineComments({
           />
         )}
 
-        {/* Mobile-only: filter + annotation list sit above the chapter content */}
+
         <div className="lg:hidden space-y-3">
           <LayerFilterDropdown
             activeLayer={activeLayer}
@@ -763,7 +763,6 @@ export default function HiveInlineComments({
             </div>
           </div>
 
-          {/* Desktop-only sidebar: filter + annotation list */}
           <div className="hidden lg:block lg:col-span-2 space-y-3">
             <LayerFilterDropdown
               activeLayer={activeLayer}

@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { and, eq, or } from 'drizzle-orm';
 import type { AnyColumn } from 'drizzle-orm';
 import { db } from '@/db';
-import { users, books, readingLists, friendships } from '@/db/schema';
+import { users, books, readingLists, friendships, clubMembers, hiveMembers, prompts } from '@/db/schema';
 
 export async function getCurrentUserImageUrlAction(): Promise<string | null> {
   const { userId } = await auth();
@@ -64,7 +64,7 @@ export async function getUserProfileAction(username: string) {
       ? or(...visiblePrivacies.map((p) => eq(col, p)))
       : undefined;
 
-  const [userBooks, userReadingLists] = await Promise.all([
+  const [userBooks, userReadingLists, memberClubs, memberHives, userPrompts] = await Promise.all([
     db.query.books.findMany({
       where: isOwnProfile
         ? eq(books.userId, profileUser.clerkId)
@@ -83,17 +83,45 @@ export async function getUserProfileAction(username: string) {
           ),
       orderBy: (rl, { desc }) => [desc(rl.updatedAt)],
     }),
+    db.query.clubMembers.findMany({
+      where: eq(clubMembers.userId, profileUser.clerkId),
+      with: { club: true },
+      orderBy: (cm, { desc }) => [desc(cm.joinedAt)],
+    }),
+    db.query.hiveMembers.findMany({
+      where: eq(hiveMembers.userId, profileUser.clerkId),
+      with: { hive: true },
+      orderBy: (hm, { desc }) => [desc(hm.joinedAt)],
+    }),
+    db.query.prompts.findMany({
+      where: isOwnProfile
+        ? eq(prompts.creatorId, profileUser.clerkId)
+        : and(eq(prompts.creatorId, profileUser.clerkId), eq(prompts.isPublic, true)),
+      orderBy: (p, { desc }) => [desc(p.createdAt)],
+    }),
   ]);
 
-  const totalWords = userBooks.reduce((sum, b) => sum + b.wordCount, 0);
-  const totalChapters = userBooks.reduce((sum, b) => sum + b.chapterCount, 0);
+  const visibleClubs = memberClubs
+    .map((mc) => ({ ...mc.club, myRole: mc.role, isMember: true as const }))
+    .filter((c) => isOwnProfile || c.privacy === 'PUBLIC');
+
+  const visibleHives = memberHives
+    .map((mh) => ({ ...mh.hive, myRole: mh.role, isMember: true as const }))
+    .filter((h) => {
+      if (isOwnProfile) return true;
+      if (isFriend) return h.privacy !== 'PRIVATE';
+      return h.privacy === 'PUBLIC';
+    });
 
   return {
     user: profileUser,
     books: userBooks,
     readingLists: userReadingLists,
-    stats: { bookCount: userBooks.length, totalWords, totalChapters },
+    clubs: visibleClubs,
+    hives: visibleHives,
+    prompts: userPrompts,
     isOwnProfile,
+    isFriend,
     currentUserId,
   };
 }
