@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Trash2, Globe, Lock } from 'lucide-react';
+import Image from 'next/image';
+import { Check, Plus, X, Loader2, Trash2, Globe, Lock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useClubStore } from '@/lib/stores/club-store';
 import { clubSchema } from '@/lib/validations/club.schema';
 import type { ClubSchemaData } from '@/lib/validations/club.schema';
-import type { ClubFormProps } from '@/lib/types/club.types';
+import type { ClubFormProps, InvitableClubFriend } from '@/lib/types/club.types';
 
 const PRIVACY_OPTIONS = [
   {
@@ -31,14 +32,22 @@ export default function ClubForm({
   clubId,
   defaultValues,
   cancelHref,
-}: ClubFormProps) {
+  friends = [],
+}: ClubFormProps & { friends?: InvitableClubFriend[] }) {
   const router = useRouter();
   const store = useClubStore();
 
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
+  const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
+
+  function toggleInvite(clerkId: string) {
+    setInvitedIds((prev) =>
+      prev.includes(clerkId) ? prev.filter((id) => id !== clerkId) : [...prev, clerkId],
+    );
+  }
 
   const form = useForm<ClubSchemaData>({
     resolver: zodResolver(clubSchema),
@@ -81,7 +90,7 @@ export default function ClubForm({
     const payload = { ...data, tags };
 
     if (mode === 'create') {
-      const result = await store.createClub(payload);
+      const result = await store.createClub(payload, invitedIds);
       if (result.success && result.clubId) {
         router.push(`/clubs/${result.clubId}`);
       } else {
@@ -263,20 +272,68 @@ export default function ClubForm({
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Invite Friends
-        </label>
-        <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#252525] p-5 flex flex-col items-center justify-center text-center gap-1.5">
-          <p className="text-sm font-medium text-white/80">
-            Invites coming soon
-          </p>
-          <p className="text-xs text-white/80">
-            Friend invites will be available in a future update. Share the club
-            link to invite others.
-          </p>
+      {mode === 'create' && privacy === 'PRIVATE' && (
+        <div>
+          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+            <Users className="inline w-3.5 h-3.5 mr-1 text-yellow-500" />
+            Invite Friends{' '}
+            <span className="text-white/80 font-normal">(optional)</span>
+            {invitedIds.length > 0 && (
+              <span className="ml-2 text-xs text-[#FFC300] font-normal">
+                {invitedIds.length} selected
+              </span>
+            )}
+          </label>
+          <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3">
+            {friends.length === 0 ? (
+              <p className="text-sm text-white/80 text-center py-3">
+                No friends to invite yet.
+              </p>
+            ) : (
+              <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                {friends.map((f) => {
+                  const selected = invitedIds.includes(f.clerkId);
+                  const name = f.username ?? 'Unknown';
+                  return (
+                    <button
+                      key={f.clerkId}
+                      type="button"
+                      onClick={() => toggleInvite(f.clerkId)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors ${
+                        selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
+                      }`}
+                    >
+                      {f.imageUrl ? (
+                        <Image
+                          src={f.imageUrl}
+                          alt={name}
+                          width={28}
+                          height={28}
+                          className="rounded-full shrink-0"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
+                          <span className="text-[#FFC300] text-xs font-bold">
+                            {name[0]?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <span className="flex-1 text-sm text-white truncate">{name}</span>
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+                          selected ? 'bg-[#FFC300] border-[#FFC300]' : 'border-white/20'
+                        }`}
+                      >
+                        {selected && <Check className="w-2.5 h-2.5 text-black" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {error && (
         <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">

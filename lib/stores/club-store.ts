@@ -19,6 +19,12 @@ import {
   addBookToClubListAction,
   removeBookFromClubListAction,
   updateBookStatusAction,
+  inviteToClubAction,
+  acceptClubInviteAction,
+  declineClubInviteAction,
+  requestToJoinClubAction,
+  approveJoinRequestAction,
+  rejectJoinRequestAction,
 } from '@/lib/actions/club.actions';
 import type { ClubFormData, ClubDiscussionFormData, ActionResult, BookStatus } from '@/lib/types/club.types';
 
@@ -26,7 +32,7 @@ interface ClubStore {
   optimisticDiscussionLikes: Record<string, boolean>;
   optimisticReplyLikes: Record<string, boolean>;
 
-  createClub: (data: ClubFormData) => Promise<ActionResult & { clubId?: string }>;
+  createClub: (data: ClubFormData, invitedIds?: string[]) => Promise<ActionResult & { clubId?: string }>;
   updateClub: (clubId: string, data: ClubFormData) => Promise<ActionResult>;
   deleteClub: (clubId: string) => Promise<ActionResult>;
 
@@ -56,13 +62,20 @@ interface ClubStore {
 
   toggleDiscussionLike: (discussionId: string, currentlyLiked: boolean) => Promise<void>;
   toggleReplyLike: (replyId: string, currentlyLiked: boolean) => Promise<void>;
+
+  inviteToClub: (clubId: string, friendClerkId: string) => Promise<ActionResult>;
+  acceptClubInvite: (inviteId: string) => Promise<ActionResult & { clubId?: string }>;
+  declineClubInvite: (inviteId: string) => Promise<ActionResult>;
+  requestToJoin: (clubId: string) => Promise<ActionResult>;
+  approveJoinRequest: (requestId: string) => Promise<ActionResult>;
+  rejectJoinRequest: (requestId: string) => Promise<ActionResult>;
 }
 
 export const useClubStore = create<ClubStore>((set) => ({
   optimisticDiscussionLikes: {},
   optimisticReplyLikes: {},
 
-  createClub: (data) => createClubAction(data),
+  createClub: (data, invitedIds) => createClubAction(data, invitedIds),
   updateClub: (clubId, data) => updateClubAction(clubId, data),
   deleteClub: (clubId) => deleteClubAction(clubId),
 
@@ -122,4 +135,11 @@ export const useClubStore = create<ClubStore>((set) => ({
       }));
     }
   },
+
+  inviteToClub: (clubId, friendClerkId) => inviteToClubAction(clubId, friendClerkId),
+  acceptClubInvite: (inviteId) => acceptClubInviteAction(inviteId),
+  declineClubInvite: (inviteId) => declineClubInviteAction(inviteId),
+  requestToJoin: (clubId) => requestToJoinClubAction(clubId),
+  approveJoinRequest: (requestId) => approveJoinRequestAction(requestId),
+  rejectJoinRequest: (requestId) => rejectJoinRequestAction(requestId),
 }));

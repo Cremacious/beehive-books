@@ -10,9 +10,19 @@ import {
   Check,
   MoreVertical,
   Loader2,
+  UserPlus,
+  X,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
-import type { ClubMemberWithUser, ClubRole } from '@/lib/types/club.types';
+import type {
+  ClubMemberWithUser,
+  ClubRole,
+  PendingJoinRequest,
+  InvitableClubFriend,
+} from '@/lib/types/club.types';
+import ClubInvitePicker from '@/components/clubs/club-invite-picker';
 
 type RoleFilter = 'ALL' | 'OWNER' | 'MODERATOR' | 'MEMBER';
 
@@ -206,15 +216,92 @@ interface MembersGridProps {
   clubId: string;
   currentUserId: string;
   myRole: ClubRole;
+  pendingRequests?: PendingJoinRequest[];
+  invitableFriends?: InvitableClubFriend[];
+}
+
+function JoinRequestRow({
+  request,
+  clubId,
+}: {
+  request: PendingJoinRequest;
+  clubId: string;
+}) {
+  const store = useClubStore();
+  const router = useRouter();
+  const [approving, setApproving] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
+  const displayName = request.user.username ?? 'Unknown';
+
+  const handleApprove = async () => {
+    setApproving(true);
+    await store.approveJoinRequest(request.id);
+    setApproving(false);
+    router.refresh();
+  };
+
+  const handleReject = async () => {
+    setRejecting(true);
+    await store.rejectJoinRequest(request.id);
+    setRejecting(false);
+    router.refresh();
+  };
+
+  return (
+    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
+      {request.user.imageUrl ? (
+        <Image
+          src={request.user.imageUrl}
+          alt={displayName}
+          width={36}
+          height={36}
+          className="w-9 h-9 rounded-full object-cover shrink-0"
+        />
+      ) : (
+        <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
+          <span className="text-sm font-semibold text-[#FFC300]">
+            {displayName.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-white truncate">{displayName}</p>
+        <p className="text-xs text-white/80">
+          Requested {new Date(request.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={handleApprove}
+          disabled={approving || rejecting}
+          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-green-500/25 text-green-400/80 hover:bg-green-500/10 transition-all"
+        >
+          {approving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+          Approve
+        </button>
+        <button
+          onClick={handleReject}
+          disabled={approving || rejecting}
+          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-red-500/20 text-red-400/80 hover:bg-red-500/10 transition-all"
+        >
+          {rejecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+          Reject
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default function MembersGrid({
   members,
   clubId,
   myRole,
+  pendingRequests = [],
+  invitableFriends = [],
 }: MembersGridProps) {
   const [query, setQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('ALL');
+  const [showInvitePicker, setShowInvitePicker] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -235,8 +322,49 @@ export default function MembersGrid({
     return counts;
   }, [members]);
 
+  const isOwnerOrMod = myRole === 'OWNER' || myRole === 'MODERATOR';
+
   return (
     <div>
+      {isOwnerOrMod && pendingRequests.length > 0 && (
+        <div className="mb-6 rounded-2xl bg-[#FFC300]/5 border border-[#FFC300]/20 p-4">
+          <p className="text-sm font-semibold text-[#FFC300] mb-3">
+            {pendingRequests.length} pending join request{pendingRequests.length !== 1 ? 's' : ''}
+          </p>
+          <div className="space-y-2">
+            {pendingRequests.map((req) => (
+              <JoinRequestRow key={req.id} request={req} clubId={clubId} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isOwnerOrMod && (
+        <div className="mb-5">
+          <button
+            onClick={() => setShowInvitePicker((v) => !v)}
+            className="flex items-center gap-2 text-sm font-medium text-[#FFC300]/80 hover:text-[#FFC300] border border-[#FFC300]/20 hover:border-[#FFC300]/40 px-4 py-2 rounded-xl bg-[#FFC300]/5 hover:bg-[#FFC300]/10 transition-all"
+          >
+            <UserPlus className="w-4 h-4" />
+            Invite Friend
+            {showInvitePicker ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
+          </button>
+          {showInvitePicker && (
+            <div className="mt-3 rounded-xl border border-[#2a2a2a] bg-[#252525] p-3">
+              <ClubInvitePicker
+                clubId={clubId}
+                friends={invitableFriends}
+                onInvited={() => setShowInvitePicker(false)}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="relative mb-4">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
         <input

@@ -10,6 +10,7 @@ export type NotificationType =
   | 'ENTRY_COMMENT'
   | 'ENTRY_COMMENT_LIKE'
   | 'CLUB_INVITE'
+  | 'CLUB_JOIN_REQUEST'
   | 'CLUB_DISCUSSION'
   | 'CLUB_REPLY'
   | 'HIVE_INVITE'

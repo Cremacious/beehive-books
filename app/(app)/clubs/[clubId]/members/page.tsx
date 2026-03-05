@@ -2,7 +2,12 @@ import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { getClubAction, getClubMembersAction } from '@/lib/actions/club.actions';
+import {
+  getClubAction,
+  getClubMembersAction,
+  getPendingJoinRequestsAction,
+  getClubFriendsForInviteAction,
+} from '@/lib/actions/club.actions';
 import MembersGrid from '@/components/clubs/members-grid';
 import type { Metadata } from 'next';
 
@@ -29,8 +34,16 @@ export default async function ClubMembersPage({
 
   const club = await getClubAction(clubId);
   if (!club) notFound();
+  if (!club.isMember) notFound();
 
-  const members = await getClubMembersAction(clubId);
+  const myRole = club.myRole ?? 'MEMBER';
+  const isOwnerOrMod = myRole === 'OWNER' || myRole === 'MODERATOR';
+
+  const [members, pendingRequests, invitableFriends] = await Promise.all([
+    getClubMembersAction(clubId),
+    isOwnerOrMod ? getPendingJoinRequestsAction(clubId) : Promise.resolve([]),
+    isOwnerOrMod ? getClubFriendsForInviteAction(clubId) : Promise.resolve([]),
+  ]);
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-5xl mx-auto">
@@ -52,7 +65,9 @@ export default async function ClubMembersPage({
         members={members}
         clubId={clubId}
         currentUserId={userId ?? ''}
-        myRole={club.myRole ?? 'MEMBER'}
+        myRole={myRole}
+        pendingRequests={pendingRequests}
+        invitableFriends={invitableFriends}
       />
     </div>
   );

@@ -197,6 +197,7 @@ export const notifications = pgTable('notifications', {
       'ENTRY_COMMENT',
       'ENTRY_COMMENT_LIKE',
       'CLUB_INVITE',
+      'CLUB_JOIN_REQUEST',
       'CLUB_DISCUSSION',
       'CLUB_REPLY',
       'HIVE_INVITE',
@@ -662,6 +663,51 @@ export const clubReadingListBooks = pgTable('club_reading_list_books', {
   addedAt: timestamp('added_at').defaultNow().notNull(),
 });
 
+export const clubInvites = pgTable(
+  'club_invites',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    clubId: text('club_id')
+      .notNull()
+      .references(() => bookClubs.id, { onDelete: 'cascade' }),
+    invitedUserId: text('invited_user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    invitedByUserId: text('invited_by_user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    status: text('status', { enum: ['PENDING', 'ACCEPTED', 'DECLINED'] })
+      .notNull()
+      .default('PENDING'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('unique_club_invite_idx').on(t.clubId, t.invitedUserId)],
+);
+
+export const clubJoinRequests = pgTable(
+  'club_join_requests',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    clubId: text('club_id')
+      .notNull()
+      .references(() => bookClubs.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    status: text('status', { enum: ['PENDING', 'APPROVED', 'REJECTED'] })
+      .notNull()
+      .default('PENDING'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('unique_club_join_request_idx').on(t.clubId, t.userId)],
+);
+
 export const bookClubsRelations = relations(bookClubs, ({ one, many }) => ({
   owner: one(users, {
     fields: [bookClubs.ownerId],
@@ -670,6 +716,8 @@ export const bookClubsRelations = relations(bookClubs, ({ one, many }) => ({
   members: many(clubMembers),
   discussions: many(clubDiscussions),
   readingBooks: many(clubReadingListBooks),
+  invites: many(clubInvites),
+  joinRequests: many(clubJoinRequests),
 }));
 
 export const clubMembersRelations = relations(clubMembers, ({ one }) => ({
@@ -679,6 +727,34 @@ export const clubMembersRelations = relations(clubMembers, ({ one }) => ({
   }),
   user: one(users, {
     fields: [clubMembers.userId],
+    references: [users.clerkId],
+  }),
+}));
+
+export const clubInvitesRelations = relations(clubInvites, ({ one }) => ({
+  club: one(bookClubs, {
+    fields: [clubInvites.clubId],
+    references: [bookClubs.id],
+  }),
+  invitedUser: one(users, {
+    fields: [clubInvites.invitedUserId],
+    references: [users.clerkId],
+    relationName: 'receivedClubInvites',
+  }),
+  invitedBy: one(users, {
+    fields: [clubInvites.invitedByUserId],
+    references: [users.clerkId],
+    relationName: 'sentClubInvites',
+  }),
+}));
+
+export const clubJoinRequestsRelations = relations(clubJoinRequests, ({ one }) => ({
+  club: one(bookClubs, {
+    fields: [clubJoinRequests.clubId],
+    references: [bookClubs.id],
+  }),
+  user: one(users, {
+    fields: [clubJoinRequests.userId],
     references: [users.clerkId],
   }),
 }));

@@ -5,8 +5,10 @@ import {
   getClubDiscussionsAction,
   getClubMembersAction,
   getClubReadingListAction,
+  checkClubJoinRequestStatusAction,
 } from '@/lib/actions/club.actions';
 import ClubDashboard from '@/components/clubs/club-dashboard';
+import ClubGate from '@/components/clubs/club-gate';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -34,6 +36,25 @@ export default async function ClubDashboardPage({
 
   const club = await getClubAction(clubId);
   if (!club) notFound();
+
+  if (!club.isMember) {
+    if (club.privacy === 'PRIVATE') notFound();
+
+    const joinRequestStatus = userId
+      ? await checkClubJoinRequestStatusAction(clubId)
+      : 'none';
+
+    return (
+      <ClubGate
+        clubId={clubId}
+        clubName={club.name}
+        description={club.description}
+        memberCount={club.memberCount}
+        joinRequestStatus={joinRequestStatus}
+        isSignedIn={!!userId}
+      />
+    );
+  }
 
   const [{ discussions }, members, readingList] = await Promise.all([
     getClubDiscussionsAction(clubId, 1),

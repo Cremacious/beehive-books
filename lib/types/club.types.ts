@@ -119,6 +119,25 @@ export type ClubDiscussionFormData = {
   content: string;
 };
 
+export type InvitableClubFriend = {
+  clerkId: string;
+  username: string | null;
+  imageUrl: string | null;
+};
+
+export type PendingClubInvite = {
+  id: string;
+  club: { id: string; name: string; imageUrl: string | null };
+  invitedBy: { username: string | null; imageUrl: string | null };
+  createdAt: Date;
+};
+
+export type PendingJoinRequest = {
+  id: string;
+  user: { clerkId: string; username: string | null; imageUrl: string | null };
+  createdAt: Date;
+};
+
 export type ActionResult = { success: boolean; message: string };
 
 export interface ClubFormProps {

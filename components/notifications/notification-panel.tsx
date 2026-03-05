@@ -45,6 +45,7 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'ENTRY_COMMENT':     return 'commented on your entry';
     case 'ENTRY_COMMENT_LIKE':return 'liked your comment';
     case 'CLUB_INVITE':            return 'invited you to a book club';
+    case 'CLUB_JOIN_REQUEST':      return 'wants to join your book club';
     case 'CLUB_DISCUSSION':        return 'posted a new discussion in your club';
     case 'CLUB_REPLY':             return 'replied to your discussion';
     case 'HIVE_INVITE':            return 'invited you to a hive';
@@ -74,6 +75,7 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'ENTRY_COMMENT':      return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'ENTRY_COMMENT_LIKE': return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'CLUB_INVITE':          return { Icon: Users,           bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
+    case 'CLUB_JOIN_REQUEST':    return { Icon: UserPlus,        bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
     case 'CLUB_DISCUSSION':      return { Icon: BookOpen,        bg: 'bg-amber-500/20',  fg: 'text-amber-400'  };
     case 'CLUB_REPLY':           return { Icon: CornerDownRight, bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
     case 'HIVE_INVITE':          return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };

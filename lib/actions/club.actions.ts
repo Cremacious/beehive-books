@@ -2,7 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { and, desc, eq, ilike, max, ne, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, max, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   bookClubs,
@@ -12,6 +12,9 @@ import {
   clubDiscussionReplies,
   clubDiscussionReplyLikes,
   clubReadingListBooks,
+  clubInvites,
+  clubJoinRequests,
+  friendships,
   users,
 } from '@/db/schema';
 import { clubSchema, clubDiscussionSchema, clubReplySchema } from '@/lib/validations/club.schema';
@@ -28,6 +31,9 @@ import type {
   ClubDiscussionReplyWithAuthor,
   ClubReadingListBook,
   BookStatus,
+  InvitableClubFriend,
+  PendingClubInvite,
+  PendingJoinRequest,
 } from '@/lib/types/club.types';
 
 async function requireAuth() {
@@ -62,6 +68,7 @@ async function requireClubOwner(clubId: string) {
 
 export async function createClubAction(
   data: ClubFormData,
+  invitedIds: string[] = [],
 ): Promise<ActionResult & { clubId?: string }> {
   const userId = await requireAuth();
   const parsed = clubSchema.safeParse(data);
@@ -78,6 +85,26 @@ export async function createClubAction(
       userId,
       role: 'OWNER',
     });
+
+    if (invitedIds.length > 0) {
+      await db.insert(clubInvites).values(
+        invitedIds.map((friendId) => ({
+          clubId: club.id,
+          invitedUserId: friendId,
+          invitedByUserId: userId,
+          status: 'PENDING' as const,
+        })),
+      );
+      for (const friendId of invitedIds) {
+        void insertNotification({
+          recipientId: friendId,
+          actorId: userId,
+          type: 'CLUB_INVITE',
+          link: `/clubs`,
+          metadata: { clubId: club.id, clubName: parsed.data.name },
+        });
+      }
+    }
 
     revalidatePath('/clubs');
     return { success: true, message: 'Club created!', clubId: club.id };
@@ -190,41 +217,7 @@ export async function deleteClubAction(clubId: string): Promise<ActionResult> {
 }
 
 export async function joinClubAction(clubId: string): Promise<ActionResult> {
-  const userId = await requireAuth();
-
-  const club = await db.query.bookClubs.findFirst({
-    where: eq(bookClubs.id, clubId),
-  });
-  if (!club) return { success: false, message: 'Club not found.' };
-  if (club.privacy === 'PRIVATE') return { success: false, message: 'This club is private.' };
-
-  const existing = await db.query.clubMembers.findFirst({
-    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
-  });
-  if (existing) return { success: false, message: 'Already a member.' };
-
-  try {
-    await db.insert(clubMembers).values({ clubId, userId, role: 'MEMBER' });
-    await db
-      .update(bookClubs)
-      .set({ memberCount: sql`${bookClubs.memberCount} + 1`, updatedAt: new Date() })
-      .where(eq(bookClubs.id, clubId));
-
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
-    void insertNotification({
-      recipientId: club.ownerId,
-      actorId: userId,
-      type: 'CLUB_DISCUSSION',
-      link: `/clubs/${clubId}`,
-      metadata: { actorUsername: actor?.username ?? '', clubName: club.name, clubId },
-    });
-
-    revalidatePath(`/clubs/${clubId}`);
-    revalidatePath('/clubs');
-    return { success: true, message: `Joined ${club.name}!` };
-  } catch {
-    return { success: false, message: 'Failed to join club.' };
-  }
+  return requestToJoinClubAction(clubId);
 }
 
 export async function leaveClubAction(clubId: string): Promise<ActionResult> {
@@ -849,4 +842,385 @@ export async function updateBookStatusAction(
   } catch {
     return { success: false, message: 'Failed to update status.' };
   }
+}
+
+// ─── Club Invites ────────────────────────────────────────────────────────────
+
+export async function getClubFriendsForInviteAction(
+  clubId: string,
+): Promise<InvitableClubFriend[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return [];
+  }
+
+  const friendRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+    columns: { requesterId: true, addresseeId: true },
+  });
+  const friendIds = friendRows.map((r) =>
+    r.requesterId === userId ? r.addresseeId : r.requesterId,
+  );
+  if (friendIds.length === 0) return [];
+
+  const members = await db.query.clubMembers.findMany({
+    where: eq(clubMembers.clubId, clubId),
+    columns: { userId: true },
+  });
+  const memberIds = new Set(members.map((m) => m.userId));
+
+  const pendingInvites = await db.query.clubInvites.findMany({
+    where: and(eq(clubInvites.clubId, clubId), eq(clubInvites.status, 'PENDING')),
+    columns: { invitedUserId: true },
+  });
+  const pendingIds = new Set(pendingInvites.map((i) => i.invitedUserId));
+
+  const invitableFriendIds = friendIds.filter(
+    (id) => !memberIds.has(id) && !pendingIds.has(id),
+  );
+  if (invitableFriendIds.length === 0) return [];
+
+  const friendUsers = await db.query.users.findMany({
+    where: inArray(users.clerkId, invitableFriendIds),
+    columns: { clerkId: true, username: true, imageUrl: true },
+  });
+
+  return friendUsers.map((u) => ({
+    clerkId: u.clerkId,
+    username: u.username,
+    imageUrl: u.imageUrl,
+  }));
+}
+
+export async function inviteToClubAction(
+  clubId: string,
+  friendClerkId: string,
+): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return { success: false, message: 'Only owners and moderators can invite members.' };
+  }
+
+  const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
+  if (!club) return { success: false, message: 'Club not found.' };
+
+  const existingMember = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, friendClerkId)),
+  });
+  if (existingMember) return { success: false, message: 'User is already a member.' };
+
+  try {
+    const existingInvite = await db.query.clubInvites.findFirst({
+      where: and(
+        eq(clubInvites.clubId, clubId),
+        eq(clubInvites.invitedUserId, friendClerkId),
+      ),
+    });
+
+    if (existingInvite?.status === 'PENDING') {
+      return { success: false, message: 'User already has a pending invite.' };
+    }
+
+    if (existingInvite) {
+      await db
+        .update(clubInvites)
+        .set({ status: 'PENDING', invitedByUserId: userId, updatedAt: new Date() })
+        .where(eq(clubInvites.id, existingInvite.id));
+    } else {
+      await db.insert(clubInvites).values({
+        clubId,
+        invitedUserId: friendClerkId,
+        invitedByUserId: userId,
+        status: 'PENDING',
+      });
+    }
+
+    void insertNotification({
+      recipientId: friendClerkId,
+      actorId: userId,
+      type: 'CLUB_INVITE',
+      link: `/clubs`,
+      metadata: { clubId, clubName: club.name },
+    });
+
+    return { success: true, message: 'Invite sent.' };
+  } catch {
+    return { success: false, message: 'Failed to send invite.' };
+  }
+}
+
+export async function getPendingClubInvitesAction(): Promise<PendingClubInvite[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const invites = await db.query.clubInvites.findMany({
+    where: and(
+      eq(clubInvites.invitedUserId, userId),
+      eq(clubInvites.status, 'PENDING'),
+    ),
+    with: {
+      club: { columns: { id: true, name: true, coverUrl: true } },
+      invitedBy: { columns: { username: true, imageUrl: true } },
+    },
+    orderBy: [desc(clubInvites.createdAt)],
+  });
+
+  return invites.map((inv) => ({
+    id: inv.id,
+    club: {
+      id: inv.club.id,
+      name: inv.club.name,
+      imageUrl: inv.club.coverUrl,
+    },
+    invitedBy: {
+      username: inv.invitedBy.username,
+      imageUrl: inv.invitedBy.imageUrl,
+    },
+    createdAt: inv.createdAt,
+  }));
+}
+
+export async function acceptClubInviteAction(
+  inviteId: string,
+): Promise<ActionResult & { clubId?: string }> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const invite = await db.query.clubInvites.findFirst({
+    where: and(
+      eq(clubInvites.id, inviteId),
+      eq(clubInvites.invitedUserId, userId),
+      eq(clubInvites.status, 'PENDING'),
+    ),
+  });
+  if (!invite) return { success: false, message: 'Invite not found.' };
+
+  try {
+    await db
+      .update(clubInvites)
+      .set({ status: 'ACCEPTED', updatedAt: new Date() })
+      .where(eq(clubInvites.id, inviteId));
+
+    const existing = await db.query.clubMembers.findFirst({
+      where: and(eq(clubMembers.clubId, invite.clubId), eq(clubMembers.userId, userId)),
+    });
+    if (!existing) {
+      await db.insert(clubMembers).values({ clubId: invite.clubId, userId, role: 'MEMBER' });
+      await db
+        .update(bookClubs)
+        .set({ memberCount: sql`${bookClubs.memberCount} + 1`, updatedAt: new Date() })
+        .where(eq(bookClubs.id, invite.clubId));
+    }
+
+    revalidatePath('/clubs');
+    revalidatePath(`/clubs/${invite.clubId}`);
+    return { success: true, message: 'Invite accepted.', clubId: invite.clubId };
+  } catch {
+    return { success: false, message: 'Failed to accept invite.' };
+  }
+}
+
+export async function declineClubInviteAction(inviteId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const invite = await db.query.clubInvites.findFirst({
+    where: and(
+      eq(clubInvites.id, inviteId),
+      eq(clubInvites.invitedUserId, userId),
+      eq(clubInvites.status, 'PENDING'),
+    ),
+  });
+  if (!invite) return { success: false, message: 'Invite not found.' };
+
+  await db
+    .update(clubInvites)
+    .set({ status: 'DECLINED', updatedAt: new Date() })
+    .where(eq(clubInvites.id, inviteId));
+
+  revalidatePath('/clubs');
+  return { success: true, message: 'Invite declined.' };
+}
+
+// ─── Club Join Requests ───────────────────────────────────────────────────────
+
+export async function requestToJoinClubAction(clubId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
+  if (!club) return { success: false, message: 'Club not found.' };
+  if (club.privacy === 'PRIVATE') return { success: false, message: 'This club is private.' };
+
+  const existing = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
+  });
+  if (existing) return { success: false, message: 'Already a member.' };
+
+  try {
+    const existingRequest = await db.query.clubJoinRequests.findFirst({
+      where: and(eq(clubJoinRequests.clubId, clubId), eq(clubJoinRequests.userId, userId)),
+    });
+
+    if (existingRequest?.status === 'PENDING') {
+      return { success: false, message: 'You already have a pending join request.' };
+    }
+
+    if (existingRequest) {
+      await db
+        .update(clubJoinRequests)
+        .set({ status: 'PENDING', updatedAt: new Date() })
+        .where(eq(clubJoinRequests.id, existingRequest.id));
+    } else {
+      await db.insert(clubJoinRequests).values({ clubId, userId, status: 'PENDING' });
+    }
+
+    void insertNotification({
+      recipientId: club.ownerId,
+      actorId: userId,
+      type: 'CLUB_JOIN_REQUEST',
+      link: `/clubs/${clubId}/members`,
+      metadata: { clubId, clubName: club.name },
+    });
+
+    revalidatePath(`/clubs/${clubId}`);
+    return { success: true, message: 'Join request sent.' };
+  } catch {
+    return { success: false, message: 'Failed to send join request.' };
+  }
+}
+
+export async function getPendingJoinRequestsAction(
+  clubId: string,
+): Promise<PendingJoinRequest[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return [];
+  }
+
+  const requests = await db.query.clubJoinRequests.findMany({
+    where: and(eq(clubJoinRequests.clubId, clubId), eq(clubJoinRequests.status, 'PENDING')),
+    with: {
+      user: { columns: { clerkId: true, username: true, imageUrl: true } },
+    },
+    orderBy: [desc(clubJoinRequests.createdAt)],
+  });
+
+  return requests.map((r) => ({
+    id: r.id,
+    user: {
+      clerkId: r.user.clerkId,
+      username: r.user.username,
+      imageUrl: r.user.imageUrl,
+    },
+    createdAt: r.createdAt,
+  }));
+}
+
+export async function approveJoinRequestAction(requestId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const request = await db.query.clubJoinRequests.findFirst({
+    where: and(eq(clubJoinRequests.id, requestId), eq(clubJoinRequests.status, 'PENDING')),
+  });
+  if (!request) return { success: false, message: 'Request not found.' };
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, request.clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return { success: false, message: 'Only owners and moderators can approve requests.' };
+  }
+
+  try {
+    await db
+      .update(clubJoinRequests)
+      .set({ status: 'APPROVED', updatedAt: new Date() })
+      .where(eq(clubJoinRequests.id, requestId));
+
+    const existing = await db.query.clubMembers.findFirst({
+      where: and(
+        eq(clubMembers.clubId, request.clubId),
+        eq(clubMembers.userId, request.userId),
+      ),
+    });
+    if (!existing) {
+      await db.insert(clubMembers).values({
+        clubId: request.clubId,
+        userId: request.userId,
+        role: 'MEMBER',
+      });
+      await db
+        .update(bookClubs)
+        .set({ memberCount: sql`${bookClubs.memberCount} + 1`, updatedAt: new Date() })
+        .where(eq(bookClubs.id, request.clubId));
+    }
+
+    revalidatePath(`/clubs/${request.clubId}`);
+    revalidatePath(`/clubs/${request.clubId}/members`);
+    return { success: true, message: 'Request approved.' };
+  } catch {
+    return { success: false, message: 'Failed to approve request.' };
+  }
+}
+
+export async function rejectJoinRequestAction(requestId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const request = await db.query.clubJoinRequests.findFirst({
+    where: and(eq(clubJoinRequests.id, requestId), eq(clubJoinRequests.status, 'PENDING')),
+  });
+  if (!request) return { success: false, message: 'Request not found.' };
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, request.clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return { success: false, message: 'Only owners and moderators can reject requests.' };
+  }
+
+  await db
+    .update(clubJoinRequests)
+    .set({ status: 'REJECTED', updatedAt: new Date() })
+    .where(eq(clubJoinRequests.id, requestId));
+
+  revalidatePath(`/clubs/${request.clubId}/members`);
+  return { success: true, message: 'Request rejected.' };
+}
+
+export async function checkClubJoinRequestStatusAction(
+  clubId: string,
+): Promise<'none' | 'pending'> {
+  const { userId } = await auth();
+  if (!userId) return 'none';
+
+  const request = await db.query.clubJoinRequests.findFirst({
+    where: and(
+      eq(clubJoinRequests.clubId, clubId),
+      eq(clubJoinRequests.userId, userId),
+      eq(clubJoinRequests.status, 'PENDING'),
+    ),
+  });
+
+  return request ? 'pending' : 'none';
 }
