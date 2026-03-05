@@ -51,15 +51,17 @@ export default function ClubReadingListPreview({
       </div>
 
       {preview.length === 0 ? (
-        <div className="py-10 flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-4">
-            <BookOpen className="w-7 h-7 text-white/80" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+            <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
           </div>
-          <p className="text-sm font-medium text-white mb-1">No books yet</p>
-          <p className="text-sm text-white/80 max-w-xs">
+          <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+            No books yet!
+          </h2>
+          <p className="text-white/80 mb-8 max-w-sm">
             {isMember
-              ? 'Add the first book to start building your club\'s reading list.'
-              : 'This club hasn\'t added any books to their reading list yet.'}
+              ? "Add the first book to start building your club's reading list."
+              : "This club hasn't added any books to their reading list yet."}
           </p>
         </div>
       ) : (

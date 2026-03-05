@@ -154,7 +154,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
         </div>
 
         <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          Your hive is empty!
+          Your library is empty!
         </h2>
 
         <p className=" text-white/80 mb-8 max-w-sm">

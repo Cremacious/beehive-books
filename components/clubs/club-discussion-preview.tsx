@@ -14,7 +14,11 @@ function timeAgo(date: Date): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function AuthorAvatar({ author }: { author: ClubDiscussionWithAuthor['author'] }) {
+function AuthorAvatar({
+  author,
+}: {
+  author: ClubDiscussionWithAuthor['author'];
+}) {
   const name = author.firstName ?? author.username ?? '?';
   const initials = name.charAt(0).toUpperCase();
   if (author.imageUrl) {
@@ -61,17 +65,22 @@ export default function ClubDiscussionPreview({
       </div>
 
       {preview.length === 0 ? (
-        <div className="py-12 flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-4">
-            <MessageCircle className="w-7 h-7 text-white/80" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+            <MessageCircle className="w-8 h-8 text-[#FFC300]/20" />
           </div>
-          <p className="text-sm font-medium text-white mb-1">No discussions yet</p>
-          <p className="text-sm text-white/80 mb-4 max-w-xs">
-            Start a conversation — share thoughts, questions, or reactions about the books you&apos;re reading.
+          <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+            No discussions yet!
+          </h2>
+          <p className="text-white/80 mb-8 max-w-sm">
+            Start conversations about books, share your thoughts, and connect
+            with fellow readers.
           </p>
           {isMember && (
-            <Button size="sm" asChild>
-              <Link href={`/clubs/${clubId}/discussions/create`}>Start a Discussion</Link>
+            <Button size="lg" asChild>
+              <Link href={`/clubs/${clubId}/discussions/create`}>
+                Start a Discussion
+              </Link>
             </Button>
           )}
         </div>
@@ -93,10 +102,14 @@ export default function ClubDiscussionPreview({
                 <div className="flex items-center gap-1.5">
                   <AuthorAvatar author={discussion.author} />
                   <span className="text-xs text-white/80">
-                    {discussion.author.username ?? discussion.author.firstName ?? 'Unknown'}
+                    {discussion.author.username ??
+                      discussion.author.firstName ??
+                      'Unknown'}
                   </span>
                   <span className="text-xs text-white/80">·</span>
-                  <span className="text-xs text-white/80">{timeAgo(discussion.createdAt)}</span>
+                  <span className="text-xs text-white/80">
+                    {timeAgo(discussion.createdAt)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-white/80">
                   <span className="flex items-center gap-1">

@@ -131,7 +131,7 @@ export function DesktopSidebar() {
             )}
 
             <div className="hidden lg:block flex-1 min-w-0">
-              <p className="text-white font-semibold truncate leading-tight">
+              <p className="text-white/90 font-semibold truncate leading-tight">
                 {dbUsername ?? 'User'}
               </p>
             </div>
@@ -140,14 +140,14 @@ export function DesktopSidebar() {
               <Link
                 href="/settings/profile"
                 title="Settings"
-                className="p-1.5 rounded-lg text-white hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
+                className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
               >
                 <Settings className="w-5 h-5" />
               </Link>
               <button
                 onClick={() => signOut({ redirectUrl: '/' })}
                 title="Sign out"
-                className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-all"
+                className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"
               >
                 <LogOut className="w-5 h-5" />
               </button>

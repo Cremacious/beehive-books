@@ -286,25 +286,22 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               </div>
             </>
           ) : (
-            <div className="py-8 flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-3">
-                <BookOpen className="w-6 h-6 text-white/80" />
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+                <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
               </div>
-              <h4 className="text-sm font-semibold text-white mb-1">
-                No book selected
-              </h4>
-              <p className="text-xs text-white/80 mb-4 max-w-xs">
-                Set a book to &quot;Currently Reading&quot; in the reading list,
-                or mods can set one manually above.
+              <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+                No book selected!
+              </h2>
+              <p className="text-white/80 mb-8 max-w-sm">
+                Choose a book for the club to read together and track everyone&apos;s
+                progress.
               </p>
               {isMod && (
-                <button
-                  onClick={() => setEditingBook(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#e0ac01] transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
+                <Button size="lg" onClick={() => setEditingBook(true)}>
+                  <Edit2 className="w-5 h-5" />
                   Set Current Book
-                </button>
+                </Button>
               )}
             </div>
           )}

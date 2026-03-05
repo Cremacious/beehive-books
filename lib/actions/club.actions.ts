@@ -844,7 +844,7 @@ export async function updateBookStatusAction(
   }
 }
 
-// ─── Club Invites ────────────────────────────────────────────────────────────
+
 
 export async function getClubFriendsForInviteAction(
   clubId: string,
@@ -1055,7 +1055,7 @@ export async function declineClubInviteAction(inviteId: string): Promise<ActionR
   return { success: true, message: 'Invite declined.' };
 }
 
-// ─── Club Join Requests ───────────────────────────────────────────────────────
+
 
 export async function requestToJoinClubAction(clubId: string): Promise<ActionResult> {
   const { userId } = await auth();

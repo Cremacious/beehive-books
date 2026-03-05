@@ -189,13 +189,17 @@ export function BookListView({
   if (books.length === 0) {
     return (
       <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-8 flex flex-col items-center text-center mb-4">
-        <BookOpen className="w-8 h-8 text-white/80 mb-3" />
-        <p className="text-sm text-white/80">No books in this list yet.</p>
-        {isOwner && (
-          <p className="text-xs text-white/80 mt-1">
-            Add books using the form below.
-          </p>
-        )}
+        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+          <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
+        </div>
+        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+          No books in this list yet!
+        </h2>
+        <p className="text-white/80 mb-8 max-w-sm">
+          {isOwner
+            ? 'Add books using the form below to start building your reading list.'
+            : 'This reading list is empty.'}
+        </p>
       </div>
     );
   }

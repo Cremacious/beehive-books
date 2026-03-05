@@ -149,7 +149,8 @@ function GoalCard({
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-sm text-white">
             Started {formatDate(goal.startDate)}
-          </span> - 
+          </span>{' '}
+          -
           {goal.endDate && (
             <span className="text-sm text-white">
               Ends {formatDate(goal.endDate)}
@@ -247,7 +248,7 @@ export default function HiveWordGoals({
       hiveId,
       goalType,
       n,
-      goalType === 'MONTHLY' ? monthInput : (endDateInput || undefined),
+      goalType === 'MONTHLY' ? monthInput : endDateInput || undefined,
     );
     setCreating(false);
     if (!result.success) {
@@ -317,7 +318,6 @@ export default function HiveWordGoals({
         {showCreate && (
           <div className="rounded-2xl bg-[#252525] border border-[#FFC300]/20 p-4 space-y-3">
             <h4 className="text-sm font-semibold text-yellow-500 flex items-center gap-2">
-   
               New word goal
             </h4>
             <div className="grid grid-cols-2 gap-2">
@@ -345,14 +345,16 @@ export default function HiveWordGoals({
             />
             {goalType === 'MONTHLY' ? (
               <div className="sm:w-1/2">
-                <label className="text-xs text-white mb-1 block">
-                  Month
-                </label>
+                <label className="text-xs text-white mb-1 block">Month</label>
                 <input
                   type="month"
                   value={monthInput}
                   onChange={(e) => setMonthInput(e.target.value)}
-                  onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                  onClick={(e) => {
+                    try {
+                      (e.target as HTMLInputElement).showPicker();
+                    } catch {}
+                  }}
                   style={{ colorScheme: 'dark' }}
                   className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all cursor-pointer accent-[#FFC300] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter-[brightness(0)_saturate(100%)_invert(83%)_sepia(54%)_saturate(1018%)_hue-rotate(8deg)_brightness(101%)_contrast(97%)]"
                 />
@@ -366,7 +368,11 @@ export default function HiveWordGoals({
                   type="date"
                   value={endDateInput}
                   onChange={(e) => setEndDateInput(e.target.value)}
-                  onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch {} }}
+                  onClick={(e) => {
+                    try {
+                      (e.target as HTMLInputElement).showPicker();
+                    } catch {}
+                  }}
                   style={{ colorScheme: 'dark' }}
                   className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all cursor-pointer accent-[#FFC300] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:filter-[brightness(0)_saturate(100%)_invert(83%)_sepia(54%)_saturate(1018%)_hue-rotate(8deg)_brightness(101%)_contrast(97%)]"
                 />
@@ -390,7 +396,11 @@ export default function HiveWordGoals({
               <Button
                 size="sm"
                 onClick={handleCreate}
-                disabled={creating || !targetInput || (goalType === 'MONTHLY' && !monthInput)}
+                disabled={
+                  creating ||
+                  !targetInput ||
+                  (goalType === 'MONTHLY' && !monthInput)
+                }
               >
                 {creating ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -403,15 +413,22 @@ export default function HiveWordGoals({
         )}
 
         {activeGoals.length === 0 && !showCreate ? (
-          <div className="flex flex-col items-center py-12 text-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-[#252525] flex items-center justify-center">
-              <Target className="w-5 h-5 text-[#FFC300]/40" />
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+              <Target className="w-8 h-8 text-[#FFC300]/20" />
             </div>
-            <p className="text-sm text-white/40">No active goals yet.</p>
+            <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+              No active goals yet!
+            </h2>
+            <p className="text-white/80 mb-8 max-w-sm">
+              Set writing goals to motivate the hive and track progress
+              together.
+            </p>
             {canCreate && (
-              <p className="text-xs text-white/25">
-                Create a goal to track the hive&apos;s writing progress.
-              </p>
+              <Button size="lg" onClick={() => setShowCreate(true)}>
+                <Plus className="w-5 h-5" />
+                Create your first goal
+              </Button>
             )}
           </div>
         ) : (

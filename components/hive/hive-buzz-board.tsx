@@ -20,7 +20,11 @@ import {
   createBuzzItemAction,
   deleteBuzzItemAction,
 } from '@/lib/actions/hive-buzz.actions';
-import type { BuzzItemWithAuthor, BuzzType, HiveRole } from '@/lib/types/hive.types';
+import type {
+  BuzzItemWithAuthor,
+  BuzzType,
+  HiveRole,
+} from '@/lib/types/hive.types';
 
 interface HiveBuzzBoardProps {
   hiveId: string;
@@ -96,7 +100,13 @@ function clampClass(content: string): string {
   return 'line-clamp-10';
 }
 
-function AuthorRow({ item, small = false }: { item: BuzzItemWithAuthor; small?: boolean }) {
+function AuthorRow({
+  item,
+  small = false,
+}: {
+  item: BuzzItemWithAuthor;
+  small?: boolean;
+}) {
   const size = small ? 20 : 26;
   return (
     <div className="flex items-center gap-2 min-w-0">
@@ -113,11 +123,15 @@ function AuthorRow({ item, small = false }: { item: BuzzItemWithAuthor; small?: 
           style={{ width: size, height: size }}
           className="rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 text-[#FFC300] font-bold text-[10px]"
         >
-          {(item.author.username ?? item.author.firstName ?? 'U')[0]?.toUpperCase()}
+          {(item.author.username ??
+            item.author.firstName ??
+            'U')[0]?.toUpperCase()}
         </div>
       )}
       <div className="min-w-0">
-        <p className={`font-medium text-white truncate ${small ? 'text-[10px]' : 'text-xs'}`}>
+        <p
+          className={`font-medium text-white truncate ${small ? 'text-[10px]' : 'text-xs'}`}
+        >
           {item.author.username ?? item.author.firstName ?? 'User'}
         </p>
         <p className="text-[10px] text-white/30">{timeAgo(item.createdAt)}</p>
@@ -151,7 +165,9 @@ function BuzzCard({
         </span>
       </div>
 
-      <p className={`text-sm text-white/85 leading-relaxed whitespace-pre-wrap ${clampClass(item.content)}`}>
+      <p
+        className={`text-sm text-white/85 leading-relaxed whitespace-pre-wrap ${clampClass(item.content)}`}
+      >
         {item.content}
       </p>
 
@@ -181,7 +197,9 @@ function BuzzDetail({
   const typeConf = buzzTypeConfig(item.type);
   const Icon = typeConf.Icon;
   const canDelete =
-    item.authorId === currentUserId || myRole === 'OWNER' || myRole === 'MODERATOR';
+    item.authorId === currentUserId ||
+    myRole === 'OWNER' ||
+    myRole === 'MODERATOR';
 
   const handleDelete = async () => {
     if (!confirm('Delete this buzz? This cannot be undone.')) return;
@@ -258,7 +276,12 @@ function CreateBuzzForm({
   const handleSubmit = () => {
     setError('');
     startTransition(async () => {
-      const result = await createBuzzItemAction(hiveId, content, type, mediaUrl || undefined);
+      const result = await createBuzzItemAction(
+        hiveId,
+        content,
+        type,
+        mediaUrl || undefined,
+      );
       if (!result.success) {
         setError(result.message);
         return;
@@ -286,7 +309,9 @@ function CreateBuzzForm({
                 : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/50 hover:border-white/20'
             }`}
           >
-            <Icon className={`w-3 h-3 ${type === value ? 'text-[#FFC300]' : color}`} />
+            <Icon
+              className={`w-3 h-3 ${type === value ? 'text-[#FFC300]' : color}`}
+            />
             {label}
           </button>
         ))}
@@ -309,14 +334,25 @@ function CreateBuzzForm({
       />
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{error}</p>
+        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+          {error}
+        </p>
       )}
 
       <div className="flex items-center gap-3 justify-end">
-        <Button variant="outline" size="sm" onClick={onDone} disabled={isPending}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onDone}
+          disabled={isPending}
+        >
           Cancel
         </Button>
-        <Button size="sm" onClick={handleSubmit} disabled={isPending || !content.trim()}>
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={isPending || !content.trim()}
+        >
           {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           Post
         </Button>
@@ -333,7 +369,9 @@ export default function HiveBuzzBoard({
 }: HiveBuzzBoardProps) {
   const [items, setItems] = useState<BuzzItemWithAuthor[]>(initialItems);
   const [showCreate, setShowCreate] = useState(false);
-  const [viewingItem, setViewingItem] = useState<BuzzItemWithAuthor | null>(null);
+  const [viewingItem, setViewingItem] = useState<BuzzItemWithAuthor | null>(
+    null,
+  );
   const [, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -362,18 +400,24 @@ export default function HiveBuzzBoard({
         )}
       </div>
 
-      {showCreate && (
-        <CreateBuzzForm hiveId={hiveId} onDone={handleCreated} />
-      )}
+      {showCreate && <CreateBuzzForm hiveId={hiveId} onDone={handleCreated} />}
 
       {items.length === 0 && !showCreate ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-[#FFC300]/40" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+            <Sparkles className="w-8 h-8 text-[#FFC300]/20" />
           </div>
-          <p className="text-sm text-white/40">
-            Nothing on the Buzz Board yet. Share some inspiration! 🐝
+          <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+            Buzz Board is empty!
+          </h2>
+          <p className="text-white/80 mb-8 max-w-sm">
+            Share inspiration, memes, playlists, and more to get the hive
+            buzzing.
           </p>
+          <Button size="lg" onClick={() => setShowCreate(true)}>
+            <Plus className="w-5 h-5" />
+            Share your first buzz
+          </Button>
         </div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">

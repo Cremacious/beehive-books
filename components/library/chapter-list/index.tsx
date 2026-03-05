@@ -34,7 +34,12 @@ type Props = {
   isOwner?: boolean;
 };
 
-export default function ChapterList({ bookId, chapters, collections, isOwner = true }: Props) {
+export default function ChapterList({
+  bookId,
+  chapters,
+  collections,
+  isOwner = true,
+}: Props) {
   const router = useRouter();
   const basePath: '/library' | '/books' = isOwner ? '/library' : '/books';
   const {
@@ -193,7 +198,9 @@ export default function ChapterList({ bookId, chapters, collections, isOwner = t
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
       <div className="px-5 py-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-yellow-500 mainFont">Chapters</h2>
+          <h2 className="text-lg font-semibold text-yellow-500 mainFont">
+            Chapters
+          </h2>
           {isOwner && (
             <div className="flex items-center gap-2">
               {reorderMode ? (
@@ -402,13 +409,20 @@ export default function ChapterList({ bookId, chapters, collections, isOwner = t
         </DndContext>
 
         {chapters.length === 0 && (
-          <div className="flex flex-col items-center py-16 text-center">
-            <FileText className="w-10 h-10 text-white/10 mb-3" />
-            <p className="text-sm text-white/35 mb-4">No chapters yet</p>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+              <FileText className="w-8 h-8 text-[#FFC300]/20" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+              No chapters yet!
+            </h2>
+            <p className="text-white/80 mb-8 max-w-sm">
+              Start writing your story by adding your first chapter.
+            </p>
             {isOwner && (
-              <Button asChild>
+              <Button asChild size="lg">
                 <Link href={`/library/${bookId}/create-chapter`}>
-                  <Plus />
+                  <Plus className="w-5 h-5" />
                   Add first chapter
                 </Link>
               </Button>

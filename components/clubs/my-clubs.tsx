@@ -2,12 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import {
-  Search,
-  SlidersHorizontal,
-  Plus,
-  BookOpen,
-} from 'lucide-react';
+import { Search, SlidersHorizontal, Plus, BookOpen } from 'lucide-react';
 import ClubCard from './club-card';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
@@ -65,7 +60,8 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
     }
 
     if (sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name));
-    if (sort === 'members') result.sort((a, b) => b.memberCount - a.memberCount);
+    if (sort === 'members')
+      result.sort((a, b) => b.memberCount - a.memberCount);
 
     return result;
   }, [clubs, query, sort, roleFilter]);
@@ -73,9 +69,18 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const displayed = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleSearch = (q: string) => { setQuery(q); setPage(1); };
-  const handleSort = (s: SortOption) => { setSort(s); setPage(1); };
-  const handleRole = (r: RoleFilter) => { setRoleFilter(r); setPage(1); };
+  const handleSearch = (q: string) => {
+    setQuery(q);
+    setPage(1);
+  };
+  const handleSort = (s: SortOption) => {
+    setSort(s);
+    setPage(1);
+  };
+  const handleRole = (r: RoleFilter) => {
+    setRoleFilter(r);
+    setPage(1);
+  };
 
   if (clubs.length === 0) {
     return (
@@ -110,21 +115,13 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
               Create a Club
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/clubs/find">
-              <Search className="w-5 h-5" />
-              Find Clubs
-            </Link>
-          </Button>
         </div>
       </div>
     );
   }
 
- 
   return (
     <>
-    
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-6">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
@@ -161,7 +158,6 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
         </div>
       </div>
 
-  
       <div className="flex gap-3 mb-8 overflow-x-auto pb-1">
         {ROLE_TABS.map(({ value, label }) => {
           const count = roleCounts[value] ?? 0;
@@ -189,7 +185,6 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
         })}
       </div>
 
-
       {displayed.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-white/10 mb-3" />
@@ -201,7 +196,10 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
             )}
           </p>
           <button
-            onClick={() => { setQuery(''); setRoleFilter('ALL'); }}
+            onClick={() => {
+              setQuery('');
+              setRoleFilter('ALL');
+            }}
             className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"
           >
             Clear filters
@@ -209,7 +207,6 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
         </div>
       )}
 
-  
       {displayed.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -217,10 +214,9 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
               <ClubCard key={club.id} club={club} />
             ))}
             {displayed.length < PAGE_SIZE &&
-              Array.from(
-                { length: PAGE_SIZE - displayed.length },
-                (_, i) => <ClubPlaceholder key={`ph-${i}`} />,
-              )}
+              Array.from({ length: PAGE_SIZE - displayed.length }, (_, i) => (
+                <ClubPlaceholder key={`ph-${i}`} />
+              ))}
           </div>
 
           <Pagination

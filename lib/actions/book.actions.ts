@@ -83,7 +83,7 @@ export async function getBookWithChaptersAction(bookId: string) {
   return book;
 }
 
-/** Fetch book + chapters + collections for any user. PRIVATE books are owner-only. */
+
 export async function getBookForViewAction(bookId: string) {
   const { userId } = await auth();
   const book = await db.query.books.findFirst({
@@ -104,7 +104,7 @@ export async function getBookForViewAction(bookId: string) {
   return { ...book, isOwner };
 }
 
-/** Fetch basic book info for hive dashboard display — no privacy check (hive membership is the gate). */
+
 export async function getHiveBookAction(bookId: string) {
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),

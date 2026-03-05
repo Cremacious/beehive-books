@@ -374,7 +374,9 @@ export default function HiveWiki({
     'ALL',
   );
   const [editorMode, setEditorMode] = useState<EditorMode | null>(null);
-  const [viewingEntry, setViewingEntry] = useState<WikiEntryWithAuthor | null>(null);
+  const [viewingEntry, setViewingEntry] = useState<WikiEntryWithAuthor | null>(
+    null,
+  );
   const [search, setSearch] = useState('');
   const [, startTransition] = useTransition();
 
@@ -468,15 +470,26 @@ export default function HiveWiki({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-[#FFC300]/40" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+            <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
           </div>
-          <p className="text-sm text-white/90">
+          <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
             {search || activeCategory !== 'ALL'
               ? 'No entries match your filter.'
-              : 'No wiki entries yet. Start building your world!'}
+              : 'No wiki entries yet!'}
+          </h2>
+          <p className="text-white/80 mb-8 max-w-sm">
+            {search || activeCategory !== 'ALL'
+              ? 'Try adjusting your search or category filter.'
+              : 'Start building your world by creating your first wiki entry.'}
           </p>
+          {!(search || activeCategory !== 'ALL') && (
+            <Button size="lg" onClick={() => setEditorMode({ mode: 'create' })}>
+              <Plus className="w-5 h-5" />
+              Create your first entry
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -502,64 +515,71 @@ export default function HiveWiki({
         title={viewingEntry?.title}
         maxWidth="xl"
       >
-        {viewingEntry && (() => {
-          const catConf = CATEGORIES.find((c) => c.value === viewingEntry.category)!;
-          const CatIcon = catConf.Icon;
-          return (
-            <div className="space-y-4">
-              <span
-                className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[viewingEntry.category]}`}
-              >
-                <CatIcon className="w-3 h-3" />
-                {catConf.label}
-              </span>
+        {viewingEntry &&
+          (() => {
+            const catConf = CATEGORIES.find(
+              (c) => c.value === viewingEntry.category,
+            )!;
+            const CatIcon = catConf.Icon;
+            return (
+              <div className="space-y-4">
+                <span
+                  className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[viewingEntry.category]}`}
+                >
+                  <CatIcon className="w-3 h-3" />
+                  {catConf.label}
+                </span>
 
-              <div
-                className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
-              />
+                <div
+                  className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
+                />
 
-              {viewingEntry.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {viewingEntry.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] text-yellow-500"
-                    >
-                      <Tag className="w-3 h-3" />
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
-                {viewingEntry.author.imageUrl ? (
-                  <Image
-                    src={viewingEntry.author.imageUrl}
-                    alt={viewingEntry.author.username ?? 'User'}
-                    width={20}
-                    height={20}
-                    className="rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[10px]">
-                    {(viewingEntry.author.username ?? viewingEntry.author.firstName ?? 'U')[0]?.toUpperCase()}
+                {viewingEntry.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {viewingEntry.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] text-yellow-500"
+                      >
+                        <Tag className="w-3 h-3" />
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
-                <span className="text-xs text-white/50">
-                  {viewingEntry.author.username ?? viewingEntry.author.firstName ?? 'User'}
-                  {' · '}
-                  {new Date(viewingEntry.updatedAt).toLocaleDateString([], {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
+                  {viewingEntry.author.imageUrl ? (
+                    <Image
+                      src={viewingEntry.author.imageUrl}
+                      alt={viewingEntry.author.username ?? 'User'}
+                      width={20}
+                      height={20}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[10px]">
+                      {(viewingEntry.author.username ??
+                        viewingEntry.author.firstName ??
+                        'U')[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-xs text-white/50">
+                    {viewingEntry.author.username ??
+                      viewingEntry.author.firstName ??
+                      'User'}
+                    {' · '}
+                    {new Date(viewingEntry.updatedAt).toLocaleDateString([], {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
       </Popup>
     </div>
   );

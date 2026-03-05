@@ -168,24 +168,20 @@ function AnnotationPreviewCard({
         )}
       </div>
 
-     
       {comment.selectedText && (
         <p className="border-l-2 border-[#FFC300]/30 pl-2 text-[11px] text-white/55 italic leading-relaxed line-clamp-2">
           &ldquo;{comment.selectedText}&rdquo;
         </p>
       )}
 
-  
       <p className="text-xs text-white/80 line-clamp-3 leading-relaxed">
         {comment.content}
       </p>
 
-    
       <AuthorRow comment={comment} />
     </button>
   );
 }
-
 
 function AnnotationDetail({
   comment,
@@ -231,7 +227,6 @@ function AnnotationDetail({
 
   return (
     <div className="space-y-4">
-  
       <div className="flex items-center gap-2 flex-wrap">
         <span
           className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${conf.bg} ${conf.color}`}
@@ -255,12 +250,10 @@ function AnnotationDetail({
         </blockquote>
       )}
 
-
       <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">
         {comment.content}
       </p>
 
-   
       <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
         {comment.author.imageUrl ? (
           <Image
@@ -284,7 +277,6 @@ function AnnotationDetail({
         </span>
       </div>
 
-  
       {canManage && (
         <div className="flex items-center gap-2 pt-1">
           <Button
@@ -321,7 +313,6 @@ function AnnotationDetail({
     </div>
   );
 }
-
 
 function AddCommentForm({
   hiveId,
@@ -433,7 +424,6 @@ function AddCommentForm({
     </div>
   );
 }
-
 
 function LayerFilterDropdown({
   activeLayer,
@@ -667,10 +657,15 @@ export default function HiveInlineComments({
 
   if (chapters.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-        <MessageSquare className="w-8 h-8 text-[#FFC300]/40" />
-        <p className="text-sm text-white/80">
-          No chapters available for annotation.
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
+          <MessageSquare className="w-8 h-8 text-[#FFC300]/20" />
+        </div>
+        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
+          No chapters available!
+        </h2>
+        <p className="text-white/80 mb-8 max-w-sm">
+          Chapters need to be written before annotations can be added.
         </p>
       </div>
     );

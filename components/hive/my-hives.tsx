@@ -113,12 +113,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
               Create a Hive
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/hive/explore">
-              <Search className="w-5 h-5" />
-              Explore Hives
-            </Link>
-          </Button>
+         
         </div>
       </div>
     );
