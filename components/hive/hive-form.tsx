@@ -5,7 +5,18 @@ import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Trash2, Globe, Lock, Users, BookOpen, Sparkles, Check } from 'lucide-react';
+import {
+  Plus,
+  X,
+  Loader2,
+  Trash2,
+  Globe,
+  Lock,
+  Users,
+  BookOpen,
+  Sparkles,
+  Check,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { hiveSchema } from '@/lib/validations/hive.schema';
@@ -54,7 +65,13 @@ const BOOK_OPTIONS = [
   },
 ];
 
-export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, userBooks = [] }: HiveFormProps) {
+export default function HiveForm({
+  mode,
+  hiveId,
+  defaultValues,
+  cancelHref,
+  userBooks = [],
+}: HiveFormProps) {
   const router = useRouter();
   const store = useHiveStore();
 
@@ -62,13 +79,17 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
-  const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>('new');
+  const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>(
+    'new',
+  );
   const [newBookTitle, setNewBookTitle] = useState('');
   const [newBookAuthor, setNewBookAuthor] = useState('');
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
   const form = useForm<HiveSchemaData>({
-    resolver: zodResolver(hiveSchema) as import('react-hook-form').Resolver<HiveSchemaData>,
+    resolver: zodResolver(
+      hiveSchema,
+    ) as import('react-hook-form').Resolver<HiveSchemaData>,
     defaultValues: {
       name: defaultValues?.name ?? '',
       description: defaultValues?.description ?? '',
@@ -109,7 +130,10 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
     const payload = {
       ...data,
       tags,
-      ...(mode === 'create' && bookOption === 'new' && newBookTitle && newBookAuthor
+      ...(mode === 'create' &&
+      bookOption === 'new' &&
+      newBookTitle &&
+      newBookAuthor
         ? { newBookTitle, newBookAuthor }
         : {}),
       ...(mode === 'create' && bookOption === 'existing' && selectedBookId
@@ -148,7 +172,6 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
       <div>
         <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Hive Name <span className="text-red-400">*</span>
@@ -158,12 +181,15 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
           placeholder="e.g. The Midnight Chronicles Hive…"
           className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
-        {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
+        {errors.name && (
+          <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+        )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Description <span className="text-white/80 font-normal">(optional)</span>
+          Description{' '}
+          <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <textarea
           {...register('description')}
@@ -172,7 +198,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
           className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.description && (
-          <p className="text-xs text-red-400 mt-1">{errors.description.message}</p>
+          <p className="text-xs text-red-400 mt-1">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
@@ -188,7 +216,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Privacy</label>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Privacy
+        </label>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc, Icon }) => (
             <label key={value} className="relative cursor-pointer">
@@ -217,7 +247,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/80 leading-tight block">{desc}</span>
+                <span className="text-xs text-white/80 leading-tight block">
+                  {desc}
+                </span>
               </div>
             </label>
           ))}
@@ -284,7 +316,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">Book</label>
+          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+            Book
+          </label>
           <div className="grid grid-cols-3 gap-2 mb-3">
             {BOOK_OPTIONS.map(({ value, label, desc, Icon }) => (
               <button
@@ -305,7 +339,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/80 leading-tight">{desc}</span>
+                <span className="text-xs text-white/80 leading-tight">
+                  {desc}
+                </span>
               </button>
             ))}
           </div>
@@ -332,9 +368,12 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
               {userBooks.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-8 text-center px-4">
                   <BookOpen className="w-8 h-8 text-white/80" />
-                  <p className="text-sm text-white/80">No books in your library yet.</p>
+                  <p className="text-sm text-white/80">
+                    No books in your library yet.
+                  </p>
                   <p className="text-xs text-white/80">
-                    Create a book first, or choose &ldquo;Start fresh&rdquo; to create one now.
+                    Create a book first, or choose &ldquo;Start fresh&rdquo; to
+                    create one now.
                   </p>
                 </div>
               ) : (
@@ -345,7 +384,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                       <li key={book.id}>
                         <button
                           type="button"
-                          onClick={() => setSelectedBookId(selected ? null : book.id)}
+                          onClick={() =>
+                            setSelectedBookId(selected ? null : book.id)
+                          }
                           className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                             selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                           }`}
@@ -364,10 +405,14 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}>
+                            <p
+                              className={`text-sm font-medium truncate ${selected ? 'text-[#FFC300]' : 'text-white'}`}
+                            >
                               {book.title}
                             </p>
-                            <p className="text-xs text-white/80 truncate">{book.author}</p>
+                            <p className="text-xs text-white/80 truncate">
+                              {book.author}
+                            </p>
                           </div>
                           {selected && (
                             <Check className="w-4 h-4 text-[#FFC300] shrink-0" />
@@ -384,7 +429,9 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
       )}
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">{error}</p>
+        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+          {error}
+        </p>
       )}
 
       <div className="flex items-center justify-between pt-2">
@@ -395,7 +442,11 @@ export default function HiveForm({ mode, hiveId, defaultValues, cancelHref, user
             onClick={handleDelete}
             disabled={deleting}
           >
-            {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+            {deleting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Trash2 className="w-4 h-4" />
+            )}
             Delete Hive
           </Button>
         ) : (
