@@ -82,8 +82,6 @@ export function ChapterForm({
     if (result.title && !currentTitle?.trim()) {
       setValue('title', result.title, { shouldValidate: true });
     }
-
-    setContentMode('write');
   }
 
   async function onSubmit(data: ChapterFormData) {
@@ -274,16 +272,18 @@ export function ChapterForm({
             </div>
           )}
 
-          <Controller
-            name="content"
-            control={control}
-            render={({ field }) => (
-              <RichTextEditor
-                content={field.value ?? ''}
-                onChange={field.onChange}
-              />
-            )}
-          />
+          {(isEdit || contentMode === 'write') && (
+            <Controller
+              name="content"
+              control={control}
+              render={({ field }) => (
+                <RichTextEditor
+                  content={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          )}
 
           {(serverError || errors.content) && (
             <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">

@@ -477,45 +477,44 @@ export function BookForm({
 
               {bookDocxOpen && (
                 <div className="px-4 pb-4 space-y-4 border-t border-[#2a2a2a]">
-                  <div className="mt-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-2">
+                  <div className="mt-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-3">
                     <p className="text-xs font-semibold text-[#FFC300]/80 uppercase tracking-wide">
-                      Formatting Requirements
+                      How to format your document
                     </p>
-                    <ul className="space-y-1.5 text-xs text-white/50">
-                      <li>
-                        • Each chapter must start with a{' '}
-                        <strong className="text-white/70">Heading 1</strong>{' '}
-                        style in Word or Google Docs — not just bold or large
-                        text.
-                      </li>
-                      <li>
-                        • The Heading 1 text becomes the chapter title in
-                        Beehive.
-                      </li>
-                      <li>
-                        • Do <strong className="text-white/70">not</strong> use
-                        Heading 1 anywhere else in the document — only for
-                        chapter titles.
-                      </li>
-                      <li>
-                        • All other content (paragraphs, Heading 2–6, lists,
-                        etc.) is preserved as chapter body.
-                      </li>
-                      <li>
-                        • Any content before the first Heading 1 (e.g. a title
-                        page) will be ignored.
-                      </li>
-                    </ul>
-                    <p className="text-[11px] text-white/30 pt-1">
-                      Example: Chapter 1 →{' '}
-                      <span className="text-white/45">
-                        Heading 1: &quot;The Beginning&quot;
-                      </span>{' '}
-                      · Chapter 2 →{' '}
-                      <span className="text-white/45">
-                        Heading 1: &quot;The Conflict&quot;
-                      </span>
+
+                    <p className="text-xs text-white/80 leading-relaxed">
+                      Beehive splits your document into chapters using{' '}
+                      <strong className="text-white">Heading 1</strong> — the
+                      style selector in Word or Google Docs (not just big or
+                      bold text). Every time it sees a Heading 1, it starts a
+                      new chapter and uses that text as the title.
                     </p>
+
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-semibold text-[#FFC300]/70 uppercase tracking-wide">
+                        Example structure
+                      </p>
+                      <div className="rounded-lg bg-[#252525] border border-[#2a2a2a] p-3 space-y-1.5 font-mono text-[11px]">
+                        <p className="text-[#FFC300]/80">▸ Heading 1 — &quot;The Beginning&quot;</p>
+                        <p className="text-white/60 pl-3">It was a dark and stormy night…</p>
+                        <p className="text-white/60 pl-3">She ran through the forest…</p>
+                        <p className="text-[#FFC300]/80 pt-1">▸ Heading 1 — &quot;The Conflict&quot;</p>
+                        <p className="text-white/60 pl-3">Two weeks had passed since…</p>
+                        <p className="text-[#FFC300]/80 pt-1">▸ Heading 1 — &quot;The Reckoning&quot;</p>
+                        <p className="text-white/60 pl-3">She hadn&apos;t expected to see him…</p>
+                      </div>
+                      <p className="text-[11px] text-white/80">
+                        → Beehive creates <strong className="text-white">3 chapters</strong> from this document.
+                      </p>
+                    </div>
+
+                    <div className="space-y-1.5 text-[11px] text-white/80 pt-1 border-t border-[#2a2a2a]">
+                      <p className="font-semibold text-white/80 pt-1">Quick tips</p>
+                      <p>• In <strong className="text-white">Word</strong>: Home tab → Styles panel → click <em>Heading 1</em></p>
+                      <p>• In <strong className="text-white">Google Docs</strong>: Format menu → Paragraph styles → <em>Heading 1</em></p>
+                      <p>• Only use Heading 1 for chapter titles — nothing else</p>
+                      <p>• Everything before the first Heading 1 (e.g. a cover page) is skipped</p>
+                    </div>
                   </div>
 
                   <label className="flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
