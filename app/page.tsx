@@ -25,7 +25,6 @@ import { Button } from '@/components/ui/button';
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#141414] text-white">
-   
       <section className="px-6 pt-24 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,195,0,0.08),transparent)]" />
         <div className="mx-auto max-w-3xl relative">
@@ -52,15 +51,11 @@ export default function LandingPage() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/sign-in">
-                <Globe className="w-4 h-4" />
-                Sign In
-              </Link>
+              <Link href="/sign-in">Sign In</Link>
             </Button>
           </div>
         </div>
       </section>
-
 
       <section className="border-y border-[#2a2a2a] bg-[#1a1a1a] px-6 py-10">
         <div className="mx-auto max-w-6xl">
@@ -111,7 +106,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
 
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
@@ -238,7 +232,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-             
+
               <div className="px-5 py-3 border-t border-[#2a2a2a] flex items-center gap-4 text-xs text-white/80">
                 <span className="flex items-center gap-1">
                   <PenLine className="w-3 h-3" /> 12 chapters
@@ -253,15 +247,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-
       <section className="px-6 py-20 bg-[#1a1a1a]">
         <div className="mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-         
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
-          
               <div className="h-0.5 w-full bg-[#FFC300]" />
-        
+
               <div className="px-5 py-4 border-b border-[#2a2a2a] flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[#FFC300]/10 flex items-center justify-center">
@@ -280,7 +271,7 @@ export default function LandingPage() {
                   <Crown className="w-3 h-3" /> Owner
                 </span>
               </div>
-       
+
               <div className="px-5 py-3 border-b border-[#2a2a2a] flex items-center gap-3 bg-[#FFC300]/5">
                 <BookOpen className="w-4 h-4 text-[#FFC300] shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -296,7 +287,6 @@ export default function LandingPage() {
                 </span>
               </div>
 
-   
               <div className="px-5 py-3 border-b border-[#2a2a2a] grid grid-cols-4 gap-2">
                 {[
                   {
@@ -335,7 +325,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-   
+
               <div className="px-4 divide-y divide-[#2a2a2a]">
                 {[
                   {
