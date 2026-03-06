@@ -16,7 +16,8 @@ export const promptSchema = z.object({
       (s) => new Date(s) > new Date(),
       'End date must be in the future',
     ),
-  isPublic: z.boolean(),
+  privacy: z.enum(['PUBLIC', 'FRIENDS', 'PRIVATE']),
+  explorable: z.boolean(),
 });
 
 export type PromptFormData = z.infer<typeof promptSchema>;

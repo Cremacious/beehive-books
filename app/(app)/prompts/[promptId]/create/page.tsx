@@ -41,7 +41,7 @@ export default async function CreateEntryPage({ params }: Props) {
   }
 
   const isCreator  = userId === prompt.creator.clerkId;
-  const canSubmit  = isCreator || prompt.myInviteStatus === 'ACCEPTED' || prompt.isPublic;
+  const canSubmit  = isCreator || prompt.myInviteStatus === 'ACCEPTED' || prompt.privacy !== 'PRIVATE';
   if (!canSubmit) redirect(`/prompts/${promptId}`);
 
   return (

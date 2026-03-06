@@ -4,6 +4,7 @@ export const hiveSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(80, 'Name too long'),
   description: z.string().max(1000, 'Description too long'),
   privacy: z.enum(['PUBLIC', 'FRIENDS', 'PRIVATE']),
+  explorable: z.boolean(),
   genre: z.string().max(50, 'Genre too long'),
   tags: z.array(z.string().max(30, 'Tag too long')).max(10, 'Maximum 10 tags'),
 });

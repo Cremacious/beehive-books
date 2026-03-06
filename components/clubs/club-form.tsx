@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Check, Plus, X, Loader2, Trash2, Globe, Lock, Users } from 'lucide-react';
+import { Check, Plus, X, Loader2, Trash2, Users, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useClubStore } from '@/lib/stores/club-store';
 import { clubSchema } from '@/lib/validations/club.schema';
@@ -13,18 +13,9 @@ import type { ClubSchemaData } from '@/lib/validations/club.schema';
 import type { ClubFormProps, InvitableClubFriend } from '@/lib/types/club.types';
 
 const PRIVACY_OPTIONS = [
-  {
-    value: 'PUBLIC' as const,
-    label: 'Public',
-    desc: 'Anyone can find and join this club',
-    Icon: Globe,
-  },
-  {
-    value: 'PRIVATE' as const,
-    label: 'Private',
-    desc: 'Invite only — hidden from search',
-    Icon: Lock,
-  },
+  { value: 'PRIVATE' as const, label: 'Private', desc: 'Invite only — hidden from search' },
+  { value: 'FRIENDS' as const, label: 'Friends', desc: 'Visible to your friends only' },
+  { value: 'PUBLIC' as const, label: 'Public', desc: 'Anyone can find and request to join' },
 ];
 
 export default function ClubForm({
@@ -55,6 +46,7 @@ export default function ClubForm({
       name: defaultValues?.name ?? '',
       description: defaultValues?.description ?? '',
       privacy: defaultValues?.privacy ?? 'PUBLIC',
+      explorable: defaultValues?.explorable ?? false,
       rules: defaultValues?.rules ?? '',
       tags: defaultValues?.tags ?? [],
     },
@@ -69,6 +61,7 @@ export default function ClubForm({
   } = form;
 
   const privacy = watch('privacy');
+  const explorableValue = watch('explorable');
 
   function addTag() {
     const t = tagInput.trim();
@@ -156,8 +149,8 @@ export default function ClubForm({
         <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Privacy
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          {PRIVACY_OPTIONS.map(({ value, label, desc, Icon }) => (
+        <div className="grid grid-cols-3 gap-2">
+          {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
               <input
                 {...register('privacy')}
@@ -165,30 +158,13 @@ export default function ClubForm({
                 value={value}
                 className="sr-only peer"
               />
-              <div
-                className={`flex items-start gap-3 p-3 rounded-xl border transition-all ${
-                  privacy === value
-                    ? 'border-[#FFC300]/50 bg-[#FFC300]/8'
-                    : 'border-[#2a2a2a] bg-[#252525]'
-                }`}
-              >
-                <Icon
-                  className={`w-4 h-4 mt-0.5 shrink-0 ${
-                    privacy === value ? 'text-[#FFC300]' : 'text-white/80'
-                  }`}
-                />
-                <div>
-                  <span
-                    className={`text-xs font-semibold block ${
-                      privacy === value ? 'text-[#FFC300]' : 'text-white'
-                    }`}
-                  >
-                    {label}
-                  </span>
-                  <span className="text-xs text-white/80 leading-tight block mt-0.5">
-                    {desc}
-                  </span>
-                </div>
+              <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
+                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                  {label}
+                </span>
+                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                  {desc}
+                </span>
               </div>
             </label>
           ))}
@@ -196,6 +172,36 @@ export default function ClubForm({
         {errors.privacy && (
           <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
         )}
+      </div>
+
+      <div className="flex items-start justify-between gap-4 rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-0.5">
+            <Compass className="w-4 h-4 text-[#FFC300]" />
+            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+          </div>
+          <p className="text-sm text-white/80">
+            List this club on the Explore page so all users can discover it.
+            Enabling this will make the club public.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const next = !explorableValue;
+            setValue('explorable', next);
+            if (next) setValue('privacy', 'PUBLIC');
+          }}
+          className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+            explorableValue ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+              explorableValue ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
       </div>
 
       <div>

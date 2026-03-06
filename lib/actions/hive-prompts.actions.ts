@@ -25,7 +25,7 @@ export async function getHivePromptsAction(hiveId: string): Promise<HivePromptCa
       createdAt: prompts.createdAt,
     })
     .from(prompts)
-    .where(and(eq(prompts.isPublic, true), eq(prompts.status, 'ACTIVE')))
+    .where(and(eq(prompts.privacy, 'PUBLIC'), eq(prompts.status, 'ACTIVE')))
     .orderBy(desc(prompts.createdAt))
     .limit(20);
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { Search, X, Loader2, Users, Globe, Lock } from 'lucide-react';
+import { Search, X, Loader2, Users, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   promptSchema,
@@ -55,6 +55,12 @@ function defaultEndDate(): string {
   return toDateInputValue(d);
 }
 
+const PRIVACY_OPTIONS = [
+  { value: 'PRIVATE' as const, label: 'Private', desc: 'Only invited friends can participate' },
+  { value: 'FRIENDS' as const, label: 'Friends', desc: 'All your friends can join' },
+  { value: 'PUBLIC' as const, label: 'Public', desc: 'Anyone on Beehive Books can join' },
+];
+
 export function PromptForm({ mode, prompt, friends }: Props) {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
@@ -67,6 +73,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PromptFormData>({
     resolver: zodResolver(promptSchema),
@@ -74,12 +81,13 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       title: prompt?.title ?? '',
       description: prompt?.description ?? '',
       endDate: prompt ? toDateInputValue(prompt.endDate) : defaultEndDate(),
-      isPublic: prompt?.isPublic ?? false,
+      privacy: prompt?.privacy ?? 'PRIVATE',
+      explorable: prompt?.explorable ?? false,
     },
   });
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const isPublicValue = watch('isPublic');
+  const privacyValue = watch('privacy');
+  const explorableValue = watch('explorable');
 
   function toggleInvite(clerkId: string) {
     setInvitedIds((prev) =>
@@ -168,35 +176,66 @@ export function PromptForm({ mode, prompt, friends }: Props) {
         </p>
       </div>
 
-      <div className="flex items-start gap-4 p-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-0.5">
-            {isPublicValue ? (
-              <Globe className="w-4 h-4 text-[#FFC300]" />
-            ) : (
-              <Lock className="w-4 h-4 text-white/80" />
-            )}
-            <span className="text-sm font-medium text-white">
-              {isPublicValue ? 'Public Challenge' : 'Private Challenge'}
-            </span>
-          </div>
-          <p className="text-sm text-white/80">
-            {isPublicValue
-              ? 'Anyone on Beehive Books can join this challenge.'
-              : 'Only people you invite can participate.'}
-          </p>
-        </div>
-        <label className="relative inline-flex items-center cursor-pointer mt-0.5">
-          <input
-            type="checkbox"
-            {...register('isPublic')}
-            className="sr-only peer"
-          />
-          <div className="w-9 h-5 bg-[#333] rounded-full peer peer-checked:bg-[#FFC300] transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-4" />
+      <div>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Privacy
         </label>
+        <div className="grid grid-cols-3 gap-2">
+          {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
+            <label key={value} className="relative cursor-pointer">
+              <input
+                {...register('privacy')}
+                type="radio"
+                value={value}
+                className="sr-only peer"
+              />
+              <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
+                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                  {label}
+                </span>
+                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                  {desc}
+                </span>
+              </div>
+            </label>
+          ))}
+        </div>
+        {errors.privacy && (
+          <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
+        )}
       </div>
 
-      {!isPublicValue && (
+      <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-0.5">
+            <Compass className="w-4 h-4 text-[#FFC300]" />
+            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+          </div>
+          <p className="text-sm text-white/80">
+            List this prompt on the Explore page so all users can discover it.
+            Enabling this will make the challenge public.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const next = !explorableValue;
+            setValue('explorable', next);
+            if (next) setValue('privacy', 'PUBLIC');
+          }}
+          className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+            explorableValue ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+              explorableValue ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
+      </div>
+
+      {privacyValue === 'PRIVATE' && (
         <div>
           <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
             <Users className="inline w-3.5 h-3.5 mr-1 text-yellow-500" />

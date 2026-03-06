@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { hives, hiveMembers, hiveInvites, books, users, friendships } from '@/db/schema';
+import { hives, hiveMembers, hiveInvites, hiveJoinRequests, books, users, friendships } from '@/db/schema';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import { insertNotification } from '@/lib/notifications';
 import type {
@@ -14,6 +14,7 @@ import type {
   HiveWithMembership,
   HiveMemberWithUser,
   PendingHiveInvite,
+  PendingHiveJoinRequest,
   InvitableFriend,
 } from '@/lib/types/hive.types';
 
@@ -119,6 +120,19 @@ export async function getHiveAction(hiveId: string): Promise<HiveWithMembership 
 
   if (hive.privacy === 'PRIVATE' && !myRole) return null;
 
+  if (hive.privacy === 'FRIENDS' && !myRole) {
+    if (!userId) return null;
+    const friendship = await db.query.friendships.findFirst({
+      where: and(
+        or(
+          and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, hive.ownerId)),
+          and(eq(friendships.requesterId, hive.ownerId), eq(friendships.addresseeId, userId)),
+        ),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+    });
+    if (!friendship) return null;
+  }
 
   if (hive.bookId) {
     const book = await db.query.books.findFirst({
@@ -158,31 +172,59 @@ export async function getAllUserHivesAction(): Promise<HiveWithMembership[]> {
 export async function searchHivesAction(query: string): Promise<HiveWithMembership[]> {
   const { userId } = await auth();
 
-  const publicHives = await db.query.hives.findMany({
-    where: and(
-      eq(hives.privacy, 'PUBLIC'),
-      query.trim()
-        ? or(ilike(hives.name, `%${query}%`), ilike(hives.description, `%${query}%`))
-        : undefined,
-    ),
+  const queryFilter = query.trim()
+    ? or(ilike(hives.name, `%${query}%`), ilike(hives.description, `%${query}%`))
+    : undefined;
+
+  const publicHivesPromise = db.query.hives.findMany({
+    where: and(eq(hives.privacy, 'PUBLIC'), queryFilter),
     orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
     limit: 30,
   });
 
   if (!userId) {
-    return publicHives.map((h) => ({ ...h, myRole: null, isMember: false }));
+    const allHives = await publicHivesPromise;
+    return allHives.map((h) => ({ ...h, myRole: null, isMember: false }));
   }
+
+  const friendshipRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+  });
+  const friendIds = friendshipRows.map((f) =>
+    f.requesterId === userId ? f.addresseeId : f.requesterId,
+  );
+
+  const [publicHivesList, friendHives] = await Promise.all([
+    publicHivesPromise,
+    friendIds.length > 0
+      ? db.query.hives.findMany({
+          where: and(
+            eq(hives.privacy, 'FRIENDS'),
+            inArray(hives.ownerId, friendIds),
+            queryFilter,
+          ),
+          orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+          limit: 30,
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const allHives = [...publicHivesList, ...friendHives];
+  if (allHives.length === 0) return [];
 
   const myMemberships = await db.query.hiveMembers.findMany({
     where: and(
       eq(hiveMembers.userId, userId),
-      sql`${hiveMembers.hiveId} = ANY(${sql`ARRAY[${sql.join(publicHives.map((h) => sql`${h.id}`), sql`, `)}]::text[]`})`,
+      sql`${hiveMembers.hiveId} = ANY(${sql`ARRAY[${sql.join(allHives.map((h) => sql`${h.id}`), sql`, `)}]::text[]`})`,
     ),
   });
 
   const membershipMap = new Map(myMemberships.map((m) => [m.hiveId, m.role as HiveRole]));
 
-  return publicHives.map((h) => ({
+  return allHives.map((h) => ({
     ...h,
     myRole: membershipMap.get(h.id) ?? null,
     isMember: membershipMap.has(h.id),
@@ -219,11 +261,29 @@ export async function deleteHiveAction(hiveId: string): Promise<ActionResult> {
 }
 
 export async function joinHiveAction(hiveId: string): Promise<ActionResult> {
-  const userId = await requireAuth();
+  return requestToJoinHiveAction(hiveId);
+}
+
+export async function requestToJoinHiveAction(hiveId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
   if (!hive) return { success: false, message: 'Hive not found.' };
-  if (hive.privacy === 'PRIVATE') return { success: false, message: 'This hive is private.' };
+  if (hive.privacy === 'PRIVATE') return { success: false, message: 'This hive is invite-only.' };
+
+  if (hive.privacy === 'FRIENDS') {
+    const friendship = await db.query.friendships.findFirst({
+      where: and(
+        or(
+          and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, hive.ownerId)),
+          and(eq(friendships.requesterId, hive.ownerId), eq(friendships.addresseeId, userId)),
+        ),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+    });
+    if (!friendship) return { success: false, message: 'This hive is for friends only.' };
+  }
 
   const existing = await db.query.hiveMembers.findFirst({
     where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
@@ -231,26 +291,144 @@ export async function joinHiveAction(hiveId: string): Promise<ActionResult> {
   if (existing) return { success: false, message: 'Already a member.' };
 
   try {
-    await db.insert(hiveMembers).values({ hiveId, userId, role: 'CONTRIBUTOR' });
-    await db
-      .update(hives)
-      .set({ memberCount: sql`${hives.memberCount} + 1`, updatedAt: new Date() })
-      .where(eq(hives.id, hiveId));
+    const existingRequest = await db.query.hiveJoinRequests.findFirst({
+      where: and(eq(hiveJoinRequests.hiveId, hiveId), eq(hiveJoinRequests.userId, userId)),
+    });
 
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    if (existingRequest?.status === 'PENDING') {
+      return { success: false, message: 'You already have a pending join request.' };
+    }
+
+    if (existingRequest) {
+      await db
+        .update(hiveJoinRequests)
+        .set({ status: 'PENDING', updatedAt: new Date() })
+        .where(eq(hiveJoinRequests.id, existingRequest.id));
+    } else {
+      await db.insert(hiveJoinRequests).values({ hiveId, userId, status: 'PENDING' });
+    }
+
     void insertNotification({
       recipientId: hive.ownerId,
       actorId: userId,
-      type: 'HIVE_INVITE',
+      type: 'HIVE_JOIN_REQUEST',
       link: `/hive/${hiveId}`,
-      metadata: { actorUsername: actor?.username ?? '', hiveName: hive.name, hiveId },
+      metadata: { hiveId, hiveName: hive.name },
     });
 
     revalidatePath(`/hive/${hiveId}`);
-    revalidatePath('/hive');
-    return { success: true, message: `Joined ${hive.name}!` };
+    return { success: true, message: 'Join request sent.' };
   } catch {
-    return { success: false, message: 'Failed to join hive.' };
+    return { success: false, message: 'Failed to send join request.' };
+  }
+}
+
+export async function checkHiveJoinRequestStatusAction(
+  hiveId: string,
+): Promise<'pending' | 'none'> {
+  const { userId } = await auth();
+  if (!userId) return 'none';
+  const request = await db.query.hiveJoinRequests.findFirst({
+    where: and(
+      eq(hiveJoinRequests.hiveId, hiveId),
+      eq(hiveJoinRequests.userId, userId),
+      eq(hiveJoinRequests.status, 'PENDING'),
+    ),
+  });
+  return request ? 'pending' : 'none';
+}
+
+export async function getPendingHiveJoinRequestsAction(
+  hiveId: string,
+): Promise<PendingHiveJoinRequest[]> {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) return [];
+
+  const requests = await db.query.hiveJoinRequests.findMany({
+    where: and(eq(hiveJoinRequests.hiveId, hiveId), eq(hiveJoinRequests.status, 'PENDING')),
+    with: { user: { columns: { clerkId: true, username: true, imageUrl: true } } },
+    orderBy: [desc(hiveJoinRequests.createdAt)],
+  });
+
+  return requests.map((r) => ({
+    id: r.id,
+    user: { clerkId: r.user.clerkId, username: r.user.username, imageUrl: r.user.imageUrl },
+    createdAt: r.createdAt,
+  }));
+}
+
+export async function approveHiveJoinRequestAction(requestId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const request = await db.query.hiveJoinRequests.findFirst({
+    where: eq(hiveJoinRequests.id, requestId),
+  });
+  if (!request) return { success: false, message: 'Request not found.' };
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, request.hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return { success: false, message: 'Insufficient permissions.' };
+  }
+
+  const alreadyMember = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, request.hiveId), eq(hiveMembers.userId, request.userId)),
+  });
+
+  try {
+    await db
+      .update(hiveJoinRequests)
+      .set({ status: 'APPROVED', updatedAt: new Date() })
+      .where(eq(hiveJoinRequests.id, requestId));
+
+    if (!alreadyMember) {
+      await db.insert(hiveMembers).values({ hiveId: request.hiveId, userId: request.userId, role: 'CONTRIBUTOR' });
+      await db
+        .update(hives)
+        .set({ memberCount: sql`${hives.memberCount} + 1`, updatedAt: new Date() })
+        .where(eq(hives.id, request.hiveId));
+    }
+
+    revalidatePath(`/hive/${request.hiveId}`);
+    return { success: true, message: 'Request approved.' };
+  } catch {
+    return { success: false, message: 'Failed to approve request.' };
+  }
+}
+
+export async function rejectHiveJoinRequestAction(requestId: string): Promise<ActionResult> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized.' };
+
+  const request = await db.query.hiveJoinRequests.findFirst({
+    where: eq(hiveJoinRequests.id, requestId),
+  });
+  if (!request) return { success: false, message: 'Request not found.' };
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, request.hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return { success: false, message: 'Insufficient permissions.' };
+  }
+
+  try {
+    await db
+      .update(hiveJoinRequests)
+      .set({ status: 'REJECTED', updatedAt: new Date() })
+      .where(eq(hiveJoinRequests.id, requestId));
+
+    revalidatePath(`/hive/${request.hiveId}`);
+    return { success: true, message: 'Request rejected.' };
+  } catch {
+    return { success: false, message: 'Failed to reject request.' };
   }
 }
 

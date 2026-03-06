@@ -115,7 +115,8 @@ export async function getMyPromptsAction(): Promise<PromptCard[]> {
     title: p.title,
     description: p.description,
     endDate: p.endDate,
-    isPublic: p.isPublic,
+    privacy: p.privacy,
+    explorable: p.explorable,
     status: (p.endDate < new Date() ? 'ENDED' : p.status) as 'ACTIVE' | 'ENDED',
     entryCount: p.entryCount,
     createdAt: p.createdAt,
@@ -148,7 +149,7 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
   const isInvited = prompt.invites.some((i) => i.userId === userId);
   const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED';
 
-  if (!isCreator && !isInvited && !prompt.isPublic) {
+  if (prompt.privacy === 'PRIVATE' && !isCreator && !isInvited) {
     throw new Error('You do not have access to this prompt');
   }
 
@@ -172,7 +173,8 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
     title: prompt.title,
     description: prompt.description,
     endDate: prompt.endDate,
-    isPublic: prompt.isPublic,
+    privacy: prompt.privacy,
+    explorable: prompt.explorable,
     status: (isEnded ? 'ENDED' : prompt.status) as 'ACTIVE' | 'ENDED',
     entryCount: prompt.entryCount,
     createdAt: prompt.createdAt,
@@ -196,7 +198,7 @@ export async function getPromptEntriesAction(
 
   const prompt = await db.query.prompts.findFirst({
     where: eq(prompts.id, promptId),
-    columns: { creatorId: true, status: true, endDate: true, isPublic: true },
+    columns: { creatorId: true, status: true, endDate: true, privacy: true },
   });
   if (!prompt) throw new Error('Prompt not found');
 
@@ -331,7 +333,8 @@ export async function createPromptAction(
     title: string;
     description: string;
     endDate: string;
-    isPublic: boolean;
+    privacy: 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
+    explorable: boolean;
   },
   inviteUserIds: string[],
 ): Promise<ActionResult & { promptId?: string }> {
@@ -354,7 +357,8 @@ export async function createPromptAction(
       title: parsed.data.title,
       description: parsed.data.description,
       endDate: parsed.data.endDate,
-      isPublic: parsed.data.isPublic,
+      privacy: parsed.data.privacy,
+      explorable: parsed.data.explorable,
     });
 
     if (inviteUserIds.length > 0) {
@@ -393,7 +397,8 @@ export async function updatePromptAction(
     title: string;
     description: string;
     endDate: string;
-    isPublic: boolean;
+    privacy: 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
+    explorable: boolean;
   },
   inviteUserIds: string[],
 ): Promise<ActionResult> {
@@ -419,7 +424,8 @@ export async function updatePromptAction(
         title: parsed.data.title,
         description: parsed.data.description,
         endDate: parsed.data.endDate,
-        isPublic: parsed.data.isPublic,
+        privacy: parsed.data.privacy,
+        explorable: parsed.data.explorable,
         updatedAt: new Date(),
       })
       .where(eq(prompts.id, promptId));
@@ -606,7 +612,7 @@ export async function createEntryAction(
       creatorId: true,
       status: true,
       endDate: true,
-      isPublic: true,
+      privacy: true,
       title: true,
     },
   });
@@ -616,7 +622,7 @@ export async function createEntryAction(
     return { success: false, message: 'This prompt has already ended.' };
   }
 
-  if (!prompt.isPublic && prompt.creatorId !== userId) {
+  if (prompt.privacy === 'PRIVATE' && prompt.creatorId !== userId) {
     const invite = await db.query.promptInvites.findFirst({
       where: and(
         eq(promptInvites.promptId, promptId),

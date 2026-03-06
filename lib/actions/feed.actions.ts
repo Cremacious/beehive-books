@@ -144,11 +144,11 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     }
   }
 
-  // New public clubs created by friends
+  // New public/friends clubs created by friends
   const recentClubs = await db.query.bookClubs.findMany({
     where: and(
       inArray(bookClubs.ownerId, friendIds),
-      eq(bookClubs.privacy, 'PUBLIC'),
+      or(eq(bookClubs.privacy, 'PUBLIC'), eq(bookClubs.privacy, 'FRIENDS')),
       gt(bookClubs.createdAt, cutoff),
     ),
     columns: { id: true, ownerId: true, name: true, createdAt: true },
@@ -190,7 +190,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
   });
 
   for (const d of recentDiscussions) {
-    if (d.club.privacy !== 'PUBLIC') continue;
+    if (d.club.privacy === 'PRIVATE') continue;
     const user = userMap[d.authorId];
     if (!user) continue;
     events.push({
@@ -207,7 +207,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
   const recentPrompts = await db.query.prompts.findMany({
     where: and(
       inArray(prompts.creatorId, friendIds),
-      eq(prompts.isPublic, true),
+      or(eq(prompts.privacy, 'PUBLIC'), eq(prompts.privacy, 'FRIENDS')),
       gt(prompts.createdAt, cutoff),
     ),
     columns: { id: true, creatorId: true, title: true, createdAt: true },

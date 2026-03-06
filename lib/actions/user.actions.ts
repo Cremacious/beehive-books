@@ -96,7 +96,7 @@ export async function getUserProfileAction(username: string) {
     db.query.prompts.findMany({
       where: isOwnProfile
         ? eq(prompts.creatorId, profileUser.clerkId)
-        : and(eq(prompts.creatorId, profileUser.clerkId), eq(prompts.isPublic, true)),
+        : and(eq(prompts.creatorId, profileUser.clerkId), eq(prompts.privacy, 'PUBLIC')),
       orderBy: (p, { desc }) => [desc(p.createdAt)],
     }),
   ]);

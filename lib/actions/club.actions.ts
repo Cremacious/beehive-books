@@ -131,6 +131,20 @@ export async function getClubAction(clubId: string): Promise<ClubWithMembership 
 
   if (club.privacy === 'PRIVATE' && !myRole) return null;
 
+  if (club.privacy === 'FRIENDS' && !myRole) {
+    if (!userId) return null;
+    const friendship = await db.query.friendships.findFirst({
+      where: and(
+        or(
+          and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, club.ownerId)),
+          and(eq(friendships.requesterId, club.ownerId), eq(friendships.addresseeId, userId)),
+        ),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+    });
+    if (!friendship) return null;
+  }
+
   return { ...club, myRole, isMember: myRole !== null };
 }
 
@@ -153,34 +167,61 @@ export async function getAllUserClubsAction(): Promise<ClubWithMembership[]> {
 export async function searchClubsAction(query: string): Promise<ClubWithMembership[]> {
   const { userId } = await auth();
 
-  const clubs = await db.query.bookClubs.findMany({
-    where: and(
-      eq(bookClubs.privacy, 'PUBLIC'),
-      query.trim()
-        ? or(
-            ilike(bookClubs.name, `%${query}%`),
-            ilike(bookClubs.description, `%${query}%`),
-          )
-        : undefined,
-    ),
+  const queryFilter = query.trim()
+    ? or(ilike(bookClubs.name, `%${query}%`), ilike(bookClubs.description, `%${query}%`))
+    : undefined;
+
+  // Always include PUBLIC clubs
+  const publicClubsPromise = db.query.bookClubs.findMany({
+    where: and(eq(bookClubs.privacy, 'PUBLIC'), queryFilter),
     orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
     limit: 30,
   });
 
   if (!userId) {
+    const clubs = await publicClubsPromise;
     return clubs.map((c) => ({ ...c, myRole: null, isMember: false }));
   }
+
+  // Get friend IDs to also include FRIENDS clubs owned by friends
+  const friendshipRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+  });
+  const friendIds = friendshipRows.map((f) =>
+    f.requesterId === userId ? f.addresseeId : f.requesterId,
+  );
+
+  const [publicClubs, friendClubs] = await Promise.all([
+    publicClubsPromise,
+    friendIds.length > 0
+      ? db.query.bookClubs.findMany({
+          where: and(
+            eq(bookClubs.privacy, 'FRIENDS'),
+            inArray(bookClubs.ownerId, friendIds),
+            queryFilter,
+          ),
+          orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+          limit: 30,
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const allClubs = [...publicClubs, ...friendClubs];
+  if (allClubs.length === 0) return [];
 
   const myMemberships = await db.query.clubMembers.findMany({
     where: and(
       eq(clubMembers.userId, userId),
-      sql`${clubMembers.clubId} = ANY(${sql`ARRAY[${sql.join(clubs.map((c) => sql`${c.id}`), sql`, `)}]::text[]`})`,
+      sql`${clubMembers.clubId} = ANY(${sql`ARRAY[${sql.join(allClubs.map((c) => sql`${c.id}`), sql`, `)}]::text[]`})`,
     ),
   });
 
   const membershipMap = new Map(myMemberships.map((m) => [m.clubId, m.role as ClubRole]));
 
-  return clubs.map((c) => ({
+  return allClubs.map((c) => ({
     ...c,
     myRole: membershipMap.get(c.id) ?? null,
     isMember: membershipMap.has(c.id),
@@ -304,7 +345,7 @@ export async function getClubMembersAction(clubId: string): Promise<ClubMemberWi
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return [];
 
-  if (club.privacy === 'PRIVATE') {
+  if (club.privacy !== 'PUBLIC') {
     if (!userId) return [];
     const membership = await db.query.clubMembers.findFirst({
       where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
@@ -434,7 +475,7 @@ export async function getClubDiscussionsAction(
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return { discussions: [], total: 0 };
 
-  if (club.privacy === 'PRIVATE') {
+  if (club.privacy !== 'PUBLIC') {
     if (!userId) return { discussions: [], total: 0 };
     const membership = await db.query.clubMembers.findFirst({
       where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
@@ -473,7 +514,7 @@ export async function getClubDiscussionByIdAction(
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return null;
 
-  if (club.privacy === 'PRIVATE') {
+  if (club.privacy !== 'PUBLIC') {
     if (!userId) return null;
     const membership = await db.query.clubMembers.findFirst({
       where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
@@ -725,7 +766,7 @@ export async function getClubReadingListAction(clubId: string): Promise<ClubRead
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return [];
 
-  if (club.privacy === 'PRIVATE') {
+  if (club.privacy !== 'PUBLIC') {
     if (!userId) return [];
     const membership = await db.query.clubMembers.findFirst({
       where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
@@ -1063,7 +1104,20 @@ export async function requestToJoinClubAction(clubId: string): Promise<ActionRes
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return { success: false, message: 'Club not found.' };
-  if (club.privacy === 'PRIVATE') return { success: false, message: 'This club is private.' };
+  if (club.privacy === 'PRIVATE') return { success: false, message: 'This club is invite-only.' };
+
+  if (club.privacy === 'FRIENDS') {
+    const friendship = await db.query.friendships.findFirst({
+      where: and(
+        or(
+          and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, club.ownerId)),
+          and(eq(friendships.requesterId, club.ownerId), eq(friendships.addresseeId, userId)),
+        ),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+    });
+    if (!friendship) return { success: false, message: 'This club is for friends only.' };
+  }
 
   const existing = await db.query.clubMembers.findFirst({
     where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),

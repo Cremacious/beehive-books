@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Globe, Lock, Crown, Shield, Check, Settings } from 'lucide-react';
+import { Globe, Lock, Users, Crown, Shield, Check, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import JoinClubButton from './join-club-button';
 import ClubProgress from './club-progress';
@@ -42,6 +42,11 @@ export default function ClubDashboard({
                 <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">
                   <Globe className="w-3 h-3" />
                   Public
+                </span>
+              ) : club.privacy === 'FRIENDS' ? (
+                <span className="inline-flex items-center gap-1 text-xs text-blue-400 bg-blue-400/10 rounded-full px-2.5 py-1">
+                  <Users className="w-3 h-3" />
+                  Friends
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">

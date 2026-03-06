@@ -11,6 +11,8 @@ import {
   removeMemberFromHiveAction,
   updateMemberRoleAction,
   completeHiveAction,
+  approveHiveJoinRequestAction,
+  rejectHiveJoinRequestAction,
 } from '@/lib/actions/hive.actions';
 import type { HiveFormData, HiveRole, ActionResult } from '@/lib/types/hive.types';
 
@@ -22,6 +24,8 @@ interface HiveStore {
   joinHive: (hiveId: string) => Promise<ActionResult>;
   leaveHive: (hiveId: string) => Promise<ActionResult>;
   completeHive: (hiveId: string) => Promise<ActionResult>;
+  approveJoinRequest: (requestId: string) => Promise<ActionResult>;
+  rejectJoinRequest: (requestId: string) => Promise<ActionResult>;
 
   inviteMember: (hiveId: string, userId: string, role?: Exclude<HiveRole, 'OWNER'>) => Promise<ActionResult>;
   acceptHiveInvite: (inviteId: string) => Promise<ActionResult & { hiveId?: string }>;
@@ -42,6 +46,8 @@ export const useHiveStore = create<HiveStore>(() => ({
   joinHive: (hiveId) => joinHiveAction(hiveId),
   leaveHive: (hiveId) => leaveHiveAction(hiveId),
   completeHive: (hiveId) => completeHiveAction(hiveId),
+  approveJoinRequest: (requestId) => approveHiveJoinRequestAction(requestId),
+  rejectJoinRequest: (requestId) => rejectHiveJoinRequestAction(requestId),
 
   inviteMember: (hiveId, userId, role) => inviteMemberAction(hiveId, userId, role),
   acceptHiveInvite: (inviteId) => acceptHiveInviteAction(inviteId),

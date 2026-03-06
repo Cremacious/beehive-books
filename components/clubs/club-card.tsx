@@ -75,8 +75,8 @@ export default function ClubCard({ club }: { club: ClubWithMembership }) {
               {club.memberCount} member{club.memberCount !== 1 ? 's' : ''}
             </span>
           </div>
-          <span className={club.privacy === 'PUBLIC' ? 'text-green-400' : 'text-white/80'}>
-            {club.privacy === 'PUBLIC' ? 'Public' : 'Private'}
+          <span className={club.privacy === 'PUBLIC' ? 'text-green-400' : club.privacy === 'FRIENDS' ? 'text-blue-400' : 'text-white/80'}>
+            {club.privacy === 'PUBLIC' ? 'Public' : club.privacy === 'FRIENDS' ? 'Friends' : 'Private'}
           </span>
         </div>
       </div>

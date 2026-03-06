@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import { getHiveAction } from '@/lib/actions/hive.actions';
+import {
+  getHiveAction,
+  checkHiveJoinRequestStatusAction,
+  getPendingHiveJoinRequestsAction,
+} from '@/lib/actions/hive.actions';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import { getHiveBookAction } from '@/lib/actions/book.actions';
 import HiveDashboard from '@/components/hive/hive-dashboard';
@@ -32,9 +36,14 @@ export default async function HiveDashboardPage({
   const hive = await getHiveAction(hiveId);
   if (!hive) notFound();
 
-  const [initialActivity, linkedBook] = await Promise.all([
+  const isOwnerOrMod = hive.myRole === 'OWNER' || hive.myRole === 'MODERATOR';
+  const isNonMember = !hive.isMember && hive.privacy !== 'PRIVATE';
+
+  const [initialActivity, linkedBook, joinRequestStatus, pendingRequests] = await Promise.all([
     getHiveActivityAction(hiveId),
     hive.bookId ? getHiveBookAction(hive.bookId) : Promise.resolve(null),
+    isNonMember && userId ? checkHiveJoinRequestStatusAction(hiveId) : Promise.resolve(null),
+    isOwnerOrMod ? getPendingHiveJoinRequestsAction(hiveId) : Promise.resolve([]),
   ]);
 
   return (
@@ -43,6 +52,8 @@ export default async function HiveDashboardPage({
       initialActivity={initialActivity}
       currentUserId={userId ?? null}
       linkedBook={linkedBook}
+      joinRequestStatus={joinRequestStatus ?? undefined}
+      pendingRequests={pendingRequests}
     />
   );
 }

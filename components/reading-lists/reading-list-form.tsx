@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Trash2, BookMarked } from 'lucide-react';
+import { Plus, X, Loader2, Trash2, BookMarked, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { readingListSchema } from '@/lib/validations/reading-list.schema';
@@ -43,14 +43,20 @@ export function ReadingListForm({
       title: defaultValues?.title ?? '',
       description: defaultValues?.description ?? '',
       privacy: defaultValues?.privacy ?? 'PRIVATE',
+      explorable: defaultValues?.explorable ?? false,
     },
   });
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = form;
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const explorableValue = watch('explorable');
 
   function addBook() {
     if (!bookTitle.trim() || !bookAuthor.trim()) return;
@@ -166,6 +172,36 @@ export function ReadingListForm({
         {errors.privacy && (
           <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
         )}
+      </div>
+
+      <div className="flex items-start justify-between gap-4 rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-0.5">
+            <Compass className="w-4 h-4 text-[#FFC300]" />
+            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+          </div>
+          <p className="text-sm text-white/80">
+            List this reading list on the Explore page so all users can discover it.
+            Enabling this will make the list public.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const next = !explorableValue;
+            setValue('explorable', next);
+            if (next) setValue('privacy', 'PUBLIC');
+          }}
+          className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+            explorableValue ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+              explorableValue ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
       </div>
 
       {mode === 'create' && (

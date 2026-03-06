@@ -21,7 +21,8 @@ export type NotificationType =
   | 'HIVE_POLL'
   | 'HIVE_BETA_REVIEW'
   | 'HIVE_INVITE_PENDING'
-  | 'HIVE_ACTIVITY';
+  | 'HIVE_ACTIVITY'
+  | 'HIVE_JOIN_REQUEST';
 
 export type NotificationItem = {
   id:        string;

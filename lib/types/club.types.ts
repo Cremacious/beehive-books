@@ -1,4 +1,4 @@
-export type ClubPrivacy = 'PUBLIC' | 'PRIVATE';
+export type ClubPrivacy = 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
 export type ClubRole = 'OWNER' | 'MODERATOR' | 'MEMBER';
 export type BookStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
@@ -8,6 +8,7 @@ export type BookClub = {
   name: string;
   description: string;
   privacy: ClubPrivacy;
+  explorable: boolean;
   rules: string;
   tags: string[];
   coverUrl: string | null;
@@ -110,6 +111,7 @@ export type ClubFormData = {
   name: string;
   description: string;
   privacy: ClubPrivacy;
+  explorable: boolean;
   rules: string;
   tags: string[];
 };

@@ -91,7 +91,7 @@ export default async function PromptDetailPage({ params }: Props) {
   const canSubmit =
     !isEnded &&
     !hasEntry &&
-    (isCreator || myInvite === 'ACCEPTED' || prompt.isPublic);
+    (isCreator || myInvite === 'ACCEPTED' || prompt.privacy !== 'PRIVATE');
 
   const entries = await getPromptEntriesAction(promptId);
 
@@ -124,7 +124,7 @@ export default async function PromptDetailPage({ params }: Props) {
                 {isEnded ? 'Ended' : 'Active'}
               </span>
               <span className="text-xs text-white/80 uppercase tracking-wider font-medium">
-                {prompt.isPublic ? 'Public' : 'Private'}
+                {prompt.privacy === 'PUBLIC' ? 'Public' : prompt.privacy === 'FRIENDS' ? 'Friends' : 'Private'}
               </span>
             </div>
 

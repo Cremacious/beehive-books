@@ -13,7 +13,8 @@ export type PromptCard = {
   title:          string;
   description:    string;
   endDate:        Date;
-  isPublic:       boolean;
+  privacy:        'PUBLIC' | 'FRIENDS' | 'PRIVATE';
+  explorable:     boolean;
   status:         PromptStatus;
   entryCount:     number;
   createdAt:      Date;

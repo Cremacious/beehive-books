@@ -60,6 +60,12 @@ export type HiveUser = {
   imageUrl: string | null;
 };
 
+export type PendingHiveJoinRequest = {
+  id: string;
+  user: { clerkId: string; username: string | null; imageUrl: string | null };
+  createdAt: Date;
+};
+
 export type Hive = {
   id: string;
   ownerId: string;
@@ -67,6 +73,7 @@ export type Hive = {
   name: string;
   description: string;
   privacy: HivePrivacy;
+  explorable: boolean;
   status: HiveStatus;
   coverUrl: string | null;
   tags: string[];
@@ -99,6 +106,7 @@ export type HiveFormData = {
   name: string;
   description: string;
   privacy: HivePrivacy;
+  explorable: boolean;
   genre: string;
   tags: string[];
   bookId?: string | null;

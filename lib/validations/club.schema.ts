@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const clubSchema = z.object({
   name:        z.string().min(2, 'Name must be at least 2 characters').max(80, 'Name too long'),
   description: z.string().max(1000, 'Description too long'),
-  privacy:     z.enum(['PUBLIC', 'PRIVATE']),
+  privacy:     z.enum(['PUBLIC', 'FRIENDS', 'PRIVATE']),
+  explorable:  z.boolean(),
   rules:       z.string().max(2000, 'Rules too long'),
   tags:        z.array(z.string().max(30, 'Tag too long')).max(10, 'Maximum 10 tags'),
 });

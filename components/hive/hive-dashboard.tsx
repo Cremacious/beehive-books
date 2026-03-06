@@ -50,6 +50,8 @@ interface HiveDashboardProps {
   initialActivity: ActivityEvent[];
   currentUserId: string | null;
   linkedBook: LinkedBook;
+  joinRequestStatus?: 'pending' | 'none';
+  pendingRequests?: { id: string; user: { clerkId: string; username: string | null; imageUrl: string | null }; createdAt: Date }[];
 }
 
 function relativeTime(date: Date): string {
@@ -317,19 +319,50 @@ export default function HiveDashboard({
   hive,
   initialActivity,
   linkedBook,
+  joinRequestStatus,
+  pendingRequests,
 }: HiveDashboardProps) {
   const store = useHiveStore();
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
+  const [requesting, setRequesting] = useState(false);
+  const [requestSent, setRequestSent] = useState(joinRequestStatus === 'pending');
   const [activity, setActivity] = useState<ActivityEvent[]>(initialActivity);
   const [refreshing, startRefresh] = useTransition();
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [localPendingRequests, setLocalPendingRequests] = useState(pendingRequests ?? []);
 
   const isOwner = hive.myRole === 'OWNER';
+  const isModOrOwner = hive.myRole === 'OWNER' || hive.myRole === 'MODERATOR';
   const isMember = hive.isMember;
 
-  const handleJoin = async () => {
+  const handleRequestJoin = async () => {
+    setRequesting(true);
     const result = await store.joinHive(hive.id);
-    if (result.success) router.refresh();
+    if (result.success) {
+      setRequestSent(true);
+    }
+    setRequesting(false);
+  };
+
+  const handleApproveRequest = async (requestId: string) => {
+    setApprovingId(requestId);
+    const result = await store.approveJoinRequest(requestId);
+    if (result.success) {
+      setLocalPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
+      router.refresh();
+    }
+    setApprovingId(null);
+  };
+
+  const handleRejectRequest = async (requestId: string) => {
+    setRejectingId(requestId);
+    const result = await store.rejectJoinRequest(requestId);
+    if (result.success) {
+      setLocalPendingRequests((prev) => prev.filter((r) => r.id !== requestId));
+    }
+    setRejectingId(null);
   };
 
   const handleLeave = async () => {
@@ -435,9 +468,15 @@ export default function HiveDashboard({
 
           <div className="flex items-center gap-2 shrink-0">
             {!isMember && hive.privacy !== 'PRIVATE' && (
-              <Button onClick={handleJoin} size="sm">
-                Join Hive
-              </Button>
+              requestSent ? (
+                <Button size="sm" variant="outline" disabled className="text-white/60 border-white/20">
+                  Request Pending
+                </Button>
+              ) : (
+                <Button onClick={handleRequestJoin} size="sm" disabled={requesting}>
+                  {requesting ? 'Requesting…' : 'Request to Join'}
+                </Button>
+              )
             )}
             {isMember && !isOwner && (
               <Button
@@ -481,6 +520,66 @@ export default function HiveDashboard({
           )} */}
         </div>
       </div>
+
+      {isModOrOwner && localPendingRequests.length > 0 && (
+        <div className="rounded-2xl bg-[#252525] border border-[#FFC300]/20 p-5">
+          <h2 className="text-base font-semibold text-white flex items-center gap-2 mainFont mb-4">
+            <UserPlus className="w-4 h-4 text-[#FFC300]" />
+            Join Requests
+            <span className="ml-1 bg-[#FFC300] text-black text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+              {localPendingRequests.length}
+            </span>
+          </h2>
+          <div className="space-y-3">
+            {localPendingRequests.map((req) => (
+              <div key={req.id} className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {req.user.imageUrl ? (
+                    <Image
+                      src={req.user.imageUrl}
+                      alt={req.user.username ?? 'User'}
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center shrink-0">
+                      <span className="text-white/60 text-sm font-bold">
+                        {(req.user.username ?? '?')[0]?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <Link
+                    href={`/u/${req.user.username}`}
+                    className="text-sm font-medium text-white hover:text-[#FFC300] truncate"
+                  >
+                    {req.user.username ?? 'Unknown'}
+                  </Link>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    size="sm"
+                    onClick={() => handleApproveRequest(req.id)}
+                    disabled={approvingId === req.id || rejectingId === req.id}
+                    className="h-7 px-3 text-xs"
+                  >
+                    {approvingId === req.id ? 'Approving…' : 'Approve'}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRejectRequest(req.id)}
+                    disabled={approvingId === req.id || rejectingId === req.id}
+                    className="h-7 px-3 text-xs text-red-400 border-red-400/30 hover:bg-red-400/10"
+                  >
+                    {rejectingId === req.id ? '…' : 'Decline'}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {hive.bookId ? (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">

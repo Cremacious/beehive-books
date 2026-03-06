@@ -70,7 +70,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
             {isEnded ? 'Ended' : 'Active'}
           </span>
           <span className="text-xs text-white/80 uppercase tracking-wider">
-            {prompt.isPublic ? 'Public' : 'Private'}
+            {prompt.privacy === 'PUBLIC' ? 'Public' : prompt.privacy === 'FRIENDS' ? 'Friends' : 'Private'}
           </span>
           {prompt.myInviteStatus && (
             <span className="text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-white/80">

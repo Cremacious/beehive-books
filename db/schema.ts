@@ -125,6 +125,7 @@ export const readingLists = pgTable('reading_lists', {
   privacy: text('privacy', { enum: ['PUBLIC', 'PRIVATE', 'FRIENDS'] })
     .notNull()
     .default('PRIVATE'),
+  explorable: boolean('explorable').notNull().default(false),
   bookCount: integer('book_count').notNull().default(0),
   readCount: integer('read_count').notNull().default(0),
   currentlyReadingId: text('currently_reading_id'),
@@ -201,6 +202,7 @@ export const notifications = pgTable('notifications', {
       'CLUB_DISCUSSION',
       'CLUB_REPLY',
       'HIVE_INVITE',
+      'HIVE_JOIN_REQUEST',
       'HIVE_CHAPTER_CLAIMED',
       'HIVE_SPRINT_STARTED',
       'HIVE_MILESTONE',
@@ -338,7 +340,10 @@ export const prompts = pgTable('prompts', {
   title: text('title').notNull(),
   description: text('description').notNull(),
   endDate: timestamp('end_date').notNull(),
-  isPublic: boolean('is_public').notNull().default(false),
+  privacy: text('privacy', { enum: ['PUBLIC', 'FRIENDS', 'PRIVATE'] })
+    .notNull()
+    .default('PRIVATE'),
+  explorable: boolean('explorable').notNull().default(false),
   status: text('status', { enum: ['ACTIVE', 'ENDED'] })
     .notNull()
     .default('ACTIVE'),
@@ -544,9 +549,10 @@ export const bookClubs = pgTable('book_clubs', {
     .references(() => users.clerkId, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
-  privacy: text('privacy', { enum: ['PUBLIC', 'PRIVATE'] })
+  privacy: text('privacy', { enum: ['PUBLIC', 'FRIENDS', 'PRIVATE'] })
     .notNull()
     .default('PUBLIC'),
+  explorable: boolean('explorable').notNull().default(false),
   rules: text('rules').notNull().default(''),
   tags: json('tags').$type<string[]>().notNull().default([]),
   coverUrl: text('cover_url'),
@@ -853,6 +859,7 @@ export const hives = pgTable('hives', {
   privacy: text('privacy', { enum: ['PUBLIC', 'FRIENDS', 'PRIVATE'] })
     .notNull()
     .default('PRIVATE'),
+  explorable: boolean('explorable').notNull().default(false),
   status: text('status', { enum: ['ACTIVE', 'COMPLETED'] })
     .notNull()
     .default('ACTIVE'),
@@ -917,6 +924,27 @@ export const hiveInvites = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (t) => [uniqueIndex('unique_hive_invite_idx').on(t.hiveId, t.invitedUserId)],
+);
+
+export const hiveJoinRequests = pgTable(
+  'hive_join_requests',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    hiveId: text('hive_id')
+      .notNull()
+      .references(() => hives.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.clerkId, { onDelete: 'cascade' }),
+    status: text('status', { enum: ['PENDING', 'APPROVED', 'REJECTED'] })
+      .notNull()
+      .default('PENDING'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('unique_hive_join_request_idx').on(t.hiveId, t.userId)],
 );
 
 export const hiveChapterClaims = pgTable(
@@ -1296,6 +1324,7 @@ export const hivesRelations = relations(hives, ({ one, many }) => ({
   book: one(books, { fields: [hives.bookId], references: [books.id] }),
   members: many(hiveMembers),
   invites: many(hiveInvites),
+  joinRequests: many(hiveJoinRequests),
   outlineItems: many(hiveOutlineItems),
   wikiEntries: many(hiveWikiEntries),
   chapterClaims: many(hiveChapterClaims),
@@ -1325,6 +1354,11 @@ export const hiveInvitesRelations = relations(hiveInvites, ({ one }) => ({
     references: [users.clerkId],
     relationName: 'sentHiveInvites',
   }),
+}));
+
+export const hiveJoinRequestsRelations = relations(hiveJoinRequests, ({ one }) => ({
+  hive: one(hives, { fields: [hiveJoinRequests.hiveId], references: [hives.id] }),
+  user: one(users, { fields: [hiveJoinRequests.userId], references: [users.clerkId] }),
 }));
 
 export const hiveChapterClaimsRelations = relations(hiveChapterClaims, ({ one }) => ({

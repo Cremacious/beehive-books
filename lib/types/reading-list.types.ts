@@ -11,6 +11,7 @@ export type ReadingList = {
   currentlyReadingId: string | null;
   currentlyReadingTitle: string | null;
   currentlyReadingAuthor: string | null;
+  explorable: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -33,6 +34,7 @@ export type ReadingListFormData = {
   title: string;
   description: string;
   privacy: Privacy;
+  explorable: boolean;
 };
 
 export type BookEntryData = {
