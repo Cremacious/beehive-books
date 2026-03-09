@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Globe, Lock, Users, Crown, Shield, Check, Settings } from 'lucide-react';
+import BackButton from '@/components/shared/back-button';
 import { Button } from '@/components/ui/button';
 import JoinClubButton from './join-club-button';
 import ClubProgress from './club-progress';
@@ -32,6 +33,7 @@ export default function ClubDashboard({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto px-4 py-6 md:px-8">
+      <BackButton href="/clubs" label="Clubs" className="mb-2" />
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">

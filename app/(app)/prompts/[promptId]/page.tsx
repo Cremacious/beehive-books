@@ -103,7 +103,7 @@ export default async function PromptDetailPage({ params }: Props) {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-4xl mx-auto">
-      <BackButton href="/prompts" label="Prompts" />
+      <BackButton href="/prompts" label="Prompts" className="mb-6" />
 
       
       <div className="mt-6 rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl overflow-hidden">

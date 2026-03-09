@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import BackButton from '@/components/shared/back-button';
 import { getClubAction, getClubDiscussionsAction } from '@/lib/actions/club.actions';
 import DiscussionList from '@/components/clubs/discussion-list';
 import type { Metadata } from 'next';
@@ -38,12 +37,7 @@ export default async function ClubDiscussionsPage({
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-4xl mx-auto">
-      <Link
-        href={`/clubs/${clubId}`}
-        className="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to {club.name}
-      </Link>
+      <BackButton href={`/clubs/${clubId}`} label={club.name} className="mb-6" />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white mainFont">Discussions</h1>
       </div>

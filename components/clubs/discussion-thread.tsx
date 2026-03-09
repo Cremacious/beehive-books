@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ArrowLeft,
   Heart,
   Trash2,
   Pin,
@@ -98,14 +96,6 @@ export default function DiscussionThread({
 
   return (
     <div>
-      <Link
-        href={`/clubs/${clubId}/discussions`}
-        className="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white mb-5 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Discussions
-      </Link>
-
       <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-5 mb-5">
         {discussion.isPinned && (
           <div className="flex items-center gap-1.5 mb-3">

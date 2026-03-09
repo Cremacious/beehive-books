@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Users, Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useClubStore } from '@/lib/stores/club-store';
+import BackButton from '@/components/shared/back-button';
 
 interface ClubGateProps {
   clubId: string;
@@ -46,6 +47,8 @@ export default function ClubGate({
   };
 
   return (
+    <div className="px-4 pt-6 md:px-8">
+      <BackButton href="/clubs" label="Clubs" className="mb-6" />
     <div className="flex min-h-[60vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md rounded-2xl bg-[#252525] border border-[#2a2a2a] p-8 text-center">
         <div className="w-14 h-14 rounded-full bg-[#FFC300]/15 flex items-center justify-center mx-auto mb-5">
@@ -82,6 +85,7 @@ export default function ClubGate({
           <p className="mt-3 text-xs text-red-400">{error}</p>
         )}
       </div>
+    </div>
     </div>
   );
 }

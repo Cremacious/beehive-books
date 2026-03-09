@@ -10,6 +10,7 @@ import {
 import ClubDashboard from '@/components/clubs/club-dashboard';
 import ClubGate from '@/components/clubs/club-gate';
 import type { Metadata } from 'next';
+import BackButton from '@/components/shared/back-button';
 
 export async function generateMetadata({
   params,

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 // import { auth } from '@clerk/nextjs/server';
 import { getHiveAction } from '@/lib/actions/hive.actions';
 import HiveNav from '@/components/hive/hive-nav';
+import BackButton from '@/components/shared/back-button';
 
 interface HiveLayoutProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
+      <BackButton href="/hive" label="Hives" className="mb-4" />
       {isMember && <HiveNav hiveId={hiveId} isOwner={isOwner} />}
       {children}
     </div>
