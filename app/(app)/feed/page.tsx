@@ -264,7 +264,7 @@ function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
 function QuickLinksBar() {
   return (
     <div className="mb-8">
-      <p className="text-xs font-semibold text-white/30 uppercase tracking-[0.15em] mb-3">
+      <p className="text-xs font-semibold text-white/80 uppercase tracking-[0.15em] mb-3">
         Quick Access
       </p>
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
@@ -280,7 +280,7 @@ function QuickLinksBar() {
               >
                 <Icon className={`w-4 h-4 ${color}`} />
               </div>
-              <span className="text-[11px] font-medium text-white/50 group-hover:text-white/80 transition-colors text-center leading-tight">
+              <span className="text-[11px] font-medium text-white group-hover:text-white/80 transition-colors text-center leading-tight">
                 {label}
               </span>
             </Link>
@@ -295,19 +295,19 @@ function NewUserWelcome() {
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-[#FFC300]/20 bg-[#FFC300]/5 p-6 text-center">
-        <div className="text-4xl mb-3">🐝</div>
+    
         <h2 className="text-xl font-bold text-white mainFont mb-1">
           Welcome to Beehive!
         </h2>
-        <p className="text-sm text-white/60 max-w-md mx-auto">
-          This is your home feed — once you add friends, you&apos;ll see their
+        <p className="text-sm text-white/80 max-w-md mx-auto">
+          This is your home feed! Once you add friends, you&apos;ll see their
           latest books, chapters, clubs, and writing activity right here. For
-          now, explore everything Beehive has to offer.
+          now, explore everything Beehive Books has to offer.
         </p>
       </div>
 
       <div>
-        <p className="text-xs font-semibold text-white/30 uppercase tracking-[0.15em] mb-3">
+        <p className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-3">
           Everything you can do
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -454,8 +454,8 @@ export default async function UserHomePage() {
         </h1>
         <p className="mt-1 text-sm text-white/60">
           {hasFriends
-            ? 'The latest from your friends on Beehive'
-            : 'Your home on Beehive — get started below'}
+            ? 'The latest from your friends on Beehive Books.'
+            : 'Your home on Beehive Books! Get started below.'}
         </p>
       </div>
 

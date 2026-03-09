@@ -34,11 +34,11 @@ export default async function ExploreBooksPage({
           <BookOpen className="w-6 h-6 text-[#FFC300]" />
           Books
         </h1>
-        <p className="mt-1 text-sm text-white/80">
+        {/* <p className="mt-1 text-sm text-white/80">
           {books.length > 0
             ? `${books.length} book${books.length !== 1 ? 's' : ''} found`
             : 'No books found'}
-        </p>
+        </p> */}
       </div>
 
       <ExploreSearchBar placeholder="Search by title or author..." />

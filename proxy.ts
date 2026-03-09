@@ -32,7 +32,7 @@ export default clerkMiddleware(async (auth, request) => {
   }
 
   if (onboarded && (isOnboardingRoute(request) || isRootRoute(request))) {
-    return NextResponse.redirect(new URL('/home', request.url));
+    return NextResponse.redirect(new URL('/feed', request.url));
   }
 });
 

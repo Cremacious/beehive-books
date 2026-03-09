@@ -103,7 +103,7 @@ export default function OnboardingPage() {
         return;
       }
 
-      router.push('/home');
+      router.push('/feed');
     });
   }
 

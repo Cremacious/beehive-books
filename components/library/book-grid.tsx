@@ -64,7 +64,7 @@ function BookListItem({ book }: { book: Book }) {
   );
 }
 
-const PLACEHOLDER_COUNT = 10;
+const PLACEHOLDER_COUNT = 8;
 
 function Placeholder() {
   return (
@@ -87,7 +87,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
   const [view, setView] = useState<ViewMode>('grid');
   const [page, setPage] = useState(1);
 
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 8;
 
   const privacyCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: books.length };
@@ -287,7 +287,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
       {displayed.length > 0 && (
         <>
           {view === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {displayed.map((book) => (
                 <BookCard key={book.id} book={book} />
               ))}

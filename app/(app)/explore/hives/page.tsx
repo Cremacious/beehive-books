@@ -31,11 +31,11 @@ export default async function ExploreHivesPage({
           <Hexagon className="w-6 h-6 text-[#FFC300]" />
           Writing Hives
         </h1>
-        <p className="mt-1 text-sm text-white/80">
+        {/* <p className="mt-1 text-sm text-white/80">
           {hives.length > 0
             ? `${hives.length} hive${hives.length !== 1 ? 's' : ''} found`
             : 'No hives found'}
-        </p>
+        </p> */}
       </div>
 
       <ExploreSearchBar placeholder="Search hives by name, genre, or tags..." />

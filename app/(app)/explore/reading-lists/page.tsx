@@ -25,11 +25,11 @@ export default async function ExploreReadingListsPage({
           <List className="w-6 h-6 text-emerald-400" />
           Reading Lists
         </h1>
-        <p className="mt-1 text-sm text-white/80">
+        {/* <p className="mt-1 text-sm text-white/80">
           {lists.length > 0
             ? `${lists.length} list${lists.length !== 1 ? 's' : ''} found`
             : 'No reading lists found'}
-        </p>
+        </p> */}
       </div>
 
       <ExploreSearchBar placeholder="Search reading lists..." />

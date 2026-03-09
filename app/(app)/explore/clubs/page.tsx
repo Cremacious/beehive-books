@@ -26,11 +26,11 @@ export default async function ExploreClubsPage({
           <Users className="w-6 h-6 text-orange-400" />
           Book Clubs
         </h1>
-        <p className="mt-1 text-sm text-white/80">
+        {/* <p className="mt-1 text-sm text-white/80">
           {clubs.length > 0
             ? `${clubs.length} club${clubs.length !== 1 ? 's' : ''} found`
             : 'No clubs found'}
-        </p>
+        </p> */}
       </div>
 
       <ExploreSearchBar placeholder="Search clubs by name, description, or tag..." />

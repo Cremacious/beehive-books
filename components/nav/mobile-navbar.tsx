@@ -25,7 +25,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo.png';
 
 const navItems = [
-  { href: '/home', label: 'Feed', icon: Home },
+  { href: '/feed', label: 'Feed', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
   { href: '/hive', label: 'Hives', icon: Hexagon },
@@ -53,7 +53,7 @@ export function MobileNavbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-4 shadow-lg">
-        <Link href="/home" className="flex items-center shrink-0">
+        <Link href="/feed" className="flex items-center shrink-0">
           <Image
             src={logoImage}
             alt="Beehive Books"
@@ -152,50 +152,47 @@ export function MobileNavbar() {
         )}
 
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
-          <ul className="space-y-0.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(href);
               return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    onClick={closeDrawer}
-                    className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-[15px] font-semibold transition-all ${
-                      active
-                        ? 'text-[#FFC300]'
-                        : 'text-white/90 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <Icon
-                      className="w-5.5 h-5.5 shrink-0"
-                      strokeWidth={active ? 2.5 : 1.75}
-                    />
-                    {label}
-                  </Link>
-                </li>
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={closeDrawer}
+                  className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                    active
+                      ? 'text-[#FFC300] bg-[#FFC300]/8'
+                      : 'text-white/80 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Icon
+                    className="w-5 h-5 shrink-0"
+                    strokeWidth={active ? 2.5 : 1.75}
+                  />
+                  {label}
+                </Link>
               );
             })}
 
             {user && (
-              <li>
-                <Link
-                  href={avatarHref}
-                  onClick={closeDrawer}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-[15px] font-semibold transition-all ${
-                    isActive('/u')
-                      ? 'text-[#FFC300]'
-                      : 'text-white/70 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <User
-                    className="w-5.5 h-5.5 shrink-0"
-                    strokeWidth={isActive('/u') ? 2.5 : 1.75}
-                  />
-                  Profile
-                </Link>
-              </li>
+              <Link
+                href={avatarHref}
+                onClick={closeDrawer}
+                className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  isActive('/u')
+                    ? 'text-[#FFC300] bg-[#FFC300]/8'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <User
+                  className="w-5 h-5 shrink-0"
+                  strokeWidth={isActive('/u') ? 2.5 : 1.75}
+                />
+                Profile
+              </Link>
             )}
-          </ul>
+          </div>
         </nav>
 
         <div className="px-3 pb-8 pt-3 border-t border-[#2a2a2a]">

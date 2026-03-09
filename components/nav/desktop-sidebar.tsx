@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 const navItems = [
-  { href: '/home',          label: 'Feed',          icon: Home },
+  { href: '/feed',          label: 'Feed',          icon: Home },
   { href: '/explore',       label: 'Explore',       icon: Compass },
   { href: '/library',       label: 'Library',       icon: Library },
   { href: '/hive',          label: 'Hives',          icon: Hexagon },
