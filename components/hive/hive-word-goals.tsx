@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   getWordGoalsAction,
   getWordLogsAction,
@@ -81,7 +82,6 @@ function GoalCard({
   myRole: HiveRole;
   onDeactivate: (id: string) => Promise<void>;
 }) {
-  const [deactivating, setDeactivating] = useState(false);
   const pct = Math.min(
     100,
     Math.round((goal.currentWords / goal.targetWords) * 100),
@@ -89,13 +89,6 @@ function GoalCard({
   const reached = pct >= 100;
   const meta = GOAL_TYPE_META[goal.type];
   const canDeactivate = myRole === 'OWNER' || myRole === 'MODERATOR';
-
-  const handleDeactivate = async () => {
-    if (!confirm('Deactivate this goal?')) return;
-    setDeactivating(true);
-    await onDeactivate(goal.id);
-    setDeactivating(false);
-  };
 
   return (
     <div
@@ -158,18 +151,17 @@ function GoalCard({
           )}
         </div>
         {canDeactivate && goal.isActive && (
-          <button
-            onClick={handleDeactivate}
-            disabled={deactivating}
-            className="p-1 text-white hover:text-red-400 transition-colors"
-            title="Deactivate goal"
-          >
-            {deactivating ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <X className="w-5 h-5" />
-            )}
-          </button>
+          <DeleteDialog
+            itemType="goal"
+            onDelete={async () => {
+              await onDeactivate(goal.id);
+            }}
+            trigger={
+              <button className="p-1 text-white hover:text-red-400 transition-colors" title="Deactivate goal">
+                <X className="w-5 h-5" />
+              </button>
+            }
+          />
         )}
       </div>
     </div>

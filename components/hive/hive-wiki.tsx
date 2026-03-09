@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   getWikiEntriesAction,
   createWikiEntryAction,
@@ -250,21 +251,12 @@ function EntryCard({
   onDelete: (id: string) => void;
   onReadMore: (entry: WikiEntryWithAuthor) => void;
 }) {
-  const [deleting, setDeleting] = useState(false);
   const catConf = CATEGORIES.find((c) => c.value === entry.category)!;
   const CatIcon = catConf.Icon;
   const canEdit =
     entry.authorId === currentUserId ||
     myRole === 'OWNER' ||
     myRole === 'MODERATOR';
-
-  const handleDelete = async () => {
-    if (!confirm(`Delete "${entry.title}"? This cannot be undone.`)) return;
-    setDeleting(true);
-    await deleteWikiEntryAction(entry.id);
-    onDelete(entry.id);
-    setDeleting(false);
-  };
 
   const preview = entry.content.replace(/<[^>]+>/g, '').slice(0, 160);
 
@@ -290,17 +282,19 @@ function EntryCard({
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="p-1 text-white hover:text-red-400 transition-colors"
-            >
-              {deleting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Trash2 className="w-3.5 h-3.5" />
-              )}
-            </button>
+            <DeleteDialog
+              itemType="entry"
+              itemName={entry.title}
+              onDelete={async () => {
+                await deleteWikiEntryAction(entry.id);
+                onDelete(entry.id);
+              }}
+              trigger={
+                <button className="p-1 text-white hover:text-red-400 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              }
+            />
           </div>
         )}
       </div>

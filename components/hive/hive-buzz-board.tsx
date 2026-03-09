@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   getBuzzItemsAction,
   createBuzzItemAction,
@@ -193,22 +194,12 @@ function BuzzDetail({
   onDelete: (id: string) => void;
   onClose: () => void;
 }) {
-  const [deleting, setDeleting] = useState(false);
   const typeConf = buzzTypeConfig(item.type);
   const Icon = typeConf.Icon;
   const canDelete =
     item.authorId === currentUserId ||
     myRole === 'OWNER' ||
     myRole === 'MODERATOR';
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this buzz? This cannot be undone.')) return;
-    setDeleting(true);
-    await deleteBuzzItemAction(item.id);
-    onDelete(item.id);
-    setDeleting(false);
-    onClose();
-  };
 
   return (
     <div className="space-y-4">
@@ -241,19 +232,20 @@ function BuzzDetail({
 
       {canDelete && (
         <div className="pt-2 border-t border-[#2a2a2a]">
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="w-3.5 h-3.5" />
-            )}
-            Delete
-          </Button>
+          <DeleteDialog
+            itemType="buzz"
+            onDelete={async () => {
+              await deleteBuzzItemAction(item.id);
+              onDelete(item.id);
+              onClose();
+            }}
+            trigger={
+              <Button size="sm" variant="destructive">
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </Button>
+            }
+          />
         </div>
       )}
     </div>

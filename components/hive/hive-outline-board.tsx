@@ -37,6 +37,7 @@ import {
   FolderPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   getOutlineItemsAction,
   createOutlineItemAction,
@@ -321,7 +322,6 @@ function SortableItemRow({
     isDragging,
   } = useSortable({ id: item.id, data: { parentId: item.parentId } });
 
-  const [deleting, setDeleting] = useState(false);
   const conf = typeConfig(item.type);
   const Icon = conf.Icon;
 
@@ -329,14 +329,6 @@ function SortableItemRow({
     item.createdById === currentUserId ||
     myRole === 'OWNER' ||
     myRole === 'MODERATOR';
-
-  const handleDelete = async () => {
-    if (!confirm(`Delete "${item.title}"?`)) return;
-    setDeleting(true);
-    await deleteOutlineItemAction(item.id);
-    onDelete(item.id);
-    setDeleting(false);
-  };
 
   return (
     <div
@@ -385,18 +377,19 @@ function SortableItemRow({
           <Button size="sm" onClick={() => onEdit(item)}>
             <Pencil className="w-3.5 h-3.5" />
           </Button>
-          <Button
-            onClick={handleDelete}
-            disabled={deleting}
-            variant="destructive"
-            size="sm"
-          >
-            {deleting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-          </Button>
+          <DeleteDialog
+            itemType="item"
+            itemName={item.title}
+            onDelete={async () => {
+              await deleteOutlineItemAction(item.id);
+              onDelete(item.id);
+            }}
+            trigger={
+              <Button variant="destructive" size="sm" type="button">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            }
+          />
         </div>
       )}
     </div>
@@ -469,22 +462,11 @@ function SortableGroupCard({
   } = useSortable({ id: group.id, data: { parentId: null, isGroup: true } });
 
   const [collapsed, setCollapsed] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const canEdit =
     group.createdById === currentUserId ||
     myRole === 'OWNER' ||
     myRole === 'MODERATOR';
-
-  const handleDeleteGroup = async () => {
-    if (
-      !confirm(`Delete group "${group.title}"? Items inside will be ungrouped.`)
-    )
-      return;
-    setDeleting(true);
-    await onDeleteGroup(group.id);
-    setDeleting(false);
-  };
 
   const childIds = childItems.map((c) => c.id);
 
@@ -534,18 +516,16 @@ function SortableGroupCard({
             <Button size="sm" onClick={() => onEditGroup(group)}>
               <Pencil className="w-3 h-3" />
             </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={handleDeleteGroup}
-              disabled={deleting}
-            >
-              {deleting ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
-                <Trash2 className="w-3 h-3" />
-              )}
-            </Button>
+            <DeleteDialog
+              itemType="group"
+              itemName={group.title}
+              onDelete={async () => { onDeleteGroup(group.id); }}
+              trigger={
+                <Button variant="destructive" size="sm" type="button">
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              }
+            />
           </div>
         )}
       </div>

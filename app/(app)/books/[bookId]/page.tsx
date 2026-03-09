@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Edit, Share2, BookOpen, FileText, MessageSquare } from 'lucide-react';
+import { Edit, BookOpen, FileText, MessageSquare } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
 import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
+import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
@@ -81,12 +82,7 @@ export default async function PublicBookPage({
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <Button variant={'outline'} asChild size="sm">
-                    <Link href={`/library/${book.id}/share`}>
-                      <Share2 className="w-3.5 h-3.5" />
-                      Share
-                    </Link>
-                  </Button>
+                  <ShareBookButton bookId={book.id} />
                   {isOwner && (
                     <Button asChild size="sm">
                       <Link href={`/library/${book.id}/edit`}>
@@ -134,9 +130,7 @@ export default async function PublicBookPage({
                 </Link>
               </Button>
             )}
-            <Button variant="outline" size="icon-sm">
-              <Share2 />
-            </Button>
+            <ShareBookButton bookId={book.id} variant="icon" />
           </div>
         </div>
 

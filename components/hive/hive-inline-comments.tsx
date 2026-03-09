@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   getInlineCommentsAction,
   getChapterContentAction,
@@ -199,7 +200,6 @@ function AnnotationDetail({
   onClose: () => void;
 }) {
   const [resolving, setResolving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const conf = layerConfig(comment.layer);
   const Icon = conf.Icon;
   const isResolved = comment.status === 'RESOLVED';
@@ -213,15 +213,6 @@ function AnnotationDetail({
     await resolveInlineCommentAction(comment.id);
     onResolve(comment.id, !isResolved);
     setResolving(false);
-    onClose();
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this annotation?')) return;
-    setDeleting(true);
-    await deleteInlineCommentAction(comment.id);
-    onDelete(comment.id);
-    setDeleting(false);
     onClose();
   };
 
@@ -294,20 +285,20 @@ function AnnotationDetail({
             )}
             {isResolved ? 'Reopen' : 'Mark Resolved'}
           </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-            className="ml-auto"
-          >
-            {deleting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="w-3.5 h-3.5" />
-            )}
-            Delete
-          </Button>
+          <DeleteDialog
+            itemType="annotation"
+            onDelete={async () => {
+              await deleteInlineCommentAction(comment.id);
+              onDelete(comment.id);
+              onClose();
+            }}
+            trigger={
+              <Button size="sm" variant="destructive" className="ml-auto">
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </Button>
+            }
+          />
         </div>
       )}
     </div>
@@ -702,7 +693,6 @@ export default function HiveInlineComments({
             onCancel={() => setShowAddForm(false)}
           />
         )}
-
 
         <div className="lg:hidden space-y-3">
           <LayerFilterDropdown

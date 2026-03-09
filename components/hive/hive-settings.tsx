@@ -15,6 +15,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Popup from '@/components/ui/popup';
 import HiveForm from '@/components/hive/hive-form';
 import HiveInvitePicker from '@/components/hive/hive-invite-picker';
 import {
@@ -83,6 +84,7 @@ export default function HiveSettings({
   const [newAuthor, setNewAuthor] = useState('');
   const [saving, setSaving] = useState(false);
   const [unlinking, setUnlinking] = useState(false);
+  const [unlinkOpen, setUnlinkOpen] = useState(false);
   const [bookError, setBookError] = useState('');
 
   const handleSaveBook = async () => {
@@ -118,15 +120,10 @@ export default function HiveSettings({
   };
 
   const handleUnlink = async () => {
-    if (
-      !confirm(
-        'Unlink the book from this hive? The book will remain in your library.',
-      )
-    )
-      return;
     setUnlinking(true);
     const result = await unlinkBookFromHiveAction(hive.id);
     if (result.success) {
+      setUnlinkOpen(false);
       router.refresh();
     } else {
       setBookError(result.message);
@@ -174,16 +171,60 @@ export default function HiveSettings({
             <Button
               variant="destructive"
               size="sm"
-              onClick={handleUnlink}
-              disabled={unlinking}
+              onClick={() => setUnlinkOpen(true)}
+              type="button"
             >
-              {unlinking ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Trash2 className="w-4 h-4" />
-              )}
+              <Trash2 className="w-4 h-4" />
               Unlink
             </Button>
+
+            <Popup
+              open={unlinkOpen}
+              onClose={() => !unlinking && setUnlinkOpen(false)}
+              title="Unlink Book"
+              maxWidth="sm"
+            >
+              <div className="space-y-4">
+                <p className="text-sm text-white/80">
+                  Are you sure you want to unlink{' '}
+                  <span className="font-semibold text-white">&ldquo;{linkedBook.title}&rdquo;</span>{' '}
+                  from this hive? The book will remain in your library.
+                </p>
+
+                {bookError && (
+                  <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg px-3 py-2">
+                    {bookError}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-end gap-3 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUnlinkOpen(false)}
+                    disabled={unlinking}
+                    type="button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleUnlink}
+                    disabled={unlinking}
+                    type="button"
+                  >
+                    {unlinking ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Unlinking…
+                      </>
+                    ) : (
+                      'Unlink'
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </Popup>
           </div>
         ) : (
           <div className="space-y-3">
