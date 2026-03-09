@@ -9,13 +9,13 @@ import {
   Plus,
   X,
   Loader2,
-  Trash2,
   BookOpen,
   Sparkles,
   Check,
   Compass,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import type { HiveSchemaData } from '@/lib/validations/hive.schema';
@@ -61,7 +61,6 @@ export default function HiveForm({
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [error, setError] = useState('');
-  const [deleting, setDeleting] = useState(false);
   const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>(
     'new',
   );
@@ -139,18 +138,6 @@ export default function HiveForm({
       } else {
         setError(result.message);
       }
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this hive? This cannot be undone.')) return;
-    setDeleting(true);
-    const result = await store.deleteHive(hiveId!);
-    if (result.success) {
-      router.push('/hive');
-    } else {
-      setError(result.message);
-      setDeleting(false);
     }
   };
 
@@ -435,19 +422,14 @@ export default function HiveForm({
 
       <div className="flex items-center justify-between pt-2">
         {mode === 'edit' ? (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            Delete Hive
-          </Button>
+          <DeleteDialog
+            itemType="hive"
+            onDelete={async () => {
+              const result = await store.deleteHive(hiveId!);
+              if (!result.success) throw new Error(result.message);
+              router.push('/hive');
+            }}
+          />
         ) : (
           <div />
         )}

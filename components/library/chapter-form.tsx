@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, FileText, FolderOpen, Loader2, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
   chapterSchema,
@@ -29,8 +30,6 @@ export function ChapterForm({
   const isEdit = mode === 'edit';
   const router = useRouter();
 
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [serverError, setServerError] = useState('');
   const [contentMode, setContentMode] = useState<'write' | 'upload'>('write');
   const [docxParsing, setDocxParsing] = useState(false);
@@ -105,19 +104,6 @@ export function ChapterForm({
     }
   }
 
-  async function handleDelete() {
-    if (!deleteConfirm) {
-      setDeleteConfirm(true);
-      return;
-    }
-    setIsDeleting(true);
-    const result = await deleteChapterAction(bookId, chapter!.id);
-    if (result.success) router.push(`/library/${bookId}`);
-    else {
-      setIsDeleting(false);
-      setServerError(result.message);
-    }
-  }
 
   const inputClass =
     'w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white ' +
@@ -296,18 +282,15 @@ export function ChapterForm({
 
           <div className="flex items-center justify-between pt-2">
             {isEdit ? (
-              <Button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                variant="destructive"
-              >
-                {isDeleting
-                  ? 'Deleting…'
-                  : deleteConfirm
-                    ? 'Confirm delete?'
-                    : 'Delete Chapter'}
-              </Button>
+              <DeleteDialog
+                itemType="chapter"
+                itemName={chapter?.title}
+                onDelete={async () => {
+                  const result = await deleteChapterAction(bookId, chapter!.id);
+                  if (!result.success) throw new Error(result.message);
+                  router.push(`/library/${bookId}`);
+                }}
+              />
             ) : (
               <div />
             )}

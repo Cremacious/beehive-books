@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Check, Plus, X, Loader2, Trash2, Users, Compass } from 'lucide-react';
+import { Check, Plus, X, Loader2, Users, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useClubStore } from '@/lib/stores/club-store';
 import { clubSchema } from '@/lib/validations/club.schema';
 import type { ClubSchemaData } from '@/lib/validations/club.schema';
@@ -32,7 +33,6 @@ export default function ClubForm({
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
-  const [deleting, setDeleting] = useState(false);
 
   function toggleInvite(clerkId: string) {
     setInvitedIds((prev) =>
@@ -96,18 +96,6 @@ export default function ClubForm({
       } else {
         setError(result.message);
       }
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this club? This cannot be undone.')) return;
-    setDeleting(true);
-    const result = await store.deleteClub(clubId!);
-    if (result.success) {
-      router.push('/clubs');
-    } else {
-      setError(result.message);
-      setDeleting(false);
     }
   };
 
@@ -349,19 +337,14 @@ export default function ClubForm({
 
       <div className="flex items-center justify-between pt-2">
         {mode === 'edit' ? (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            Delete Club
-          </Button>
+          <DeleteDialog
+            itemType="club"
+            onDelete={async () => {
+              const result = await store.deleteClub(clubId!);
+              if (!result.success) throw new Error(result.message);
+              router.push('/clubs');
+            }}
+          />
         ) : (
           <div />
         )}

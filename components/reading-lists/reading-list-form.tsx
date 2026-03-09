@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Trash2, BookMarked, Compass } from 'lucide-react';
+import { Plus, X, Loader2, BookMarked, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { readingListSchema } from '@/lib/validations/reading-list.schema';
 import type {
@@ -35,7 +36,6 @@ export function ReadingListForm({
     null,
   );
   const [error, setError] = useState('');
-  const [deleting, setDeleting] = useState(false);
 
   const form = useForm<ReadingListFormData>({
     resolver: zodResolver(readingListSchema),
@@ -96,18 +96,6 @@ export function ReadingListForm({
       } else {
         setError(result.message);
       }
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm(`Delete this reading list? This cannot be undone.`)) return;
-    setDeleting(true);
-    const result = await store.deleteList(listId!);
-    if (result.success) {
-      router.push('/reading-lists');
-    } else {
-      setError(result.message);
-      setDeleting(false);
     }
   };
 
@@ -328,19 +316,14 @@ export function ReadingListForm({
 
       <div className="flex items-center justify-between pt-2">
         {mode === 'edit' ? (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            Delete List
-          </Button>
+          <DeleteDialog
+            itemType="reading list"
+            onDelete={async () => {
+              const result = await store.deleteList(listId!);
+              if (!result.success) throw new Error(result.message);
+              router.push('/reading-lists');
+            }}
+          />
         ) : (
           <div />
         )}

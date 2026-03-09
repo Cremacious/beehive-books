@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import {
   GripVertical,
   FolderOpen,
   MoreHorizontal,
-  Loader2,
   Trash2,
 } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books.types';
@@ -47,8 +47,7 @@ export function SortableChapterRow({
 
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -117,53 +116,21 @@ export function SortableChapterRow({
           className="flex items-center gap-2 shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
-          {isOwner && confirmDelete ? (
-            <>
-              <span className="text-xs text-white hidden sm:inline">
-                Delete this chapter?
-              </span>
-              <Button
-                size="sm"
-                variant="destructive"
-                disabled={deleting}
-                onClick={async () => {
-                  setDeleting(true);
-                  onDeleteChapter();
-                  setDeleting(false);
-                  setConfirmDelete(false);
-                }}
-              >
-                {deleting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  'Delete'
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setConfirmDelete(false)}
-              >
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link
-                href={`${basePath}/${bookId}/${chapter.id}`}
-                className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
-              >
-                Read
-              </Link>
-              {isOwner && (
+          <>
+            <Link
+              href={`${basePath}/${bookId}/${chapter.id}`}
+              className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
+            >
+              Read
+            </Link>
+            {isOwner && (
+              <>
                 <Link
                   href={`/library/${bookId}/${chapter.id}/edit`}
                   className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
                 >
                   Edit
                 </Link>
-              )}
-              {isOwner && (
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setShowMenu((v) => !v)}
@@ -220,8 +187,8 @@ export function SortableChapterRow({
                       )}
                       <button
                         onClick={() => {
-                          setConfirmDelete(true);
                           setShowMenu(false);
+                          setDeleteDialogOpen(true);
                         }}
                         className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
                       >
@@ -231,10 +198,20 @@ export function SortableChapterRow({
                     </div>
                   )}
                 </div>
-              )}
-            </>
-          )}
+              </>
+            )}
+          </>
         </div>
+      )}
+
+      {isOwner && (
+        <DeleteDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          itemType="chapter"
+          itemName={chapter.title}
+          onDelete={async () => { onDeleteChapter(); }}
+        />
       )}
     </div>
   );

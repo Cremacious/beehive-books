@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { createId } from '@paralleldrive/cuid2';
 import { Button } from '@/components/ui/button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {
   createBookAction,
@@ -50,8 +51,6 @@ export function BookForm({
   const [coverUrl, setCoverUrl] = useState<string | null>(
     book?.coverUrl ?? null,
   );
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [serverError, setServerError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [bookDocxOpen, setBookDocxOpen] = useState(false);
@@ -158,19 +157,6 @@ export function BookForm({
     router.push('/library');
   }
 
-  async function handleDelete() {
-    if (!deleteConfirm) {
-      setDeleteConfirm(true);
-      return;
-    }
-    setIsDeleting(true);
-    const result = await deleteBookAction(book!.id);
-    if (result.success) router.push('/library');
-    else {
-      setIsDeleting(false);
-      setServerError(result.message);
-    }
-  }
 
   const inputClass =
     'w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white ' +
@@ -580,18 +566,15 @@ export function BookForm({
 
           <div className="flex items-center justify-between pt-2">
             {isEdit ? (
-              <Button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                variant="destructive"
-              >
-                {isDeleting
-                  ? 'Deleting…'
-                  : deleteConfirm
-                    ? 'Confirm delete?'
-                    : 'Delete Book'}
-              </Button>
+              <DeleteDialog
+                itemType="book"
+                itemName={book?.title}
+                onDelete={async () => {
+                  const result = await deleteBookAction(book!.id);
+                  if (!result.success) throw new Error(result.message);
+                  router.push('/library');
+                }}
+              />
             ) : (
               <div />
             )}

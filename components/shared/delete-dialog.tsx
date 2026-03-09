@@ -14,6 +14,10 @@ interface DeleteDialogProps {
   onDelete: () => Promise<void>;
   /** The trigger element. Defaults to a destructive button labelled "Delete {itemType}". */
   trigger?: React.ReactNode;
+  /** Controlled open state. If provided, the component acts as a controlled dialog (no internal trigger click handler). */
+  open?: boolean;
+  /** Called when the dialog requests to close (controlled mode). */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function DeleteDialog({
@@ -21,10 +25,19 @@ export function DeleteDialog({
   itemName,
   onDelete,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: DeleteDialogProps) {
-  const [open, setOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+
+  const open = isControlled ? controlledOpen! : internalOpen;
+  function setOpen(v: boolean) {
+    if (isControlled) onOpenChange?.(v);
+    else setInternalOpen(v);
+  }
 
   async function handleDelete() {
     setDeleting(true);
@@ -42,14 +55,16 @@ export function DeleteDialog({
 
   return (
     <>
-      <span onClick={() => setOpen(true)}>
-        {trigger ?? (
-          <Button variant="destructive" type="button">
-            <Trash2 className="w-4 h-4" />
-            {label}
-          </Button>
-        )}
-      </span>
+      {!isControlled && (
+        <span onClick={() => setOpen(true)}>
+          {trigger ?? (
+            <Button variant="destructive" type="button">
+              <Trash2 className="w-4 h-4" />
+              {label}
+            </Button>
+          )}
+        </span>
+      )}
 
       <Popup open={open} onClose={() => !deleting && setOpen(false)} title={label} maxWidth="sm">
         <div className="space-y-4">
