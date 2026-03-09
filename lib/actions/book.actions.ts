@@ -699,3 +699,16 @@ export async function toggleCommentLikeAction(
     return { success: false, liked: !!existing };
   }
 }
+
+export async function getBookForExportAction(bookId: string) {
+  const { book } = await requireBookOwner(bookId);
+  const chapterRows = await db.query.chapters.findMany({
+    where: eq(chapters.bookId, bookId),
+    orderBy: (c, { asc }) => [asc(c.order)],
+    columns: { id: true, title: true, content: true, authorNotes: true, order: true },
+  });
+  return {
+    book: { title: book.title, author: book.author, description: book.description ?? '' },
+    chapters: chapterRows,
+  };
+}

@@ -82,7 +82,7 @@ export default async function PublicBookPage({
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <ShareBookButton bookId={book.id} />
+                  <ShareBookButton bookId={book.id} isOwner={isOwner} />
                   {isOwner && (
                     <Button asChild size="sm">
                       <Link href={`/library/${book.id}/edit`}>
@@ -130,7 +130,7 @@ export default async function PublicBookPage({
                 </Link>
               </Button>
             )}
-            <ShareBookButton bookId={book.id} variant="icon" />
+            <ShareBookButton bookId={book.id} variant="icon" isOwner={isOwner} />
           </div>
         </div>
 
