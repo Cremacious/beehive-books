@@ -5,7 +5,6 @@ import { Comfortaa } from 'next/font/google';
 import { Providers } from '@/app/providers';
 import './globals.css';
 
-//TODO: Fix issue with page shifting when uploading docx
 
 const comfortaa = Comfortaa({
   subsets: ['latin'],
