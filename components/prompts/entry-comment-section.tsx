@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
@@ -96,17 +97,34 @@ function ReplyItem({
 
   return (
     <div className="flex gap-3">
-      <Avatar
-        imageUrl={reply.user.imageUrl}
-        alt={displayName(reply.user)}
-        fallback={initials(reply.user)}
-        className="w-7 h-7 text-xs"
-      />
+      {reply.user.username ? (
+        <Link href={`/u/${reply.user.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
+          <Avatar
+            imageUrl={reply.user.imageUrl}
+            alt={displayName(reply.user)}
+            fallback={initials(reply.user)}
+            className="w-7 h-7 text-xs"
+          />
+        </Link>
+      ) : (
+        <Avatar
+          imageUrl={reply.user.imageUrl}
+          alt={displayName(reply.user)}
+          fallback={initials(reply.user)}
+          className="w-7 h-7 text-xs"
+        />
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-semibold text-white">
-            {displayName(reply.user)}
-          </span>
+          {reply.user.username ? (
+            <Link href={`/u/${reply.user.username}`} className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors">
+              {displayName(reply.user)}
+            </Link>
+          ) : (
+            <span className="text-sm font-semibold text-white">
+              {displayName(reply.user)}
+            </span>
+          )}
           <span className="text-sm text-white">{timeAgo(reply.createdAt)}</span>
         </div>
         <p className="text-sm text-white leading-relaxed">{reply.content}</p>
@@ -169,17 +187,34 @@ function CommentItem({
   return (
     <div>
       <div className="flex gap-3">
-        <Avatar
-          imageUrl={comment.user.imageUrl}
-          alt={displayName(comment.user)}
-          fallback={initials(comment.user)}
-          className="w-8 h-8 text-xs"
-        />
+        {comment.user.username ? (
+          <Link href={`/u/${comment.user.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
+            <Avatar
+              imageUrl={comment.user.imageUrl}
+              alt={displayName(comment.user)}
+              fallback={initials(comment.user)}
+              className="w-8 h-8 text-xs"
+            />
+          </Link>
+        ) : (
+          <Avatar
+            imageUrl={comment.user.imageUrl}
+            alt={displayName(comment.user)}
+            fallback={initials(comment.user)}
+            className="w-8 h-8 text-xs"
+          />
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-semibold text-white">
-              {displayName(comment.user)}
-            </span>
+            {comment.user.username ? (
+              <Link href={`/u/${comment.user.username}`} className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors">
+                {displayName(comment.user)}
+              </Link>
+            ) : (
+              <span className="text-sm font-semibold text-white">
+                {displayName(comment.user)}
+              </span>
+            )}
             <span className="text-sm text-white">
               {timeAgo(comment.createdAt)}
             </span>

@@ -6,6 +6,7 @@ import {
   getClubMembersAction,
   getClubReadingListAction,
   checkClubJoinRequestStatusAction,
+  getPendingJoinRequestsAction,
 } from '@/lib/actions/club.actions';
 import ClubDashboard from '@/components/clubs/club-dashboard';
 import ClubGate from '@/components/clubs/club-gate';
@@ -57,10 +58,13 @@ export default async function ClubDashboardPage({
     );
   }
 
-  const [{ discussions }, members, readingList] = await Promise.all([
+  const isOwner = club.myRole === 'OWNER';
+
+  const [{ discussions }, members, readingList, pendingRequests] = await Promise.all([
     getClubDiscussionsAction(clubId, 1),
     getClubMembersAction(clubId),
     getClubReadingListAction(clubId),
+    isOwner ? getPendingJoinRequestsAction(clubId) : Promise.resolve([]),
   ]);
 
   return (
@@ -70,6 +74,7 @@ export default async function ClubDashboardPage({
       members={members}
       readingList={readingList}
       currentUserId={userId}
+      pendingRequestCount={pendingRequests.length}
     />
   );
 }

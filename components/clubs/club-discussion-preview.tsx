@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { MessageSquare, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ClubDiscussionWithAuthor } from '@/lib/types/club.types';
@@ -14,28 +15,46 @@ function timeAgo(date: Date): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function AuthorAvatar({
+function AuthorChip({
   author,
 }: {
   author: ClubDiscussionWithAuthor['author'];
 }) {
-  const name = author.firstName ?? author.username ?? '?';
+  const router = useRouter();
+  const name = author.username ?? author.firstName ?? '?';
   const initials = name.charAt(0).toUpperCase();
-  if (author.imageUrl) {
-    return (
-      <Image
-        src={author.imageUrl}
-        alt={name}
-        width={24}
-        height={24}
-        className="w-6 h-6 rounded-full object-cover"
-      />
-    );
-  }
-  return (
+
+  const avatar = author.imageUrl ? (
+    <Image
+      src={author.imageUrl}
+      alt={name}
+      width={24}
+      height={24}
+      className="w-6 h-6 rounded-full object-cover"
+    />
+  ) : (
     <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
       <span className="text-xs font-semibold text-[#FFC300]">{initials}</span>
     </div>
+  );
+
+  if (!author.username) {
+    return (
+      <div className="flex items-center gap-1.5">
+        {avatar}
+        <span className="text-xs text-white/80">{name}</span>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/u/${author.username!}`); }}
+      className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+    >
+      {avatar}
+      <span className="text-xs text-white/80 hover:text-white transition-colors">{name}</span>
+    </button>
   );
 }
 
@@ -100,12 +119,7 @@ export default function ClubDiscussionPreview({
               </p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <AuthorAvatar author={discussion.author} />
-                  <span className="text-xs text-white/80">
-                    {discussion.author.username ??
-                      discussion.author.firstName ??
-                      'Unknown'}
-                  </span>
+                  <AuthorChip author={discussion.author} />
                   <span className="text-xs text-white/80">·</span>
                   <span className="text-xs text-white/80">
                     {timeAgo(discussion.createdAt)}

@@ -56,7 +56,7 @@ function mapBook(b: typeof books.$inferSelect): Book {
   };
 }
 
-// ─── Books ───────────────────────────────────────────────────────────────────
+
 
 export async function searchExplorableBooksAction(
   query: string,
@@ -78,7 +78,7 @@ export async function searchExplorableBooksAction(
   return rows.map(mapBook);
 }
 
-// ─── Clubs ───────────────────────────────────────────────────────────────────
+
 
 export async function searchExplorableClubsAction(
   query: string,
@@ -151,7 +151,6 @@ export async function searchExplorableClubsAction(
   }));
 }
 
-// ─── Hives ───────────────────────────────────────────────────────────────────
 
 export async function searchExplorableHivesAction(
   query: string,
@@ -224,7 +223,7 @@ export async function searchExplorableHivesAction(
   }));
 }
 
-// ─── Prompts ─────────────────────────────────────────────────────────────────
+
 
 export async function searchExplorablePromptsAction(query: string): Promise<PromptCard[]> {
   const { userId } = await auth();
@@ -272,7 +271,6 @@ export async function searchExplorablePromptsAction(query: string): Promise<Prom
   }));
 }
 
-// ─── Reading Lists ────────────────────────────────────────────────────────────
 
 export async function searchExplorableReadingListsAction(query: string): Promise<ReadingList[]> {
   const q = query.trim();
@@ -288,7 +286,7 @@ export async function searchExplorableReadingListsAction(query: string): Promise
   return rows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] }));
 }
 
-// ─── Hub ─────────────────────────────────────────────────────────────────────
+
 
 export async function getExplorableHubDataAction(): Promise<{
   books: Book[];

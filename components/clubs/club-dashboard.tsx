@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Globe, Lock, Users, Crown, Shield, Check, Settings } from 'lucide-react';
+import { Globe, Lock, Users, Crown, Shield, Check, Settings, UserPlus } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { Button } from '@/components/ui/button';
 import JoinClubButton from './join-club-button';
@@ -20,6 +20,7 @@ interface ClubDashboardProps {
   members: ClubMemberWithUser[];
   readingList: ClubReadingListBook[];
   currentUserId: string | null;
+  pendingRequestCount?: number;
 }
 
 export default function ClubDashboard({
@@ -27,6 +28,7 @@ export default function ClubDashboard({
   recentDiscussions,
   members,
   readingList,
+  pendingRequestCount = 0,
 }: ClubDashboardProps) {
   const isOwner = club.myRole === 'OWNER';
   const isMember = club.isMember;
@@ -34,6 +36,24 @@ export default function ClubDashboard({
   return (
     <div className="space-y-6 max-w-6xl mx-auto px-4 py-6 md:px-8">
       <BackButton href="/clubs" label="Clubs" className="mb-2" />
+
+      {isOwner && pendingRequestCount > 0 && (
+        <Link
+          href={`/clubs/${club.id}/members`}
+          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FFC300]/8 border border-[#FFC300]/20 hover:bg-[#FFC300]/12 transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
+            <UserPlus className="w-4 h-4 text-[#FFC300]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-[#FFC300]">
+              {pendingRequestCount} pending join {pendingRequestCount === 1 ? 'request' : 'requests'}
+            </p>
+            <p className="text-sm text-white">Tap to review in Members</p>
+          </div>
+          <span className="text-sm text-white">View →</span>
+        </Link>
+      )}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">

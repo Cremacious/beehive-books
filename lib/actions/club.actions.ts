@@ -171,7 +171,7 @@ export async function searchClubsAction(query: string): Promise<ClubWithMembersh
     ? or(ilike(bookClubs.name, `%${query}%`), ilike(bookClubs.description, `%${query}%`))
     : undefined;
 
-  // Always include PUBLIC clubs
+
   const publicClubsPromise = db.query.bookClubs.findMany({
     where: and(eq(bookClubs.privacy, 'PUBLIC'), queryFilter),
     orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
@@ -183,7 +183,7 @@ export async function searchClubsAction(query: string): Promise<ClubWithMembersh
     return clubs.map((c) => ({ ...c, myRole: null, isMember: false }));
   }
 
-  // Get friend IDs to also include FRIENDS clubs owned by friends
+
   const friendshipRows = await db.query.friendships.findMany({
     where: and(
       or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
@@ -616,6 +616,21 @@ export async function toggleDiscussionLikeAction(
         .update(clubDiscussions)
         .set({ likeCount: sql`${clubDiscussions.likeCount} + 1` })
         .where(eq(clubDiscussions.id, discussionId));
+
+      const discussion = await db.query.clubDiscussions.findFirst({
+        where: eq(clubDiscussions.id, discussionId),
+      });
+      if (discussion && discussion.authorId !== userId) {
+        const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+        void insertNotification({
+          recipientId: discussion.authorId,
+          actorId: userId,
+          type: 'COMMENT_LIKE',
+          link: `/clubs/${discussion.clubId}/discussions/${discussionId}`,
+          metadata: { actorUsername: actor?.username ?? '', discussionId },
+        });
+      }
+
       return { success: true, liked: true };
     }
   } catch {
@@ -686,6 +701,28 @@ export async function createDiscussionReplyAction(
       });
     }
 
+    // Also notify the parent reply author if this is a nested reply
+    if (parentId) {
+      const parentReply = await db.query.clubDiscussionReplies.findFirst({
+        where: eq(clubDiscussionReplies.id, parentId),
+      });
+      if (parentReply && parentReply.authorId !== userId && parentReply.authorId !== discussion.authorId) {
+        void insertNotification({
+          recipientId: parentReply.authorId,
+          actorId: userId,
+          type: 'CLUB_REPLY',
+          link: `/clubs/${clubId}/discussions/${discussionId}`,
+          metadata: {
+            actorUsername: actor?.username ?? '',
+            clubName: club?.name ?? '',
+            clubId,
+            discussionId,
+            discussionTitle: discussion.title,
+          },
+        });
+      }
+    }
+
     revalidatePath(`/clubs/${clubId}/discussions/${discussionId}`);
     return { success: true, message: 'Reply posted.', replyId: reply.id };
   } catch {
@@ -753,6 +790,24 @@ export async function toggleReplyLikeAction(
         .update(clubDiscussionReplies)
         .set({ likeCount: sql`${clubDiscussionReplies.likeCount} + 1` })
         .where(eq(clubDiscussionReplies.id, replyId));
+
+      const reply = await db.query.clubDiscussionReplies.findFirst({
+        where: eq(clubDiscussionReplies.id, replyId),
+      });
+      if (reply && reply.authorId !== userId) {
+        const discussion = await db.query.clubDiscussions.findFirst({
+          where: eq(clubDiscussions.id, reply.discussionId),
+        });
+        const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+        void insertNotification({
+          recipientId: reply.authorId,
+          actorId: userId,
+          type: 'COMMENT_LIKE',
+          link: `/clubs/${discussion?.clubId}/discussions/${reply.discussionId}`,
+          metadata: { actorUsername: actor?.username ?? '', discussionId: reply.discussionId },
+        });
+      }
+
       return { success: true, liked: true };
     }
   } catch {
@@ -1146,7 +1201,7 @@ export async function requestToJoinClubAction(clubId: string): Promise<ActionRes
       recipientId: club.ownerId,
       actorId: userId,
       type: 'CLUB_JOIN_REQUEST',
-      link: `/clubs/${clubId}/members`,
+      link: `/clubs/${clubId}`,
       metadata: { clubId, clubName: club.name },
     });
 

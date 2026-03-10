@@ -83,7 +83,7 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false }
 
       <Popup open={open} onClose={() => setOpen(false)} title="Share" maxWidth="sm">
         <div className="space-y-4">
-          {/* Share link */}
+
           <div className="space-y-2">
             <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Share Link</p>
             <div className="flex items-center gap-2 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-2.5">
@@ -106,7 +106,7 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false }
             </Button>
           </div>
 
-          {/* Export — only for the owner */}
+ 
           {isOwner && (
             <div className="space-y-2 pt-1 border-t border-[#2a2a2a]">
               <p className="text-xs font-semibold text-white/50 uppercase tracking-wider pt-1">Export</p>

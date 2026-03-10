@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import {
   TrendingUp,
@@ -157,7 +158,21 @@ function EventRow({ event }: { event: ActivityEvent }) {
   return (
     <div className="flex items-start gap-3 py-2.5">
       <div className="relative shrink-0">
-        {event.user.imageUrl ? (
+        {event.user.username ? (
+          <Link href={`/u/${event.user.username}`} className="hover:opacity-80 transition-opacity block">
+            {event.user.imageUrl ? (
+              <Image
+                src={event.user.imageUrl}
+                alt={name}
+                width={28}
+                height={28}
+                className="rounded-full"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-[#FFC300]/20" />
+            )}
+          </Link>
+        ) : event.user.imageUrl ? (
           <Image
             src={event.user.imageUrl}
             alt=""

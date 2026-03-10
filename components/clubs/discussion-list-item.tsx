@@ -40,22 +40,45 @@ export default function DiscussionListItem({
 
 
       <div className="flex items-center gap-2 mb-2.5">
-        {author.imageUrl ? (
-          <Image
-            src={author.imageUrl}
-            alt={authorName}
-            width={28}
-            height={28}
-            className="w-7 h-7 rounded-full object-cover shrink-0"
-          />
+        {author.username ? (
+          <Link href={`/u/${author.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            {author.imageUrl ? (
+              <Image
+                src={author.imageUrl}
+                alt={authorName}
+                width={28}
+                height={28}
+                className="w-7 h-7 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
+                <span className="text-[11px] font-semibold text-[#FFC300]">
+                  {initials}
+                </span>
+              </div>
+            )}
+            <span className="text-xs font-medium text-white/80 hover:text-white transition-colors">{authorName}</span>
+          </Link>
         ) : (
-          <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-            <span className="text-[11px] font-semibold text-[#FFC300]">
-              {initials}
-            </span>
-          </div>
+          <>
+            {author.imageUrl ? (
+              <Image
+                src={author.imageUrl}
+                alt={authorName}
+                width={28}
+                height={28}
+                className="w-7 h-7 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
+                <span className="text-[11px] font-semibold text-[#FFC300]">
+                  {initials}
+                </span>
+              </div>
+            )}
+            <span className="text-xs font-medium text-white/80">{authorName}</span>
+          </>
         )}
-        <span className="text-xs font-medium text-white/80">{authorName}</span>
         <span className="text-xs text-white/80">·</span>
         <span className="text-xs text-white/80">
           {timeAgo(discussion.createdAt)}
@@ -90,7 +113,7 @@ export default function DiscussionListItem({
         </div>
         <Link
           href={`/clubs/${clubId}/discussions/${discussion.id}`}
-          className="text-xs text-[#FFC300]/80 hover:text-[#FFC300] transition-colors"
+          className=" text-[#FFC300]/80 hover:text-[#FFC300] transition-colors"
         >
           Read more →
         </Link>

@@ -73,14 +73,19 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
 
   const events: FeedEvent[] = [];
 
-  // New books from friends
   const recentBooks = await db.query.books.findMany({
     where: and(
       inArray(books.userId, friendIds),
       or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
       gt(books.createdAt, cutoff),
     ),
-    columns: { id: true, userId: true, title: true, genre: true, createdAt: true },
+    columns: {
+      id: true,
+      userId: true,
+      title: true,
+      genre: true,
+      createdAt: true,
+    },
     orderBy: [desc(books.createdAt)],
     limit: LIMIT_PER_TYPE,
   });
@@ -98,7 +103,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  // New chapters from friends' visible books
   const friendBookRows = await db.query.books.findMany({
     where: and(
       inArray(books.userId, friendIds),
@@ -144,7 +148,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     }
   }
 
-  // New public/friends clubs created by friends
   const recentClubs = await db.query.bookClubs.findMany({
     where: and(
       inArray(bookClubs.ownerId, friendIds),
@@ -169,7 +172,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  // Club discussions by friends in public clubs
   const recentDiscussions = await db.query.clubDiscussions.findMany({
     where: and(
       inArray(clubDiscussions.authorId, friendIds),
@@ -198,12 +200,15 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       type: 'CLUB_DISCUSSION',
       timestamp: d.createdAt,
       user,
-      meta: { discussionTitle: d.title, clubName: d.club.name, clubId: d.clubId },
+      meta: {
+        discussionTitle: d.title,
+        clubName: d.club.name,
+        clubId: d.clubId,
+      },
       link: `/clubs/${d.clubId}`,
     });
   }
 
-  // New public prompts by friends
   const recentPrompts = await db.query.prompts.findMany({
     where: and(
       inArray(prompts.creatorId, friendIds),
@@ -228,11 +233,13 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  // New reading lists by friends
   const recentLists = await db.query.readingLists.findMany({
     where: and(
       inArray(readingLists.userId, friendIds),
-      or(eq(readingLists.privacy, 'PUBLIC'), eq(readingLists.privacy, 'FRIENDS')),
+      or(
+        eq(readingLists.privacy, 'PUBLIC'),
+        eq(readingLists.privacy, 'FRIENDS'),
+      ),
       gt(readingLists.createdAt, cutoff),
     ),
     columns: { id: true, userId: true, title: true, createdAt: true },
@@ -253,14 +260,19 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  // New hives by friends
   const recentHives = await db.query.hives.findMany({
     where: and(
       inArray(hives.ownerId, friendIds),
       or(eq(hives.privacy, 'PUBLIC'), eq(hives.privacy, 'FRIENDS')),
       gt(hives.createdAt, cutoff),
     ),
-    columns: { id: true, ownerId: true, name: true, genre: true, createdAt: true },
+    columns: {
+      id: true,
+      ownerId: true,
+      name: true,
+      genre: true,
+      createdAt: true,
+    },
     orderBy: [desc(hives.createdAt)],
     limit: LIMIT_PER_TYPE,
   });

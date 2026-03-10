@@ -7,7 +7,10 @@ import { Camera, Loader2, Trash2, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
-import { updateUserAvatarAction, deleteUserAccountAction } from '@/lib/actions/user.actions';
+import {
+  updateUserAvatarAction,
+  deleteUserAccountAction,
+} from '@/lib/actions/user.actions';
 
 interface SettingsClientProps {
   user: {
@@ -45,15 +48,15 @@ export function SettingsClient({ user }: SettingsClientProps) {
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     }
-    // reset input so same file can be re-selected
+
     e.target.value = '';
   }
 
-  const initial = user.username?.[0]?.toUpperCase() ?? user.email[0]?.toUpperCase() ?? '?';
+  const initial =
+    user.username?.[0]?.toUpperCase() ?? user.email[0]?.toUpperCase() ?? '?';
 
   return (
     <div className="space-y-5">
-      {/* Account info */}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] divide-y divide-[#2a2a2a]">
         <div className="flex items-center gap-3 px-5 py-4">
           <User className="w-4 h-4 text-white/30 shrink-0" />
@@ -68,19 +71,19 @@ export function SettingsClient({ user }: SettingsClientProps) {
           <Mail className="w-4 h-4 text-white/30 shrink-0" />
           <div className="min-w-0">
             <p className="text-xs text-white/40 mb-0.5">Email</p>
-            <p className="text-sm text-white font-medium truncate">{user.email}</p>
+            <p className="text-sm text-white font-medium truncate">
+              {user.email}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Profile photo */}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">
           Profile Photo
         </h2>
 
         <div className="flex items-center gap-5">
-          {/* Avatar preview */}
           <div className="w-20 h-20 rounded-full overflow-hidden bg-[#1e1e1e] border-2 border-[#FFC300]/20 shrink-0">
             {imageUrl ? (
               <Image
@@ -92,7 +95,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-[#2a2000]">
-                <span className="text-2xl font-bold text-[#FFC300]">{initial}</span>
+                <span className="text-2xl font-bold text-[#FFC300]">
+                  {initial}
+                </span>
               </div>
             )}
           </div>
@@ -121,7 +126,12 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 onChange={handleFileChange}
                 disabled={uploading}
               />
-              <Button variant="secondary" size="sm" disabled={uploading} asChild>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={uploading}
+                asChild
+              >
                 <span>
                   {uploading ? (
                     <>
@@ -141,13 +151,13 @@ export function SettingsClient({ user }: SettingsClientProps) {
         </div>
       </div>
 
-      {/* Danger zone */}
       <div className="rounded-2xl bg-[#252525] border border-red-900/25 p-6">
         <h2 className="text-xs font-semibold text-red-400/60 uppercase tracking-wider mb-2">
           Danger Zone
         </h2>
         <p className="text-sm text-white/50 mb-5 leading-relaxed">
-          Permanently deletes your account and all associated data — books, reading lists, clubs, hives, and prompts. This cannot be undone.
+          Permanently deletes your account and all associated data — books,
+          reading lists, clubs, hives, and prompts. This cannot be undone.
         </p>
         <DeleteDialog
           itemType="account"

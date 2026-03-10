@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FileText, Clock, Trophy } from 'lucide-react';
 import type { PromptCard as PromptCardType, PromptUser } from '@/lib/types/prompt.types';
 
@@ -40,6 +41,7 @@ function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
 }
 
 export function PromptCard({ prompt }: { prompt: PromptCardType }) {
+  const router = useRouter();
   const isEnded = prompt.status === 'ENDED' || prompt.endDate < new Date();
   const [countdown, setCountdown] = useState(() =>
     isEnded ? 'Ended' : formatCountdown(prompt.endDate),
@@ -88,10 +90,20 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
         </p>
 
         <div className="flex items-center justify-between pt-3 border-t border-[#2a2a2a] mt-auto text-xs text-white/80">
-          <div className="flex items-center gap-1.5">
-            <UserAvatar user={prompt.creator} size={5} />
-            <span className="truncate max-w-20">{creatorName}</span>
-          </div>
+          {prompt.creator.username ? (
+            <button
+              onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/u/${prompt.creator.username!}`); }}
+              className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+            >
+              <UserAvatar user={prompt.creator} size={5} />
+              <span className="truncate max-w-20 hover:text-white transition-colors">{creatorName}</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <UserAvatar user={prompt.creator} size={5} />
+              <span className="truncate max-w-20">{creatorName}</span>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <FileText className="w-3.5 h-3.5" />

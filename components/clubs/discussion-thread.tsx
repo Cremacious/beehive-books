@@ -11,7 +11,9 @@ import {
   Loader2,
   MessageSquare,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useClubStore } from '@/lib/stores/club-store';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import DiscussionReplySection from './discussion-reply-section';
 import type { ClubDiscussionFull, ClubRole } from '@/lib/types/club.types';
 
@@ -43,7 +45,6 @@ export default function DiscussionThread({
   const isMod = myRole === 'OWNER' || myRole === 'MODERATOR';
   const isOwn = currentUserId === discussion.authorId;
 
-  const [deleting, setDeleting] = useState(false);
   const [pinning, setPinning] = useState(false);
   const [error, setError] = useState('');
 
@@ -59,19 +60,6 @@ export default function DiscussionThread({
   const handleLike = async () => {
     if (!currentUserId) return;
     await store.toggleDiscussionLike(discussion.id, likedByMe);
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this discussion? This cannot be undone.')) return;
-    setDeleting(true);
-    setError('');
-    const result = await store.deleteDiscussion(clubId, discussion.id);
-    if (result.success) {
-      router.push(`/clubs/${clubId}/discussions`);
-    } else {
-      setError(result.message);
-      setDeleting(false);
-    }
   };
 
   const handlePin = async () => {
@@ -107,7 +95,25 @@ export default function DiscussionThread({
         )}
 
         <div className="flex items-center gap-2.5 mb-4">
-          {author.imageUrl ? (
+          {author.username ? (
+            <Link href={`/u/${author.username}`} className="shrink-0">
+              {author.imageUrl ? (
+                <Image
+                  src={author.imageUrl}
+                  alt={authorName}
+                  width={36}
+                  height={36}
+                  className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <span className="text-sm font-semibold text-[#FFC300]">
+                    {initials}
+                  </span>
+                </div>
+              )}
+            </Link>
+          ) : author.imageUrl ? (
             <Image
               src={author.imageUrl}
               alt={authorName}
@@ -123,7 +129,13 @@ export default function DiscussionThread({
             </div>
           )}
           <div>
-            <p className="text-sm font-medium text-white">{authorName}</p>
+            {author.username ? (
+              <Link href={`/u/${author.username}`} className="text-sm font-medium text-white hover:text-[#FFC300] transition-colors">
+                {authorName}
+              </Link>
+            ) : (
+              <p className="text-sm font-medium text-white">{authorName}</p>
+            )}
             <p className="text-xs text-white/80">
               {timeAgo(discussion.createdAt)}
             </p>
@@ -183,18 +195,20 @@ export default function DiscussionThread({
             )}
 
             {(isOwn || isMod) && (
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all"
-              >
-                {deleting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="w-3.5 h-3.5" />
-                )}
-                Delete
-              </button>
+              <DeleteDialog
+                itemType="discussion"
+                onDelete={async () => {
+                  const result = await store.deleteDiscussion(clubId, discussion.id);
+                  if (!result.success) throw new Error(result.message);
+                  router.push(`/clubs/${clubId}/discussions`);
+                }}
+                trigger={
+                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all">
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete
+                  </button>
+                }
+              />
             )}
           </div>
         </div>

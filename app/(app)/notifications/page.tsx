@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 const PER_PAGE = 25;
 
-// ── helpers (mirrors notification-panel.tsx) ────────────────────────────────
+
 
 function timeAgo(date: Date): string {
   const diff  = Date.now() - new Date(date).getTime();
@@ -108,7 +108,6 @@ function getTypeIcon(type: NotificationType): IconCfg {
   }
 }
 
-// ── row ─────────────────────────────────────────────────────────────────────
 
 function NotificationRow({ n }: { n: NotificationItem }) {
   const isSystem      = n.type === 'PROMPT_ENDED';
@@ -146,7 +145,6 @@ function NotificationRow({ n }: { n: NotificationItem }) {
   );
 }
 
-// ── page ────────────────────────────────────────────────────────────────────
 
 export default async function NotificationsPage({
   searchParams,
@@ -156,7 +154,7 @@ export default async function NotificationsPage({
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  // fire-and-forget prune of notifications older than 30 days
+
   void pruneOldNotificationsAction();
 
   const { page: pageStr } = await searchParams;
@@ -172,7 +170,7 @@ export default async function NotificationsPage({
         <h1 className="text-2xl font-bold text-white mainFont">Notifications</h1>
       </div>
 
-      {/* 30-day info banner */}
+
       <div className="flex items-start gap-3 px-4 py-3 mb-5 rounded-xl bg-white/4 border border-white/8">
         <Info className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
         <p className="text-xs text-white/40 leading-relaxed">
@@ -180,7 +178,7 @@ export default async function NotificationsPage({
         </p>
       </div>
 
-      {/* list */}
+
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">

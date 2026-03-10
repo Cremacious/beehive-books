@@ -30,7 +30,11 @@ export async function exportBookToPdf(
   function addText(
     text: string,
     size: number,
-    options: { bold?: boolean; center?: boolean; color?: [number, number, number] } = {},
+    options: {
+      bold?: boolean;
+      center?: boolean;
+      color?: [number, number, number];
+    } = {},
   ) {
     const { bold = false, center = false, color = [0, 0, 0] } = options;
     doc.setFontSize(size);
@@ -59,7 +63,6 @@ export async function exportBookToPdf(
     }
   }
 
-  // Title
   addText(book.title, 26, { bold: true, center: true });
   y += 4;
   addText(`by ${book.author}`, 13, { center: true, color: [80, 80, 80] });
@@ -70,7 +73,6 @@ export async function exportBookToPdf(
     y += 16;
   }
 
-  // Divider line
   doc.setDrawColor(200, 200, 200);
   doc.line(margin, y, pageW - margin, y);
   y += 24;
@@ -88,7 +90,6 @@ export async function exportBookToPdf(
     addText(content, 11);
     y += 28;
 
-    // Chapter divider
     if (y + 30 < pageH - margin) {
       doc.setDrawColor(220, 220, 220);
       doc.line(margin, y - 10, pageW - margin, y - 10);

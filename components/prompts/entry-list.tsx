@@ -55,15 +55,24 @@ export function EntryList({ entries, promptId }: Props) {
             key={entry.id}
             className="flex items-start gap-4 p-4 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] hover:border-[#FFC300]/20 transition-all"
           >
-            <UserAvatar user={entry.user} />
+            {entry.user.username ? (
+              <Link href={`/u/${entry.user.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
+                <UserAvatar user={entry.user} />
+              </Link>
+            ) : (
+              <UserAvatar user={entry.user} />
+            )}
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className=" font-semibold text-white">
-                  {displayName(entry.user)}
-                </span>
-                {entry.user.username && (
-                  <span className="text-sm text-white/80"></span>
+                {entry.user.username ? (
+                  <Link href={`/u/${entry.user.username}`} className="font-semibold text-white hover:text-[#FFC300] transition-colors">
+                    {displayName(entry.user)}
+                  </Link>
+                ) : (
+                  <span className="font-semibold text-white">
+                    {displayName(entry.user)}
+                  </span>
                 )}
 
                 <Button asChild size={'sm'}>

@@ -8,7 +8,7 @@ function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
   const name = member.user.username ?? '?';
   const initials = name.charAt(0).toUpperCase();
   return (
-    <Link href={`/u/${member.userId}`}>
+    <Link href={`/u/${member.user.username ?? member.userId}`}>
       <div
         className="relative cursor-pointer"
         title={member.user.username ?? name}

@@ -465,6 +465,28 @@ export async function reorderCollectionsAction(
   }
 }
 
+export async function reorderBookItemsAction(
+  bookId: string,
+  chapterOrders: { id: string; order: number }[],
+  collectionOrders: { id: string; order: number }[],
+): Promise<ActionResult> {
+  await requireBookOwner(bookId);
+  try {
+    await Promise.all([
+      ...chapterOrders.map(({ id, order }) =>
+        db.update(chapters).set({ order }).where(eq(chapters.id, id)),
+      ),
+      ...collectionOrders.map(({ id, order }) =>
+        db.update(collections).set({ order }).where(eq(collections.id, id)),
+      ),
+    ]);
+    revalidatePath(`/library/${bookId}`);
+    return { success: true, message: 'Order saved.' };
+  } catch {
+    return { success: false, message: 'Failed to save order.' };
+  }
+}
+
 export async function createCollectionAction(
   bookId: string,
   name: string,
