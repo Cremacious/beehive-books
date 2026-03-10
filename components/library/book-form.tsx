@@ -503,7 +503,7 @@ export function BookForm({
                     </div>
                   </div>
 
-                  <label className="flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+                  <label className="relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
                     {bookDocxFileName ? (
                       <>
                         <FileText className="w-5 h-5 text-[#FFC300]/70" />

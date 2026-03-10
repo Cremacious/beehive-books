@@ -171,7 +171,7 @@ export async function searchClubsAction(query: string): Promise<ClubWithMembersh
     ? or(ilike(bookClubs.name, `%${query}%`), ilike(bookClubs.description, `%${query}%`))
     : undefined;
 
-  // Always include PUBLIC clubs
+
   const publicClubsPromise = db.query.bookClubs.findMany({
     where: and(eq(bookClubs.privacy, 'PUBLIC'), queryFilter),
     orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
@@ -183,7 +183,7 @@ export async function searchClubsAction(query: string): Promise<ClubWithMembersh
     return clubs.map((c) => ({ ...c, myRole: null, isMember: false }));
   }
 
-  // Get friend IDs to also include FRIENDS clubs owned by friends
+
   const friendshipRows = await db.query.friendships.findMany({
     where: and(
       or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),

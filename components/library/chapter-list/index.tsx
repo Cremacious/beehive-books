@@ -34,6 +34,26 @@ type Props = {
   isOwner?: boolean;
 };
 
+type TopLevelItem =
+  | { type: 'chapter'; id: string; order: number }
+  | { type: 'collection'; id: string; order: number };
+
+function buildTopLevelItems(
+  soloChapters: Chapter[],
+  collections: Collection[],
+): TopLevelItem[] {
+  const items: TopLevelItem[] = [
+    ...soloChapters.map((c) => ({ type: 'chapter' as const, id: c.id, order: c.order })),
+    ...collections.map((c) => ({ type: 'collection' as const, id: c.id, order: c.order })),
+  ];
+  items.sort((a, b) => {
+    if (a.order !== b.order) return a.order - b.order;
+   
+    return a.type === 'chapter' ? -1 : 1;
+  });
+  return items;
+}
+
 export default function ChapterList({
   bookId,
   chapters,
@@ -45,26 +65,41 @@ export default function ChapterList({
   const {
     reorderMode,
     setReorderMode,
-    reorderChapters,
-    reorderCollections,
+    reorderBookItems,
     createCollection,
     deleteChapter,
     assignChapterToCollection,
   } = useBookStore();
 
-  const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(
-    null,
-  );
-  const [pendingCollections, setPendingCollections] = useState<
-    Collection[] | null
-  >(null);
+
+  const [pendingFlatList, setPendingFlatList] = useState<string[] | null>(null);
+
+  const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(null);
+  const [pendingCollections, setPendingCollections] = useState<Collection[] | null>(null);
 
   const localChapters =
     reorderMode && pendingChapters !== null ? pendingChapters : chapters;
   const localCollections =
-    reorderMode && pendingCollections !== null
-      ? pendingCollections
-      : collections;
+    reorderMode && pendingCollections !== null ? pendingCollections : collections;
+
+  const soloChapters = localChapters.filter((c) => !c.collectionId);
+  const collectionGroups = localCollections.map((col) => ({
+    ...col,
+    chapters: localChapters.filter((c) => c.collectionId === col.id),
+  }));
+
+  const topLevelItems = buildTopLevelItems(soloChapters, localCollections);
+
+ 
+  const activeFlatList = reorderMode && pendingFlatList !== null
+    ? pendingFlatList
+    : topLevelItems.map((t) => t.id);
+
+
+  const orderedTopLevelItems = activeFlatList
+    .map((id) => topLevelItems.find((t) => t.id === id))
+    .filter((t): t is TopLevelItem => t !== undefined);
+
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
     const initialCollapsed: Record<string, boolean> = {};
     collections.forEach((col) => {
@@ -97,6 +132,21 @@ export default function ChapterList({
         c.id === chapterId ? { ...c, collectionId } : c,
       ),
     );
+
+    if (collectionId === null) {
+    
+      setPendingFlatList((prev) => {
+        const list = prev ?? topLevelItems.map((t) => t.id);
+        if (!list.includes(chapterId)) return [...list, chapterId];
+        return list;
+      });
+    } else {
+
+      setPendingFlatList((prev) => {
+        const list = prev ?? topLevelItems.map((t) => t.id);
+        return list.filter((id) => id !== chapterId);
+      });
+    }
     assignChapterToCollection(bookId, chapterId, collectionId).then(() =>
       router.refresh(),
     );
@@ -109,12 +159,15 @@ export default function ChapterList({
   function handleDragOver(event: DragOverEvent) {
     const { active, over } = event;
     const overId = over?.id as string | undefined;
-    const activeIsChapter = localChapters.some((c) => c.id === active.id);
+    const activeId = active.id as string;
+    const activeIsChapter = localChapters.some((c) => c.id === activeId);
+    const activeIsCollection = localCollections.some((c) => c.id === activeId);
     const overIsCollection = overId
       ? localCollections.some((c) => c.id === overId)
       : false;
     const overIsUncategorized = overId === 'uncategorized';
-    if (activeIsChapter && (overIsCollection || overIsUncategorized)) {
+ 
+    if (activeIsChapter && !activeIsCollection && (overIsCollection || overIsUncategorized)) {
       setDragOverId(overId ?? null);
     } else {
       setDragOverId(null);
@@ -129,47 +182,70 @@ export default function ChapterList({
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    if (localCollections.some((c) => c.id === activeId)) {
-      const oldIndex = localCollections.findIndex((c) => c.id === activeId);
-      const newIndex = localCollections.findIndex((c) => c.id === overId);
+    const activeIsTopLevel = activeFlatList.includes(activeId);
+    const activeIsChapter = localChapters.some((c) => c.id === activeId);
+    const overIsCollection = localCollections.some((c) => c.id === overId);
+    const overIsUncategorized = overId === 'uncategorized';
+
+    if (activeIsTopLevel) {
+
+      if (activeIsChapter && overIsCollection) {
+        handleAssignCollection(activeId, overId);
+        return;
+      }
+
+      if (activeIsChapter && overIsUncategorized) {
+        handleAssignCollection(activeId, null);
+        return;
+      }
+   
+      const oldIndex = activeFlatList.indexOf(activeId);
+      const newIndex = activeFlatList.indexOf(overId);
       if (oldIndex !== -1 && newIndex !== -1) {
-        setPendingCollections(arrayMove(localCollections, oldIndex, newIndex));
+        setPendingFlatList(arrayMove(activeFlatList, oldIndex, newIndex));
       }
       return;
     }
 
-    const overIsCollection = localCollections.some((c) => c.id === overId);
-    const overIsUncategorized = overId === 'uncategorized';
-
-    if (overIsCollection) {
-      handleAssignCollection(activeId, overId);
-      return;
-    }
-    if (overIsUncategorized) {
-      handleAssignCollection(activeId, null);
-      return;
-    }
 
     const oldIndex = localChapters.findIndex((c) => c.id === activeId);
     const newIndex = localChapters.findIndex((c) => c.id === overId);
-    setPendingChapters(arrayMove(localChapters, oldIndex, newIndex));
+    if (oldIndex !== -1 && newIndex !== -1) {
+      setPendingChapters(arrayMove(localChapters, oldIndex, newIndex));
+    }
   }
 
   async function handleSaveOrder() {
     setSaving(true);
-    const [chapterResult, collectionResult] = await Promise.all([
-      reorderChapters(
-        bookId,
-        localChapters.map((c) => c.id),
-      ),
-      reorderCollections(
-        bookId,
-        localCollections.map((c) => c.id),
-      ),
-    ]);
+
+    const soloChapterIdSet = new Set(soloChapters.map((c) => c.id));
+    const collectionIdSet = new Set(localCollections.map((c) => c.id));
+
+
+    const chapterOrders: { id: string; order: number }[] = [];
+    const collectionOrders: { id: string; order: number }[] = [];
+
+    activeFlatList.forEach((id, index) => {
+      const globalOrder = index + 1;
+      if (soloChapterIdSet.has(id)) {
+        chapterOrders.push({ id, order: globalOrder });
+      } else if (collectionIdSet.has(id)) {
+        collectionOrders.push({ id, order: globalOrder });
+      }
+    });
+
+
+    collectionGroups.forEach((col) => {
+      col.chapters.forEach((chapter, idx) => {
+        chapterOrders.push({ id: chapter.id, order: idx + 1 });
+      });
+    });
+
+    const result = await reorderBookItems(bookId, chapterOrders, collectionOrders);
     setSaving(false);
-    if (chapterResult.success && collectionResult.success) {
+    if (result.success) {
       setReorderMode(false);
+      setPendingFlatList(null);
       setPendingChapters(null);
       setPendingCollections(null);
       router.refresh();
@@ -187,12 +263,6 @@ export default function ChapterList({
       router.refresh();
     }
   }
-
-  const soloChapters = localChapters.filter((c) => !c.collectionId);
-  const collectionGroups = localCollections.map((col) => ({
-    ...col,
-    chapters: localChapters.filter((c) => c.collectionId === col.id),
-  }));
 
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
@@ -217,6 +287,7 @@ export default function ChapterList({
                     variant="outline"
                     onClick={() => {
                       setReorderMode(false);
+                      setPendingFlatList(null);
                       setPendingChapters(null);
                       setPendingCollections(null);
                     }}
@@ -233,6 +304,7 @@ export default function ChapterList({
                     onClick={() => {
                       setPendingChapters([...chapters]);
                       setPendingCollections([...collections]);
+                      setPendingFlatList(topLevelItems.map((t) => t.id));
                       setReorderMode(true);
                     }}
                   >
@@ -277,6 +349,7 @@ export default function ChapterList({
               onClick={() => {
                 setPendingChapters([...chapters]);
                 setPendingCollections([...collections]);
+                setPendingFlatList(topLevelItems.map((t) => t.id));
                 setReorderMode(true);
               }}
             >
@@ -338,73 +411,80 @@ export default function ChapterList({
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
+          {/* Single SortableContext for all top-level items (solo chapters + collection headers) */}
           <SortableContext
-            items={localCollections.map((c) => c.id)}
+            items={activeFlatList}
             strategy={verticalListSortingStrategy}
           >
             {reorderMode && localCollections.length > 0 && (
               <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
             )}
 
-            <SortableContext
-              items={soloChapters.map((c) => c.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {soloChapters.map((chapter) => (
-                <SortableChapterRow
-                  key={chapter.id}
-                  chapter={chapter}
-                  bookId={bookId}
-                  reorderMode={reorderMode}
-                  collections={localCollections}
-                  isOwner={isOwner}
-                  basePath={basePath}
-                  onAssignCollection={(colId) =>
-                    handleAssignCollection(chapter.id, colId)
-                  }
-                  onDeleteChapter={() => handleDeleteChapter(chapter.id)}
-                />
-              ))}
-            </SortableContext>
+            {orderedTopLevelItems.map((item) => {
+              if (item.type === 'chapter') {
+                const chapter = soloChapters.find((c) => c.id === item.id);
+                if (!chapter) return null;
+                return (
+                  <SortableChapterRow
+                    key={chapter.id}
+                    chapter={chapter}
+                    bookId={bookId}
+                    reorderMode={reorderMode}
+                    collections={localCollections}
+                    isOwner={isOwner}
+                    basePath={basePath}
+                    onAssignCollection={(colId) =>
+                      handleAssignCollection(chapter.id, colId)
+                    }
+                    onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                  />
+                );
+              }
 
-            {collectionGroups.map((col) => (
-              <div key={col.id}>
-                <SortableCollectionHeader
-                  col={col}
-                  bookId={bookId}
-                  isChapterDragOver={dragOverId === col.id}
-                  isReordering={reorderMode}
-                  collapsed={!!collapsed[col.id]}
-                  onToggleCollapse={() => toggleCollapse(col.id)}
-                  onUpdated={() => router.refresh()}
-                  isOwner={isOwner}
-                />
+              // Collection item
+              const col = collectionGroups.find((c) => c.id === item.id);
+              if (!col) return null;
+              return (
+                <div key={col.id}>
+                  <SortableCollectionHeader
+                    col={col}
+                    bookId={bookId}
+                    isChapterDragOver={dragOverId === col.id}
+                    isReordering={reorderMode}
+                    collapsed={!!collapsed[col.id]}
+                    onToggleCollapse={() => toggleCollapse(col.id)}
+                    onUpdated={() => router.refresh()}
+                    isOwner={isOwner}
+                  />
 
-                {(!collapsed[col.id] || reorderMode) && (
-                  <SortableContext
-                    items={col.chapters.map((c) => c.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {col.chapters.map((chapter) => (
-                      <SortableChapterRow
-                        key={chapter.id}
-                        chapter={chapter}
-                        bookId={bookId}
-                        reorderMode={reorderMode}
-                        indent
-                        collections={localCollections}
-                        isOwner={isOwner}
-                        basePath={basePath}
-                        onAssignCollection={(colId) =>
-                          handleAssignCollection(chapter.id, colId)
-                        }
-                        onDeleteChapter={() => handleDeleteChapter(chapter.id)}
-                      />
-                    ))}
-                  </SortableContext>
-                )}
-              </div>
-            ))}
+                  {(!collapsed[col.id] || reorderMode) && (
+                    <SortableContext
+                      items={col.chapters.map((c) => c.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {col.chapters.map((chapter) => (
+                        <SortableChapterRow
+                          key={chapter.id}
+                          chapter={chapter}
+                          bookId={bookId}
+                          reorderMode={reorderMode}
+                          indent
+                          collections={localCollections}
+                          isOwner={isOwner}
+                          basePath={basePath}
+                          onAssignCollection={(colId) =>
+                            handleAssignCollection(chapter.id, colId)
+                          }
+                          onDeleteChapter={() =>
+                            handleDeleteChapter(chapter.id)
+                          }
+                        />
+                      ))}
+                    </SortableContext>
+                  )}
+                </div>
+              );
+            })}
           </SortableContext>
         </DndContext>
 

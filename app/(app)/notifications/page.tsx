@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 const PER_PAGE = 25;
 
-// ── helpers (mirrors notification-panel.tsx) ────────────────────────────────
+
 
 function timeAgo(date: Date): string {
   const diff  = Date.now() - new Date(date).getTime();
@@ -108,7 +108,6 @@ function getTypeIcon(type: NotificationType): IconCfg {
   }
 }
 
-// ── row ─────────────────────────────────────────────────────────────────────
 
 function NotificationRow({ n }: { n: NotificationItem }) {
   const isSystem      = n.type === 'PROMPT_ENDED';
@@ -146,7 +145,6 @@ function NotificationRow({ n }: { n: NotificationItem }) {
   );
 }
 
-// ── page ────────────────────────────────────────────────────────────────────
 
 export default async function NotificationsPage({
   searchParams,

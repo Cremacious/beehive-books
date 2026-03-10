@@ -4,6 +4,7 @@ import {
   deleteChapterAction,
   reorderChaptersAction,
   reorderCollectionsAction,
+  reorderBookItemsAction,
   deleteCollectionAction,
   createCollectionAction,
   updateCollectionAction,
@@ -21,6 +22,7 @@ interface BookStore {
   deleteChapter:              (bookId: string, chapterId: string) => Promise<ActionResult>;
   reorderChapters:            (bookId: string, orderedIds: string[]) => Promise<ActionResult>;
   reorderCollections:         (bookId: string, orderedIds: string[]) => Promise<ActionResult>;
+  reorderBookItems:           (bookId: string, chapterOrders: { id: string; order: number }[], collectionOrders: { id: string; order: number }[]) => Promise<ActionResult>;
   createCollection:           (bookId: string, name: string) => Promise<ActionResult>;
   updateCollection:           (bookId: string, collectionId: string, name: string) => Promise<ActionResult>;
   deleteCollection:           (bookId: string, collectionId: string) => Promise<ActionResult>;
@@ -37,6 +39,7 @@ export const useBookStore = create<BookStore>((set) => ({
   deleteChapter:             (bookId, chapterId) => deleteChapterAction(bookId, chapterId),
   reorderChapters:           (bookId, orderedIds) => reorderChaptersAction(bookId, orderedIds),
   reorderCollections:        (bookId, orderedIds) => reorderCollectionsAction(bookId, orderedIds),
+  reorderBookItems:          (bookId, chapterOrders, collectionOrders) => reorderBookItemsAction(bookId, chapterOrders, collectionOrders),
   createCollection:          (bookId, name) => createCollectionAction(bookId, name),
   updateCollection:          (bookId, collectionId, name) => updateCollectionAction(bookId, collectionId, name),
   deleteCollection:          (bookId, collectionId) => deleteCollectionAction(bookId, collectionId),
