@@ -36,7 +36,11 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
-  const dbUsername = user?.publicMetadata?.username as string | undefined;
+  const dbUsername =
+    (user?.publicMetadata?.username as string | undefined) ??
+    user?.username ??
+    user?.firstName ??
+    undefined;
   const avatarUrl = useCurrentUserImage();
 
   const isActive = (href: string) =>

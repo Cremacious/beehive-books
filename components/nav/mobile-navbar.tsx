@@ -46,7 +46,11 @@ export function MobileNavbar() {
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  const dbUsername = user?.publicMetadata?.username as string | undefined;
+  const dbUsername =
+    (user?.publicMetadata?.username as string | undefined) ??
+    user?.username ??
+    user?.firstName ??
+    undefined;
   const avatarHref = `/u/${dbUsername ?? user?.id ?? ''}`;
   const avatarUrl = useCurrentUserImage();
 
