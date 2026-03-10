@@ -1,10 +1,42 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { and, eq, or } from 'drizzle-orm';
 import type { AnyColumn } from 'drizzle-orm';
 import { db } from '@/db';
 import { users, books, readingLists, friendships, clubMembers, hiveMembers, prompts } from '@/db/schema';
+
+export async function getCurrentUserAction() {
+  const { userId } = await auth();
+  if (!userId) return null;
+  return db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+}
+
+export async function updateUserAvatarAction(
+  imageUrl: string,
+): Promise<{ success: boolean; message: string }> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized' };
+  try {
+    await db.update(users).set({ imageUrl, updatedAt: new Date() }).where(eq(users.clerkId, userId));
+    return { success: true, message: 'Photo updated.' };
+  } catch {
+    return { success: false, message: 'Failed to update photo.' };
+  }
+}
+
+export async function deleteUserAccountAction(): Promise<{ success: boolean; message: string }> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, message: 'Unauthorized' };
+  try {
+    await db.delete(users).where(eq(users.clerkId, userId));
+    const client = await clerkClient();
+    await client.users.deleteUser(userId);
+    return { success: true, message: 'Account deleted.' };
+  } catch {
+    return { success: false, message: 'Failed to delete account. Please try again.' };
+  }
+}
 
 export async function getCurrentUserImageUrlAction(): Promise<string | null> {
   const { userId } = await auth();

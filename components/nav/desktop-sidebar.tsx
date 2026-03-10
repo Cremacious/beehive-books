@@ -138,7 +138,7 @@ export function DesktopSidebar() {
 
             <div className="hidden lg:flex items-center gap-0.5 shrink-0">
               <Link
-                href="/settings/profile"
+                href="/settings"
                 title="Settings"
                 className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
               >

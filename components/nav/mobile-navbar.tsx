@@ -198,7 +198,7 @@ export function MobileNavbar() {
         <div className="px-3 pb-8 pt-3 border-t border-[#2a2a2a]">
           <div className="flex gap-2">
             <Link
-              href="/settings/profile"
+              href="/settings"
               onClick={closeDrawer}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#514e4e] hover:border-white/70 transition-all"
             >
