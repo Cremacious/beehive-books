@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useTransition } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Send, Loader2, Trash2, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -133,14 +134,28 @@ export default function HiveChat({
                 className={`flex items-end gap-2 group ${isOwn ? 'flex-row-reverse' : ''} ${sameAuthor ? 'mt-0.5' : 'mt-3'}`}
               >
                 <div className="shrink-0 w-7">
-                  {!sameAuthor && <Avatar user={msg.author} size={28} />}
+                  {!sameAuthor && (
+                    msg.author.username ? (
+                      <Link href={`/u/${msg.author.username}`} className="hover:opacity-80 transition-opacity block">
+                        <Avatar user={msg.author} size={28} />
+                      </Link>
+                    ) : (
+                      <Avatar user={msg.author} size={28} />
+                    )
+                  )}
                 </div>
 
                 <div
                   className={`max-w-[72%] flex flex-col gap-0.5 ${isOwn ? 'items-end' : 'items-start'}`}
                 >
                   {!sameAuthor && !isOwn && (
-                    <span className="text-xs text-white/40 px-1">{name}</span>
+                    msg.author.username ? (
+                      <Link href={`/u/${msg.author.username}`} className="text-xs text-white/40 px-1 hover:text-white/70 transition-colors">
+                        {name}
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-white/40 px-1">{name}</span>
+                    )
                   )}
                   <div className="flex items-center gap-1.5 group/bubble">
                     {canDelete(msg) && (

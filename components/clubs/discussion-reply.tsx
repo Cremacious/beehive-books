@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Heart, Reply, Trash2, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useClubStore } from '@/lib/stores/club-store';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import type {
@@ -90,7 +91,25 @@ export default function DiscussionReply({
     <div className={depth > 0 ? 'pl-4 border-l border-[#2a2a2a]' : ''}>
       <div className="py-3">
         <div className="flex items-center gap-2 mb-2">
-          {author.imageUrl ? (
+          {author.username ? (
+            <Link href={`/u/${author.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
+              {author.imageUrl ? (
+                <Image
+                  src={author.imageUrl}
+                  alt={authorName}
+                  width={28}
+                  height={28}
+                  className="w-7 h-7 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center">
+                  <span className="text-[11px] font-semibold text-[#FFC300]">
+                    {initials}
+                  </span>
+                </div>
+              )}
+            </Link>
+          ) : author.imageUrl ? (
             <Image
               src={author.imageUrl}
               alt={authorName}
@@ -105,7 +124,13 @@ export default function DiscussionReply({
               </span>
             </div>
           )}
-          <span className="text-xs font-medium text-white">{authorName}</span>
+          {author.username ? (
+            <Link href={`/u/${author.username}`} className="text-xs font-medium text-white hover:text-[#FFC300] transition-colors">
+              {authorName}
+            </Link>
+          ) : (
+            <span className="text-xs font-medium text-white">{authorName}</span>
+          )}
           <span className="text-xs text-white/80">·</span>
           <span className="text-xs text-white/80">
             {timeAgo(reply.createdAt)}

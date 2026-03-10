@@ -11,6 +11,7 @@ import {
   Loader2,
   MessageSquare,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useClubStore } from '@/lib/stores/club-store';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import DiscussionReplySection from './discussion-reply-section';
@@ -94,7 +95,25 @@ export default function DiscussionThread({
         )}
 
         <div className="flex items-center gap-2.5 mb-4">
-          {author.imageUrl ? (
+          {author.username ? (
+            <Link href={`/u/${author.username}`} className="shrink-0">
+              {author.imageUrl ? (
+                <Image
+                  src={author.imageUrl}
+                  alt={authorName}
+                  width={36}
+                  height={36}
+                  className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <span className="text-sm font-semibold text-[#FFC300]">
+                    {initials}
+                  </span>
+                </div>
+              )}
+            </Link>
+          ) : author.imageUrl ? (
             <Image
               src={author.imageUrl}
               alt={authorName}
@@ -110,7 +129,13 @@ export default function DiscussionThread({
             </div>
           )}
           <div>
-            <p className="text-sm font-medium text-white">{authorName}</p>
+            {author.username ? (
+              <Link href={`/u/${author.username}`} className="text-sm font-medium text-white hover:text-[#FFC300] transition-colors">
+                {authorName}
+              </Link>
+            ) : (
+              <p className="text-sm font-medium text-white">{authorName}</p>
+            )}
             <p className="text-xs text-white/80">
               {timeAgo(discussion.createdAt)}
             </p>
