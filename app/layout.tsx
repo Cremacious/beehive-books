@@ -5,10 +5,11 @@ import { Comfortaa } from 'next/font/google';
 import { Providers } from '@/app/providers';
 import './globals.css';
 
-//TODO:  Create alert on club page when pending join requests
-//TODO: Delete Dialog for deleting club discussion
-//TODO: User's names can be clicked to view their profile
+
+
+//TODO: User's names can be clicked to view their profile. This includes club discussions, 
 //TODO: Fix issue with page shifting when uploading docx
+//TODO: make it so only owners, moderators, and the comment's original user can delete a club discussion comment. The red trash icon only appears for those users. Use Delete popup UI.
 
 //TODO: Notifications work when receiving a request to join a club, when someone comments on your discussion, when someone posts a discussion in your club, NOT when someone likes your discussion comment, NOT when someone replies to your discussion comment, when someone posts in your prompt, when someone comments on your prompt entry, when someone  comments on your book, when someone replies to your book comment, when someone likes your book comment, when someone wants to join your hive,
 

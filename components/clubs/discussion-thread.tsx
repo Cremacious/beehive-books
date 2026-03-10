@@ -12,6 +12,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import DiscussionReplySection from './discussion-reply-section';
 import type { ClubDiscussionFull, ClubRole } from '@/lib/types/club.types';
 
@@ -43,7 +44,6 @@ export default function DiscussionThread({
   const isMod = myRole === 'OWNER' || myRole === 'MODERATOR';
   const isOwn = currentUserId === discussion.authorId;
 
-  const [deleting, setDeleting] = useState(false);
   const [pinning, setPinning] = useState(false);
   const [error, setError] = useState('');
 
@@ -59,19 +59,6 @@ export default function DiscussionThread({
   const handleLike = async () => {
     if (!currentUserId) return;
     await store.toggleDiscussionLike(discussion.id, likedByMe);
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this discussion? This cannot be undone.')) return;
-    setDeleting(true);
-    setError('');
-    const result = await store.deleteDiscussion(clubId, discussion.id);
-    if (result.success) {
-      router.push(`/clubs/${clubId}/discussions`);
-    } else {
-      setError(result.message);
-      setDeleting(false);
-    }
   };
 
   const handlePin = async () => {
@@ -183,18 +170,20 @@ export default function DiscussionThread({
             )}
 
             {(isOwn || isMod) && (
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all"
-              >
-                {deleting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="w-3.5 h-3.5" />
-                )}
-                Delete
-              </button>
+              <DeleteDialog
+                itemType="discussion"
+                onDelete={async () => {
+                  const result = await store.deleteDiscussion(clubId, discussion.id);
+                  if (!result.success) throw new Error(result.message);
+                  router.push(`/clubs/${clubId}/discussions`);
+                }}
+                trigger={
+                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all">
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete
+                  </button>
+                }
+              />
             )}
           </div>
         </div>

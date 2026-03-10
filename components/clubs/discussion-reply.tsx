@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Heart, Reply, Trash2, Loader2 } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import type {
   ClubDiscussionReplyWithAuthor,
   ClubRole,
@@ -45,7 +46,6 @@ export default function DiscussionReply({
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [posting, setPosting] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [replyError, setReplyError] = useState('');
 
   const optimisticLike = store.optimisticReplyLikes[reply.id];
@@ -60,17 +60,6 @@ export default function DiscussionReply({
   const handleLike = async () => {
     if (!currentUserId) return;
     await store.toggleReplyLike(reply.id, likedByMe);
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Delete this reply?')) return;
-    setDeleting(true);
-    const result = await store.deleteReply(clubId, reply.id);
-    if (result.success) {
-      router.refresh();
-    } else {
-      setDeleting(false);
-    }
   };
 
   const handlePostReply = async () => {
@@ -154,17 +143,19 @@ export default function DiscussionReply({
           )}
 
           {(isOwn || isMod) && (
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="inline-flex items-center gap-1 text-xs text-red-400/80 hover:text-red-400 transition-colors"
-            >
-              {deleting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Trash2 className="w-3.5 h-3.5" />
-              )}
-            </button>
+            <DeleteDialog
+              itemType="reply"
+              onDelete={async () => {
+                const result = await store.deleteReply(clubId, reply.id);
+                if (!result.success) throw new Error(result.message);
+                router.refresh();
+              }}
+              trigger={
+                <button className="inline-flex items-center gap-1 text-xs text-red-400/80 hover:text-red-400 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              }
+            />
           )}
         </div>
 
