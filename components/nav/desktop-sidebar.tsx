@@ -30,7 +30,7 @@ const navItems = [
   { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
   { href: '/friends', label: 'Friends', icon: Users2 },
 ] as const;
-import logoImage from '@/public/logo.png';
+import logoImage from '@/public/logo3.png';
 
 export function DesktopSidebar() {
   const pathname = usePathname();

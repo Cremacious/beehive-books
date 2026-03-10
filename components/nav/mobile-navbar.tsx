@@ -22,7 +22,7 @@ import {
   Hexagon,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
-import logoImage from '@/public/logo.png';
+import logoImage from '@/public/logo3.png';
 
 const navItems = [
   { href: '/feed', label: 'Feed', icon: Home },
