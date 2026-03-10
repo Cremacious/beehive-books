@@ -81,7 +81,7 @@ export function MobileNavbar() {
             ) : (
               <div className="w-7.5 h-7.5 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/25">
                 <span className="text-[#FFC300] text-xs font-bold">
-                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
+                  {dbUsername?.[0]?.toUpperCase() ?? ' '}
                 </span>
               </div>
             )}

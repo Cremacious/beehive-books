@@ -295,7 +295,6 @@ function NewUserWelcome() {
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-[#FFC300]/20 bg-[#FFC300]/5 p-6 text-center">
-    
         <h2 className="text-xl font-bold text-white mainFont mb-1">
           Welcome to Beehive!
         </h2>
@@ -415,11 +414,10 @@ function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
 function NoActivityEmpty() {
   return (
     <div className="rounded-2xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-14 text-center">
-      <div className="text-3xl mb-3">🐝</div>
-      <p className="text-sm text-white/50 font-medium">
+      <p className="text-lg text-white font-medium">
         No recent activity from your friends.
       </p>
-      <p className="text-xs text-white/30 max-w-xs mx-auto mt-1.5">
+      <p className="text-sm text-white/80 max-w-xs mx-auto mt-1.5">
         New books, chapters, clubs, hives, and prompts will appear here as your
         friends create them.
       </p>

@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-// import { auth } from '@clerk/nextjs/server';
 import { getHiveAction } from '@/lib/actions/hive.actions';
 import HiveNav from '@/components/hive/hive-nav';
 import BackButton from '@/components/shared/back-button';
@@ -11,7 +10,7 @@ interface HiveLayoutProps {
 
 export default async function HiveLayout({ children, params }: HiveLayoutProps) {
   const { hiveId } = await params;
-  // const { userId } = await auth();
+
 
   const hive = await getHiveAction(hiveId);
   if (!hive) notFound();
