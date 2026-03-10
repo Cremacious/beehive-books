@@ -179,9 +179,24 @@ export function SortableCollectionHeader({
       }`}
     >
       {isReordering ? (
-        <GripVertical
-          className={`w-4 h-4 shrink-0 ${isChapterDragOver ? 'text-[#FFC300]/60' : 'text-white/25'}`}
-        />
+        <div className="flex items-center gap-1 shrink-0">
+          <GripVertical
+            className={`w-4 h-4 ${isChapterDragOver ? 'text-[#FFC300]/60' : 'text-white/25'}`}
+          />
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onToggleCollapse(); }}
+            className="p-0.5 text-white/30 hover:text-white/60 transition-colors"
+            title={collapsed ? 'Expand collection' : 'Collapse collection'}
+          >
+            {collapsed ? (
+              <ChevronRight className="w-5 h-5 text-yellow-500" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-yellow-500" />
+            )}
+          </button>
+        </div>
       ) : (
         <div
           className="flex items-center cursor-pointer"

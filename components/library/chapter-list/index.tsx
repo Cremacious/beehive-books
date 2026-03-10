@@ -48,10 +48,26 @@ function buildTopLevelItems(
   ];
   items.sort((a, b) => {
     if (a.order !== b.order) return a.order - b.order;
-   
     return a.type === 'chapter' ? -1 : 1;
   });
   return items;
+}
+
+// Builds the full flat list for the DnD context (respects collapse state)
+function buildFlatList(
+  topLevelItems: TopLevelItem[],
+  collectionGroups: { id: string; chapters: Chapter[] }[],
+  collapsed: Record<string, boolean>,
+): string[] {
+  const result: string[] = [];
+  for (const item of topLevelItems) {
+    result.push(item.id);
+    if (item.type === 'collection' && !collapsed[item.id]) {
+      const col = collectionGroups.find((g) => g.id === item.id);
+      if (col) col.chapters.forEach((c) => result.push(c.id));
+    }
+  }
+  return result;
 }
 
 export default function ChapterList({
@@ -71,41 +87,25 @@ export default function ChapterList({
     assignChapterToCollection,
   } = useBookStore();
 
-
+  // Flat ordered list of all visible items in reorder mode
   const [pendingFlatList, setPendingFlatList] = useState<string[] | null>(null);
-
+  // Tracks pending chapter state (for collectionId changes)
   const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(null);
-  const [pendingCollections, setPendingCollections] = useState<Collection[] | null>(null);
+  // Stores chapter order for collapsed collections in reorder mode
+  const [hiddenChapters, setHiddenChapters] = useState<Record<string, string[]>>({});
 
-  const localChapters =
-    reorderMode && pendingChapters !== null ? pendingChapters : chapters;
-  const localCollections =
-    reorderMode && pendingCollections !== null ? pendingCollections : collections;
-
+  const localChapters = reorderMode && pendingChapters !== null ? pendingChapters : chapters;
   const soloChapters = localChapters.filter((c) => !c.collectionId);
-  const collectionGroups = localCollections.map((col) => ({
+  const collectionGroups = collections.map((col) => ({
     ...col,
     chapters: localChapters.filter((c) => c.collectionId === col.id),
   }));
-
-  const topLevelItems = buildTopLevelItems(soloChapters, localCollections);
-
- 
-  const activeFlatList = reorderMode && pendingFlatList !== null
-    ? pendingFlatList
-    : topLevelItems.map((t) => t.id);
-
-
-  const orderedTopLevelItems = activeFlatList
-    .map((id) => topLevelItems.find((t) => t.id === id))
-    .filter((t): t is TopLevelItem => t !== undefined);
+  const topLevelItems = buildTopLevelItems(soloChapters, collections);
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
-    const initialCollapsed: Record<string, boolean> = {};
-    collections.forEach((col) => {
-      initialCollapsed[col.id] = true;
-    });
-    return initialCollapsed;
+    const init: Record<string, boolean> = {};
+    collections.forEach((col) => { init[col.id] = true; });
+    return init;
   });
   const [saving, setSaving] = useState(false);
   const [newColName, setNewColName] = useState('');
@@ -115,41 +115,107 @@ export default function ChapterList({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  const toggleCollapse = (id: string) =>
-    setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+  // In reorder mode: pendingFlatList is the single source of truth for display order
+  const activeFlatList: string[] =
+    reorderMode && pendingFlatList !== null
+      ? pendingFlatList
+      : buildFlatList(topLevelItems, collectionGroups, collapsed);
 
-  function handleAssignCollection(
-    chapterId: string,
-    collectionId: string | null,
-  ) {
+  // All IDs for the SortableContext in display mode (so useSortable has a valid context)
+  const allIds = [...chapters.map((c) => c.id), ...collections.map((c) => c.id)];
+
+  const chapterMap = new Map(localChapters.map((c) => [c.id, c]));
+  const collectionGroupMap = new Map(collectionGroups.map((g) => [g.id, g]));
+
+  function enterReorderMode() {
+    const flat = buildFlatList(topLevelItems, collectionGroups, collapsed);
+    setPendingFlatList(flat);
+    setPendingChapters([...chapters]);
+    setHiddenChapters({});
+    setReorderMode(true);
+  }
+
+  function cancelReorderMode() {
+    setReorderMode(false);
+    setPendingFlatList(null);
+    setPendingChapters(null);
+    setHiddenChapters({});
+  }
+
+  function toggleCollapse(collectionId: string) {
+    if (!reorderMode) {
+      setCollapsed((prev) => ({ ...prev, [collectionId]: !prev[collectionId] }));
+      return;
+    }
+
+    // In reorder mode: add/remove chapters from flat list on expand/collapse
+    const isCollapsed = !!collapsed[collectionId];
+    const list = pendingFlatList ?? [];
+
+    if (isCollapsed) {
+      // Expand: re-insert chapters after collection header
+      const chaptersToInsert =
+        hiddenChapters[collectionId] ??
+        collectionGroups.find((g) => g.id === collectionId)?.chapters.map((c) => c.id) ??
+        [];
+      const colIdx = list.indexOf(collectionId);
+      const newList = [...list];
+      if (colIdx !== -1) newList.splice(colIdx + 1, 0, ...chaptersToInsert);
+      setPendingFlatList(newList);
+      setHiddenChapters((prev) => {
+        const next = { ...prev };
+        delete next[collectionId];
+        return next;
+      });
+      setCollapsed((prev) => ({ ...prev, [collectionId]: false }));
+    } else {
+      // Collapse: extract chapters from flat list and save their order
+      const col = collectionGroups.find((g) => g.id === collectionId);
+      const chapterIdSet = new Set(col?.chapters.map((c) => c.id) ?? []);
+      const chaptersInOrder = list.filter((id) => chapterIdSet.has(id));
+      const newList = list.filter((id) => !chapterIdSet.has(id));
+      setPendingFlatList(newList);
+      setHiddenChapters((prev) => ({ ...prev, [collectionId]: chaptersInOrder }));
+      setCollapsed((prev) => ({ ...prev, [collectionId]: true }));
+    }
+  }
+
+  function handleAssignCollection(chapterId: string, collectionId: string | null) {
     setPendingChapters((prev) =>
       (prev ?? chapters).map((c) =>
         c.id === chapterId ? { ...c, collectionId } : c,
       ),
     );
 
-    if (collectionId === null) {
-    
-      setPendingFlatList((prev) => {
-        const list = prev ?? topLevelItems.map((t) => t.id);
-        if (!list.includes(chapterId)) return [...list, chapterId];
-        return list;
-      });
-    } else {
-
-      setPendingFlatList((prev) => {
-        const list = prev ?? topLevelItems.map((t) => t.id);
-        return list.filter((id) => id !== chapterId);
-      });
+    if (reorderMode) {
+      if (collectionId) {
+        // Move chapter to just after the collection header, expand that collection
+        setPendingFlatList((prev) => {
+          const list = prev ?? activeFlatList;
+          const filtered = list.filter((id) => id !== chapterId);
+          const colIdx = filtered.indexOf(collectionId);
+          const newList = [...filtered];
+          newList.splice(colIdx !== -1 ? colIdx + 1 : newList.length, 0, chapterId);
+          return newList;
+        });
+        setCollapsed((prev) => ({ ...prev, [collectionId]: false }));
+      } else {
+        // Move chapter to just before the first collection header (uncategorized area)
+        setPendingFlatList((prev) => {
+          const list = prev ?? activeFlatList;
+          const filtered = list.filter((id) => id !== chapterId);
+          const firstColIdx = filtered.findIndex((id) => collections.some((c) => c.id === id));
+          const newList = [...filtered];
+          newList.splice(firstColIdx === -1 ? newList.length : firstColIdx, 0, chapterId);
+          return newList;
+        });
+      }
     }
-    assignChapterToCollection(bookId, chapterId, collectionId).then(() =>
-      router.refresh(),
-    );
+
+    assignChapterToCollection(bookId, chapterId, collectionId).then(() => router.refresh());
   }
 
   function handleDeleteChapter(chapterId: string) {
@@ -161,13 +227,10 @@ export default function ChapterList({
     const overId = over?.id as string | undefined;
     const activeId = active.id as string;
     const activeIsChapter = localChapters.some((c) => c.id === activeId);
-    const activeIsCollection = localCollections.some((c) => c.id === activeId);
-    const overIsCollection = overId
-      ? localCollections.some((c) => c.id === overId)
-      : false;
+    const overIsCollection = overId ? collections.some((c) => c.id === overId) : false;
     const overIsUncategorized = overId === 'uncategorized';
- 
-    if (activeIsChapter && !activeIsCollection && (overIsCollection || overIsUncategorized)) {
+
+    if (activeIsChapter && (overIsCollection || overIsUncategorized)) {
       setDragOverId(overId ?? null);
     } else {
       setDragOverId(null);
@@ -181,73 +244,77 @@ export default function ChapterList({
 
     const activeId = active.id as string;
     const overId = over.id as string;
-
-    const activeIsTopLevel = activeFlatList.includes(activeId);
     const activeIsChapter = localChapters.some((c) => c.id === activeId);
-    const overIsCollection = localCollections.some((c) => c.id === overId);
+    const overIsCollection = collections.some((c) => c.id === overId);
     const overIsUncategorized = overId === 'uncategorized';
 
-    if (activeIsTopLevel) {
-
-      if (activeIsChapter && overIsCollection) {
-        handleAssignCollection(activeId, overId);
-        return;
-      }
-
-      if (activeIsChapter && overIsUncategorized) {
-        handleAssignCollection(activeId, null);
-        return;
-      }
-   
-      const oldIndex = activeFlatList.indexOf(activeId);
-      const newIndex = activeFlatList.indexOf(overId);
-      if (oldIndex !== -1 && newIndex !== -1) {
-        setPendingFlatList(arrayMove(activeFlatList, oldIndex, newIndex));
-      }
+    // Drop chapter onto a collection header → assign to that collection
+    if (activeIsChapter && overIsCollection) {
+      handleAssignCollection(activeId, overId);
       return;
     }
 
+    // Drop chapter onto uncategorized zone → remove from collection
+    if (activeIsChapter && overIsUncategorized) {
+      handleAssignCollection(activeId, null);
+      return;
+    }
 
-    const oldIndex = localChapters.findIndex((c) => c.id === activeId);
-    const newIndex = localChapters.findIndex((c) => c.id === overId);
+    // Reorder in flat list
+    const oldIndex = activeFlatList.indexOf(activeId);
+    const newIndex = activeFlatList.indexOf(overId);
     if (oldIndex !== -1 && newIndex !== -1) {
-      setPendingChapters(arrayMove(localChapters, oldIndex, newIndex));
+      setPendingFlatList(arrayMove(activeFlatList, oldIndex, newIndex));
     }
   }
 
   async function handleSaveOrder() {
     setSaving(true);
 
-    const soloChapterIdSet = new Set(soloChapters.map((c) => c.id));
-    const collectionIdSet = new Set(localCollections.map((c) => c.id));
-
+    const flatList = pendingFlatList ?? activeFlatList;
+    const collectionIdSet = new Set(collections.map((c) => c.id));
 
     const chapterOrders: { id: string; order: number }[] = [];
     const collectionOrders: { id: string; order: number }[] = [];
 
-    activeFlatList.forEach((id, index) => {
+    // Global positions for solo chapters and collection headers
+    flatList.forEach((id, index) => {
       const globalOrder = index + 1;
-      if (soloChapterIdSet.has(id)) {
-        chapterOrders.push({ id, order: globalOrder });
-      } else if (collectionIdSet.has(id)) {
+      if (collectionIdSet.has(id)) {
         collectionOrders.push({ id, order: globalOrder });
+      } else {
+        const chapter = localChapters.find((c) => c.id === id);
+        if (chapter && !chapter.collectionId) {
+          chapterOrders.push({ id, order: globalOrder });
+        }
       }
     });
 
+    // Intra-collection chapter ordering
+    for (const col of collections) {
+      const colGroup = collectionGroups.find((g) => g.id === col.id);
+      if (!colGroup) continue;
+      const colChapterIds = new Set(colGroup.chapters.map((c) => c.id));
 
-    collectionGroups.forEach((col) => {
-      col.chapters.forEach((chapter, idx) => {
-        chapterOrders.push({ id: chapter.id, order: idx + 1 });
-      });
-    });
+      if (collapsed[col.id]) {
+        // Collapsed: use hiddenChapters order (or current chapter order)
+        const orderedIds = hiddenChapters[col.id] ?? colGroup.chapters.map((c) => c.id);
+        orderedIds.forEach((id, idx) => {
+          if (colChapterIds.has(id)) chapterOrders.push({ id, order: idx + 1 });
+        });
+      } else {
+        // Expanded: use flat list order for this collection's chapters
+        const orderedInFlat = flatList.filter((id) => colChapterIds.has(id));
+        orderedInFlat.forEach((id, idx) => {
+          chapterOrders.push({ id, order: idx + 1 });
+        });
+      }
+    }
 
     const result = await reorderBookItems(bookId, chapterOrders, collectionOrders);
     setSaving(false);
     if (result.success) {
-      setReorderMode(false);
-      setPendingFlatList(null);
-      setPendingChapters(null);
-      setPendingCollections(null);
+      cancelReorderMode();
       router.refresh();
     }
   }
@@ -268,54 +335,24 @@ export default function ChapterList({
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-xl">
       <div className="px-5 py-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-yellow-500 mainFont">
-            Chapters
-          </h2>
+          <h2 className="text-lg font-semibold text-yellow-500 mainFont">Chapters</h2>
           {isOwner && (
             <div className="flex items-center gap-2">
               {reorderMode ? (
                 <>
                   <Button size="sm" onClick={handleSaveOrder} disabled={saving}>
-                    {saving ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      'Save Order'
-                    )}
+                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Order'}
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setReorderMode(false);
-                      setPendingFlatList(null);
-                      setPendingChapters(null);
-                      setPendingCollections(null);
-                    }}
-                  >
+                  <Button size="sm" variant="outline" onClick={cancelReorderMode}>
                     Cancel
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="hidden sm:flex"
-                    onClick={() => {
-                      setPendingChapters([...chapters]);
-                      setPendingCollections([...collections]);
-                      setPendingFlatList(topLevelItems.map((t) => t.id));
-                      setReorderMode(true);
-                    }}
-                  >
+                  <Button size="sm" variant="outline" className="hidden sm:flex" onClick={enterReorderMode}>
                     Reorder
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="hidden sm:flex"
-                    onClick={() => setShowColInput((v) => !v)}
-                  >
+                  <Button size="sm" variant="outline" className="hidden sm:flex" onClick={() => setShowColInput((v) => !v)}>
                     <FolderOpen />
                     Add Collection
                   </Button>
@@ -335,69 +372,36 @@ export default function ChapterList({
         {reorderMode && (
           <div className="mt-3 p-3 rounded-lg bg-[#FFC300]/10 border border-[#FFC300]/20">
             <p className="text-sm text-white leading-relaxed">
-              Drag chapters and collections into your preferred order. Drop a
-              chapter onto a collection header to move it into that collection,
-              or onto Uncategorized to remove it from a collection.
+              Drag chapters and collections into your preferred order. Drop a chapter onto a
+              collection header to assign it, or onto Uncategorized to remove it from a
+              collection. Collapse a collection to drag it as a unit.
             </p>
           </div>
         )}
         {isOwner && !reorderMode && (
           <div className="flex sm:hidden items-center gap-2 mt-3">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setPendingChapters([...chapters]);
-                setPendingCollections([...collections]);
-                setPendingFlatList(topLevelItems.map((t) => t.id));
-                setReorderMode(true);
-              }}
-            >
-              Reorder
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowColInput((v) => !v)}
-            >
+            <Button size="sm" variant="outline" onClick={enterReorderMode}>Reorder</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowColInput((v) => !v)}>
               <FolderOpen />
               Collection
             </Button>
           </div>
         )}
-
         {showColInput && (
           <div className="flex items-center gap-2 mt-3">
             <input
               type="text"
               value={newColName}
               onChange={(e) => setNewColName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAddCollection();
-              }}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleAddCollection(); }}
               placeholder="Collection name…"
               autoFocus
               className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-1.5 text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#FFC300]/50 transition-all"
             />
-            <Button
-              size="sm"
-              onClick={handleAddCollection}
-              disabled={addingCol || !newColName.trim()}
-            >
-              {addingCol ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                'Add'
-              )}
+            <Button size="sm" onClick={handleAddCollection} disabled={addingCol || !newColName.trim()}>
+              {addingCol ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Add'}
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setShowColInput(false);
-                setNewColName('');
-              }}
-            >
+            <Button size="sm" variant="outline" onClick={() => { setShowColInput(false); setNewColName(''); }}>
               Cancel
             </Button>
           </div>
@@ -411,80 +415,108 @@ export default function ChapterList({
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          {/* Single SortableContext for all top-level items (solo chapters + collection headers) */}
           <SortableContext
-            items={activeFlatList}
+            items={reorderMode ? activeFlatList : allIds}
             strategy={verticalListSortingStrategy}
           >
-            {reorderMode && localCollections.length > 0 && (
-              <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
+            {reorderMode ? (
+              // --- REORDER MODE: single flat list, all visible items ---
+              <>
+                {collections.length > 0 && (
+                  <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
+                )}
+                {activeFlatList.map((id) => {
+                  const chapter = chapterMap.get(id);
+                  if (chapter) {
+                    return (
+                      <SortableChapterRow
+                        key={chapter.id}
+                        chapter={chapter}
+                        bookId={bookId}
+                        reorderMode={true}
+                        indent={!!chapter.collectionId}
+                        collections={collections}
+                        isOwner={isOwner}
+                        basePath={basePath}
+                        onAssignCollection={(colId) => handleAssignCollection(chapter.id, colId)}
+                        onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                      />
+                    );
+                  }
+                  const col = collectionGroupMap.get(id);
+                  if (col) {
+                    return (
+                      <SortableCollectionHeader
+                        key={col.id}
+                        col={col}
+                        bookId={bookId}
+                        isChapterDragOver={dragOverId === col.id}
+                        isReordering={true}
+                        collapsed={!!collapsed[col.id]}
+                        onToggleCollapse={() => toggleCollapse(col.id)}
+                        onUpdated={() => router.refresh()}
+                        isOwner={isOwner}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </>
+            ) : (
+              // --- DISPLAY MODE: nested layout ---
+              <>
+                {topLevelItems.map((item) => {
+                  if (item.type === 'chapter') {
+                    const chapter = chapterMap.get(item.id);
+                    if (!chapter) return null;
+                    return (
+                      <SortableChapterRow
+                        key={chapter.id}
+                        chapter={chapter}
+                        bookId={bookId}
+                        reorderMode={false}
+                        collections={collections}
+                        isOwner={isOwner}
+                        basePath={basePath}
+                        onAssignCollection={(colId) => handleAssignCollection(chapter.id, colId)}
+                        onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                      />
+                    );
+                  }
+                  const col = collectionGroupMap.get(item.id);
+                  if (!col) return null;
+                  return (
+                    <div key={col.id}>
+                      <SortableCollectionHeader
+                        col={col}
+                        bookId={bookId}
+                        isChapterDragOver={false}
+                        isReordering={false}
+                        collapsed={!!collapsed[col.id]}
+                        onToggleCollapse={() => toggleCollapse(col.id)}
+                        onUpdated={() => router.refresh()}
+                        isOwner={isOwner}
+                      />
+                      {!collapsed[col.id] &&
+                        col.chapters.map((chapter) => (
+                          <SortableChapterRow
+                            key={chapter.id}
+                            chapter={chapter}
+                            bookId={bookId}
+                            reorderMode={false}
+                            indent
+                            collections={collections}
+                            isOwner={isOwner}
+                            basePath={basePath}
+                            onAssignCollection={(colId) => handleAssignCollection(chapter.id, colId)}
+                            onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                          />
+                        ))}
+                    </div>
+                  );
+                })}
+              </>
             )}
-
-            {orderedTopLevelItems.map((item) => {
-              if (item.type === 'chapter') {
-                const chapter = soloChapters.find((c) => c.id === item.id);
-                if (!chapter) return null;
-                return (
-                  <SortableChapterRow
-                    key={chapter.id}
-                    chapter={chapter}
-                    bookId={bookId}
-                    reorderMode={reorderMode}
-                    collections={localCollections}
-                    isOwner={isOwner}
-                    basePath={basePath}
-                    onAssignCollection={(colId) =>
-                      handleAssignCollection(chapter.id, colId)
-                    }
-                    onDeleteChapter={() => handleDeleteChapter(chapter.id)}
-                  />
-                );
-              }
-
-              // Collection item
-              const col = collectionGroups.find((c) => c.id === item.id);
-              if (!col) return null;
-              return (
-                <div key={col.id}>
-                  <SortableCollectionHeader
-                    col={col}
-                    bookId={bookId}
-                    isChapterDragOver={dragOverId === col.id}
-                    isReordering={reorderMode}
-                    collapsed={!!collapsed[col.id]}
-                    onToggleCollapse={() => toggleCollapse(col.id)}
-                    onUpdated={() => router.refresh()}
-                    isOwner={isOwner}
-                  />
-
-                  {(!collapsed[col.id] || reorderMode) && (
-                    <SortableContext
-                      items={col.chapters.map((c) => c.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {col.chapters.map((chapter) => (
-                        <SortableChapterRow
-                          key={chapter.id}
-                          chapter={chapter}
-                          bookId={bookId}
-                          reorderMode={reorderMode}
-                          indent
-                          collections={localCollections}
-                          isOwner={isOwner}
-                          basePath={basePath}
-                          onAssignCollection={(colId) =>
-                            handleAssignCollection(chapter.id, colId)
-                          }
-                          onDeleteChapter={() =>
-                            handleDeleteChapter(chapter.id)
-                          }
-                        />
-                      ))}
-                    </SortableContext>
-                  )}
-                </div>
-              );
-            })}
           </SortableContext>
         </DndContext>
 
@@ -493,9 +525,7 @@ export default function ChapterList({
             <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
               <FileText className="w-8 h-8 text-[#FFC300]/20" />
             </div>
-            <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-              No chapters yet!
-            </h2>
+            <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">No chapters yet!</h2>
             <p className="text-white/80 mb-8 max-w-sm">
               Start writing your story by adding your first chapter.
             </p>
