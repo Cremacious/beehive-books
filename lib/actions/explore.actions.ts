@@ -29,8 +29,7 @@ const USER_COLUMNS = {
   imageUrl: true,
 } as const;
 
-// Cached per userId for 60 seconds. Multiple search actions called within the
-// same minute share one DB round-trip instead of each firing their own query.
+
 const getFriendIds = unstable_cache(
   async (userId: string): Promise<string[]> => {
     const rows = await db.query.friendships.findMany({
@@ -293,8 +292,7 @@ export async function searchExplorableReadingListsAction(query: string): Promise
   return rows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] }));
 }
 
-// Public explore hub data changes infrequently. Cache for 5 minutes so every
-// visitor doesn't trigger 5 parallel DB queries — one warm cache hit serves all.
+
 const getCachedHubData = unstable_cache(
   async () => {
     const [bookRows, clubRows, hiveRows, promptRows, readingListRows] = await Promise.all([

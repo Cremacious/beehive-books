@@ -47,7 +47,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
   const { userId } = await auth();
   if (!userId) return [];
 
-  // Round 1: must be sequential — everything else depends on friendIds.
+
   const friendshipRows = await db.query.friendships.findMany({
     where: and(
       or(
@@ -66,8 +66,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
 
   const cutoff = new Date(Date.now() - FEED_DAYS * 24 * 60 * 60 * 1000);
 
-  // Round 2: all independent queries run in parallel.
-  // friendBookRows is fetched here (no cutoff) so its IDs can seed the chapters query.
+
   const [
     friendUsers,
     recentBooks,
@@ -184,7 +183,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  // Round 3: chapters depends on friendBookIds from round 2.
+
   if (friendBookRows.length > 0) {
     const friendBookIds = friendBookRows.map((b) => b.id);
     const bookInfoMap = Object.fromEntries(

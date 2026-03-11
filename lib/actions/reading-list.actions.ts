@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { readingLists, readingListBooks } from '@/db/schema';
@@ -62,6 +63,8 @@ export async function createReadingListAction(
   currentlyReadingIdx: number | null = null,
 ): Promise<ActionResult & { listId?: string }> {
   const userId = await requireAuth();
+  const limitError = await checkCreateLimit(userId, 'readingLists');
+  if (limitError) return { success: false, message: limitError };
   const parsed = readingListSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };

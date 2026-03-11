@@ -48,8 +48,6 @@ export default async function BookPage({
 
   const { chapters, collections, isOwner } = book;
 
-  //TODO: Make it so collections can be ordered. Make it so the chapters can be listed as chapter, chapter, collection, chapter, then collection in the order if the user wants.
-
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
@@ -138,7 +136,11 @@ export default async function BookPage({
                 </Link>
               </Button>
             )}
-            <ShareBookButton bookId={book.id} variant="icon" isOwner={isOwner} />
+            <ShareBookButton
+              bookId={book.id}
+              variant="icon"
+              isOwner={isOwner}
+            />
           </div>
         </div>
 

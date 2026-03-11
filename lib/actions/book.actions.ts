@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -119,6 +120,8 @@ export async function createBookAction(
   presetId?: string,
 ): Promise<ActionResult> {
   const userId = await requireAuth();
+  const limitError = await checkCreateLimit(userId, 'books');
+  if (limitError) return { success: false, message: limitError };
   const parsed = bookSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };

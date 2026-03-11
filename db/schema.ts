@@ -19,6 +19,7 @@ export const users = pgTable('users', {
   imageUrl: text('image_url'),
   username: text('username').unique(),
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
+  premium: boolean('premium').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

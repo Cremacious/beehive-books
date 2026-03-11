@@ -53,7 +53,7 @@ function buildTopLevelItems(
   return items;
 }
 
-// Builds the full flat list for the DnD context (respects collapse state)
+
 function buildFlatList(
   topLevelItems: TopLevelItem[],
   collectionGroups: { id: string; chapters: Chapter[] }[],
@@ -87,11 +87,11 @@ export default function ChapterList({
     assignChapterToCollection,
   } = useBookStore();
 
-  // Flat ordered list of all visible items in reorder mode
+
   const [pendingFlatList, setPendingFlatList] = useState<string[] | null>(null);
-  // Tracks pending chapter state (for collectionId changes)
+
   const [pendingChapters, setPendingChapters] = useState<Chapter[] | null>(null);
-  // Stores chapter order for collapsed collections in reorder mode
+
   const [hiddenChapters, setHiddenChapters] = useState<Record<string, string[]>>({});
 
   const localChapters = reorderMode && pendingChapters !== null ? pendingChapters : chapters;
@@ -118,13 +118,13 @@ export default function ChapterList({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  // In reorder mode: pendingFlatList is the single source of truth for display order
+
   const activeFlatList: string[] =
     reorderMode && pendingFlatList !== null
       ? pendingFlatList
       : buildFlatList(topLevelItems, collectionGroups, collapsed);
 
-  // All IDs for the SortableContext in display mode (so useSortable has a valid context)
+
   const allIds = [...chapters.map((c) => c.id), ...collections.map((c) => c.id)];
 
   const chapterMap = new Map(localChapters.map((c) => [c.id, c]));
@@ -151,12 +151,12 @@ export default function ChapterList({
       return;
     }
 
-    // In reorder mode: add/remove chapters from flat list on expand/collapse
+
     const isCollapsed = !!collapsed[collectionId];
     const list = pendingFlatList ?? [];
 
     if (isCollapsed) {
-      // Expand: re-insert chapters after collection header
+
       const chaptersToInsert =
         hiddenChapters[collectionId] ??
         collectionGroups.find((g) => g.id === collectionId)?.chapters.map((c) => c.id) ??
@@ -172,7 +172,7 @@ export default function ChapterList({
       });
       setCollapsed((prev) => ({ ...prev, [collectionId]: false }));
     } else {
-      // Collapse: extract chapters from flat list and save their order
+
       const col = collectionGroups.find((g) => g.id === collectionId);
       const chapterIdSet = new Set(col?.chapters.map((c) => c.id) ?? []);
       const chaptersInOrder = list.filter((id) => chapterIdSet.has(id));
@@ -192,7 +192,7 @@ export default function ChapterList({
 
     if (reorderMode) {
       if (collectionId) {
-        // Move chapter to just after the collection header, expand that collection
+    
         setPendingFlatList((prev) => {
           const list = prev ?? activeFlatList;
           const filtered = list.filter((id) => id !== chapterId);
@@ -203,7 +203,7 @@ export default function ChapterList({
         });
         setCollapsed((prev) => ({ ...prev, [collectionId]: false }));
       } else {
-        // Move chapter to just before the first collection header (uncategorized area)
+
         setPendingFlatList((prev) => {
           const list = prev ?? activeFlatList;
           const filtered = list.filter((id) => id !== chapterId);
@@ -248,19 +248,19 @@ export default function ChapterList({
     const overIsCollection = collections.some((c) => c.id === overId);
     const overIsUncategorized = overId === 'uncategorized';
 
-    // Drop chapter onto a collection header → assign to that collection
+
     if (activeIsChapter && overIsCollection) {
       handleAssignCollection(activeId, overId);
       return;
     }
 
-    // Drop chapter onto uncategorized zone → remove from collection
+
     if (activeIsChapter && overIsUncategorized) {
       handleAssignCollection(activeId, null);
       return;
     }
 
-    // Reorder in flat list
+
     const oldIndex = activeFlatList.indexOf(activeId);
     const newIndex = activeFlatList.indexOf(overId);
     if (oldIndex !== -1 && newIndex !== -1) {
@@ -277,7 +277,7 @@ export default function ChapterList({
     const chapterOrders: { id: string; order: number }[] = [];
     const collectionOrders: { id: string; order: number }[] = [];
 
-    // Global positions for solo chapters and collection headers
+ 
     flatList.forEach((id, index) => {
       const globalOrder = index + 1;
       if (collectionIdSet.has(id)) {
@@ -290,20 +290,20 @@ export default function ChapterList({
       }
     });
 
-    // Intra-collection chapter ordering
+
     for (const col of collections) {
       const colGroup = collectionGroups.find((g) => g.id === col.id);
       if (!colGroup) continue;
       const colChapterIds = new Set(colGroup.chapters.map((c) => c.id));
 
       if (collapsed[col.id]) {
-        // Collapsed: use hiddenChapters order (or current chapter order)
+
         const orderedIds = hiddenChapters[col.id] ?? colGroup.chapters.map((c) => c.id);
         orderedIds.forEach((id, idx) => {
           if (colChapterIds.has(id)) chapterOrders.push({ id, order: idx + 1 });
         });
       } else {
-        // Expanded: use flat list order for this collection's chapters
+      
         const orderedInFlat = flatList.filter((id) => colChapterIds.has(id));
         orderedInFlat.forEach((id, idx) => {
           chapterOrders.push({ id, order: idx + 1 });
@@ -420,7 +420,7 @@ export default function ChapterList({
             strategy={verticalListSortingStrategy}
           >
             {reorderMode ? (
-              // --- REORDER MODE: single flat list, all visible items ---
+        
               <>
                 {collections.length > 0 && (
                   <UncategorizedZone isOver={dragOverId === 'uncategorized'} />
@@ -463,7 +463,7 @@ export default function ChapterList({
                 })}
               </>
             ) : (
-              // --- DISPLAY MODE: nested layout ---
+         
               <>
                 {topLevelItems.map((item) => {
                   if (item.type === 'chapter') {

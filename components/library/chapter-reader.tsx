@@ -28,11 +28,9 @@ export function ChapterReader({
         />
 
         <div className="text-center min-w-0">
-          {/* <p className="text-xs text-yellow-500 truncate">
-            {chapter.collection
-              ? chapter.collection.name
-              : `Chapter ${chapter.order}`}
-          </p> */}
+          <p className="text-xs text-yellow-500 truncate">
+            {chapter.collection ? chapter.collection.name : ``}
+          </p>
           <h1 className="text-sm font-semibold text-white truncate leading-tight">
             {chapter.title}
           </h1>

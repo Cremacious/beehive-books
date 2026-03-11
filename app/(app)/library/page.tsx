@@ -9,11 +9,9 @@ import BookGrid from '@/components/library/book-grid';
 import { getUserBooksAction } from '@/lib/actions/book.actions';
 
 // TODO: Allow users to make a custom book order.
-//TODO: Make 5 books the limit for free users
-//TODO: Create a way to mark books as first draft vs final draft, and allow users to filter by that.
-//TODO: Create share button component
+
 //TODO: Add QR code functionality
-//TODO: Export as DOCX
+
 
 export default async function LibraryPage() {
   const books = await getUserBooksAction();
