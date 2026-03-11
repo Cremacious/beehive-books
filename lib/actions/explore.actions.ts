@@ -1,6 +1,7 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
+import { unstable_cache } from 'next/cache';
 import { and, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -28,15 +29,21 @@ const USER_COLUMNS = {
   imageUrl: true,
 } as const;
 
-async function getFriendIds(userId: string): Promise<string[]> {
-  const rows = await db.query.friendships.findMany({
-    where: and(
-      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
-      eq(friendships.status, 'ACCEPTED'),
-    ),
-  });
-  return rows.map((r) => (r.requesterId === userId ? r.addresseeId : r.requesterId));
-}
+// Cached per userId for 60 seconds. Multiple search actions called within the
+// same minute share one DB round-trip instead of each firing their own query.
+const getFriendIds = unstable_cache(
+  async (userId: string): Promise<string[]> => {
+    const rows = await db.query.friendships.findMany({
+      where: and(
+        or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+    });
+    return rows.map((r) => (r.requesterId === userId ? r.addresseeId : r.requesterId));
+  },
+  ['explore-friend-ids'],
+  { revalidate: 60 },
+);
 
 function mapBook(b: typeof books.$inferSelect): Book {
   return {
@@ -286,7 +293,63 @@ export async function searchExplorableReadingListsAction(query: string): Promise
   return rows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] }));
 }
 
+// Public explore hub data changes infrequently. Cache for 5 minutes so every
+// visitor doesn't trigger 5 parallel DB queries — one warm cache hit serves all.
+const getCachedHubData = unstable_cache(
+  async () => {
+    const [bookRows, clubRows, hiveRows, promptRows, readingListRows] = await Promise.all([
+      db.query.books.findMany({
+        where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+        orderBy: [desc(books.createdAt)],
+        limit: 8,
+      }),
+      db.query.bookClubs.findMany({
+        where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC')),
+        orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+        limit: 8,
+      }),
+      db.query.hives.findMany({
+        where: and(eq(hives.explorable, true), eq(hives.privacy, 'PUBLIC')),
+        orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+        limit: 8,
+      }),
+      db.query.prompts.findMany({
+        where: and(eq(prompts.explorable, true), eq(prompts.privacy, 'PUBLIC')),
+        with: { creator: { columns: USER_COLUMNS } },
+        orderBy: [desc(prompts.createdAt)],
+        limit: 8,
+      }),
+      db.query.readingLists.findMany({
+        where: and(eq(readingLists.explorable, true), eq(readingLists.privacy, 'PUBLIC')),
+        orderBy: [desc(readingLists.updatedAt)],
+        limit: 8,
+      }),
+    ]);
 
+    return {
+      books: bookRows.map(mapBook),
+      clubs: clubRows.map((c) => ({ ...c, tags: c.tags as string[], myRole: null, isMember: false })),
+      hives: hiveRows.map((h) => ({ ...h, tags: h.tags as string[], myRole: null, isMember: false })),
+      prompts: promptRows.map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        endDate: p.endDate,
+        privacy: p.privacy as 'PUBLIC' | 'FRIENDS' | 'PRIVATE',
+        explorable: p.explorable,
+        status: (p.endDate < new Date() ? 'ENDED' : p.status) as 'ACTIVE' | 'ENDED',
+        entryCount: p.entryCount,
+        createdAt: p.createdAt,
+        creator: p.creator as PromptUser,
+        myInviteStatus: null,
+        myEntryId: null,
+      })),
+      readingLists: readingListRows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] })),
+    };
+  },
+  ['explore-hub'],
+  { revalidate: 300 },
+);
 
 export async function getExplorableHubDataAction(): Promise<{
   books: Book[];
@@ -295,53 +358,5 @@ export async function getExplorableHubDataAction(): Promise<{
   prompts: PromptCard[];
   readingLists: ReadingList[];
 }> {
-  const [bookRows, clubRows, hiveRows, promptRows, readingListRows] = await Promise.all([
-    db.query.books.findMany({
-      where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
-      orderBy: [desc(books.createdAt)],
-      limit: 8,
-    }),
-    db.query.bookClubs.findMany({
-      where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC')),
-      orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
-      limit: 8,
-    }),
-    db.query.hives.findMany({
-      where: and(eq(hives.explorable, true), eq(hives.privacy, 'PUBLIC')),
-      orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
-      limit: 8,
-    }),
-    db.query.prompts.findMany({
-      where: and(eq(prompts.explorable, true), eq(prompts.privacy, 'PUBLIC')),
-      with: { creator: { columns: USER_COLUMNS } },
-      orderBy: [desc(prompts.createdAt)],
-      limit: 8,
-    }),
-    db.query.readingLists.findMany({
-      where: and(eq(readingLists.explorable, true), eq(readingLists.privacy, 'PUBLIC')),
-      orderBy: [desc(readingLists.updatedAt)],
-      limit: 8,
-    }),
-  ]);
-
-  return {
-    books: bookRows.map(mapBook),
-    clubs: clubRows.map((c) => ({ ...c, tags: c.tags as string[], myRole: null, isMember: false })),
-    hives: hiveRows.map((h) => ({ ...h, tags: h.tags as string[], myRole: null, isMember: false })),
-    prompts: promptRows.map((p) => ({
-      id: p.id,
-      title: p.title,
-      description: p.description,
-      endDate: p.endDate,
-      privacy: p.privacy as 'PUBLIC' | 'FRIENDS' | 'PRIVATE',
-      explorable: p.explorable,
-      status: (p.endDate < new Date() ? 'ENDED' : p.status) as 'ACTIVE' | 'ENDED',
-      entryCount: p.entryCount,
-      createdAt: p.createdAt,
-      creator: p.creator as PromptUser,
-      myInviteStatus: null,
-      myEntryId: null,
-    })),
-    readingLists: readingListRows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] })),
-  };
+  return getCachedHubData();
 }
