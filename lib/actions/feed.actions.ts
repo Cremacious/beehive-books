@@ -47,6 +47,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
   const { userId } = await auth();
   if (!userId) return [];
 
+  // Round 1: must be sequential — everything else depends on friendIds.
   const friendshipRows = await db.query.friendships.findMany({
     where: and(
       or(
@@ -65,30 +66,110 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
 
   const cutoff = new Date(Date.now() - FEED_DAYS * 24 * 60 * 60 * 1000);
 
-  const friendUsers = await db.query.users.findMany({
-    where: inArray(users.clerkId, friendIds),
-    columns: { clerkId: true, username: true, firstName: true, imageUrl: true },
-  });
+  // Round 2: all independent queries run in parallel.
+  // friendBookRows is fetched here (no cutoff) so its IDs can seed the chapters query.
+  const [
+    friendUsers,
+    recentBooks,
+    friendBookRows,
+    recentClubs,
+    recentDiscussions,
+    recentPrompts,
+    recentLists,
+    recentHives,
+  ] = await Promise.all([
+    db.query.users.findMany({
+      where: inArray(users.clerkId, friendIds),
+      columns: { clerkId: true, username: true, firstName: true, imageUrl: true },
+    }),
+    db.query.books.findMany({
+      where: and(
+        inArray(books.userId, friendIds),
+        or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
+        gt(books.createdAt, cutoff),
+      ),
+      columns: { id: true, userId: true, title: true, genre: true, createdAt: true },
+      orderBy: [desc(books.createdAt)],
+      limit: LIMIT_PER_TYPE,
+    }),
+    db.query.books.findMany({
+      where: and(
+        inArray(books.userId, friendIds),
+        or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
+      ),
+      columns: { id: true, userId: true, title: true },
+    }),
+    db.query.bookClubs.findMany({
+      where: and(
+        inArray(bookClubs.ownerId, friendIds),
+        or(eq(bookClubs.privacy, 'PUBLIC'), eq(bookClubs.privacy, 'FRIENDS')),
+        gt(bookClubs.createdAt, cutoff),
+      ),
+      columns: { id: true, ownerId: true, name: true, createdAt: true },
+      orderBy: [desc(bookClubs.createdAt)],
+      limit: LIMIT_PER_TYPE,
+    }),
+    db.query.clubDiscussions.findMany({
+      where: and(
+        inArray(clubDiscussions.authorId, friendIds),
+        gt(clubDiscussions.createdAt, cutoff),
+      ),
+      columns: {
+        id: true,
+        authorId: true,
+        clubId: true,
+        title: true,
+        createdAt: true,
+      },
+      with: {
+        club: { columns: { id: true, name: true, privacy: true } },
+      },
+      orderBy: [desc(clubDiscussions.createdAt)],
+      limit: LIMIT_PER_TYPE * 2,
+    }),
+    db.query.prompts.findMany({
+      where: and(
+        inArray(prompts.creatorId, friendIds),
+        or(eq(prompts.privacy, 'PUBLIC'), eq(prompts.privacy, 'FRIENDS')),
+        gt(prompts.createdAt, cutoff),
+      ),
+      columns: { id: true, creatorId: true, title: true, createdAt: true },
+      orderBy: [desc(prompts.createdAt)],
+      limit: LIMIT_PER_TYPE,
+    }),
+    db.query.readingLists.findMany({
+      where: and(
+        inArray(readingLists.userId, friendIds),
+        or(
+          eq(readingLists.privacy, 'PUBLIC'),
+          eq(readingLists.privacy, 'FRIENDS'),
+        ),
+        gt(readingLists.createdAt, cutoff),
+      ),
+      columns: { id: true, userId: true, title: true, createdAt: true },
+      orderBy: [desc(readingLists.createdAt)],
+      limit: LIMIT_PER_TYPE,
+    }),
+    db.query.hives.findMany({
+      where: and(
+        inArray(hives.ownerId, friendIds),
+        or(eq(hives.privacy, 'PUBLIC'), eq(hives.privacy, 'FRIENDS')),
+        gt(hives.createdAt, cutoff),
+      ),
+      columns: {
+        id: true,
+        ownerId: true,
+        name: true,
+        genre: true,
+        createdAt: true,
+      },
+      orderBy: [desc(hives.createdAt)],
+      limit: LIMIT_PER_TYPE,
+    }),
+  ]);
+
   const userMap = Object.fromEntries(friendUsers.map((u) => [u.clerkId, u]));
-
   const events: FeedEvent[] = [];
-
-  const recentBooks = await db.query.books.findMany({
-    where: and(
-      inArray(books.userId, friendIds),
-      or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
-      gt(books.createdAt, cutoff),
-    ),
-    columns: {
-      id: true,
-      userId: true,
-      title: true,
-      genre: true,
-      createdAt: true,
-    },
-    orderBy: [desc(books.createdAt)],
-    limit: LIMIT_PER_TYPE,
-  });
 
   for (const b of recentBooks) {
     const user = userMap[b.userId];
@@ -103,14 +184,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  const friendBookRows = await db.query.books.findMany({
-    where: and(
-      inArray(books.userId, friendIds),
-      or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
-    ),
-    columns: { id: true, userId: true, title: true },
-  });
-
+  // Round 3: chapters depends on friendBookIds from round 2.
   if (friendBookRows.length > 0) {
     const friendBookIds = friendBookRows.map((b) => b.id);
     const bookInfoMap = Object.fromEntries(
@@ -148,17 +222,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     }
   }
 
-  const recentClubs = await db.query.bookClubs.findMany({
-    where: and(
-      inArray(bookClubs.ownerId, friendIds),
-      or(eq(bookClubs.privacy, 'PUBLIC'), eq(bookClubs.privacy, 'FRIENDS')),
-      gt(bookClubs.createdAt, cutoff),
-    ),
-    columns: { id: true, ownerId: true, name: true, createdAt: true },
-    orderBy: [desc(bookClubs.createdAt)],
-    limit: LIMIT_PER_TYPE,
-  });
-
   for (const c of recentClubs) {
     const user = userMap[c.ownerId];
     if (!user) continue;
@@ -171,25 +234,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       link: `/clubs/${c.id}`,
     });
   }
-
-  const recentDiscussions = await db.query.clubDiscussions.findMany({
-    where: and(
-      inArray(clubDiscussions.authorId, friendIds),
-      gt(clubDiscussions.createdAt, cutoff),
-    ),
-    columns: {
-      id: true,
-      authorId: true,
-      clubId: true,
-      title: true,
-      createdAt: true,
-    },
-    with: {
-      club: { columns: { id: true, name: true, privacy: true } },
-    },
-    orderBy: [desc(clubDiscussions.createdAt)],
-    limit: LIMIT_PER_TYPE * 2,
-  });
 
   for (const d of recentDiscussions) {
     if (d.club.privacy === 'PRIVATE') continue;
@@ -209,17 +253,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  const recentPrompts = await db.query.prompts.findMany({
-    where: and(
-      inArray(prompts.creatorId, friendIds),
-      or(eq(prompts.privacy, 'PUBLIC'), eq(prompts.privacy, 'FRIENDS')),
-      gt(prompts.createdAt, cutoff),
-    ),
-    columns: { id: true, creatorId: true, title: true, createdAt: true },
-    orderBy: [desc(prompts.createdAt)],
-    limit: LIMIT_PER_TYPE,
-  });
-
   for (const p of recentPrompts) {
     const user = userMap[p.creatorId];
     if (!user) continue;
@@ -233,20 +266,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     });
   }
 
-  const recentLists = await db.query.readingLists.findMany({
-    where: and(
-      inArray(readingLists.userId, friendIds),
-      or(
-        eq(readingLists.privacy, 'PUBLIC'),
-        eq(readingLists.privacy, 'FRIENDS'),
-      ),
-      gt(readingLists.createdAt, cutoff),
-    ),
-    columns: { id: true, userId: true, title: true, createdAt: true },
-    orderBy: [desc(readingLists.createdAt)],
-    limit: LIMIT_PER_TYPE,
-  });
-
   for (const l of recentLists) {
     const user = userMap[l.userId];
     if (!user) continue;
@@ -259,23 +278,6 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       link: `/u/${user.username ?? user.clerkId}`,
     });
   }
-
-  const recentHives = await db.query.hives.findMany({
-    where: and(
-      inArray(hives.ownerId, friendIds),
-      or(eq(hives.privacy, 'PUBLIC'), eq(hives.privacy, 'FRIENDS')),
-      gt(hives.createdAt, cutoff),
-    ),
-    columns: {
-      id: true,
-      ownerId: true,
-      name: true,
-      genre: true,
-      createdAt: true,
-    },
-    orderBy: [desc(hives.createdAt)],
-    limit: LIMIT_PER_TYPE,
-  });
 
   for (const h of recentHives) {
     const user = userMap[h.ownerId];
