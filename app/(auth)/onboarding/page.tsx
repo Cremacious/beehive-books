@@ -103,6 +103,9 @@ export default function OnboardingPage() {
         return;
       }
 
+      // Refresh the Clerk user object so publicMetadata.username is available
+      // immediately in the sidebar without the user needing to reload the page.
+      await user?.reload();
       router.push('/feed');
     });
   }

@@ -1,16 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-// import { syncUser } from '@/sync-user';
 
 const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)']);
 const isOnboardingRoute = createRouteMatcher(['/onboarding']);
 const isRootRoute = createRouteMatcher(['/']);
 
 export default clerkMiddleware(async (auth, request) => {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   if (!userId) {
     if (!isPublicRoute(request)) {
@@ -19,13 +15,12 @@ export default clerkMiddleware(async (auth, request) => {
     return;
   }
 
-  const [dbUser] = await db
-    .select({ onboardingComplete: users.onboardingComplete })
-    .from(users)
-    .where(eq(users.clerkId, userId))
-    .limit(1);
-
-  const onboarded = dbUser?.onboardingComplete;
+  // Primary: read from JWT (zero DB cost). Fallback: short-lived cookie set by
+  // completeOnboarding() for the window before the JWT refreshes.
+  const metadata = sessionClaims?.metadata as { onboardingComplete?: boolean } | undefined;
+  const onboarded =
+    metadata?.onboardingComplete === true ||
+    request.cookies.get('onboarding-done')?.value === '1';
 
   if (!onboarded && !isOnboardingRoute(request) && !isPublicRoute(request)) {
     return NextResponse.redirect(new URL('/onboarding', request.url));

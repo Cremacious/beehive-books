@@ -1,6 +1,7 @@
 'use server';
 
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { cookies } from 'next/headers';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -91,6 +92,17 @@ export async function completeOnboarding(
     }
     return { error: 'Something went wrong. Please try again.' };
   }
+
+  // Set a short-lived cookie so the middleware can immediately see that
+  // onboarding is complete, without waiting for the Clerk JWT to refresh.
+  const cookieStore = await cookies();
+  cookieStore.set('onboarding-done', '1', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60,
+  });
 
   return { error: '' };
 }
