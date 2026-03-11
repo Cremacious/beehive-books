@@ -69,6 +69,9 @@ export function ChapterReader({
               <ChevronLeft className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
               <div className="min-w-0">
                 <p className="text-xs text-yellow-500">Previous</p>
+                {prev.collectionName && (
+                  <p className="text-xs text-white/80 truncate">{prev.collectionName}</p>
+                )}
                 <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
                   {prev.title}
                 </p>
@@ -94,6 +97,9 @@ export function ChapterReader({
             >
               <div className="min-w-0">
                 <p className="text-xs text-yellow-500">Next</p>
+                {next.collectionName && (
+                  <p className="text-xs text-white/80 truncate">{next.collectionName}</p>
+                )}
                 <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
                   {next.title}
                 </p>

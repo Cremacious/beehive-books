@@ -12,7 +12,7 @@ export async function generateMetadata({
   try {
     const data = await getChapterWithContextAction(chapterId);
     return {
-      title: `${data.chapter.title} — ${data.book.title}`,
+      title: `${data.chapter.title} - ${data.book.title}`,
       description: `Read ${data.chapter.title} from ${data.book.title} on Beehive Books.`,
     };
   } catch {
