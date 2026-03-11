@@ -3,6 +3,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { and, eq, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { checkCreateLimit } from '@/lib/premium';
 import { db } from '@/db';
 import {
   prompts,
@@ -339,6 +340,8 @@ export async function createPromptAction(
   inviteUserIds: string[],
 ): Promise<ActionResult & { promptId?: string }> {
   const userId = await requireAuth();
+  const limitError = await checkCreateLimit(userId, 'prompts');
+  if (limitError) return { success: false, message: limitError };
 
   const parsed = promptServerSchema.safeParse({
     ...data,

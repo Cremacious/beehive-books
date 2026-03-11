@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -119,6 +120,8 @@ export async function createBookAction(
   presetId?: string,
 ): Promise<ActionResult> {
   const userId = await requireAuth();
+  const limitError = await checkCreateLimit(userId, 'books');
+  if (limitError) return { success: false, message: limitError };
   const parsed = bookSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -239,7 +242,7 @@ export async function getChapterWithContextAction(chapterId: string) {
     db.query.collections.findMany({
       where: eq(collections.bookId, book.id),
       orderBy: (c, { asc }) => [asc(c.order)],
-      columns: { id: true },
+      columns: { id: true, name: true, order: true },
     }),
     db.query.chapterComments.findMany({
       where: and(
@@ -272,13 +275,34 @@ export async function getChapterWithContextAction(chapterId: string) {
       },
     }),
   ]);
-  const uncategorized = allChapters.filter((c) => !c.collectionId);
-  const flatOrder = [
-    ...uncategorized,
-    ...allCollections.flatMap((col) =>
-      allChapters.filter((c) => c.collectionId === col.id),
-    ),
+
+  type TopItem = { type: 'chapter' | 'collection'; id: string; order: number };
+  const soloChapters = allChapters.filter((c) => !c.collectionId);
+  const topItems: TopItem[] = [
+    ...soloChapters.map((c) => ({ type: 'chapter' as const, id: c.id, order: c.order })),
+    ...allCollections.map((col) => ({ type: 'collection' as const, id: col.id, order: col.order })),
   ];
+  topItems.sort((a, b) => a.order - b.order || (a.type === 'chapter' ? -1 : 1));
+
+  const collectionMap = new Map(allCollections.map((col) => [col.id, col]));
+  const chapterById = new Map(allChapters.map((c) => [c.id, c]));
+
+  type FlatEntry = { id: string; title: string; collectionName: string | null };
+  const flatOrder: FlatEntry[] = [];
+  for (const item of topItems) {
+    if (item.type === 'chapter') {
+      const ch = chapterById.get(item.id);
+      if (ch) flatOrder.push({ id: ch.id, title: ch.title, collectionName: null });
+    } else {
+      const col = collectionMap.get(item.id);
+      const colChapters = allChapters
+        .filter((c) => c.collectionId === item.id)
+        .sort((a, b) => a.order - b.order);
+      for (const ch of colChapters) {
+        flatOrder.push({ id: ch.id, title: ch.title, collectionName: col?.name ?? null });
+      }
+    }
+  }
 
   const idx = flatOrder.findIndex((c) => c.id === chapterId);
   const prev = idx > 0 ? flatOrder[idx - 1] : null;

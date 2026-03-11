@@ -2,7 +2,7 @@ import { SignIn } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import Image from 'next/image';
 import Link from 'next/link';
-import logoImage from '@/public/logo.png';
+import logoImage from '@/public/logo3.png';
 
 export default function SignInPage() {
   return (

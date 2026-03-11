@@ -93,8 +93,7 @@ export async function completeOnboarding(
     return { error: 'Something went wrong. Please try again.' };
   }
 
-  // Set a short-lived cookie so the middleware can immediately see that
-  // onboarding is complete, without waiting for the Clerk JWT to refresh.
+
   const cookieStore = await cookies();
   cookieStore.set('onboarding-done', '1', {
     httpOnly: true,

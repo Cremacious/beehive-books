@@ -1,9 +1,15 @@
+import { auth } from '@clerk/nextjs/server';
 import { DesktopSidebar } from '@/components/nav/desktop-sidebar';
 import { MobileNavbar } from '@/components/nav/mobile-navbar';
 import { syncUser } from '@/sync-user';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  await syncUser();
+
+  const { sessionClaims } = await auth();
+  const meta = sessionClaims?.metadata as { onboardingComplete?: boolean; username?: string } | undefined;
+  if (!meta?.onboardingComplete || !meta?.username) {
+    await syncUser();
+  }
   return (
     <div className="flex h-screen overflow-hidden">
       <DesktopSidebar />

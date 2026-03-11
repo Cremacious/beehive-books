@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { checkCreateLimit } from '@/lib/premium';
 import { and, desc, eq, ilike, inArray, max, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -71,6 +72,8 @@ export async function createClubAction(
   invitedIds: string[] = [],
 ): Promise<ActionResult & { clubId?: string }> {
   const userId = await requireAuth();
+  const limitError = await checkCreateLimit(userId, 'clubs');
+  if (limitError) return { success: false, message: limitError };
   const parsed = clubSchema.safeParse(data);
   if (!parsed.success) return { success: false, message: parsed.error.issues[0].message };
 
@@ -701,7 +704,6 @@ export async function createDiscussionReplyAction(
       });
     }
 
-    // Also notify the parent reply author if this is a nested reply
     if (parentId) {
       const parentReply = await db.query.clubDiscussionReplies.findFirst({
         where: eq(clubDiscussionReplies.id, parentId),
