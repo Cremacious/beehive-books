@@ -1,5 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)']);
 const isOnboardingRoute = createRouteMatcher(['/onboarding']);
@@ -15,12 +18,25 @@ export default clerkMiddleware(async (auth, request) => {
     return;
   }
 
-  // Primary: read from JWT (zero DB cost). Fallback: short-lived cookie set by
-  // completeOnboarding() for the window before the JWT refreshes.
+  // Fast path: JWT claim is present (zero DB cost for most users).
+  // Fallback 1: short-lived cookie set by completeOnboarding() before JWT refreshes.
+  // Fallback 2: DB query for users whose Clerk publicMetadata was never populated
+  //             (e.g. seeded accounts, or accounts from before metadata sync was added).
+  //             syncUser() in the app layout will update their Clerk metadata on first
+  //             successful visit, so they only hit the DB once.
   const metadata = sessionClaims?.metadata as { onboardingComplete?: boolean } | undefined;
-  const onboarded =
+  let onboarded =
     metadata?.onboardingComplete === true ||
     request.cookies.get('onboarding-done')?.value === '1';
+
+  if (!onboarded) {
+    const [dbUser] = await db
+      .select({ onboardingComplete: users.onboardingComplete })
+      .from(users)
+      .where(eq(users.clerkId, userId))
+      .limit(1);
+    onboarded = dbUser?.onboardingComplete === true;
+  }
 
   if (!onboarded && !isOnboardingRoute(request) && !isPublicRoute(request)) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
