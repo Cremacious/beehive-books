@@ -7,12 +7,15 @@ import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import Popup from '@/components/ui/popup';
 import RoleBadge from '@/components/admin/role-badge';
 import Pagination from '@/components/shared/pagination';
 import {
   updateUserRoleAction,
   toggleUserPremiumAction,
 } from '@/lib/actions/admin.actions';
+
+type Role = 'member' | 'moderator' | 'admin';
 
 type User = {
   clerkId: string;
@@ -21,7 +24,7 @@ type User = {
   lastName: string | null;
   username: string | null;
   imageUrl: string | null;
-  role: 'member' | 'moderator' | 'admin';
+  role: Role;
   premium: boolean;
   createdAt: Date;
 };
@@ -33,6 +36,9 @@ interface Props {
   pageSize: number;
 }
 
+type PendingRoleChange = { clerkId: string; username: string | null; newRole: Role; currentRole: Role };
+type PendingPremiumToggle = { clerkId: string; username: string | null; currentPremium: boolean };
+
 export default function UsersTable({ users, total, page, pageSize }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -40,6 +46,8 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const [searchValue, setSearchValue] = useState(
     searchParams.get('search') ?? '',
   );
+  const [pendingRole, setPendingRole] = useState<PendingRoleChange | null>(null);
+  const [pendingPremium, setPendingPremium] = useState<PendingPremiumToggle | null>(null);
   const [pending, startTransition] = useTransition();
 
   const totalPages = Math.ceil(total / pageSize);
@@ -58,22 +66,26 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
     updateUrl(1, searchValue);
   };
 
-  const handleRoleChange = (
-    clerkId: string,
-    role: 'member' | 'moderator' | 'admin',
-  ) => {
+  const confirmRoleChange = () => {
+    if (!pendingRole) return;
     startTransition(async () => {
-      await updateUserRoleAction(clerkId, role);
+      await updateUserRoleAction(pendingRole.clerkId, pendingRole.newRole);
+      setPendingRole(null);
       router.refresh();
     });
   };
 
-  const handleTogglePremium = (clerkId: string) => {
+  const confirmPremiumToggle = () => {
+    if (!pendingPremium) return;
     startTransition(async () => {
-      await toggleUserPremiumAction(clerkId);
+      await toggleUserPremiumAction(pendingPremium.clerkId);
+      setPendingPremium(null);
       router.refresh();
     });
   };
+
+  const displayName = (u: User) =>
+    u.username ? `${u.username}` : [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
 
   return (
     <div>
@@ -174,12 +186,12 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                   <select
                     value={u.role}
                     disabled={pending}
-                    onChange={(e) =>
-                      handleRoleChange(
-                        u.clerkId,
-                        e.target.value as 'member' | 'moderator' | 'admin',
-                      )
-                    }
+                    onChange={(e) => {
+                      const newRole = e.target.value as Role;
+                      if (newRole !== u.role) {
+                        setPendingRole({ clerkId: u.clerkId, username: u.username, newRole, currentRole: u.role });
+                      }
+                    }}
                     className="bg-transparent border-0 text-sm cursor-pointer focus:outline-none"
                   >
                     <option value="member" className="bg-[#252525]">
@@ -198,7 +210,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
                   <button
-                    onClick={() => handleTogglePremium(u.clerkId)}
+                    onClick={() => setPendingPremium({ clerkId: u.clerkId, username: u.username, currentPremium: u.premium })}
                     disabled={pending}
                     className="focus:outline-none"
                   >
@@ -240,6 +252,58 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
           onPageChange={(p) => updateUrl(p)}
         />
       </div>
+
+      <Popup
+        open={!!pendingRole}
+        onClose={() => setPendingRole(null)}
+        title="Change Role"
+        maxWidth="sm"
+      >
+        <p className="text-sm text-white/70 mb-1">
+          Change role for{' '}
+          <span className="text-white font-medium">
+            {pendingRole ? displayName(users.find((u) => u.clerkId === pendingRole.clerkId) ?? { username: pendingRole.username, firstName: null, lastName: null, email: '' } as User) : ''}
+          </span>
+        </p>
+        <p className="text-sm text-white/70 mb-6">
+          <span className="capitalize text-white/50">{pendingRole?.currentRole}</span>
+          {' → '}
+          <span className="capitalize text-white font-medium">{pendingRole?.newRole}</span>
+        </p>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setPendingRole(null)} disabled={pending}>
+            Cancel
+          </Button>
+          <Button onClick={confirmRoleChange} disabled={pending}>
+            {pending ? 'Saving…' : 'Confirm'}
+          </Button>
+        </div>
+      </Popup>
+
+      <Popup
+        open={!!pendingPremium}
+        onClose={() => setPendingPremium(null)}
+        title={pendingPremium?.currentPremium ? 'Revoke Premium' : 'Grant Premium'}
+        maxWidth="sm"
+      >
+        <p className="text-sm text-white/70 mb-6">
+          {pendingPremium?.currentPremium
+            ? 'Remove premium status from '
+            : 'Grant premium status to '}
+          <span className="text-white font-medium">
+            {pendingPremium ? displayName(users.find((u) => u.clerkId === pendingPremium.clerkId) ?? { username: pendingPremium.username, firstName: null, lastName: null, email: '' } as User) : ''}
+          </span>
+          ?
+        </p>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setPendingPremium(null)} disabled={pending}>
+            Cancel
+          </Button>
+          <Button onClick={confirmPremiumToggle} disabled={pending}>
+            {pending ? 'Saving…' : 'Confirm'}
+          </Button>
+        </div>
+      </Popup>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import AdminSidebar from '@/components/admin/admin-sidebar';
+import AdminMobileNav from '@/components/admin/admin-mobile-nav';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
@@ -19,7 +20,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex h-full min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <AdminMobileNav />
+        <main className="flex-1 p-6">{children}</main>
+      </div>
     </div>
   );
 }
