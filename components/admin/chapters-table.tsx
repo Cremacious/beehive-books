@@ -53,12 +53,12 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
     <div>
       <form onSubmit={handleSearch} className="flex gap-2 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
           <input
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="Search by chapter title…"
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder:text-white focus:outline-none focus:border-[#FFC300]/40"
           />
         </div>
         <Button type="submit" variant="outline" size="sm">Search</Button>
@@ -71,13 +71,35 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
 
       <p className="text-sm text-white mb-3">{total.toLocaleString()} chapters</p>
 
-      <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
+      <div className="md:hidden rounded-2xl border border-[#2a2a2a] overflow-hidden divide-y divide-[#2a2a2a]">
+        {chapters.map((c) => (
+          <div key={c.id} className="p-4 hover:bg-white/2 transition-colors">
+            <p className="font-medium text-white truncate">{c.title}</p>
+            <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-white">
+              {c.book && <span className="truncate max-w-[160px]">{c.book.title}</span>}
+              {c.book?.user?.username && (
+                <Link href={`/u/${c.book.user.username}`} className="hover:text-[#FFC300] transition-colors">
+                  @{c.book.user.username}
+                </Link>
+              )}
+              <span>{c.wordCount.toLocaleString()} words</span>
+              <span>Ch. {c.order + 1}</span>
+              <span className="ml-auto text-white">{new Date(c.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        ))}
+        {chapters.length === 0 && (
+          <p className="px-4 py-8 text-center text-white text-sm">No chapters found.</p>
+        )}
+      </div>
+
+      <div className="hidden md:block rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a2a2a] bg-[#252525]">
               <th className="text-left px-4 py-3 text-white font-medium">Chapter</th>
-              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Book</th>
-              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Author</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Book</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Author</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Words</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Order</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
@@ -86,28 +108,18 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
           <tbody className="divide-y divide-[#2a2a2a]">
             {chapters.map((c) => (
               <tr key={c.id} className="hover:bg-white/2 transition-colors">
+                <td className="px-4 py-3 font-medium text-white">{c.title}</td>
+                <td className="px-4 py-3 text-white">{c.book?.title ?? <span className="text-white italic">unknown</span>}</td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-white">{c.title}</p>
-                </td>
-                <td className="px-4 py-3 hidden md:table-cell">
-                  {c.book ? (
-                    <span className="text-white">{c.book.title}</span>
-                  ) : (
-                    <span className="text-white/30 italic">unknown</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 hidden md:table-cell">
                   {c.book?.user?.username ? (
                     <Link href={`/u/${c.book.user.username}`} className="text-white hover:text-[#FFC300] transition-colors">
-                      {c.book.user.username}
+                      @{c.book.user.username}
                     </Link>
                   ) : (
-                    <span className="text-white/30 italic">unknown</span>
+                    <span className="text-white italic">unknown</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-white hidden lg:table-cell">
-                  {c.wordCount.toLocaleString()}
-                </td>
+                <td className="px-4 py-3 text-white hidden lg:table-cell">{c.wordCount.toLocaleString()}</td>
                 <td className="px-4 py-3 text-white hidden lg:table-cell">{c.order + 1}</td>
                 <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                   {new Date(c.createdAt).toLocaleDateString()}
@@ -116,9 +128,7 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
             ))}
             {chapters.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">
-                  No chapters found.
-                </td>
+                <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">No chapters found.</td>
               </tr>
             )}
           </tbody>

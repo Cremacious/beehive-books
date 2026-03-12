@@ -13,7 +13,7 @@ const CONFIG: Record<Role, { label: string; className: string }> = {
   },
   member: {
     label: 'Member',
-    className: 'bg-white/8 text-white/50 border-transparent',
+    className: 'bg-white/8 text-white border-transparent',
   },
 };
 

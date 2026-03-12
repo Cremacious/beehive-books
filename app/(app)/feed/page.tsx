@@ -473,10 +473,10 @@ export default async function UserHomePage() {
       ) : (
         <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-[0.15em]">
+            <p className="text-xs font-semibold text-white uppercase tracking-[0.15em]">
               Friend Activity
             </p>
-            <p className="text-xs text-white/25">
+            <p className="text-xs text-white">
               {events.length} update{events.length !== 1 ? 's' : ''} · last 30
               days
             </p>

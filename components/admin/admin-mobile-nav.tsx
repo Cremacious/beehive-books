@@ -57,7 +57,7 @@ export default function AdminMobileNav() {
           ))}
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-          <svg className="w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>

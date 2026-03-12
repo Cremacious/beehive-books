@@ -22,7 +22,7 @@ export default function ConfirmDeleteDialog({
 }: Props) {
   return (
     <Popup open={open} onClose={onClose} title={title} maxWidth="sm">
-      <p className="text-sm text-white/70 mb-6">{description}</p>
+      <p className="text-sm text-white mb-6">{description}</p>
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose} disabled={loading}>
           Cancel

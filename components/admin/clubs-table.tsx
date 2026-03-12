@@ -63,12 +63,12 @@ export default function ClubsTable({ clubs, total, page, pageSize }: Props) {
     <div>
       <form onSubmit={handleSearch} className="flex gap-2 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
           <input
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="Search by club name…"
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder:text-white focus:outline-none focus:border-[#FFC300]/40"
           />
         </div>
         <Button type="submit" variant="outline" size="sm">Search</Button>
@@ -81,13 +81,47 @@ export default function ClubsTable({ clubs, total, page, pageSize }: Props) {
 
       <p className="text-sm text-white mb-3">{total.toLocaleString()} clubs</p>
 
-      <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
+      <div className="md:hidden rounded-2xl border border-[#2a2a2a] overflow-hidden divide-y divide-[#2a2a2a]">
+        {clubs.map((c) => (
+          <div key={c.id} className="p-4 hover:bg-white/2 transition-colors">
+            <div className="flex items-start justify-between gap-2">
+              <p className="font-medium text-white truncate">{c.name}</p>
+              <button
+                onClick={() => setDeleteTarget(c)}
+                className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="mt-2 flex items-center gap-2 flex-wrap text-xs text-white">
+              {c.owner?.username && (
+                <Link href={`/u/${c.owner.username}`} className="hover:text-[#FFC300] transition-colors">
+                  @{c.owner.username}
+                </Link>
+              )}
+              <Badge
+                variant="outline"
+                className={c.privacy === 'PUBLIC' ? 'bg-green-500/15 text-green-400 border-transparent' : 'bg-white/8 text-white border-transparent'}
+              >
+                {c.privacy}
+              </Badge>
+              <span>{c.memberCount} members</span>
+              <span className="ml-auto text-white">{new Date(c.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        ))}
+        {clubs.length === 0 && (
+          <p className="px-4 py-8 text-center text-white text-sm">No clubs found.</p>
+        )}
+      </div>
+
+      <div className="hidden md:block rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a2a2a] bg-[#252525]">
               <th className="text-left px-4 py-3 text-white font-medium">Club</th>
-              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Owner</th>
-              <th className="text-left px-4 py-3 text-white font-medium hidden sm:table-cell">Privacy</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Owner</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Privacy</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Members</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
               <th className="px-4 py-3" />
@@ -96,26 +130,20 @@ export default function ClubsTable({ clubs, total, page, pageSize }: Props) {
           <tbody className="divide-y divide-[#2a2a2a]">
             {clubs.map((c) => (
               <tr key={c.id} className="hover:bg-white/2 transition-colors">
+                <td className="px-4 py-3 font-medium text-white">{c.name}</td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-white">{c.name}</p>
-                </td>
-                <td className="px-4 py-3 hidden md:table-cell">
                   {c.owner?.username ? (
                     <Link href={`/u/${c.owner.username}`} className="text-white hover:text-[#FFC300] transition-colors">
-                      {c.owner.username}
+                      @{c.owner.username}
                     </Link>
                   ) : (
                     <span className="text-white italic">unknown</span>
                   )}
                 </td>
-                <td className="px-4 py-3 hidden sm:table-cell">
+                <td className="px-4 py-3">
                   <Badge
                     variant="outline"
-                    className={
-                      c.privacy === 'PUBLIC'
-                        ? 'bg-green-500/15 text-green-400 border-transparent'
-                        : 'bg-white/8 text-white/40 border-transparent'
-                    }
+                    className={c.privacy === 'PUBLIC' ? 'bg-green-500/15 text-green-400 border-transparent' : 'bg-white/8 text-white border-transparent'}
                   >
                     {c.privacy}
                   </Badge>
@@ -128,7 +156,6 @@ export default function ClubsTable({ clubs, total, page, pageSize }: Props) {
                   <button
                     onClick={() => setDeleteTarget(c)}
                     className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors"
-                    title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -137,9 +164,7 @@ export default function ClubsTable({ clubs, total, page, pageSize }: Props) {
             ))}
             {clubs.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-white/30 text-sm">
-                  No clubs found.
-                </td>
+                <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">No clubs found.</td>
               </tr>
             )}
           </tbody>
