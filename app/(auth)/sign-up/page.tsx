@@ -8,7 +8,6 @@ import { Loader2 } from 'lucide-react';
 import logoImage from '@/public/logo3.png';
 
 export default function SignUpPage() {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +18,7 @@ export default function SignUpPage() {
     setError('');
     setLoading(true);
 
-    const result = await signUp.email({ name, email, password });
+    const result = await signUp.email({ name: email.split('@')[0], email, password });
 
     if (result.error) {
       const msg = result.error.message ?? '';
@@ -49,21 +48,6 @@ export default function SignUpPage() {
           <p className="text-sm text-white/50 mb-6">Join the Beehive Books community</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-yellow-500 mb-1.5 mainFont">
-                Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                autoComplete="name"
-                placeholder="Your name"
-                className="w-full rounded-xl bg-[#252525] border border-[#333] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-yellow-500 mb-1.5 mainFont">
                 Email

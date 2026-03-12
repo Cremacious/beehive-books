@@ -16,6 +16,11 @@ function isPublic(pathname: string) {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Let better-auth handle its own API routes without interference
+  if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
   const session = await auth.api.getSession({ headers: request.headers });
   const userId = session?.user?.id ?? null;
 
