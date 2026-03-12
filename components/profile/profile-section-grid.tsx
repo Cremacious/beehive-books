@@ -12,11 +12,11 @@ interface Props {
   limit: number;
   gridClassName: string;
   placeholder?: ReactNode;
-  /** Searchable text per child — one entry per rendered child, same order. */
+ 
   searchTexts: string[];
-  /** Optional status value per child (e.g. 'ACTIVE'/'ENDED'). Enables filter pills. */
+
   statusValues?: string[];
-  /** Human-readable label per status value. */
+
   statusLabels?: Record<string, string>;
   children: ReactNode;
 }

@@ -93,7 +93,7 @@ function timeAgo(date: Date) {
   return `${days}d ago`;
 }
 
-/** Tailwind line-clamp class based on content length so cards have variable heights. */
+
 function clampClass(content: string): string {
   if (content.length < 120) return 'line-clamp-3';
   if (content.length < 300) return 'line-clamp-5';

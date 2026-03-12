@@ -16,10 +16,7 @@ export default async function CreatePromptPage() {
       <BackButton href="/prompts" label="Prompts" />
 
       <div className="mt-6 mb-8">
-        {/* <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">New Challenge</h1>
-        <p className="mt-1 text-base text-white/70">
-          Set a writing prompt, invite friends, and let the creativity flow.
-        </p> */}
+
       </div>
 
       <PromptForm mode="create" friends={friends.map((f) => f.user)} />

@@ -1,11 +1,4 @@
-/**
- * Seed script — creates test Clerk accounts + matching DB rows.
- *
- * Run:  npm run db:seed
- *
- * Safe to re-run: skips users that already exist in Clerk.
- * All accounts share the same password so you can switch between them easily.
- */
+// npm run db:seed
 
 import 'dotenv/config';
 import { createClerkClient } from '@clerk/backend';

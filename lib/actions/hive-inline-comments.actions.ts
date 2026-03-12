@@ -144,7 +144,7 @@ export async function createInlineCommentAction(
             }),
           ),
         );
-      } catch { /* non-critical */ }
+      } catch {}
     })();
 
     return { success: true, message: 'Comment added.', commentId: comment.id };

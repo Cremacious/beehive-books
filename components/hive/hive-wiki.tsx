@@ -48,7 +48,7 @@ const CATEGORIES: {
   { value: 'LOCATION', label: 'Locations', Icon: MapPin },
   { value: 'TIMELINE', label: 'Timeline', Icon: Clock },
   { value: 'LORE', label: 'Lore', Icon: Scroll },
-  // { value: 'TERMINOLOGY', label: 'Terms', Icon: BookMarked },
+
   { value: 'OTHER', label: 'Other', Icon: MoreHorizontal },
 ];
 
@@ -61,9 +61,6 @@ const CATEGORY_COLORS: Record<WikiCategory, string> = {
   OTHER: 'text-white/40 bg-white/5 border-white/10',
 };
 
-// const DEFAULT_COLORS = [
-//   '#FFC300', '#8B5CF6', '#10B981', '#3B82F6', '#F97316', '#EC4899',
-// ];
 
 type EditorMode =
   | { mode: 'create' }

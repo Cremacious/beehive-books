@@ -296,11 +296,7 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
             </span>
           </div>
         )}
-        {/* <div
-          className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${cfg.bg} ${cfg.color} ring-2 ring-[#1e1e1e]`}
-        >
-          {cfg.icon}
-        </div> */}
+    
       </div>
 
       <div className="flex-1 min-w-0 pt-0.5">
@@ -501,23 +497,7 @@ export default function HiveDashboard({
               member{hive.memberCount !== 1 ? 's' : ''}
             </span>
           </div>
-          {/* {hive.totalWordCount > 0 && (
-            <div className="flex items-center gap-1.5 text-sm">
-              <span className="text-[#FFC300] font-semibold">
-                {hive.totalWordCount.toLocaleString()}
-              </span>
-              <span className="text-white/60">words written</span>
-            </div>
-          )} */}
-          {/* {hive.chapterCount > 0 && (
-            <div className="flex items-center gap-1.5 text-sm">
-              <BookOpen className="w-4 h-4 text-white/40" />
-              <span className="text-white font-semibold">{hive.chapterCount}</span>
-              <span className="text-white/60">
-                chapter{hive.chapterCount !== 1 ? 's' : ''}
-              </span>
-            </div>
-          )} */}
+  
         </div>
       </div>
 

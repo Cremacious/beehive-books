@@ -135,7 +135,7 @@ export async function createWikiEntryAction(
             }),
           ),
         );
-      } catch { /* non-critical */ }
+      } catch {}
     })();
 
     return { success: true, message: 'Entry created.', entryId: entry.id };

@@ -73,8 +73,7 @@ function Placeholder() {
         <BookOpen className="w-8 h-8 text-[#FFC300]/15" />
       </div>
       <div className="px-3 pt-3 pb-3">
-        {/* <div className="h-4 w-3/4 rounded bg-[#FFC300]/8 mb-2" />
-        <div className="h-3 w-1/2 rounded bg-[#FFC300]/5" /> */}
+
       </div>
     </div>
   );

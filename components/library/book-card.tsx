@@ -38,11 +38,7 @@ export default function BookCard({ book }: { book: Book }) {
           <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium truncate max-w-full">
             {book.category}
           </span>
-          {/* {book.draftStatus !== 'COMPLETED' && (
-            <span className="px-2 py-1 rounded-full bg-white/5 text-white/40 text-sm font-medium">
-              {DRAFT_STATUS_LABELS[book.draftStatus]}
-            </span>
-          )} */}
+  
         </div>
       </div>
     </Link>

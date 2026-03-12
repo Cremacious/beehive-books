@@ -4,10 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { getCurrentUserImageUrlAction } from '@/lib/actions/user.actions';
 
-/**
- * Returns the current user's avatar URL from the database (Cloudinary).
- * Falls back to Clerk's imageUrl if the DB has none (e.g. OAuth users).
- */
+
 export function useCurrentUserImage(): string | null {
   const { user } = useUser();
   const [dbImageUrl, setDbImageUrl] = useState<string | null>(null);
