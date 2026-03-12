@@ -100,7 +100,7 @@ export async function createBuzzItemAction(
             }),
           ),
         );
-      } catch 
+      } catch {}
     })();
 
     return { success: true, message: 'Posted to Buzz Board.', itemId: item.id };
