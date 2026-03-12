@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, or, sql } from 'drizzle-orm';
@@ -24,12 +25,6 @@ import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
 import { insertNotification } from '@/lib/notifications';
 
 export type ActionResult = { success: boolean; message: string };
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function isFriendOf(userId: string, ownerId: string): Promise<boolean> {
   if (userId === ownerId) return true;
@@ -86,7 +81,7 @@ export async function getBookWithChaptersAction(bookId: string) {
 
 
 export async function getBookForViewAction(bookId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
     with: {
@@ -192,7 +187,7 @@ export async function deleteBookAction(bookId: string): Promise<ActionResult> {
 }
 
 export async function getPublicBookAction(bookId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
@@ -216,7 +211,7 @@ export async function getPublicBookAction(bookId: string) {
 }
 
 export async function getChapterWithContextAction(chapterId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),
@@ -254,7 +249,7 @@ export async function getChapterWithContextAction(chapterId: string) {
         user: {
           columns: {
             username: true,
-            imageUrl: true,
+            image: true,
             firstName: true,
             lastName: true,
           },
@@ -264,7 +259,7 @@ export async function getChapterWithContextAction(chapterId: string) {
             user: {
               columns: {
                 username: true,
-                imageUrl: true,
+                image: true,
                 firstName: true,
                 lastName: true,
               },
@@ -640,7 +635,7 @@ export async function addCommentAction(
       .where(eq(books.id, book.id));
 
     const actor = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId),
+      where: eq(users.id, userId),
       columns: { username: true },
     });
     const link = `/library/${book.id}/${chapterId}`;
@@ -724,7 +719,7 @@ export async function toggleCommentLikeAction(
         .where(eq(chapterComments.id, commentId));
       if (comment) {
         const actor = await db.query.users.findFirst({
-          where: eq(users.clerkId, userId),
+          where: eq(users.id, userId),
           columns: { username: true },
         });
         void insertNotification({

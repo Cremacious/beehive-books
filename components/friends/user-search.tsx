@@ -57,13 +57,13 @@ export function UserSearch() {
 
             return (
               <li
-                key={user.clerkId}
+                key={user.id}
                 className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]"
               >
                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-[#2a2000] shrink-0">
-                  {user.imageUrl ? (
+                  {user.image ? (
                     <Image
-                      src={user.imageUrl}
+                      src={user.image}
                       alt={displayName}
                       fill
                       className="object-cover"
@@ -79,7 +79,7 @@ export function UserSearch() {
 
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/u/${user.username ?? user.clerkId}`}
+                    href={`/u/${user.username ?? user.id}`}
                     className=" font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
                   >
                     {user.username}
@@ -88,7 +88,7 @@ export function UserSearch() {
 
              
                 <FriendButton
-                  targetUserId={user.clerkId}
+                  targetUserId={user.id}
                   initialStatus={friendStatus}
                   compact
                 />

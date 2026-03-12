@@ -1,13 +1,14 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveMembers, prompts } from '@/db/schema';
 import type { HivePromptCard } from '@/lib/types/hive.types';
 
 export async function getHivePromptsAction(hiveId: string): Promise<HivePromptCard[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

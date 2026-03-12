@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
 import { Comfortaa } from 'next/font/google';
 import { Providers } from '@/app/providers';
 import './globals.css';
@@ -34,12 +32,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{ baseTheme: dark }}>
-      <html lang="en" className={comfortaa.variable}>
-        <body className="antialiased">
-          <Providers>{children}</Providers>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={comfortaa.variable}>
+      <body className="antialiased">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }

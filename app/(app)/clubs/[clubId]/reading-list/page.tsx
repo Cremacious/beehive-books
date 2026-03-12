@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import BackButton from '@/components/shared/back-button';
 import { getClubAction, getClubReadingListAction } from '@/lib/actions/club.actions';
 import { ListStats } from '@/components/reading-lists/list-stats';
@@ -26,7 +27,7 @@ export default async function ClubReadingListPage({
   params: Promise<{ clubId: string }>;
 }) {
   const { clubId } = await params;
-  await auth();
+
 
   const club = await getClubAction(clubId);
   if (!club) notFound();

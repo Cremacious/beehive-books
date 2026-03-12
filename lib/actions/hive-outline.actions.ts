@@ -1,17 +1,12 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, asc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveOutlineItems, hiveMembers } from '@/db/schema';
 import type { ActionResult, OutlineItem, OutlineItemType } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -23,7 +18,7 @@ async function requireHiveMember(hiveId: string) {
 }
 
 export async function getOutlineItemsAction(hiveId: string): Promise<OutlineItem[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

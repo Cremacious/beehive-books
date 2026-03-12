@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, count, desc, eq, gte, ilike, or } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -23,10 +24,10 @@ export type ActionResult = { success: boolean; message: string };
 const PAGE_SIZE = 25;
 
 async function requireAdmin() {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) throw new Error('Unauthorized');
   const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
+    where: eq(users.id, userId),
     columns: { role: true },
   });
   if (user?.role !== 'admin') throw new Error('Forbidden');
@@ -108,12 +109,12 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
       limit: PAGE_SIZE,
       offset,
       columns: {
-        clerkId: true,
+        id: true,
         email: true,
         firstName: true,
         lastName: true,
         username: true,
-        imageUrl: true,
+        image: true,
         role: true,
         premium: true,
         createdAt: true,
@@ -126,23 +127,23 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
 }
 
 export async function updateUserRoleAction(
-  clerkId: string,
+  id: string,
   role: 'member' | 'moderator' | 'admin',
 ): Promise<ActionResult> {
   await requireAdmin();
   try {
-    await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.clerkId, clerkId));
+    await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, id));
     return { success: true, message: 'Role updated.' };
   } catch {
     return { success: false, message: 'Failed to update role.' };
   }
 }
 
-export async function toggleUserPremiumAction(clerkId: string): Promise<ActionResult> {
+export async function toggleUserPremiumAction(id: string): Promise<ActionResult> {
   await requireAdmin();
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId),
+      where: eq(users.id, id),
       columns: { premium: true },
     });
     if (!user) return { success: false, message: 'User not found.' };
@@ -150,7 +151,7 @@ export async function toggleUserPremiumAction(clerkId: string): Promise<ActionRe
     await db
       .update(users)
       .set({ premium: !user.premium, updatedAt: new Date() })
-      .where(eq(users.clerkId, clerkId));
+      .where(eq(users.id, id));
     return { success: true, message: `Premium ${!user.premium ? 'granted' : 'revoked'}.` };
   } catch {
     return { success: false, message: 'Failed to update premium status.' };

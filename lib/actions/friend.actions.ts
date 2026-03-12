@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, eq, ilike, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
@@ -12,12 +13,6 @@ type ActionResult = {
   message: string;
   friendshipId?: string;
 };
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 export type FriendStatus =
   | { status: 'NONE' }
@@ -37,7 +32,7 @@ async function findFriendship(a: string, b: string) {
 export async function getFriendshipStatusAction(
   targetUserId: string,
 ): Promise<FriendStatus> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId || userId === targetUserId) return { status: 'NONE' };
 
   const f = await findFriendship(userId, targetUserId);
@@ -53,11 +48,11 @@ export async function getFriendshipStatusAction(
 }
 
 export type FriendUser = {
-  clerkId: string;
+  id: string;
   username: string | null;
   firstName: string | null;
   lastName: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export async function getMyFriendsDataAction() {
@@ -71,20 +66,20 @@ export async function getMyFriendsDataAction() {
     with: {
       requester: {
         columns: {
-          clerkId: true,
+          id: true,
           username: true,
           firstName: true,
           lastName: true,
-          imageUrl: true,
+          image: true,
         },
       },
       addressee: {
         columns: {
-          clerkId: true,
+          id: true,
           username: true,
           firstName: true,
           lastName: true,
-          imageUrl: true,
+          image: true,
         },
       },
     },
@@ -118,22 +113,22 @@ export type SearchResult = {
 export async function searchUsersAction(
   query: string,
 ): Promise<SearchResult[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId || query.trim().length < 2) return [];
 
   const like = `%${query.trim()}%`;
 
   const results = await db.query.users.findMany({
     where: and(
-      ne(users.clerkId, userId),
+      ne(users.id, userId),
       or(ilike(users.username, like), ilike(users.email, like)),
     ),
     columns: {
-      clerkId: true,
+      id: true,
       username: true,
       firstName: true,
       lastName: true,
-      imageUrl: true,
+      image: true,
       email: true,
     },
     limit: 15,
@@ -149,8 +144,8 @@ export async function searchUsersAction(
   return results.map((u) => {
     const f = myFriendships.find(
       (row) =>
-        (row.requesterId === userId && row.addresseeId === u.clerkId) ||
-        (row.requesterId === u.clerkId && row.addresseeId === userId),
+        (row.requesterId === userId && row.addresseeId === u.id) ||
+        (row.requesterId === u.id && row.addresseeId === userId),
     );
 
     let friendStatus: FriendStatus = { status: 'NONE' };
@@ -190,7 +185,7 @@ export async function sendFriendRequestAction(
       .values({ requesterId, addresseeId })
       .returning({ id: friendships.id });
     const actor = await db.query.users.findFirst({
-      where: eq(users.clerkId, requesterId),
+      where: eq(users.id, requesterId),
       columns: { username: true },
     });
     void insertNotification({
@@ -262,7 +257,7 @@ export async function acceptFriendRequestAction(
       .set({ status: 'ACCEPTED', updatedAt: new Date() })
       .where(eq(friendships.id, friendshipId));
     const actor = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId),
+      where: eq(users.id, userId),
       columns: { username: true },
     });
     void insertNotification({

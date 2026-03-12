@@ -24,9 +24,9 @@ function AuthorChip({
   const name = author.username ?? author.firstName ?? '?';
   const initials = name.charAt(0).toUpperCase();
 
-  const avatar = author.imageUrl ? (
+  const avatar = author.image ? (
     <Image
-      src={author.imageUrl}
+      src={author.image}
       alt={name}
       width={24}
       height={24}

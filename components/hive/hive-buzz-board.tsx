@@ -111,9 +111,9 @@ function AuthorRow({
   const size = small ? 20 : 26;
   return (
     <div className="flex items-center gap-2 min-w-0">
-      {item.author.imageUrl ? (
+      {item.author.image ? (
         <Image
-          src={item.author.imageUrl}
+          src={item.author.image}
           alt={item.author.username ?? 'User'}
           width={size}
           height={size}

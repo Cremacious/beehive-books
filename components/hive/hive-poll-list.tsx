@@ -108,9 +108,9 @@ function PollCard({
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          {poll.author.imageUrl ? (
+          {poll.author.image ? (
             <Image
-              src={poll.author.imageUrl}
+              src={poll.author.image}
               alt={poll.author.username ?? 'User'}
               width={28}
               height={28}

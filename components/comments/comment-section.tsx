@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageSquare, Loader2 } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
+
+import { useSession } from '@/lib/auth-client';
 import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import { useCommentStore } from '@/lib/stores/comment-store';
 import type {
@@ -24,13 +25,14 @@ function initials(user: CommentUser): string {
 }
 
 function CurrentUserAvatar({ className }: { className: string }) {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const avatarUrl = useCurrentUserImage();
   return (
     <Avatar
       imageUrl={avatarUrl}
       alt="You"
-      fallback={(user?.username ?? 'Y').slice(0, 2).toUpperCase()}
+      fallback={((user as { username?: string } | undefined)?.username ?? user?.name ?? 'Y').slice(0, 2).toUpperCase()}
       className={className}
     />
   );
@@ -188,7 +190,7 @@ function CommentItem({
         {comment.user.username ? (
           <Link href={`/u/${comment.user.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
             <Avatar
-              imageUrl={comment.user.imageUrl}
+              imageUrl={comment.user.image}
               alt={displayName(comment.user)}
               fallback={initials(comment.user)}
               className="w-8 h-8 text-xs"
@@ -196,7 +198,7 @@ function CommentItem({
           </Link>
         ) : (
           <Avatar
-            imageUrl={comment.user.imageUrl}
+            imageUrl={comment.user.image}
             alt={displayName(comment.user)}
             fallback={initials(comment.user)}
             className="w-8 h-8 text-xs"
@@ -296,7 +298,7 @@ function ReplyItem({
       {reply.user.username ? (
         <Link href={`/u/${reply.user.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
           <Avatar
-            imageUrl={reply.user.imageUrl}
+            imageUrl={reply.user.image}
             alt={displayName(reply.user)}
             fallback={initials(reply.user)}
             className="w-7 h-7 text-[10px]"
@@ -304,7 +306,7 @@ function ReplyItem({
         </Link>
       ) : (
         <Avatar
-          imageUrl={reply.user.imageUrl}
+          imageUrl={reply.user.image}
           alt={displayName(reply.user)}
           fallback={initials(reply.user)}
           className="w-7 h-7 text-[10px]"

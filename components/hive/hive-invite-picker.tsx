@@ -82,19 +82,19 @@ export default function HiveInvitePicker({
   
       <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
         {friends.map((friend) => {
-          const invited = successIds.has(friend.clerkId);
-          const loading = loadingId === friend.clerkId;
+          const invited = successIds.has(friend.id);
+          const loading = loadingId === friend.id;
           const displayName =
             friend.username ?? friend.firstName ?? 'Unknown';
 
           return (
             <div
-              key={friend.clerkId}
+              key={friend.id}
               className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]"
             >
-              {friend.imageUrl ? (
+              {friend.image ? (
                 <Image
-                  src={friend.imageUrl}
+                  src={friend.image}
                   alt={displayName}
                   width={28}
                   height={28}
@@ -113,7 +113,7 @@ export default function HiveInvitePicker({
               </span>
 
               <button
-                onClick={() => !invited && handleInvite(friend.clerkId)}
+                onClick={() => !invited && handleInvite(friend.id)}
                 disabled={loading || invited}
                 className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-all shrink-0 ${
                   invited

@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
@@ -12,16 +13,10 @@ import type {
   HiveUser,
 } from '@/lib/types/hive.types';
 
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
-
 export async function getMilestonesAction(
   hiveId: string,
 ): Promise<MilestoneWithUser[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -82,7 +77,7 @@ export async function awardMyMilestoneAction(
   metadata: Record<string, string> = {},
 ): Promise<void> {
   try {
-    const { userId } = await auth();
+    const userId = await requireAuth();
     if (!userId) return;
 
     const membership = await db.query.hiveMembers.findFirst({

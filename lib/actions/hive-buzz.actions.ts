@@ -1,18 +1,13 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq, ne, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveBuzzItems, hiveBuzzLikes, hiveMembers, hives, users } from '@/db/schema';
 import { insertOrBundleHiveActivityNotification } from '@/lib/notifications';
 import type { ActionResult, BuzzItemWithAuthor, BuzzType, HiveUser } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -24,7 +19,7 @@ async function requireHiveMember(hiveId: string) {
 }
 
 export async function getBuzzItemsAction(hiveId: string): Promise<BuzzItemWithAuthor[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -82,7 +77,7 @@ export async function createBuzzItemAction(
       try {
         const [hive, actor, otherMembers] = await Promise.all([
           db.query.hives.findFirst({ where: eq(hives.id, hiveId), columns: { name: true } }),
-          db.query.users.findFirst({ where: eq(users.clerkId, userId), columns: { username: true } }),
+          db.query.users.findFirst({ where: eq(users.id, userId), columns: { username: true } }),
           db.query.hiveMembers.findMany({
             where: and(eq(hiveMembers.hiveId, hiveId), ne(hiveMembers.userId, userId)),
             columns: { userId: true },

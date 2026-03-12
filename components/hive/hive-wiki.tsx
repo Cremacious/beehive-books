@@ -326,9 +326,9 @@ function EntryCard({
       )}
 
       <div className="flex items-center gap-1.5 pt-0.5">
-        {entry.author.imageUrl ? (
+        {entry.author.image ? (
           <Image
-            src={entry.author.imageUrl}
+            src={entry.author.image}
             alt={entry.author.username ?? 'User'}
             width={16}
             height={16}
@@ -541,9 +541,9 @@ export default function HiveWiki({
                 )}
 
                 <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
-                  {viewingEntry.author.imageUrl ? (
+                  {viewingEntry.author.image ? (
                     <Image
-                      src={viewingEntry.author.imageUrl}
+                      src={viewingEntry.author.image}
                       alt={viewingEntry.author.username ?? 'User'}
                       width={20}
                       height={20}

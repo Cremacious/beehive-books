@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import {
   getClubAction,
   getClubDiscussionsAction,
@@ -34,7 +35,8 @@ export default async function ClubDashboardPage({
   params: Promise<{ clubId: string }>;
 }) {
   const { clubId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   const club = await getClubAction(clubId);
   if (!club) notFound();

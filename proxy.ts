@@ -1,51 +1,62 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)']);
-const isOnboardingRoute = createRouteMatcher(['/onboarding']);
-const isRootRoute = createRouteMatcher(['/']);
+const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up'];
+const ONBOARDING_PATH = '/onboarding';
 
-export default clerkMiddleware(async (auth, request) => {
-  const { userId, sessionClaims } = await auth();
+function isPublic(pathname: string) {
+  return PUBLIC_PATHS.some((p) =>
+    p === '/' ? pathname === '/' : pathname === p || pathname.startsWith(p + '/'),
+  );
+}
 
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const session = await auth.api.getSession({ headers: request.headers });
+  const userId = session?.user?.id ?? null;
+
+  // Unauthenticated: only allow public routes
   if (!userId) {
-    if (!isPublicRoute(request)) {
+    if (!isPublic(pathname)) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
-    return;
+    return NextResponse.next();
   }
 
-  const metadata = sessionClaims?.metadata as { onboardingComplete?: boolean } | undefined;
-  let onboarded =
-    metadata?.onboardingComplete === true ||
-    request.cookies.get('onboarding-done')?.value === '1';
+  // Authenticated: check onboarding status
+  const [dbUser] = await db
+    .select({ onboardingComplete: users.onboardingComplete })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
 
-  if (!onboarded) {
-    const [dbUser] = await db
-      .select({ onboardingComplete: users.onboardingComplete })
-      .from(users)
-      .where(eq(users.clerkId, userId))
-      .limit(1);
-    onboarded = dbUser?.onboardingComplete === true;
-  }
+  const onboarded = dbUser?.onboardingComplete === true;
 
-  if (!onboarded && !isOnboardingRoute(request) && !isPublicRoute(request)) {
+  // Not yet onboarded → must go to /onboarding (except public routes)
+  if (!onboarded && pathname !== ONBOARDING_PATH && !isPublic(pathname)) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
-  if (onboarded && (isOnboardingRoute(request) || isRootRoute(request))) {
+  // Onboarded user visiting root or onboarding → send to /feed
+  if (onboarded && (pathname === '/' || pathname === ONBOARDING_PATH)) {
     return NextResponse.redirect(new URL('/feed', request.url));
   }
-});
+
+  // Signed-in user visiting sign-in/sign-up → send to /feed
+  if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
+    return NextResponse.redirect(new URL('/feed', request.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };

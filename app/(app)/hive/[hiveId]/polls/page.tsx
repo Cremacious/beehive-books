@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { getHiveAction } from '@/lib/actions/hive.actions';
 import { getPollsAction } from '@/lib/actions/hive-polls.actions';
 import HivePollList from '@/components/hive/hive-poll-list';
@@ -12,7 +13,8 @@ export default async function HivePollsPage({
   params: Promise<{ hiveId: string }>;
 }) {
   const { hiveId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   if (!userId) notFound();
 
   const hive = await getHiveAction(hiveId);

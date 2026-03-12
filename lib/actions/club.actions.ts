@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, desc, eq, ilike, inArray, max, ne, or, sql } from 'drizzle-orm';
@@ -36,12 +37,6 @@ import type {
   PendingClubInvite,
   PendingJoinRequest,
 } from '@/lib/types/club.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireClubMember(clubId: string) {
   const userId = await requireAuth();
@@ -117,7 +112,7 @@ export async function createClubAction(
 }
 
 export async function getClubAction(clubId: string): Promise<ClubWithMembership | null> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const club = await db.query.bookClubs.findFirst({
     where: eq(bookClubs.id, clubId),
@@ -168,7 +163,7 @@ export async function getAllUserClubsAction(): Promise<ClubWithMembership[]> {
 }
 
 export async function searchClubsAction(query: string): Promise<ClubWithMembership[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const queryFilter = query.trim()
     ? or(ilike(bookClubs.name, `%${query}%`), ilike(bookClubs.description, `%${query}%`))
@@ -343,7 +338,7 @@ export async function updateMemberRoleAction(
 }
 
 export async function getClubMembersAction(clubId: string): Promise<ClubMemberWithUser[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return [];
@@ -438,7 +433,7 @@ export async function createClubDiscussionAction(
       .returning({ id: clubDiscussions.id });
 
     const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
 
     const allMembers = await db.query.clubMembers.findMany({
       where: and(eq(clubMembers.clubId, clubId), ne(clubMembers.userId, userId)),
@@ -472,7 +467,7 @@ export async function getClubDiscussionsAction(
   clubId: string,
   page = 1,
 ): Promise<{ discussions: ClubDiscussionWithAuthor[]; total: number }> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   const PAGE_SIZE = 20;
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
@@ -512,7 +507,7 @@ export async function getClubDiscussionByIdAction(
   clubId: string,
   discussionId: string,
 ): Promise<ClubDiscussionFull | null> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return null;
@@ -624,7 +619,7 @@ export async function toggleDiscussionLikeAction(
         where: eq(clubDiscussions.id, discussionId),
       });
       if (discussion && discussion.authorId !== userId) {
-        const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+        const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
         void insertNotification({
           recipientId: discussion.authorId,
           actorId: userId,
@@ -685,7 +680,7 @@ export async function createDiscussionReplyAction(
       .set({ replyCount: sql`${clubDiscussions.replyCount} + 1`, updatedAt: new Date() })
       .where(eq(clubDiscussions.id, discussionId));
 
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
     const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
 
     if (discussion.authorId !== userId) {
@@ -800,7 +795,7 @@ export async function toggleReplyLikeAction(
         const discussion = await db.query.clubDiscussions.findFirst({
           where: eq(clubDiscussions.id, reply.discussionId),
         });
-        const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+        const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
         void insertNotification({
           recipientId: reply.authorId,
           actorId: userId,
@@ -818,7 +813,7 @@ export async function toggleReplyLikeAction(
 }
 
 export async function getClubReadingListAction(clubId: string): Promise<ClubReadingListBook[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
   if (!club) return [];
@@ -856,7 +851,7 @@ export async function addBookToClubListAction(
       .where(eq(clubReadingListBooks.clubId, clubId));
     const nextOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
 
-    const { userId } = await auth();
+    const userId = await requireAuth();
     await db.insert(clubReadingListBooks).values({
       clubId,
       title: title.trim(),
@@ -947,7 +942,7 @@ export async function updateBookStatusAction(
 export async function getClubFriendsForInviteAction(
   clubId: string,
 ): Promise<InvitableClubFriend[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.clubMembers.findFirst({
@@ -987,14 +982,14 @@ export async function getClubFriendsForInviteAction(
   if (invitableFriendIds.length === 0) return [];
 
   const friendUsers = await db.query.users.findMany({
-    where: inArray(users.clerkId, invitableFriendIds),
-    columns: { clerkId: true, username: true, imageUrl: true },
+    where: inArray(users.id, invitableFriendIds),
+    columns: { id: true, username: true, image: true },
   });
 
   return friendUsers.map((u) => ({
-    clerkId: u.clerkId,
+    id: u.id,
     username: u.username,
-    imageUrl: u.imageUrl,
+    image: u.image,
   }));
 }
 
@@ -1002,7 +997,7 @@ export async function inviteToClubAction(
   clubId: string,
   friendClerkId: string,
 ): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const membership = await db.query.clubMembers.findFirst({
@@ -1061,7 +1056,7 @@ export async function inviteToClubAction(
 }
 
 export async function getPendingClubInvitesAction(): Promise<PendingClubInvite[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const invites = await db.query.clubInvites.findMany({
@@ -1071,7 +1066,7 @@ export async function getPendingClubInvitesAction(): Promise<PendingClubInvite[]
     ),
     with: {
       club: { columns: { id: true, name: true, coverUrl: true } },
-      invitedBy: { columns: { username: true, imageUrl: true } },
+      invitedBy: { columns: { username: true, image: true } },
     },
     orderBy: [desc(clubInvites.createdAt)],
   });
@@ -1081,11 +1076,11 @@ export async function getPendingClubInvitesAction(): Promise<PendingClubInvite[]
     club: {
       id: inv.club.id,
       name: inv.club.name,
-      imageUrl: inv.club.coverUrl,
+      image: inv.club.coverUrl,
     },
     invitedBy: {
       username: inv.invitedBy.username,
-      imageUrl: inv.invitedBy.imageUrl,
+      image: inv.invitedBy.image,
     },
     createdAt: inv.createdAt,
   }));
@@ -1094,7 +1089,7 @@ export async function getPendingClubInvitesAction(): Promise<PendingClubInvite[]
 export async function acceptClubInviteAction(
   inviteId: string,
 ): Promise<ActionResult & { clubId?: string }> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const invite = await db.query.clubInvites.findFirst({
@@ -1132,7 +1127,7 @@ export async function acceptClubInviteAction(
 }
 
 export async function declineClubInviteAction(inviteId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const invite = await db.query.clubInvites.findFirst({
@@ -1156,7 +1151,7 @@ export async function declineClubInviteAction(inviteId: string): Promise<ActionR
 
 
 export async function requestToJoinClubAction(clubId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const club = await db.query.bookClubs.findFirst({ where: eq(bookClubs.id, clubId) });
@@ -1217,7 +1212,7 @@ export async function requestToJoinClubAction(clubId: string): Promise<ActionRes
 export async function getPendingJoinRequestsAction(
   clubId: string,
 ): Promise<PendingJoinRequest[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.clubMembers.findFirst({
@@ -1230,7 +1225,7 @@ export async function getPendingJoinRequestsAction(
   const requests = await db.query.clubJoinRequests.findMany({
     where: and(eq(clubJoinRequests.clubId, clubId), eq(clubJoinRequests.status, 'PENDING')),
     with: {
-      user: { columns: { clerkId: true, username: true, imageUrl: true } },
+      user: { columns: { id: true, username: true, image: true } },
     },
     orderBy: [desc(clubJoinRequests.createdAt)],
   });
@@ -1238,16 +1233,16 @@ export async function getPendingJoinRequestsAction(
   return requests.map((r) => ({
     id: r.id,
     user: {
-      clerkId: r.user.clerkId,
+      id: r.user.id,
       username: r.user.username,
-      imageUrl: r.user.imageUrl,
+      image: r.user.image,
     },
     createdAt: r.createdAt,
   }));
 }
 
 export async function approveJoinRequestAction(requestId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const request = await db.query.clubJoinRequests.findFirst({
@@ -1295,7 +1290,7 @@ export async function approveJoinRequestAction(requestId: string): Promise<Actio
 }
 
 export async function rejectJoinRequestAction(requestId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const request = await db.query.clubJoinRequests.findFirst({
@@ -1322,7 +1317,7 @@ export async function rejectJoinRequestAction(requestId: string): Promise<Action
 export async function checkClubJoinRequestStatusAction(
   clubId: string,
 ): Promise<'none' | 'pending'> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return 'none';
 
   const request = await db.query.clubJoinRequests.findFirst({

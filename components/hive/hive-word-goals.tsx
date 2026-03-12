@@ -462,9 +462,9 @@ export default function HiveWordGoals({
                 key={log.id}
                 className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#1e1e1e]"
               >
-                {log.user.imageUrl ? (
+                {log.user.image ? (
                   <Image
-                    src={log.user.imageUrl}
+                    src={log.user.image}
                     alt=""
                     width={20}
                     height={20}

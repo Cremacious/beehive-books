@@ -53,7 +53,7 @@ export default async function UserProfilePage({ params }: Props) {
 
   const friendStatus =
     currentUserId && !isOwnProfile
-      ? await getFriendshipStatusAction(user.clerkId)
+      ? await getFriendshipStatusAction(user.id)
       : null;
 
   const displayName = user.username ?? 'unknown';
@@ -62,11 +62,11 @@ export default async function UserProfilePage({ params }: Props) {
   const promptCards = prompts.map((p) => ({
     ...p,
     creator: {
-      clerkId: user.clerkId,
+      id: user.id,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
-      imageUrl: user.imageUrl,
+      image: user.image,
     },
     myInviteStatus: null as 'PENDING' | 'ACCEPTED' | null,
     myEntryId: null as string | null,
@@ -92,9 +92,9 @@ export default async function UserProfilePage({ params }: Props) {
         <div className="px-5 pb-5 md:px-7 md:pb-7">
           <div className="flex items-end justify-between -mt-10 gap-4">
             <div className="w-20 h-20 rounded-full ring-4 ring-[#1e1e1e] overflow-hidden bg-[#2a2000] shrink-0">
-              {user.imageUrl ? (
+              {user.image ? (
                 <Image
-                  src={user.imageUrl}
+                  src={user.image}
                   alt={displayName}
                   width={80}
                   height={80}
@@ -116,7 +116,7 @@ export default async function UserProfilePage({ params }: Props) {
               )}
               {friendStatus && (
                 <FriendButton
-                  targetUserId={user.clerkId}
+                  targetUserId={user.id}
                   initialStatus={friendStatus}
                 />
               )}

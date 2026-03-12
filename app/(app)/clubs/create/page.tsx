@@ -1,4 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import ClubForm from '@/components/clubs/club-form';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
 
@@ -8,15 +9,16 @@ export const metadata = {
 };
 
 export default async function CreateClubPage() {
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
-  let friends: { clerkId: string; username: string | null; imageUrl: string | null }[] = [];
+  let friends: { id: string; username: string | null; image: string | null }[] = [];
   if (userId) {
     const { friends: myFriends } = await getMyFriendsDataAction();
     friends = myFriends.map(({ user }) => ({
-      clerkId: user.clerkId,
+      id: user.id,
       username: user.username,
-      imageUrl: user.imageUrl,
+      image: user.image,
     }));
   }
 

@@ -50,9 +50,9 @@ function ParticipantRow({
 }) {
   return (
     <div className="flex items-center gap-3 py-2">
-      {p.user.imageUrl ? (
+      {p.user.image ? (
         <Image
-          src={p.user.imageUrl}
+          src={p.user.image}
           alt=""
           width={24}
           height={24}

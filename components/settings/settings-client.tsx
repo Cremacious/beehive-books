@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useClerk } from '@clerk/nextjs';
+import { signOut } from '@/lib/auth-client';
 import { Camera, Loader2, Trash2, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
@@ -14,17 +14,16 @@ import {
 
 interface SettingsClientProps {
   user: {
-    clerkId: string;
+    id: string;
     username: string | null;
     email: string;
-    imageUrl: string | null;
+    image: string | null;
   };
 }
 
 export function SettingsClient({ user }: SettingsClientProps) {
-  const { signOut } = useClerk();
-  const { upload, uploading } = useCloudinaryUpload('avatars', user.clerkId);
-  const [imageUrl, setImageUrl] = useState(user.imageUrl);
+  const { upload, uploading } = useCloudinaryUpload('avatars', user.id);
+  const [imageUrl, setImageUrl] = useState(user.image);
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
@@ -164,7 +163,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
           onDelete={async () => {
             const result = await deleteUserAccountAction();
             if (!result.success) throw new Error(result.message);
-            await signOut({ redirectUrl: '/' });
+            await signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
           }}
           trigger={
             <Button variant="destructive" size="sm" type="button">

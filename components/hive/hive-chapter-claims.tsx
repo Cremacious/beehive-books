@@ -163,9 +163,9 @@ function ChapterRow({
       {claim ? (
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-1.5">
-            {claim.claimer.imageUrl ? (
+            {claim.claimer.image ? (
               <Image
-                src={claim.claimer.imageUrl}
+                src={claim.claimer.image}
                 alt={claim.claimer.username ?? 'User'}
                 width={20}
                 height={20}

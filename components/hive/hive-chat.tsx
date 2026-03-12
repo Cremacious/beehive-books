@@ -36,9 +36,9 @@ function Avatar({
   size?: number;
 }) {
   const name = user.username ?? user.firstName ?? 'User';
-  return user.imageUrl ? (
+  return user.image ? (
     <Image
-      src={user.imageUrl}
+      src={user.image}
       alt={name}
       width={size}
       height={size}

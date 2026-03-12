@@ -1,17 +1,12 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveSprints, hiveSprintParticipants, hiveMembers } from '@/db/schema';
 import type { ActionResult, SprintWithParticipants, HiveUser } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -78,7 +73,7 @@ const WITH_FULL = {
 export async function getActiveSprintAction(
   hiveId: string,
 ): Promise<SprintWithParticipants | null> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return null;
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -98,7 +93,7 @@ export async function getPastSprintsAction(
   hiveId: string,
   limit = 10,
 ): Promise<SprintWithParticipants[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

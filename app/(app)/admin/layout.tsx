@@ -1,4 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { db } from '@/db';
 import { users } from '@/db/schema';
@@ -7,11 +8,11 @@ import AdminSidebar from '@/components/admin/admin-sidebar';
 import AdminMobileNav from '@/components/admin/admin-mobile-nav';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { userId } = await auth();
-  if (!userId) redirect('/');
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) redirect('/');
 
   const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
+    where: eq(users.id, session.user.id),
     columns: { role: true },
   });
 

@@ -134,9 +134,9 @@ function ChapterRow({
           {chapter.betaStatus?.updatedBy && (
             <span className="flex items-center gap-1 text-[10px] text-white/25">
               <span>·</span>
-              {chapter.betaStatus.updatedBy.imageUrl ? (
+              {chapter.betaStatus.updatedBy.image ? (
                 <Image
-                  src={chapter.betaStatus.updatedBy.imageUrl}
+                  src={chapter.betaStatus.updatedBy.image}
                   alt=""
                   width={12}
                   height={12}

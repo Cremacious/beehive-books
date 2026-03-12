@@ -106,9 +106,9 @@ function timeAgo(date: Date) {
 function AuthorRow({ comment }: { comment: InlineComment }) {
   return (
     <div className="flex items-center gap-1.5">
-      {comment.author.imageUrl ? (
+      {comment.author.image ? (
         <Image
-          src={comment.author.imageUrl}
+          src={comment.author.image}
           alt={comment.author.username ?? ''}
           width={14}
           height={14}
@@ -246,9 +246,9 @@ function AnnotationDetail({
       </p>
 
       <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
-        {comment.author.imageUrl ? (
+        {comment.author.image ? (
           <Image
-            src={comment.author.imageUrl}
+            src={comment.author.image}
             alt={comment.author.username ?? ''}
             width={20}
             height={20}

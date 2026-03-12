@@ -1,4 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { Bell } from 'lucide-react';
 import {
   getAllUserHivesAction,
@@ -14,7 +15,8 @@ export const metadata = {
 };
 
 export default async function HivePage() {
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   const [userHives, pendingInvites] = await Promise.all([
     userId ? getAllUserHivesAction() : [],

@@ -97,9 +97,9 @@ export default function DiscussionThread({
         <div className="flex items-center gap-2.5 mb-4">
           {author.username ? (
             <Link href={`/u/${author.username}`} className="shrink-0">
-              {author.imageUrl ? (
+              {author.image ? (
                 <Image
-                  src={author.imageUrl}
+                  src={author.image}
                   alt={authorName}
                   width={36}
                   height={36}
@@ -113,9 +113,9 @@ export default function DiscussionThread({
                 </div>
               )}
             </Link>
-          ) : author.imageUrl ? (
+          ) : author.image ? (
             <Image
-              src={author.imageUrl}
+              src={author.image}
               alt={authorName}
               width={36}
               height={36}

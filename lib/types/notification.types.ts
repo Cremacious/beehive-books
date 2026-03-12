@@ -31,5 +31,5 @@ export type NotificationItem = {
   link:      string;
   metadata:  Record<string, string>;
   createdAt: Date;
-  actor: { username: string | null; imageUrl: string | null } | null;
+  actor: { username: string | null; image: string | null } | null;
 };

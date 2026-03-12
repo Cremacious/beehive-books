@@ -13,9 +13,9 @@ function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
         className="relative cursor-pointer"
         title={member.user.username ?? name}
       >
-        {member.user.imageUrl ? (
+        {member.user.image ? (
           <Image
-            src={member.user.imageUrl}
+            src={member.user.image}
             alt={name}
             width={40}
             height={40}

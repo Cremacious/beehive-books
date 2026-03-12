@@ -42,9 +42,9 @@ export default function DiscussionListItem({
       <div className="flex items-center gap-2 mb-2.5">
         {author.username ? (
           <Link href={`/u/${author.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            {author.imageUrl ? (
+            {author.image ? (
               <Image
-                src={author.imageUrl}
+                src={author.image}
                 alt={authorName}
                 width={28}
                 height={28}
@@ -61,9 +61,9 @@ export default function DiscussionListItem({
           </Link>
         ) : (
           <>
-            {author.imageUrl ? (
+            {author.image ? (
               <Image
-                src={author.imageUrl}
+                src={author.image}
                 alt={authorName}
                 width={28}
                 height={28}

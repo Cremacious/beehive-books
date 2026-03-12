@@ -11,12 +11,19 @@ import {
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
+// ---------------------------------------------------------------------------
+// Better Auth tables
+// ---------------------------------------------------------------------------
+
 export const users = pgTable('users', {
-  clerkId: text('clerk_id').primaryKey(),
+  id: text('id').primaryKey(),
+  name: text('name'),
   email: text('email').notNull(),
+  emailVerified: boolean('email_verified').notNull().default(false),
+  image: text('image_url'),
+  // App-specific fields
   firstName: text('first_name'),
   lastName: text('last_name'),
-  imageUrl: text('image_url'),
   username: text('username').unique(),
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
   premium: boolean('premium').default(false).notNull(),
@@ -25,13 +32,57 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const session = pgTable('session', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+});
+
+export const account = pgTable('account', {
+  id: text('id').primaryKey(),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  accessTokenExpiresAt: timestamp('access_token_expires_at'),
+  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+  scope: text('scope'),
+  password: text('password'),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+});
+
+export const verification = pgTable('verification', {
+  id: text('id').primaryKey(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at'),
+  updatedAt: timestamp('updated_at'),
+});
+
+// ---------------------------------------------------------------------------
+// App tables (all userId/authorId/etc. now reference users.id)
+// ---------------------------------------------------------------------------
+
 export const books = pgTable('books', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createId()),
   userId: text('user_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   author: text('author').notNull(),
   genre: text('genre').notNull(),
@@ -93,7 +144,7 @@ export const chapterComments = pgTable('chapter_comments', {
     .references(() => chapters.id, { onDelete: 'cascade' }),
   userId: text('user_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   parentId: text('parent_id'),
   content: text('content').notNull(),
   likeCount: integer('like_count').notNull().default(0),
@@ -106,7 +157,7 @@ export const commentLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     commentId: text('comment_id')
       .notNull()
       .references(() => chapterComments.id, { onDelete: 'cascade' }),
@@ -121,7 +172,7 @@ export const readingLists = pgTable('reading_lists', {
     .$defaultFn(() => createId()),
   userId: text('user_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description').notNull().default(''),
   privacy: text('privacy', { enum: ['PUBLIC', 'PRIVATE', 'FRIENDS'] })
@@ -145,10 +196,10 @@ export const friendships = pgTable(
       .$defaultFn(() => createId()),
     requesterId: text('requester_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     addresseeId: text('addressee_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', { enum: ['PENDING', 'ACCEPTED'] })
       .notNull()
       .default('PENDING'),
@@ -183,8 +234,8 @@ export const notifications = pgTable('notifications', {
     .$defaultFn(() => createId()),
   recipientId: text('recipient_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
-  actorId: text('actor_id').references(() => users.clerkId, {
+    .references(() => users.id, { onDelete: 'cascade' }),
+  actorId: text('actor_id').references(() => users.id, {
     onDelete: 'cascade',
   }),
   type: text('type', {
@@ -225,6 +276,10 @@ export const notifications = pgTable('notifications', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// ---------------------------------------------------------------------------
+// Relations
+// ---------------------------------------------------------------------------
+
 export const usersRelations = relations(users, ({ many }) => ({
   books: many(books),
   comments: many(chapterComments),
@@ -249,18 +304,18 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const friendshipsRelations = relations(friendships, ({ one }) => ({
   requester: one(users, {
     fields: [friendships.requesterId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'sentRequests',
   }),
   addressee: one(users, {
     fields: [friendships.addresseeId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'receivedRequests',
   }),
 }));
 
 export const booksRelations = relations(books, ({ one, many }) => ({
-  user: one(users, { fields: [books.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [books.userId], references: [users.id] }),
   chapters: many(chapters),
   collections: many(collections),
 }));
@@ -288,7 +343,7 @@ export const chapterCommentsRelations = relations(
     }),
     user: one(users, {
       fields: [chapterComments.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     parent: one(chapterComments, {
       fields: [chapterComments.parentId],
@@ -303,7 +358,7 @@ export const chapterCommentsRelations = relations(
 export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
   user: one(users, {
     fields: [commentLikes.userId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
   comment: one(chapterComments, {
     fields: [commentLikes.commentId],
@@ -316,7 +371,7 @@ export const readingListsRelations = relations(
   ({ one, many }) => ({
     user: one(users, {
       fields: [readingLists.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     books: many(readingListBooks),
   }),
@@ -338,7 +393,7 @@ export const prompts = pgTable('prompts', {
     .$defaultFn(() => createId()),
   creatorId: text('creator_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description').notNull(),
   endDate: timestamp('end_date').notNull(),
@@ -365,7 +420,7 @@ export const promptInvites = pgTable(
       .references(() => prompts.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', { enum: ['PENDING', 'ACCEPTED'] })
       .notNull()
       .default('PENDING'),
@@ -387,7 +442,7 @@ export const promptEntries = pgTable(
       .references(() => prompts.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
     wordCount: integer('word_count').notNull().default(0),
     likeCount: integer('like_count').notNull().default(0),
@@ -404,7 +459,7 @@ export const promptEntryLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     entryId: text('entry_id')
       .notNull()
       .references(() => promptEntries.id, { onDelete: 'cascade' }),
@@ -422,7 +477,7 @@ export const promptEntryComments = pgTable('prompt_entry_comments', {
     .references(() => promptEntries.id, { onDelete: 'cascade' }),
   userId: text('user_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   parentId: text('parent_id'),
   content: text('content').notNull(),
   likeCount: integer('like_count').notNull().default(0),
@@ -435,7 +490,7 @@ export const promptEntryCommentLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     commentId: text('comment_id')
       .notNull()
       .references(() => promptEntryComments.id, { onDelete: 'cascade' }),
@@ -447,7 +502,7 @@ export const promptEntryCommentLikes = pgTable(
 export const promptsRelations = relations(prompts, ({ one, many }) => ({
   creator: one(users, {
     fields: [prompts.creatorId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
   invites: many(promptInvites),
   entries: many(promptEntries),
@@ -460,7 +515,7 @@ export const promptInvitesRelations = relations(promptInvites, ({ one }) => ({
   }),
   user: one(users, {
     fields: [promptInvites.userId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
 }));
 
@@ -473,7 +528,7 @@ export const promptEntriesRelations = relations(
     }),
     user: one(users, {
       fields: [promptEntries.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     comments: many(promptEntryComments),
     likes: many(promptEntryLikes),
@@ -485,7 +540,7 @@ export const promptEntryLikesRelations = relations(
   ({ one }) => ({
     user: one(users, {
       fields: [promptEntryLikes.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     entry: one(promptEntries, {
       fields: [promptEntryLikes.entryId],
@@ -503,7 +558,7 @@ export const promptEntryCommentsRelations = relations(
     }),
     user: one(users, {
       fields: [promptEntryComments.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     parent: one(promptEntryComments, {
       fields: [promptEntryComments.parentId],
@@ -520,7 +575,7 @@ export const promptEntryCommentLikesRelations = relations(
   ({ one }) => ({
     user: one(users, {
       fields: [promptEntryCommentLikes.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     comment: one(promptEntryComments, {
       fields: [promptEntryCommentLikes.commentId],
@@ -532,15 +587,19 @@ export const promptEntryCommentLikesRelations = relations(
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   recipient: one(users, {
     fields: [notifications.recipientId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'receivedNotifications',
   }),
   actor: one(users, {
     fields: [notifications.actorId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'sentNotifications',
   }),
 }));
+
+// ---------------------------------------------------------------------------
+// Clubs
+// ---------------------------------------------------------------------------
 
 export const bookClubs = pgTable('book_clubs', {
   id: text('id')
@@ -548,7 +607,7 @@ export const bookClubs = pgTable('book_clubs', {
     .$defaultFn(() => createId()),
   ownerId: text('owner_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
   privacy: text('privacy', { enum: ['PUBLIC', 'FRIENDS', 'PRIVATE'] })
@@ -579,7 +638,7 @@ export const clubMembers = pgTable(
       .references(() => bookClubs.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     role: text('role', { enum: ['OWNER', 'MODERATOR', 'MEMBER'] })
       .notNull()
       .default('MEMBER'),
@@ -597,7 +656,7 @@ export const clubDiscussions = pgTable('club_discussions', {
     .references(() => bookClubs.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   content: text('content').notNull(),
   likeCount: integer('like_count').notNull().default(0),
@@ -612,7 +671,7 @@ export const clubDiscussionLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     discussionId: text('discussion_id')
       .notNull()
       .references(() => clubDiscussions.id, { onDelete: 'cascade' }),
@@ -630,7 +689,7 @@ export const clubDiscussionReplies = pgTable('club_discussion_replies', {
     .references(() => clubDiscussions.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   parentId: text('parent_id'),
   content: text('content').notNull(),
   likeCount: integer('like_count').notNull().default(0),
@@ -643,7 +702,7 @@ export const clubDiscussionReplyLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     replyId: text('reply_id')
       .notNull()
       .references(() => clubDiscussionReplies.id, { onDelete: 'cascade' }),
@@ -665,7 +724,7 @@ export const clubReadingListBooks = pgTable('club_reading_list_books', {
     .notNull()
     .default('NOT_STARTED'),
   order: integer('order').notNull().default(0),
-  addedById: text('added_by_id').references(() => users.clerkId, {
+  addedById: text('added_by_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   addedAt: timestamp('added_at').defaultNow().notNull(),
@@ -682,10 +741,10 @@ export const clubInvites = pgTable(
       .references(() => bookClubs.id, { onDelete: 'cascade' }),
     invitedUserId: text('invited_user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     invitedByUserId: text('invited_by_user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', { enum: ['PENDING', 'ACCEPTED', 'DECLINED'] })
       .notNull()
       .default('PENDING'),
@@ -706,7 +765,7 @@ export const clubJoinRequests = pgTable(
       .references(() => bookClubs.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', { enum: ['PENDING', 'APPROVED', 'REJECTED'] })
       .notNull()
       .default('PENDING'),
@@ -719,7 +778,7 @@ export const clubJoinRequests = pgTable(
 export const bookClubsRelations = relations(bookClubs, ({ one, many }) => ({
   owner: one(users, {
     fields: [bookClubs.ownerId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
   members: many(clubMembers),
   discussions: many(clubDiscussions),
@@ -735,7 +794,7 @@ export const clubMembersRelations = relations(clubMembers, ({ one }) => ({
   }),
   user: one(users, {
     fields: [clubMembers.userId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
 }));
 
@@ -746,12 +805,12 @@ export const clubInvitesRelations = relations(clubInvites, ({ one }) => ({
   }),
   invitedUser: one(users, {
     fields: [clubInvites.invitedUserId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'receivedClubInvites',
   }),
   invitedBy: one(users, {
     fields: [clubInvites.invitedByUserId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'sentClubInvites',
   }),
 }));
@@ -763,7 +822,7 @@ export const clubJoinRequestsRelations = relations(clubJoinRequests, ({ one }) =
   }),
   user: one(users, {
     fields: [clubJoinRequests.userId],
-    references: [users.clerkId],
+    references: [users.id],
   }),
 }));
 
@@ -776,7 +835,7 @@ export const clubDiscussionsRelations = relations(
     }),
     author: one(users, {
       fields: [clubDiscussions.authorId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     likes: many(clubDiscussionLikes),
     replies: many(clubDiscussionReplies),
@@ -788,7 +847,7 @@ export const clubDiscussionLikesRelations = relations(
   ({ one }) => ({
     user: one(users, {
       fields: [clubDiscussionLikes.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     discussion: one(clubDiscussions, {
       fields: [clubDiscussionLikes.discussionId],
@@ -806,7 +865,7 @@ export const clubDiscussionRepliesRelations = relations(
     }),
     author: one(users, {
       fields: [clubDiscussionReplies.authorId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     parent: one(clubDiscussionReplies, {
       fields: [clubDiscussionReplies.parentId],
@@ -823,7 +882,7 @@ export const clubDiscussionReplyLikesRelations = relations(
   ({ one }) => ({
     user: one(users, {
       fields: [clubDiscussionReplyLikes.userId],
-      references: [users.clerkId],
+      references: [users.id],
     }),
     reply: one(clubDiscussionReplies, {
       fields: [clubDiscussionReplyLikes.replyId],
@@ -841,12 +900,14 @@ export const clubReadingListBooksRelations = relations(
     }),
     addedBy: one(users, {
       fields: [clubReadingListBooks.addedById],
-      references: [users.clerkId],
+      references: [users.id],
     }),
   }),
 );
 
-
+// ---------------------------------------------------------------------------
+// Hives
+// ---------------------------------------------------------------------------
 
 export const hives = pgTable('hives', {
   id: text('id')
@@ -854,7 +915,7 @@ export const hives = pgTable('hives', {
     .$defaultFn(() => createId()),
   ownerId: text('owner_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   bookId: text('book_id').references(() => books.id, { onDelete: 'set null' }),
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
@@ -886,7 +947,7 @@ export const hiveMembers = pgTable(
       .references(() => hives.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     role: text('role', {
       enum: ['OWNER', 'MODERATOR', 'CONTRIBUTOR', 'BETA_READER'],
     })
@@ -908,10 +969,10 @@ export const hiveInvites = pgTable(
       .references(() => hives.id, { onDelete: 'cascade' }),
     invitedUserId: text('invited_user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     invitedByUserId: text('invited_by_user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     role: text('role', {
       enum: ['MODERATOR', 'CONTRIBUTOR', 'BETA_READER'],
     })
@@ -939,7 +1000,7 @@ export const hiveJoinRequests = pgTable(
       .references(() => hives.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', { enum: ['PENDING', 'APPROVED', 'REJECTED'] })
       .notNull()
       .default('PENDING'),
@@ -963,7 +1024,7 @@ export const hiveChapterClaims = pgTable(
       .references(() => chapters.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: text('status', {
       enum: ['CLAIMED', 'IN_PROGRESS', 'COMPLETED'],
     })
@@ -992,7 +1053,7 @@ export const hiveBetaChapterStatus = pgTable(
     })
       .notNull()
       .default('DRAFT'),
-    updatedById: text('updated_by_id').references(() => users.clerkId, {
+    updatedById: text('updated_by_id').references(() => users.id, {
       onDelete: 'set null',
     }),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -1012,7 +1073,7 @@ export const hiveInlineComments = pgTable('hive_inline_comments', {
     .references(() => chapters.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   selectionStart: integer('selection_start').notNull(),
   selectionEnd: integer('selection_end').notNull(),
   selectedText: text('selected_text').notNull(),
@@ -1035,7 +1096,7 @@ export const hiveOutlineItems = pgTable('hive_outline_items', {
   hiveId: text('hive_id')
     .notNull()
     .references(() => hives.id, { onDelete: 'cascade' }),
-  createdById: text('created_by_id').references(() => users.clerkId, {
+  createdById: text('created_by_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   title: text('title').notNull(),
@@ -1046,7 +1107,7 @@ export const hiveOutlineItems = pgTable('hive_outline_items', {
   order: integer('order').notNull().default(0),
   parentId: text('parent_id'),
   color: text('color').notNull().default('#FFC300'),
-  assignedToId: text('assigned_to_id').references(() => users.clerkId, {
+  assignedToId: text('assigned_to_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -1062,7 +1123,7 @@ export const hiveWikiEntries = pgTable('hive_wiki_entries', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   content: text('content').notNull().default(''),
   category: text('category', {
@@ -1087,7 +1148,7 @@ export const hiveVersionSnapshots = pgTable('hive_version_snapshots', {
     .references(() => chapters.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   content: text('content').notNull().default(''),
   wordCount: integer('word_count').notNull().default(0),
@@ -1103,7 +1164,7 @@ export const hiveStyleGuide = pgTable('hive_style_guide', {
     .references(() => hives.id, { onDelete: 'cascade' })
     .unique(),
   content: text('content').notNull().default(''),
-  updatedById: text('updated_by_id').references(() => users.clerkId, {
+  updatedById: text('updated_by_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -1117,7 +1178,7 @@ export const hiveWordGoals = pgTable('hive_word_goals', {
   hiveId: text('hive_id')
     .notNull()
     .references(() => hives.id, { onDelete: 'cascade' }),
-  createdById: text('created_by_id').references(() => users.clerkId, {
+  createdById: text('created_by_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   type: text('type', { enum: ['DAILY', 'WEEKLY', 'MONTHLY', 'TOTAL'] })
@@ -1139,7 +1200,7 @@ export const hiveWordLogs = pgTable('hive_word_logs', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   userId: text('user_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   chapterId: text('chapter_id').references(() => chapters.id, {
     onDelete: 'set null',
   }),
@@ -1158,7 +1219,7 @@ export const hiveMilestones = pgTable(
       .references(() => hives.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     type: text('type', {
       enum: [
         'FIRST_CELL',
@@ -1199,14 +1260,14 @@ export const hiveSprints = pgTable('hive_sprints', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   startedById: text('started_by_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   durationMinutes: integer('duration_minutes').notNull().default(25),
   startTime: timestamp('start_time').defaultNow().notNull(),
   endTime: timestamp('end_time'),
   status: text('status', { enum: ['ACTIVE', 'COMPLETED'] })
     .notNull()
     .default('ACTIVE'),
-  winnerId: text('winner_id').references(() => users.clerkId, {
+  winnerId: text('winner_id').references(() => users.id, {
     onDelete: 'set null',
   }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -1223,7 +1284,7 @@ export const hiveSprintParticipants = pgTable(
       .references(() => hiveSprints.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     wordsBefore: integer('words_before').notNull().default(0),
     wordsAfter: integer('words_after'),
     joinedAt: timestamp('joined_at').defaultNow().notNull(),
@@ -1240,7 +1301,7 @@ export const hivePolls = pgTable('hive_polls', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   question: text('question').notNull(),
   options: json('options').$type<string[]>().notNull().default([]),
   isMultiChoice: boolean('is_multi_choice').notNull().default(false),
@@ -1262,7 +1323,7 @@ export const hivePollVotes = pgTable(
       .references(() => hivePolls.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     selectedOptions: json('selected_options').$type<number[]>().notNull().default([]),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
@@ -1278,7 +1339,7 @@ export const hiveChatMessages = pgTable('hive_chat_messages', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   content: text('content').notNull(),
   parentId: text('parent_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -1293,7 +1354,7 @@ export const hiveBuzzItems = pgTable('hive_buzz_items', {
     .references(() => hives.id, { onDelete: 'cascade' }),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.clerkId, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   content: text('content').notNull(),
   type: text('type', {
     enum: ['INSPIRATION', 'MEME', 'PLAYLIST', 'MOOD', 'OTHER'],
@@ -1310,7 +1371,7 @@ export const hiveBuzzLikes = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.clerkId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     buzzId: text('buzz_id')
       .notNull()
       .references(() => hiveBuzzItems.id, { onDelete: 'cascade' }),
@@ -1319,10 +1380,8 @@ export const hiveBuzzLikes = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.buzzId] })],
 );
 
-
-
 export const hivesRelations = relations(hives, ({ one, many }) => ({
-  owner: one(users, { fields: [hives.ownerId], references: [users.clerkId] }),
+  owner: one(users, { fields: [hives.ownerId], references: [users.id] }),
   book: one(books, { fields: [hives.bookId], references: [books.id] }),
   members: many(hiveMembers),
   invites: many(hiveInvites),
@@ -1341,94 +1400,94 @@ export const hivesRelations = relations(hives, ({ one, many }) => ({
 
 export const hiveMembersRelations = relations(hiveMembers, ({ one }) => ({
   hive: one(hives, { fields: [hiveMembers.hiveId], references: [hives.id] }),
-  user: one(users, { fields: [hiveMembers.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveMembers.userId], references: [users.id] }),
 }));
 
 export const hiveInvitesRelations = relations(hiveInvites, ({ one }) => ({
   hive: one(hives, { fields: [hiveInvites.hiveId], references: [hives.id] }),
   invitedUser: one(users, {
     fields: [hiveInvites.invitedUserId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'receivedHiveInvites',
   }),
   invitedBy: one(users, {
     fields: [hiveInvites.invitedByUserId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'sentHiveInvites',
   }),
 }));
 
 export const hiveJoinRequestsRelations = relations(hiveJoinRequests, ({ one }) => ({
   hive: one(hives, { fields: [hiveJoinRequests.hiveId], references: [hives.id] }),
-  user: one(users, { fields: [hiveJoinRequests.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveJoinRequests.userId], references: [users.id] }),
 }));
 
 export const hiveChapterClaimsRelations = relations(hiveChapterClaims, ({ one }) => ({
   hive: one(hives, { fields: [hiveChapterClaims.hiveId], references: [hives.id] }),
   chapter: one(chapters, { fields: [hiveChapterClaims.chapterId], references: [chapters.id] }),
-  user: one(users, { fields: [hiveChapterClaims.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveChapterClaims.userId], references: [users.id] }),
 }));
 
 export const hiveBetaChapterStatusRelations = relations(hiveBetaChapterStatus, ({ one }) => ({
   hive: one(hives, { fields: [hiveBetaChapterStatus.hiveId], references: [hives.id] }),
   chapter: one(chapters, { fields: [hiveBetaChapterStatus.chapterId], references: [chapters.id] }),
-  updatedBy: one(users, { fields: [hiveBetaChapterStatus.updatedById], references: [users.clerkId] }),
+  updatedBy: one(users, { fields: [hiveBetaChapterStatus.updatedById], references: [users.id] }),
 }));
 
 export const hiveInlineCommentsRelations = relations(hiveInlineComments, ({ one }) => ({
   hive: one(hives, { fields: [hiveInlineComments.hiveId], references: [hives.id] }),
   chapter: one(chapters, { fields: [hiveInlineComments.chapterId], references: [chapters.id] }),
-  author: one(users, { fields: [hiveInlineComments.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hiveInlineComments.authorId], references: [users.id] }),
 }));
 
 export const hiveOutlineItemsRelations = relations(hiveOutlineItems, ({ one }) => ({
   hive: one(hives, { fields: [hiveOutlineItems.hiveId], references: [hives.id] }),
-  createdBy: one(users, { fields: [hiveOutlineItems.createdById], references: [users.clerkId] }),
+  createdBy: one(users, { fields: [hiveOutlineItems.createdById], references: [users.id] }),
   assignedTo: one(users, {
     fields: [hiveOutlineItems.assignedToId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'assignedOutlineItems',
   }),
 }));
 
 export const hiveWikiEntriesRelations = relations(hiveWikiEntries, ({ one }) => ({
   hive: one(hives, { fields: [hiveWikiEntries.hiveId], references: [hives.id] }),
-  author: one(users, { fields: [hiveWikiEntries.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hiveWikiEntries.authorId], references: [users.id] }),
 }));
 
 export const hiveVersionSnapshotsRelations = relations(hiveVersionSnapshots, ({ one }) => ({
   hive: one(hives, { fields: [hiveVersionSnapshots.hiveId], references: [hives.id] }),
   chapter: one(chapters, { fields: [hiveVersionSnapshots.chapterId], references: [chapters.id] }),
-  author: one(users, { fields: [hiveVersionSnapshots.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hiveVersionSnapshots.authorId], references: [users.id] }),
 }));
 
 export const hiveStyleGuideRelations = relations(hiveStyleGuide, ({ one }) => ({
   hive: one(hives, { fields: [hiveStyleGuide.hiveId], references: [hives.id] }),
-  updatedBy: one(users, { fields: [hiveStyleGuide.updatedById], references: [users.clerkId] }),
+  updatedBy: one(users, { fields: [hiveStyleGuide.updatedById], references: [users.id] }),
 }));
 
 export const hiveWordGoalsRelations = relations(hiveWordGoals, ({ one }) => ({
   hive: one(hives, { fields: [hiveWordGoals.hiveId], references: [hives.id] }),
-  createdBy: one(users, { fields: [hiveWordGoals.createdById], references: [users.clerkId] }),
+  createdBy: one(users, { fields: [hiveWordGoals.createdById], references: [users.id] }),
 }));
 
 export const hiveWordLogsRelations = relations(hiveWordLogs, ({ one }) => ({
   hive: one(hives, { fields: [hiveWordLogs.hiveId], references: [hives.id] }),
-  user: one(users, { fields: [hiveWordLogs.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveWordLogs.userId], references: [users.id] }),
   chapter: one(chapters, { fields: [hiveWordLogs.chapterId], references: [chapters.id] }),
 }));
 
 export const hiveMilestonesRelations = relations(hiveMilestones, ({ one }) => ({
   hive: one(hives, { fields: [hiveMilestones.hiveId], references: [hives.id] }),
-  user: one(users, { fields: [hiveMilestones.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveMilestones.userId], references: [users.id] }),
 }));
 
 export const hiveSprintsRelations = relations(hiveSprints, ({ one, many }) => ({
   hive: one(hives, { fields: [hiveSprints.hiveId], references: [hives.id] }),
-  startedBy: one(users, { fields: [hiveSprints.startedById], references: [users.clerkId] }),
+  startedBy: one(users, { fields: [hiveSprints.startedById], references: [users.id] }),
   winner: one(users, {
     fields: [hiveSprints.winnerId],
-    references: [users.clerkId],
+    references: [users.id],
     relationName: 'wonSprints',
   }),
   participants: many(hiveSprintParticipants),
@@ -1436,32 +1495,32 @@ export const hiveSprintsRelations = relations(hiveSprints, ({ one, many }) => ({
 
 export const hiveSprintParticipantsRelations = relations(hiveSprintParticipants, ({ one }) => ({
   sprint: one(hiveSprints, { fields: [hiveSprintParticipants.sprintId], references: [hiveSprints.id] }),
-  user: one(users, { fields: [hiveSprintParticipants.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveSprintParticipants.userId], references: [users.id] }),
 }));
 
 export const hivePollsRelations = relations(hivePolls, ({ one, many }) => ({
   hive: one(hives, { fields: [hivePolls.hiveId], references: [hives.id] }),
-  author: one(users, { fields: [hivePolls.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hivePolls.authorId], references: [users.id] }),
   votes: many(hivePollVotes),
 }));
 
 export const hivePollVotesRelations = relations(hivePollVotes, ({ one }) => ({
   poll: one(hivePolls, { fields: [hivePollVotes.pollId], references: [hivePolls.id] }),
-  user: one(users, { fields: [hivePollVotes.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hivePollVotes.userId], references: [users.id] }),
 }));
 
 export const hiveChatMessagesRelations = relations(hiveChatMessages, ({ one }) => ({
   hive: one(hives, { fields: [hiveChatMessages.hiveId], references: [hives.id] }),
-  author: one(users, { fields: [hiveChatMessages.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hiveChatMessages.authorId], references: [users.id] }),
 }));
 
 export const hiveBuzzItemsRelations = relations(hiveBuzzItems, ({ one, many }) => ({
   hive: one(hives, { fields: [hiveBuzzItems.hiveId], references: [hives.id] }),
-  author: one(users, { fields: [hiveBuzzItems.authorId], references: [users.clerkId] }),
+  author: one(users, { fields: [hiveBuzzItems.authorId], references: [users.id] }),
   likes: many(hiveBuzzLikes),
 }));
 
 export const hiveBuzzLikesRelations = relations(hiveBuzzLikes, ({ one }) => ({
-  user: one(users, { fields: [hiveBuzzLikes.userId], references: [users.clerkId] }),
+  user: one(users, { fields: [hiveBuzzLikes.userId], references: [users.id] }),
   buzzItem: one(hiveBuzzItems, { fields: [hiveBuzzLikes.buzzId], references: [hiveBuzzItems.id] }),
 }));

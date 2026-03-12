@@ -248,8 +248,8 @@ function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
     <div
       className={`relative w-${size} h-${size} rounded-full overflow-hidden bg-[#2a2000] shrink-0`}
     >
-      {user.imageUrl ? (
-        <Image src={user.imageUrl} alt={name} fill className="object-cover" />
+      {user.image ? (
+        <Image src={user.image} alt={name} fill className="object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
           <span className="text-xs font-bold text-[#FFC300]">

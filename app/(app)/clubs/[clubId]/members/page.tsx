@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import BackButton from '@/components/shared/back-button';
 import {
   getClubAction,
@@ -29,7 +30,8 @@ export default async function ClubMembersPage({
   params: Promise<{ clubId: string }>;
 }) {
   const { clubId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   const club = await getClubAction(clubId);
   if (!club) notFound();

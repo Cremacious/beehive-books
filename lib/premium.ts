@@ -57,7 +57,7 @@ export async function checkCreateLimit(
   resource: PremiumResource,
 ): Promise<string | null> {
   const [[userRow], currentCount] = await Promise.all([
-    db.select({ premium: users.premium }).from(users).where(eq(users.clerkId, userId)).limit(1),
+    db.select({ premium: users.premium }).from(users).where(eq(users.id, userId)).limit(1),
     resourceCountQuery[resource](userId),
   ]);
 

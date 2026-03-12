@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { FileText } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { EntryContent } from '@/components/prompts/entry-content';
@@ -42,9 +43,9 @@ function UserAvatar({ user }: { user: PromptUser }) {
   const name = user.username || '?';
   return (
     <div className="w-10 h-10 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={name}
           width={40}
           height={40}
@@ -61,7 +62,8 @@ function UserAvatar({ user }: { user: PromptUser }) {
 
 export default async function EntryDetailPage({ params }: Props) {
   const { promptId, entryId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   let entry;
   try {

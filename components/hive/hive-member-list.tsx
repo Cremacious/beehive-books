@@ -138,9 +138,9 @@ export default function HiveMemberList({
               href={`/u/${member.user.username ?? member.userId}`}
               className="shrink-0"
             >
-              {member.user.imageUrl ? (
+              {member.user.image ? (
                 <Image
-                  src={member.user.imageUrl}
+                  src={member.user.image}
                   alt={member.user.username ?? 'User'}
                   width={36}
                   height={36}

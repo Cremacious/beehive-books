@@ -160,9 +160,9 @@ function EventRow({ event }: { event: ActivityEvent }) {
       <div className="relative shrink-0">
         {event.user.username ? (
           <Link href={`/u/${event.user.username}`} className="hover:opacity-80 transition-opacity block">
-            {event.user.imageUrl ? (
+            {event.user.image ? (
               <Image
-                src={event.user.imageUrl}
+                src={event.user.image}
                 alt={name}
                 width={28}
                 height={28}
@@ -172,9 +172,9 @@ function EventRow({ event }: { event: ActivityEvent }) {
               <div className="w-7 h-7 rounded-full bg-[#FFC300]/20" />
             )}
           </Link>
-        ) : event.user.imageUrl ? (
+        ) : event.user.image ? (
           <Image
-            src={event.user.imageUrl}
+            src={event.user.image}
             alt=""
             width={28}
             height={28}

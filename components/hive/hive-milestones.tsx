@@ -116,10 +116,10 @@ export default function HiveMilestones({
                       {earners
                         .slice(0, 5)
                         .map((e) =>
-                          e.user.imageUrl ? (
+                          e.user.image ? (
                             <Image
                               key={e.id}
-                              src={e.user.imageUrl}
+                              src={e.user.image}
                               alt=""
                               width={16}
                               height={16}
@@ -165,9 +165,9 @@ export default function HiveMilestones({
                 <div className="space-y-2">
                   {(byType[filter] ?? []).map((m) => (
                     <div key={m.id} className="flex items-center gap-3">
-                      {m.user.imageUrl ? (
+                      {m.user.image ? (
                         <Image
-                          src={m.user.imageUrl}
+                          src={m.user.image}
                           alt=""
                           width={24}
                           height={24}
@@ -219,9 +219,9 @@ export default function HiveMilestones({
                         {info.label}
                       </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        {m.user.imageUrl && (
+                        {m.user.image && (
                           <Image
-                            src={m.user.imageUrl}
+                            src={m.user.image}
                             alt=""
                             width={14}
                             height={14}

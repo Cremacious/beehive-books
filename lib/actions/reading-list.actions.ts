@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, sql } from 'drizzle-orm';
@@ -15,12 +16,6 @@ import type {
   BookEntryData,
   ActionResult,
 } from '@/lib/types/reading-list.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireListOwner(listId: string) {
   const userId = await requireAuth();
@@ -40,7 +35,7 @@ export async function getUserReadingListsAction() {
 }
 
 export async function getReadingListAction(listId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const list = await db.query.readingLists.findFirst({
     where: eq(readingLists.id, listId),
