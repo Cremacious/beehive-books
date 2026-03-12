@@ -14,6 +14,20 @@ export const auth = betterAuth({
     requireEmailVerification: false,
   },
 
+  socialProviders: {
+    google: {
+      clientId: process.env.Google_Client_Id!,
+      clientSecret: process.env.Google_Client_Secret!,
+    },
+  },
+
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ['google'],
+    },
+  },
+
   user: {
     additionalFields: {
       firstName:          { type: 'string',  required: false, defaultValue: null },
