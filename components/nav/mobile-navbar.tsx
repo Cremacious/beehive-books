@@ -20,6 +20,7 @@ import {
   Settings,
   LogOut,
   Hexagon,
+  ShieldCheck,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo3.png';
@@ -35,7 +36,7 @@ const navItems = [
   { href: '/friends', label: 'Friends', icon: Users2 },
 ] as const;
 
-export function MobileNavbar() {
+export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const { user } = useUser();
   const { signOut } = useClerk();
@@ -194,6 +195,24 @@ export function MobileNavbar() {
                   strokeWidth={isActive('/u') ? 2.5 : 1.75}
                 />
                 Profile
+              </Link>
+            )}
+
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={closeDrawer}
+                className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  isActive('/admin')
+                    ? 'text-[#FFC300] bg-[#FFC300]/8'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <ShieldCheck
+                  className="w-5 h-5 shrink-0"
+                  strokeWidth={isActive('/admin') ? 2.5 : 1.75}
+                />
+                Admin
               </Link>
             )}
           </div>

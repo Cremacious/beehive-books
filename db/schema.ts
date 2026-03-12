@@ -20,6 +20,7 @@ export const users = pgTable('users', {
   username: text('username').unique(),
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
   premium: boolean('premium').default(false).notNull(),
+  role: text('role', { enum: ['member', 'moderator', 'admin'] }).notNull().default('member'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

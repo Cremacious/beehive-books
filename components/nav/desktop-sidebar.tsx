@@ -17,6 +17,7 @@ import {
   Settings,
   LogOut,
   Hexagon,
+  ShieldCheck,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
@@ -32,7 +33,7 @@ const navItems = [
 ] as const;
 import logoImage from '@/public/logo3.png';
 
-export function DesktopSidebar() {
+export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
@@ -106,6 +107,25 @@ export function DesktopSidebar() {
                     strokeWidth={isActive('/u') ? 2.5 : 1.75}
                   />
                   <span className="hidden lg:block">Profile</span>
+                </Link>
+              </li>
+            )}
+
+            {isAdmin && (
+              <li>
+                <Link
+                  href="/admin"
+                  className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+                    isActive('/admin')
+                      ? 'text-[#FFC300]'
+                      : 'text-white/90 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <ShieldCheck
+                    className="w-5.5 h-5.5 shrink-0"
+                    strokeWidth={isActive('/admin') ? 2.5 : 1.75}
+                  />
+                  <span className="hidden lg:block">Admin</span>
                 </Link>
               </li>
             )}
