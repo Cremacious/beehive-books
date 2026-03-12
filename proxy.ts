@@ -18,12 +18,6 @@ export default clerkMiddleware(async (auth, request) => {
     return;
   }
 
-  // Fast path: JWT claim is present (zero DB cost for most users).
-  // Fallback 1: short-lived cookie set by completeOnboarding() before JWT refreshes.
-  // Fallback 2: DB query for users whose Clerk publicMetadata was never populated
-  //             (e.g. seeded accounts, or accounts from before metadata sync was added).
-  //             syncUser() in the app layout will update their Clerk metadata on first
-  //             successful visit, so they only hit the DB once.
   const metadata = sessionClaims?.metadata as { onboardingComplete?: boolean } | undefined;
   let onboarded =
     metadata?.onboardingComplete === true ||

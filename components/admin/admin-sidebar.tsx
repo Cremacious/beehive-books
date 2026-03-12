@@ -9,7 +9,7 @@ import {
   BookText,
   MessageSquare,
   Lightbulb,
-  Bell,
+  // Bell,
   Layers,
   ChevronLeft,
 } from 'lucide-react';
@@ -22,7 +22,7 @@ const links = [
   { href: '/admin/clubs', label: 'Clubs', icon: Layers },
   { href: '/admin/discussions', label: 'Discussions', icon: MessageSquare },
   { href: '/admin/prompts', label: 'Prompts', icon: Lightbulb },
-  { href: '/admin/notifications', label: 'Notifications', icon: Bell },
+  // { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ];
 
 export default function AdminSidebar() {
@@ -34,9 +34,6 @@ export default function AdminSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-56 shrink-0 h-screen sticky top-0 bg-[#1a1a1a] border-r border-[#2a2a2a]">
       <div className="px-4 py-5 border-b border-[#2a2a2a]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#FFC300]/60 mb-0.5">
-          Beehive
-        </p>
         <h2 className="text-base font-bold text-white">Admin Panel</h2>
       </div>
 
@@ -51,7 +48,7 @@ export default function AdminSidebar() {
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     active
                       ? 'bg-[#FFC300]/10 text-[#FFC300]'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      : 'text-white hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" strokeWidth={active ? 2.5 : 1.75} />
@@ -66,7 +63,7 @@ export default function AdminSidebar() {
       <div className="px-2 pb-4">
         <Link
           href="/feed"
-          className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-white hover:bg-white/5 transition-all"
+          className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-yellow-500 hover:text-white hover:bg-white/5 transition-all"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to app

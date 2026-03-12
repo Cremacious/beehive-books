@@ -33,7 +33,7 @@ async function requireAdmin() {
   return userId;
 }
 
-// ─── Stats ───────────────────────────────────────────────────────────────────
+
 
 export async function getAdminStatsAction() {
   await requireAdmin();
@@ -86,7 +86,7 @@ export async function getAdminStatsAction() {
   };
 }
 
-// ─── Users ───────────────────────────────────────────────────────────────────
+
 
 export async function getAllUsersAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -157,7 +157,6 @@ export async function toggleUserPremiumAction(clerkId: string): Promise<ActionRe
   }
 }
 
-// ─── Books ───────────────────────────────────────────────────────────────────
 
 export async function getAllBooksAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -212,7 +211,6 @@ export async function deleteBookAdminAction(bookId: string): Promise<ActionResul
   }
 }
 
-// ─── Chapters ────────────────────────────────────────────────────────────────
 
 export async function getAllChaptersAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -247,7 +245,6 @@ export async function getAllChaptersAdminAction(page = 1, search?: string) {
   return { chapters: rows, total, page, pageSize: PAGE_SIZE };
 }
 
-// ─── Clubs ───────────────────────────────────────────────────────────────────
 
 export async function getAllClubsAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -289,7 +286,7 @@ export async function deleteClubAdminAction(clubId: string): Promise<ActionResul
   }
 }
 
-// ─── Prompts & Entries ───────────────────────────────────────────────────────
+
 
 export async function getAllPromptsAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -370,7 +367,6 @@ export async function deletePromptEntryAdminAction(entryId: string): Promise<Act
   }
 }
 
-// ─── Discussions ─────────────────────────────────────────────────────────────
 
 export async function getAllDiscussionsAdminAction(page = 1, search?: string) {
   await requireAdmin();
@@ -451,7 +447,6 @@ export async function deleteDiscussionReplyAdminAction(replyId: string): Promise
   }
 }
 
-// ─── Notifications ───────────────────────────────────────────────────────────
 
 export async function getAllNotificationsAdminAction(page = 1) {
   await requireAdmin();

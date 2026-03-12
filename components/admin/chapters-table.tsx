@@ -69,18 +69,18 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
         )}
       </form>
 
-      <p className="text-xs text-white/40 mb-3">{total.toLocaleString()} chapters</p>
+      <p className="text-sm text-white mb-3">{total.toLocaleString()} chapters</p>
 
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-              <th className="text-left px-4 py-3 text-white/50 font-medium">Chapter</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Book</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Author</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Words</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Order</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden xl:table-cell">Created</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Chapter</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Book</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Author</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Words</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Order</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#2a2a2a]">
@@ -91,32 +91,32 @@ export default function ChaptersTable({ chapters, total, page, pageSize }: Props
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   {c.book ? (
-                    <span className="text-white/70">{c.book.title}</span>
+                    <span className="text-white">{c.book.title}</span>
                   ) : (
                     <span className="text-white/30 italic">unknown</span>
                   )}
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   {c.book?.user?.username ? (
-                    <Link href={`/u/${c.book.user.username}`} className="text-white/70 hover:text-[#FFC300] transition-colors">
-                      @{c.book.user.username}
+                    <Link href={`/u/${c.book.user.username}`} className="text-white hover:text-[#FFC300] transition-colors">
+                      {c.book.user.username}
                     </Link>
                   ) : (
                     <span className="text-white/30 italic">unknown</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-white/60 hidden lg:table-cell">
+                <td className="px-4 py-3 text-white hidden lg:table-cell">
                   {c.wordCount.toLocaleString()}
                 </td>
-                <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{c.order + 1}</td>
-                <td className="px-4 py-3 text-white/40 text-xs hidden xl:table-cell">
+                <td className="px-4 py-3 text-white hidden lg:table-cell">{c.order + 1}</td>
+                <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                   {new Date(c.createdAt).toLocaleDateString()}
                 </td>
               </tr>
             ))}
             {chapters.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-white/30 text-sm">
+                <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">
                   No chapters found.
                 </td>
               </tr>

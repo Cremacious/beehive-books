@@ -16,15 +16,7 @@ export default async function CreateHivePage() {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
-      {/* <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2 mainFont">
-          <span className="text-3xl">🐝</span>
-          Create a Hive
-        </h1>
-        <p className="text-sm text-white/60 mt-1">
-          Bring writers and beta readers together to build something great.
-        </p>
-      </div> */}
+
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <HiveForm mode="create" cancelHref="/hive" userBooks={userBooks} />

@@ -87,18 +87,18 @@ export default function BooksTable({ books, total, page, pageSize }: Props) {
         )}
       </form>
 
-      <p className="text-xs text-white/40 mb-3">{total.toLocaleString()} books</p>
+      <p className="text-sm text-white mb-3">{total.toLocaleString()} books</p>
 
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-              <th className="text-left px-4 py-3 text-white/50 font-medium">Title</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Owner</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden sm:table-cell">Privacy</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Words</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Chapters</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden xl:table-cell">Created</th>
+              <th className="text-left px-4 py-3 text-white font-medium">Title</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Owner</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden sm:table-cell">Privacy</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Words</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Chapters</th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -107,15 +107,15 @@ export default function BooksTable({ books, total, page, pageSize }: Props) {
               <tr key={b.id} className="hover:bg-white/2 transition-colors">
                 <td className="px-4 py-3">
                   <p className="font-medium text-white">{b.title}</p>
-                  <p className="text-xs text-white/40">{b.author}</p>
+                  <p className="text-xs text-white">{b.author}</p>
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   {b.user?.username ? (
-                    <Link href={`/u/${b.user.username}`} className="text-white/70 hover:text-[#FFC300] transition-colors">
-                      @{b.user.username}
+                    <Link href={`/u/${b.user.username}`} className="text-white hover:text-[#FFC300] transition-colors">
+                      {b.user.username}
                     </Link>
                   ) : (
-                    <span className="text-white/30 italic">unknown</span>
+                    <span className="text-white italic">unknown</span>
                   )}
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
@@ -123,17 +123,17 @@ export default function BooksTable({ books, total, page, pageSize }: Props) {
                     {b.privacy}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-white/60 hidden lg:table-cell">
+                <td className="px-4 py-3 text-white hidden lg:table-cell">
                   {b.wordCount.toLocaleString()}
                 </td>
-                <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{b.chapterCount}</td>
-                <td className="px-4 py-3 text-white/40 text-xs hidden xl:table-cell">
+                <td className="px-4 py-3 text-white hidden lg:table-cell">{b.chapterCount}</td>
+                <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                   {new Date(b.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => setDeleteTarget(b)}
-                    className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                    className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -25,11 +25,7 @@ export default async function ExplorePromptsPage({
           <Lightbulb className="w-6 h-6 text-purple-400" />
           Writing Prompts
         </h1>
-        {/* <p className="mt-1 text-sm text-white/80">
-          {prompts.length > 0
-            ? `${prompts.length} prompt${prompts.length !== 1 ? 's' : ''} found`
-            : 'No prompts found'}
-        </p> */}
+
       </div>
 
       <ExploreSearchBar placeholder="Search writing prompts..." />

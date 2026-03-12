@@ -20,9 +20,6 @@ export default async function AdminPromptsPage({ searchParams }: Props) {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
-        <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-widest mb-1">
-          Writing
-        </p>
         <h1 className="text-2xl font-bold text-white">Prompts</h1>
       </div>
       <PromptsTable

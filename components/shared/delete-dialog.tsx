@@ -6,17 +6,16 @@ import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
 
 interface DeleteDialogProps {
-  /** What is being deleted — shown in the confirmation message. E.g. "chapter", "book", "comment" */
   itemType: string;
-  /** Optional name of the specific item — shown in quotes. E.g. "My First Novel" */
+
   itemName?: string;
-  /** Called when the user confirms deletion. Should perform the delete and return/throw. */
+
   onDelete: () => Promise<void>;
-  /** The trigger element. Defaults to a destructive button labelled "Delete {itemType}". */
+
   trigger?: React.ReactNode;
-  /** Controlled open state. If provided, the component acts as a controlled dialog (no internal trigger click handler). */
+
   open?: boolean;
-  /** Called when the dialog requests to close (controlled mode). */
+
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -66,13 +65,21 @@ export function DeleteDialog({
         </span>
       )}
 
-      <Popup open={open} onClose={() => !deleting && setOpen(false)} title={label} maxWidth="sm">
+      <Popup
+        open={open}
+        onClose={() => !deleting && setOpen(false)}
+        title={label}
+        maxWidth="sm"
+      >
         <div className="space-y-4">
           <p className="text-sm text-white/80">
             Are you sure you want to permanently delete{' '}
             {itemName ? (
               <>
-                <span className="font-semibold text-white">&ldquo;{itemName}&rdquo;</span>?
+                <span className="font-semibold text-white">
+                  &ldquo;{itemName}&rdquo;
+                </span>
+                ?
               </>
             ) : (
               <>this {itemType}?</>

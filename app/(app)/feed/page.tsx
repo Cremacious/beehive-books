@@ -464,7 +464,7 @@ export default async function UserHomePage() {
       ) : events.length === 0 ? (
         <>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-[0.15em]">
+            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em]">
               Friend Activity
             </p>
           </div>

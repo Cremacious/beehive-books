@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Trash2, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import Pagination from '@/components/shared/pagination';
 import ConfirmDeleteDialog from '@/components/admin/confirm-delete-dialog';
 import {
@@ -102,7 +102,7 @@ export default function DiscussionsTable({
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
               activeTab === tab
                 ? 'bg-[#FFC300]/10 text-[#FFC300]'
-                : 'text-white/50 hover:text-white hover:bg-white/5'
+                : 'text-white/80 hover:text-white hover:bg-white/5'
             }`}
           >
             {tab}
@@ -130,18 +130,18 @@ export default function DiscussionsTable({
             )}
           </form>
 
-          <p className="text-xs text-white/40 mb-3">{discussionsTotal.toLocaleString()} discussions</p>
+          <p className="text-sm text-white mb-3">{discussionsTotal.toLocaleString()} discussions</p>
 
           <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-                  <th className="text-left px-4 py-3 text-white/50 font-medium">Title</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Club</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Author</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Likes</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Replies</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden xl:table-cell">Created</th>
+                  <th className="text-left px-4 py-3 text-white font-medium">Title</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Club</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Author</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Likes</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Replies</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -154,27 +154,27 @@ export default function DiscussionsTable({
                         <p className="font-medium text-white">{d.title}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden md:table-cell">
+                    <td className="px-4 py-3 text-white hidden md:table-cell">
                       {d.club?.name ?? '—'}
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       {d.author?.username ? (
-                        <Link href={`/u/${d.author.username}`} className="text-white/70 hover:text-[#FFC300] transition-colors">
-                          @{d.author.username}
+                        <Link href={`/u/${d.author.username}`} className="text-white hover:text-[#FFC300] transition-colors">
+                          {d.author.username}
                         </Link>
                       ) : (
-                        <span className="text-white/30 italic">unknown</span>
+                        <span className="text-white italic">unknown</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{d.likeCount}</td>
-                    <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{d.replyCount}</td>
-                    <td className="px-4 py-3 text-white/40 text-xs hidden xl:table-cell">
+                    <td className="px-4 py-3 text-white hidden lg:table-cell">{d.likeCount}</td>
+                    <td className="px-4 py-3 text-white hidden lg:table-cell">{d.replyCount}</td>
+                    <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                       {new Date(d.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setDeleteTarget({ id: d.id, type: 'discussion' })}
-                        className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                        className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -202,17 +202,17 @@ export default function DiscussionsTable({
 
       {activeTab === 'replies' && (
         <>
-          <p className="text-xs text-white/40 mb-3">{repliesTotal.toLocaleString()} replies</p>
+          <p className="text-sm text-white mb-3">{repliesTotal.toLocaleString()} replies</p>
 
           <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-                  <th className="text-left px-4 py-3 text-white/50 font-medium">Content</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Author</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Discussion</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Likes</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden xl:table-cell">Created</th>
+                  <th className="text-left px-4 py-3 text-white font-medium">Content</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Author</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Discussion</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Likes</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">Created</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -220,30 +220,30 @@ export default function DiscussionsTable({
                 {replies.map((r) => (
                   <tr key={r.id} className="hover:bg-white/2 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="text-white/70 truncate max-w-[200px]">
+                      <p className="text-white truncate max-w-50">
                         {r.content.slice(0, 80)}…
                       </p>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       {r.author?.username ? (
-                        <Link href={`/u/${r.author.username}`} className="text-white/70 hover:text-[#FFC300] transition-colors">
+                        <Link href={`/u/${r.author.username}`} className="text-white hover:text-[#FFC300] transition-colors">
                           @{r.author.username}
                         </Link>
                       ) : (
-                        <span className="text-white/30 italic">unknown</span>
+                        <span className="text-white italic">unknown</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden md:table-cell truncate max-w-[160px]">
+                    <td className="px-4 py-3 text-white hidden md:table-cell truncate max-w-40">
                       {r.discussion?.title ?? '—'}
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{r.likeCount}</td>
-                    <td className="px-4 py-3 text-white/40 text-xs hidden xl:table-cell">
+                    <td className="px-4 py-3 text-white hidden lg:table-cell">{r.likeCount}</td>
+                    <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                       {new Date(r.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setDeleteTarget({ id: r.id, type: 'reply' })}
-                        className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                        className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -252,7 +252,7 @@ export default function DiscussionsTable({
                 ))}
                 {replies.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-white/30 text-sm">No replies found.</td>
+                    <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">No replies found.</td>
                   </tr>
                 )}
               </tbody>

@@ -9,7 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import RoleBadge from '@/components/admin/role-badge';
 import Pagination from '@/components/shared/pagination';
-import { updateUserRoleAction, toggleUserPremiumAction } from '@/lib/actions/admin.actions';
+import {
+  updateUserRoleAction,
+  toggleUserPremiumAction,
+} from '@/lib/actions/admin.actions';
 
 type User = {
   clerkId: string;
@@ -34,7 +37,9 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [searchValue, setSearchValue] = useState(searchParams.get('search') ?? '');
+  const [searchValue, setSearchValue] = useState(
+    searchParams.get('search') ?? '',
+  );
   const [pending, startTransition] = useTransition();
 
   const totalPages = Math.ceil(total / pageSize);
@@ -42,7 +47,8 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const updateUrl = (newPage: number, newSearch?: string) => {
     const params = new URLSearchParams();
     if (newPage > 1) params.set('page', String(newPage));
-    const s = newSearch !== undefined ? newSearch : searchParams.get('search') ?? '';
+    const s =
+      newSearch !== undefined ? newSearch : (searchParams.get('search') ?? '');
     if (s) params.set('search', s);
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -52,7 +58,10 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
     updateUrl(1, searchValue);
   };
 
-  const handleRoleChange = (clerkId: string, role: 'member' | 'moderator' | 'admin') => {
+  const handleRoleChange = (
+    clerkId: string,
+    role: 'member' | 'moderator' | 'admin',
+  ) => {
     startTransition(async () => {
       await updateUserRoleAction(clerkId, role);
       router.refresh();
@@ -86,29 +95,45 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => { setSearchValue(''); updateUrl(1, ''); }}
+            onClick={() => {
+              setSearchValue('');
+              updateUrl(1, '');
+            }}
           >
             Clear
           </Button>
         )}
       </form>
 
-      <p className="text-xs text-white/40 mb-3">{total.toLocaleString()} users</p>
+      <p className="text-sm text-white mb-3">{total.toLocaleString()} users</p>
 
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-              <th className="text-left px-4 py-3 text-white/50 font-medium">User</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Email</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium">Role</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden sm:table-cell">Premium</th>
-              <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Joined</th>
+              <th className="text-left px-4 py-3 text-white font-medium">
+                User
+              </th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">
+                Email
+              </th>
+              <th className="text-left px-4 py-3 text-white font-medium">
+                Role
+              </th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden sm:table-cell">
+                Premium
+              </th>
+              <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">
+                Joined
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#2a2a2a]">
             {users.map((u) => (
-              <tr key={u.clerkId} className="hover:bg-white/2 transition-colors">
+              <tr
+                key={u.clerkId}
+                className="hover:bg-white/2 transition-colors"
+              >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2.5">
                     {u.imageUrl ? (
@@ -132,32 +157,40 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                           href={`/u/${u.username}`}
                           className="text-white font-medium hover:text-[#FFC300] transition-colors"
                         >
-                          @{u.username}
+                          {u.username}
                         </Link>
                       ) : (
-                        <span className="text-white/40 italic">no username</span>
-                      )}
-                      {(u.firstName || u.lastName) && (
-                        <p className="text-xs text-white/40">
-                          {[u.firstName, u.lastName].filter(Boolean).join(' ')}
-                        </p>
+                        <span className="text-white/40 italic">
+                          no username
+                        </span>
                       )}
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-white/60 hidden md:table-cell">{u.email}</td>
+                <td className="px-4 py-3 text-white hidden md:table-cell">
+                  {u.email}
+                </td>
                 <td className="px-4 py-3">
                   <select
                     value={u.role}
                     disabled={pending}
                     onChange={(e) =>
-                      handleRoleChange(u.clerkId, e.target.value as 'member' | 'moderator' | 'admin')
+                      handleRoleChange(
+                        u.clerkId,
+                        e.target.value as 'member' | 'moderator' | 'admin',
+                      )
                     }
                     className="bg-transparent border-0 text-sm cursor-pointer focus:outline-none"
                   >
-                    <option value="member" className="bg-[#252525]">Member</option>
-                    <option value="moderator" className="bg-[#252525]">Moderator</option>
-                    <option value="admin" className="bg-[#252525]">Admin</option>
+                    <option value="member" className="bg-[#252525]">
+                      Member
+                    </option>
+                    <option value="moderator" className="bg-[#252525]">
+                      Moderator
+                    </option>
+                    <option value="admin" className="bg-[#252525]">
+                      Admin
+                    </option>
                   </select>
                   <div className="mt-0.5">
                     <RoleBadge role={u.role} />
@@ -171,20 +204,27 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                   >
                     <Badge
                       variant={u.premium ? 'default' : 'outline'}
-                      className={u.premium ? 'cursor-pointer hover:opacity-80' : 'cursor-pointer hover:opacity-80 text-white/30'}
+                      className={
+                        u.premium
+                          ? 'cursor-pointer hover:opacity-80'
+                          : 'cursor-pointer hover:opacity-80 text-white/30'
+                      }
                     >
                       {u.premium ? 'Premium' : 'Free'}
                     </Badge>
                   </button>
                 </td>
-                <td className="px-4 py-3 text-white/40 text-xs hidden lg:table-cell">
+                <td className="px-4 py-3 text-white text-xs hidden lg:table-cell">
                   {new Date(u.createdAt).toLocaleDateString()}
                 </td>
               </tr>
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-white/30 text-sm">
+                <td
+                  colSpan={5}
+                  className="px-4 py-8 text-center text-white/30 text-sm"
+                >
                   No users found.
                 </td>
               </tr>
@@ -194,7 +234,11 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
       </div>
 
       <div className="mt-6">
-        <Pagination page={page} totalPages={totalPages} onPageChange={(p) => updateUrl(p)} />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={(p) => updateUrl(p)}
+        />
       </div>
     </div>
   );

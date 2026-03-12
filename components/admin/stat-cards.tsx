@@ -39,13 +39,13 @@ export default function StatCards({ data }: { data: StatData }) {
             <div className="p-2 rounded-xl bg-[#FFC300]/10">
               <Icon className="w-4 h-4 text-[#FFC300]" />
             </div>
-            <span className="text-sm font-medium text-white/60">{label}</span>
+            <span className="text-sm font-medium text-yellow-500">{label}</span>
           </div>
           <p className="text-3xl font-bold text-white">
             {data.totals[key].toLocaleString()}
           </p>
           {key !== 'chapters' && (
-            <p className="text-xs text-white/40 mt-1">
+            <p className=" text-white mt-1">
               +{(data.newThisMonth as Record<string, number>)[key]} this month
             </p>
           )}

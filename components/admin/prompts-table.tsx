@@ -102,7 +102,7 @@ export default function PromptsTable({
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
               activeTab === tab
                 ? 'bg-[#FFC300]/10 text-[#FFC300]'
-                : 'text-white/50 hover:text-white hover:bg-white/5'
+                : 'text-white/80 hover:text-white hover:bg-white/5'
             }`}
           >
             {tab}
@@ -130,17 +130,17 @@ export default function PromptsTable({
             )}
           </form>
 
-          <p className="text-xs text-white/40 mb-3">{promptsTotal.toLocaleString()} prompts</p>
+          <p className="text-sm text-white mb-3">{promptsTotal.toLocaleString()} prompts</p>
 
           <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#2a2a2a] bg-[#252525]">
-                  <th className="text-left px-4 py-3 text-white/50 font-medium">Title</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden md:table-cell">Creator</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden sm:table-cell">Status</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden lg:table-cell">Entries</th>
-                  <th className="text-left px-4 py-3 text-white/50 font-medium hidden xl:table-cell">End Date</th>
+                  <th className="text-left px-4 py-3 text-white font-medium">Title</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden md:table-cell">Creator</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden sm:table-cell">Status</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Entries</th>
+                  <th className="text-left px-4 py-3 text-white font-medium hidden xl:table-cell">End Date</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -152,8 +152,8 @@ export default function PromptsTable({
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       {p.creator?.username ? (
-                        <Link href={`/u/${p.creator.username}`} className="text-white/70 hover:text-[#FFC300] transition-colors">
-                          @{p.creator.username}
+                        <Link href={`/u/${p.creator.username}`} className="text-white hover:text-[#FFC300] transition-colors">
+                          {p.creator.username}
                         </Link>
                       ) : (
                         <span className="text-white/30 italic">unknown</span>
@@ -171,14 +171,14 @@ export default function PromptsTable({
                         {p.status}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{p.entryCount}</td>
-                    <td className="px-4 py-3 text-white/40 text-xs hidden xl:table-cell">
+                    <td className="px-4 py-3 text-white hidden lg:table-cell">{p.entryCount}</td>
+                    <td className="px-4 py-3 text-white text-xs hidden xl:table-cell">
                       {p.endDate ? new Date(p.endDate).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setDeleteTarget({ id: p.id, label: p.title, type: 'prompt' })}
-                        className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                        className="p-1.5 rounded-lg text-white hover:text-red-400 hover:bg-red-400/10 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -187,7 +187,7 @@ export default function PromptsTable({
                 ))}
                 {prompts.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-white/30 text-sm">No prompts found.</td>
+                    <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">No prompts found.</td>
                   </tr>
                 )}
               </tbody>
@@ -225,7 +225,7 @@ export default function PromptsTable({
                 {entries.map((e) => (
                   <tr key={e.id} className="hover:bg-white/2 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="text-white/70 truncate max-w-[200px]">
+                      <p className="text-white/70 truncate max-w-50">
                         {e.content.replace(/<[^>]+>/g, ' ').slice(0, 80)}…
                       </p>
                     </td>
@@ -238,7 +238,7 @@ export default function PromptsTable({
                         <span className="text-white/30 italic">unknown</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-white/60 hidden md:table-cell truncate max-w-[160px]">
+                    <td className="px-4 py-3 text-white/60 hidden md:table-cell truncate max-w-40">
                       {e.prompt?.title ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-white/60 hidden lg:table-cell">{e.wordCount.toLocaleString()}</td>

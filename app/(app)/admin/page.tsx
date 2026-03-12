@@ -14,7 +14,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <section className="mb-8">
-        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
+        <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
           All time
         </h2>
         <StatCards data={data} />

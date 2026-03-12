@@ -188,17 +188,12 @@ export default function HiveBetaReader({
 }: HiveBetaReaderProps) {
   const [chapters, setChapters] =
     useState<BetaChapterWithStatus[]>(initialChapters);
-  // const [, startTransition] = useTransition();
+
   const [activeFilter, setActiveFilter] = useState<BetaChapterStatus | 'ALL'>(
     'ALL',
   );
 
-  // const refresh = () => {
-  //   startTransition(async () => {
-  //     const fresh = await getBetaChaptersAction(hiveId);
-  //     setChapters(fresh);
-  //   });
-  // };
+
 
   const handleUpdate = (chapterId: string, status: BetaChapterStatus) => {
     setChapters((prev) =>
