@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { getFriendFeedAction } from '@/lib/actions/feed.actions';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
+import { getAnnouncementsAction } from '@/lib/actions/admin.actions';
+import AnnouncementCard from '@/components/announcements/announcement-card';
 import type {
   FeedEvent,
   FeedEventType,
@@ -426,9 +428,10 @@ function NoActivityEmpty() {
 }
 
 export default async function UserHomePage() {
-  const [events, { friends }] = await Promise.all([
+  const [events, { friends }, announcements] = await Promise.all([
     getFriendFeedAction(),
     getMyFriendsDataAction(),
+    getAnnouncementsAction(),
   ]);
 
   const hasFriends = friends.length > 0;
@@ -458,6 +461,19 @@ export default async function UserHomePage() {
       </div>
 
       <QuickLinksBar />
+
+      {announcements.length > 0 && (
+        <div className="space-y-3 mb-8">
+          {announcements.map((a) => (
+            <AnnouncementCard
+              key={a.id}
+              title={a.title}
+              content={a.content}
+              createdAt={a.createdAt}
+            />
+          ))}
+        </div>
+      )}
 
       {!hasFriends ? (
         <NewUserWelcome />

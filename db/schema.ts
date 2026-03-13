@@ -277,6 +277,22 @@ export const notifications = pgTable('notifications', {
 });
 
 // ---------------------------------------------------------------------------
+// Announcements
+// ---------------------------------------------------------------------------
+
+export const announcements = pgTable('announcements', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  createdById: text('created_by_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
 
@@ -1523,4 +1539,8 @@ export const hiveBuzzItemsRelations = relations(hiveBuzzItems, ({ one, many }) =
 export const hiveBuzzLikesRelations = relations(hiveBuzzLikes, ({ one }) => ({
   user: one(users, { fields: [hiveBuzzLikes.userId], references: [users.id] }),
   buzzItem: one(hiveBuzzItems, { fields: [hiveBuzzLikes.buzzId], references: [hiveBuzzItems.id] }),
+}));
+
+export const announcementsRelations = relations(announcements, ({ one }) => ({
+  createdBy: one(users, { fields: [announcements.createdById], references: [users.id] }),
 }));

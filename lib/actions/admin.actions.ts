@@ -3,6 +3,7 @@
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
 import { and, count, desc, eq, gte, ilike, or } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import {
   users,
@@ -15,6 +16,7 @@ import {
   clubDiscussions,
   clubDiscussionReplies,
   notifications,
+  announcements,
 } from '@/db/schema';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
@@ -476,4 +478,61 @@ export async function getAllNotificationsAdminAction(page = 1) {
   ]);
 
   return { notifications: rows, total, page, pageSize: PAGE_SIZE };
+}
+
+// ---------------------------------------------------------------------------
+// Announcements
+// ---------------------------------------------------------------------------
+
+export type AnnouncementItem = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  createdBy: { username: string | null; firstName: string | null } | null;
+};
+
+export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
+  const rows = await db.query.announcements.findMany({
+    orderBy: desc(announcements.createdAt),
+    with: { createdBy: { columns: { username: true, firstName: true } } },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    createdAt: r.createdAt,
+    createdBy: r.createdBy,
+  }));
+}
+
+export async function getAllAnnouncementsAdminAction(): Promise<AnnouncementItem[]> {
+  await requireAdmin();
+  return getAnnouncementsAction();
+}
+
+export async function createAnnouncementAction(
+  title: string,
+  content: string,
+): Promise<ActionResult> {
+  const userId = await requireAdmin();
+  if (!title.trim() || !content.trim()) {
+    return { success: false, message: 'Title and content are required.' };
+  }
+  await db.insert(announcements).values({
+    title: title.trim(),
+    content: content.trim(),
+    createdById: userId,
+  });
+  revalidatePath('/feed');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement created.' };
+}
+
+export async function deleteAnnouncementAdminAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  await db.delete(announcements).where(eq(announcements.id, id));
+  revalidatePath('/feed');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement deleted.' };
 }

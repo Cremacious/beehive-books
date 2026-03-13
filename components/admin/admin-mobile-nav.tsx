@@ -10,6 +10,7 @@ import {
   Lightbulb,
   Bell,
   Layers,
+  Megaphone,
 } from 'lucide-react';
 
 const links = [
@@ -20,6 +21,7 @@ const links = [
   { href: '/admin/clubs', label: 'Clubs', icon: Layers },
   { href: '/admin/discussions', label: 'Discussions', icon: MessageSquare },
   { href: '/admin/prompts', label: 'Prompts', icon: Lightbulb },
+  { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ];
 
