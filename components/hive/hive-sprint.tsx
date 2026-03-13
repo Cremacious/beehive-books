@@ -50,9 +50,9 @@ function ParticipantRow({
 }) {
   return (
     <div className="flex items-center gap-3 py-2">
-      {p.user.imageUrl ? (
+      {p.user.image ? (
         <Image
-          src={p.user.imageUrl}
+          src={p.user.image}
           alt=""
           width={24}
           height={24}
@@ -62,7 +62,7 @@ function ParticipantRow({
         <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 shrink-0" />
       )}
       <span className="flex-1 text-sm text-white/70 truncate min-w-0">
-        {p.user.username ?? p.user.firstName ?? 'User'}
+        {p.user.username ?? 'User'}
       </span>
       {isWinner && <Trophy className="w-3.5 h-3.5 text-[#FFC300] shrink-0" />}
       {p.wordsWritten !== null ? (

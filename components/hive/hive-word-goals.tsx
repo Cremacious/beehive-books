@@ -462,9 +462,9 @@ export default function HiveWordGoals({
                 key={log.id}
                 className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#1e1e1e]"
               >
-                {log.user.imageUrl ? (
+                {log.user.image ? (
                   <Image
-                    src={log.user.imageUrl}
+                    src={log.user.image}
                     alt=""
                     width={20}
                     height={20}
@@ -474,7 +474,7 @@ export default function HiveWordGoals({
                   <div className="w-5 h-5 rounded-full bg-[#FFC300]/20 shrink-0" />
                 )}
                 <span className="text-sm text-white flex-1 min-w-0 truncate">
-                  {log.user.username ?? log.user.firstName ?? 'User'}
+                  {log.user.username ?? 'User'}
                 </span>
                 <span className="text-sm font-semibold text-[#FFC300] shrink-0">
                   +{log.wordsAdded.toLocaleString()}

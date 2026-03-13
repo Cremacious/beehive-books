@@ -1,17 +1,12 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { hiveVersionSnapshots, hiveMembers, hives, chapters } from '@/db/schema';
 import type { ActionResult, VersionSnapshot, HiveUser } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -26,7 +21,7 @@ export async function getVersionSnapshotsAction(
   hiveId: string,
   chapterId: string,
 ): Promise<VersionSnapshot[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

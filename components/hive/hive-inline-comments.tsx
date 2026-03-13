@@ -106,9 +106,9 @@ function timeAgo(date: Date) {
 function AuthorRow({ comment }: { comment: InlineComment }) {
   return (
     <div className="flex items-center gap-1.5">
-      {comment.author.imageUrl ? (
+      {comment.author.image ? (
         <Image
-          src={comment.author.imageUrl}
+          src={comment.author.image}
           alt={comment.author.username ?? ''}
           width={14}
           height={14}
@@ -116,13 +116,11 @@ function AuthorRow({ comment }: { comment: InlineComment }) {
         />
       ) : (
         <div className="w-3.5 h-3.5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] text-[8px] font-bold">
-          {(comment.author.username ??
-            comment.author.firstName ??
-            'U')[0]?.toUpperCase()}
+          {(comment.author.username ?? 'U')[0]?.toUpperCase()}
         </div>
       )}
       <span className="text-[11px] text-white/50">
-        {comment.author.username ?? comment.author.firstName ?? 'User'}
+        {comment.author.username ?? 'User'}
         {' · '}
         {timeAgo(comment.createdAt)}
       </span>
@@ -246,9 +244,9 @@ function AnnotationDetail({
       </p>
 
       <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
-        {comment.author.imageUrl ? (
+        {comment.author.image ? (
           <Image
-            src={comment.author.imageUrl}
+            src={comment.author.image}
             alt={comment.author.username ?? ''}
             width={20}
             height={20}
@@ -256,13 +254,11 @@ function AnnotationDetail({
           />
         ) : (
           <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] text-[10px] font-bold">
-            {(comment.author.username ??
-              comment.author.firstName ??
-              'U')[0]?.toUpperCase()}
+            {(comment.author.username ?? 'U')[0]?.toUpperCase()}
           </div>
         )}
         <span className="text-xs text-white/55">
-          {comment.author.username ?? comment.author.firstName ?? 'User'}
+          {comment.author.username ?? 'User'}
           {' · '}
           {timeAgo(comment.createdAt)}
         </span>

@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, desc, eq, gte } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -28,7 +29,7 @@ export async function getHiveActivityAction(
   hiveId: string,
   limit = 40,
 ): Promise<ActivityEvent[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

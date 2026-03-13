@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useSession, signOut } from '@/lib/auth-client';
 import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import {
   Home,
@@ -22,7 +22,7 @@ import {
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
 const navItems = [
-  { href: '/feed', label: 'Feed', icon: Home },
+  { href: '/home', label: 'Home', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
   { href: '/hive', label: 'Hives', icon: Hexagon },
@@ -35,13 +35,9 @@ import logoImage from '@/public/logo3.png';
 
 export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
-  const dbUsername =
-    (user?.publicMetadata?.username as string | undefined) ??
-    user?.username ??
-    user?.firstName ??
-    undefined;
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+  const username = session?.user?.username ?? undefined;
   const avatarUrl = useCurrentUserImage();
 
   const isActive = (href: string) =>
@@ -95,7 +91,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             {user && (
               <li>
                 <Link
-                  href={`/u/${(user.publicMetadata?.username as string | undefined) ?? user.id}`}
+                  href={`/u/${username ?? user.id}`}
                   className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                     isActive('/u')
                       ? 'text-[#FFC300]'
@@ -133,14 +129,14 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         </nav>
 
         <div className="px-2 xl:px-3 pb-4 pt-3 border-t border-[#2a2a2a]">
-          {!isLoaded ? (
+          {isPending ? (
             <UserSkeleton />
           ) : (
             <div className="flex items-center md:justify-center lg:justify-start gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
-                  alt={dbUsername ?? 'User'}
+                  alt={username ?? 'User'}
                   width={38}
                   height={38}
                   className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
@@ -148,14 +144,14 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               ) : (
                 <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
                   <span className="text-[#FFC300] text-sm font-bold">
-                    {dbUsername?.[0]?.toUpperCase() ?? '?'}
+                    {username?.[0]?.toUpperCase() ?? '?'}
                   </span>
                 </div>
               )}
 
               <div className="hidden lg:block flex-1 min-w-0">
                 <p className="text-white/90 font-semibold truncate leading-tight">
-                  {dbUsername ?? 'User'}
+                  {username ?? 'User'}
                 </p>
               </div>
 
@@ -168,7 +164,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                   <Settings className="w-5 h-5" />
                 </Link>
                 <button
-                  onClick={() => signOut({ redirectUrl: '/' })}
+                  onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
                   title="Sign out"
                   className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"
                 >

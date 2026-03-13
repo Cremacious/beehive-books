@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { Clock } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { EntryForm } from '@/components/prompts/entry-form';
@@ -21,7 +22,8 @@ function formatDate(d: Date): string {
 
 export default async function CreateEntryPage({ params }: Props) {
   const { promptId } = await params;
-  const { userId }   = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   if (!userId) redirect('/sign-in');
 
   let prompt;
@@ -40,7 +42,7 @@ export default async function CreateEntryPage({ params }: Props) {
     redirect(`/prompts/${promptId}/${prompt.myEntryId}`);
   }
 
-  const isCreator  = userId === prompt.creator.clerkId;
+  const isCreator  = userId === prompt.creator.id;
   const canSubmit  = isCreator || prompt.myInviteStatus === 'ACCEPTED' || prompt.privacy !== 'PRIVATE';
   if (!canSubmit) redirect(`/prompts/${promptId}`);
 

@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 
 export type ParsedChapter = {
   title: string;
@@ -27,7 +28,7 @@ function splitOnH1(html: string): ParsedChapter[] {
 }
 
 export async function parseDocxAction(formData: FormData): Promise<ParseDocxResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');
@@ -71,7 +72,7 @@ export async function parseDocxAction(formData: FormData): Promise<ParseDocxResu
 export async function parseSingleChapterDocxAction(
   formData: FormData,
 ): Promise<ParseSingleChapterResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');

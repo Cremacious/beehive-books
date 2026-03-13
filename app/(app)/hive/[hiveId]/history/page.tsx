@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { chapters } from '@/db/schema';
@@ -15,7 +16,8 @@ export default async function HiveHistoryPage({
   params: Promise<{ hiveId: string }>;
 }) {
   const { hiveId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   if (!userId) notFound();
 
   const hive = await getHiveAction(hiveId);

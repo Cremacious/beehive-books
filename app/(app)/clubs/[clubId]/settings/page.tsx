@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import BackButton from '@/components/shared/back-button';
 import { getClubAction } from '@/lib/actions/club.actions';
 import EditClubForm from '@/components/clubs/edit-club-form';
@@ -15,7 +16,8 @@ export default async function ClubSettingsPage({
   params: Promise<{ clubId: string }>;
 }) {
   const { clubId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   const club = await getClubAction(clubId);
   if (!club) notFound();

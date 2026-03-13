@@ -41,28 +41,25 @@ export type PendingHiveInvite = {
   hiveName: string;
   hiveCoverUrl: string | null;
   role: Exclude<HiveRole, 'OWNER'>;
-  invitedBy: { username: string | null; imageUrl: string | null };
+  invitedBy: { username: string | null; image: string | null };
   createdAt: Date;
 };
 
 export type InvitableFriend = {
-  clerkId: string;
+  id: string;
   username: string | null;
-  firstName: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export type HiveUser = {
-  clerkId: string;
+  id: string;
   username: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export type PendingHiveJoinRequest = {
   id: string;
-  user: { clerkId: string; username: string | null; imageUrl: string | null };
+  user: { id: string; username: string | null; image: string | null };
   createdAt: Date;
 };
 

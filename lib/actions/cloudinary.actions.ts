@@ -1,12 +1,13 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { cloudinary } from '@/lib/cloudinary';
 
 type UploadFolder = 'covers' | 'avatars';
 
 export async function generateUploadSignatureAction(folder: UploadFolder, entityId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) throw new Error('Unauthorized');
 
   const cloudFolder = folder === 'covers' ? 'hive-covers' : 'hive-avatars';
@@ -28,7 +29,7 @@ export async function generateUploadSignatureAction(folder: UploadFolder, entity
 }
 
 export async function deleteImageAction(publicId: string) {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) throw new Error('Unauthorized');
 
   try {

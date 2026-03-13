@@ -1,16 +1,11 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { desc, eq, and, lt, count } from 'drizzle-orm';
 import { db } from '@/db';
 import { notifications } from '@/db/schema';
 import type { NotificationItem } from '@/lib/types/notification.types';
-
-async function requireAuth(): Promise<string> {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 export async function getNotificationsAction(): Promise<{
   notifications: NotificationItem[];
@@ -20,7 +15,7 @@ export async function getNotificationsAction(): Promise<{
 
   const rows = await db.query.notifications.findMany({
     where: eq(notifications.recipientId, userId),
-    with:  { actor: { columns: { username: true, imageUrl: true } } },
+    with:  { actor: { columns: { username: true, image: true } } },
     orderBy: desc(notifications.createdAt),
     limit: 30,
   });
@@ -49,7 +44,7 @@ export async function getNotificationsPageAction(
   const [rows, countResult] = await Promise.all([
     db.query.notifications.findMany({
       where: eq(notifications.recipientId, userId),
-      with: { actor: { columns: { username: true, imageUrl: true } } },
+      with: { actor: { columns: { username: true, image: true } } },
       orderBy: desc(notifications.createdAt),
       limit: perPage,
       offset: (page - 1) * perPage,

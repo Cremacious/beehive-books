@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import BackButton from '@/components/shared/back-button';
 import { getClubAction, getClubDiscussionsAction } from '@/lib/actions/club.actions';
 import DiscussionList from '@/components/clubs/discussion-list';
@@ -27,7 +28,8 @@ export default async function ClubDiscussionsPage({
 }) {
   const { clubId } = await params;
   const { page: pageStr } = await searchParams;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   const page = Number(pageStr) || 1;
 
   const club = await getClubAction(clubId);

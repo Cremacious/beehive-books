@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { Clock, Trophy, Users, FileText, PenLine, Lock } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
@@ -55,9 +56,9 @@ function UserAvatar({ user, size = 8 }: { user: PromptUser; size?: number }) {
   const cls = `w-${size} h-${size} rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0`;
   return (
     <div className={cls}>
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={name}
           width={32}
           height={32}
@@ -74,7 +75,8 @@ function UserAvatar({ user, size = 8 }: { user: PromptUser; size?: number }) {
 
 export default async function PromptDetailPage({ params }: Props) {
   const { promptId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   let prompt;
   try {
@@ -83,7 +85,7 @@ export default async function PromptDetailPage({ params }: Props) {
     notFound();
   }
 
-  const isCreator = userId === prompt.creator.clerkId;
+  const isCreator = userId === prompt.creator.id;
   const isEnded =
     prompt.status === 'ENDED' || new Date(prompt.endDate) < new Date();
   const myInvite = prompt.myInviteStatus;

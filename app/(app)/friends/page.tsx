@@ -162,8 +162,8 @@ function Avatar({ user, size = 10 }: { user: FriendUser; size?: number }) {
   const cls = `relative rounded-full overflow-hidden bg-[#2a2000] shrink-0 w-${size} h-${size}`;
   return (
     <div className={cls}>
-      {user.imageUrl ? (
-        <Image src={user.imageUrl} alt={name} fill className="object-cover" />
+      {user.image ? (
+        <Image src={user.image} alt={name} fill className="object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
           <span className="text-sm font-bold text-[#FFC300]">
@@ -192,7 +192,7 @@ function FriendCard({
       </div>
       <div className="flex items-center gap-2 mt-1">
         <Link
-          href={`/u/${user.username ?? user.clerkId}`}
+          href={`/u/${user.username ?? user.id}`}
           className="text-xs px-3 py-1.5 rounded-lg border border-[#333] text-white/70 hover:text-white hover:border-[#FFC300]/40 transition-all"
         >
           View Profile
@@ -214,13 +214,13 @@ function RequestRow({
       <Avatar user={user} size={10} />
       <div className="flex-1 min-w-0">
         <Link
-          href={`/u/${user.username ?? user.clerkId}`}
+          href={`/u/${user.username ?? user.id}`}
           className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
         >
           {user.username || 'Unknown User'}
         </Link>
       </div>
-      <FriendButton targetUserId={user.clerkId} initialStatus={friendStatus} />
+      <FriendButton targetUserId={user.id} initialStatus={friendStatus} />
     </li>
   );
 }

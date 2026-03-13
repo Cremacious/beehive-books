@@ -34,9 +34,9 @@ export default function ClubForm({
   const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
 
-  function toggleInvite(clerkId: string) {
+  function toggleInvite(id: string) {
     setInvitedIds((prev) =>
-      prev.includes(clerkId) ? prev.filter((id) => id !== clerkId) : [...prev, clerkId],
+      prev.includes(id) ? prev.filter((existingId) => existingId !== id) : [...prev, id],
     );
   }
 
@@ -286,20 +286,20 @@ export default function ClubForm({
             ) : (
               <div className="space-y-1.5 max-h-52 overflow-y-auto">
                 {friends.map((f) => {
-                  const selected = invitedIds.includes(f.clerkId);
+                  const selected = invitedIds.includes(f.id);
                   const name = f.username ?? 'Unknown';
                   return (
                     <button
-                      key={f.clerkId}
+                      key={f.id}
                       type="button"
-                      onClick={() => toggleInvite(f.clerkId)}
+                      onClick={() => toggleInvite(f.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors ${
                         selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                       }`}
                     >
-                      {f.imageUrl ? (
+                      {f.image ? (
                         <Image
-                          src={f.imageUrl}
+                          src={f.image}
                           alt={name}
                           width={28}
                           height={28}

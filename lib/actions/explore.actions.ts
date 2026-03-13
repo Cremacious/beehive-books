@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { unstable_cache } from 'next/cache';
 import { and, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
@@ -22,11 +23,9 @@ import type { PromptCard, PromptUser } from '@/lib/types/prompt.types';
 import type { ReadingList } from '@/lib/types/reading-list.types';
 
 const USER_COLUMNS = {
-  clerkId: true,
+  id: true,
   username: true,
-  firstName: true,
-  lastName: true,
-  imageUrl: true,
+  image: true,
 } as const;
 
 
@@ -90,7 +89,7 @@ export async function searchExplorableClubsAction(
   query: string,
   tags: string[] = [],
 ): Promise<ClubWithMembership[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   const q = query.trim();
 
   const tagFilter =
@@ -163,7 +162,7 @@ export async function searchExplorableHivesAction(
   genres: string[] = [],
   tags: string[] = [],
 ): Promise<HiveWithMembership[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   const q = query.trim();
 
   const tagFilter =
@@ -232,7 +231,7 @@ export async function searchExplorableHivesAction(
 
 
 export async function searchExplorablePromptsAction(query: string): Promise<PromptCard[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   const q = query.trim();
 
   const rows = await db.query.prompts.findMany({

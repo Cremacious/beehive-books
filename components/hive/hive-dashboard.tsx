@@ -51,7 +51,7 @@ interface HiveDashboardProps {
   currentUserId: string | null;
   linkedBook: LinkedBook;
   joinRequestStatus?: 'pending' | 'none';
-  pendingRequests?: { id: string; user: { clerkId: string; username: string | null; imageUrl: string | null }; createdAt: Date }[];
+  pendingRequests?: { id: string; user: { id: string; username: string | null; image: string | null }; createdAt: Date }[];
 }
 
 function relativeTime(date: Date): string {
@@ -70,7 +70,7 @@ function relativeTime(date: Date): string {
 }
 
 function displayName(user: ActivityEvent['user']): string {
-  return user.username ?? user.firstName ?? 'Someone';
+  return user.username ?? 'Someone';
 }
 
 const EVENT_CONFIG: Record<
@@ -281,9 +281,9 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
   return (
     <div className="flex items-start gap-4 py-4 border-b border-[#2a2a2a] last:border-0">
       <div className="relative shrink-0">
-        {user.imageUrl ? (
+        {user.image ? (
           <Image
-            src={user.imageUrl}
+            src={user.image}
             alt={displayName(user)}
             width={40}
             height={40}
@@ -292,7 +292,7 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
         ) : (
           <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center">
             <span className="text-white/60 text-sm font-bold">
-              {(user.username ?? user.firstName ?? '?')[0]?.toUpperCase()}
+              {(user.username ?? '?')[0]?.toUpperCase()}
             </span>
           </div>
         )}
@@ -514,9 +514,9 @@ export default function HiveDashboard({
             {localPendingRequests.map((req) => (
               <div key={req.id} className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  {req.user.imageUrl ? (
+                  {req.user.image ? (
                     <Image
-                      src={req.user.imageUrl}
+                      src={req.user.image}
                       alt={req.user.username ?? 'User'}
                       width={36}
                       height={36}

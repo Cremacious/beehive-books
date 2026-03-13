@@ -28,9 +28,9 @@ function FriendAvatar({ user }: { user: FriendUser }) {
   const name = user.username || '?';
   return (
     <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={name}
           width={28}
           height={28}
@@ -66,7 +66,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   const [serverError, setServerError] = useState('');
   const [inviteSearch, setInviteSearch] = useState('');
 
-  const initialInvited = prompt?.invites.map((i) => i.user.clerkId) ?? [];
+  const initialInvited = prompt?.invites.map((i) => i.user.id) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
 
   const {
@@ -89,11 +89,11 @@ export function PromptForm({ mode, prompt, friends }: Props) {
   const privacyValue = watch('privacy');
   const explorableValue = watch('explorable');
 
-  function toggleInvite(clerkId: string) {
+  function toggleInvite(id: string) {
     setInvitedIds((prev) =>
-      prev.includes(clerkId)
-        ? prev.filter((id) => id !== clerkId)
-        : [...prev, clerkId],
+      prev.includes(id)
+        ? prev.filter((existingId) => existingId !== id)
+        : [...prev, id],
     );
   }
 
@@ -270,13 +270,13 @@ export function PromptForm({ mode, prompt, friends }: Props) {
                   </li>
                 ) : (
                   filteredFriends.map((f) => {
-                    const selected = invitedIds.includes(f.clerkId);
+                    const selected = invitedIds.includes(f.id);
                     const name = f.username || 'Unknown';
                     return (
-                      <li key={f.clerkId}>
+                      <li key={f.id}>
                         <button
                           type="button"
-                          onClick={() => toggleInvite(f.clerkId)}
+                          onClick={() => toggleInvite(f.id)}
                           className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                             selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                           }`}

@@ -108,9 +108,9 @@ function PollCard({
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          {poll.author.imageUrl ? (
+          {poll.author.image ? (
             <Image
-              src={poll.author.imageUrl}
+              src={poll.author.image}
               alt={poll.author.username ?? 'User'}
               width={28}
               height={28}
@@ -118,14 +118,12 @@ function PollCard({
             />
           ) : (
             <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 text-[#FFC300] font-bold text-xs">
-              {(poll.author.username ??
-                poll.author.firstName ??
-                'U')[0]?.toUpperCase()}
+              {(poll.author.username ?? 'U')[0]?.toUpperCase()}
             </div>
           )}
           <div className="min-w-0">
             <p className="text-xs text-white/40">
-              {poll.author.username ?? poll.author.firstName ?? 'User'}
+              {poll.author.username ?? 'User'}
               {poll.endsAt && !isClosed && (
                 <span className="ml-2 text-white/30">
                   · Ends {formatDate(poll.endsAt)}

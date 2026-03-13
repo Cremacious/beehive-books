@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { books } from '@/db/schema';
@@ -24,7 +25,8 @@ export default async function HiveSettingsPage({
   params: Promise<{ hiveId: string }>;
 }) {
   const { hiveId } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   if (!userId) redirect('/sign-in');
 
   const hive = await getHiveAction(hiveId);

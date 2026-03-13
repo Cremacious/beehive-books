@@ -138,9 +138,9 @@ export default function HiveMemberList({
               href={`/u/${member.user.username ?? member.userId}`}
               className="shrink-0"
             >
-              {member.user.imageUrl ? (
+              {member.user.image ? (
                 <Image
-                  src={member.user.imageUrl}
+                  src={member.user.image}
                   alt={member.user.username ?? 'User'}
                   width={36}
                   height={36}
@@ -149,9 +149,7 @@ export default function HiveMemberList({
               ) : (
                 <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/10">
                   <span className="text-[#FFC300] text-sm font-bold">
-                    {(member.user.username ??
-                      member.user.firstName ??
-                      '?')[0]?.toUpperCase()}
+                    {(member.user.username ?? '?')[0]?.toUpperCase()}
                   </span>
                 </div>
               )}
@@ -162,11 +160,7 @@ export default function HiveMemberList({
                 href={`/u/${member.user.username ?? member.userId}`}
                 className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
               >
-                {member.user.username ??
-                  [member.user.firstName, member.user.lastName]
-                    .filter(Boolean)
-                    .join(' ') ??
-                  'Unknown'}
+                {member.user.username ?? 'Unknown'}
                 {isMe && (
                   <span className="text-white/80 font-normal ml-1">(you)</span>
                 )}

@@ -163,9 +163,9 @@ function ChapterRow({
       {claim ? (
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-1.5">
-            {claim.claimer.imageUrl ? (
+            {claim.claimer.image ? (
               <Image
-                src={claim.claimer.imageUrl}
+                src={claim.claimer.image}
                 alt={claim.claimer.username ?? 'User'}
                 width={20}
                 height={20}
@@ -173,13 +173,11 @@ function ChapterRow({
               />
             ) : (
               <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[9px]">
-                {(claim.claimer.username ??
-                  claim.claimer.firstName ??
-                  'U')[0]?.toUpperCase()}
+                {(claim.claimer.username ?? 'U')[0]?.toUpperCase()}
               </div>
             )}
             <span className="text-xs text-white/40 hidden sm:block">
-              {claim.claimer.username ?? claim.claimer.firstName ?? 'User'}
+              {claim.claimer.username ?? 'User'}
             </span>
           </div>
 

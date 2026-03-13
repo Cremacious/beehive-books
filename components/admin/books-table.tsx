@@ -19,7 +19,7 @@ type Book = {
   chapterCount: number;
   createdAt: Date;
   userId: string;
-  user: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  user: { username: string | null } | null;
 };
 
 interface Props {

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { AlertTriangle } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { PromptForm } from '@/components/prompts/prompt-form';
@@ -16,7 +17,8 @@ type Props = { params: Promise<{ promptId: string }> };
 
 export default async function EditPromptPage({ params }: Props) {
   const { promptId } = await params;
-  const { userId }   = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
   if (!userId) redirect('/sign-in');
 
   let prompt;
@@ -27,7 +29,7 @@ export default async function EditPromptPage({ params }: Props) {
   }
 
 
-  if (userId !== prompt.creator.clerkId) redirect(`/prompts/${promptId}`);
+  if (userId !== prompt.creator.id) redirect(`/prompts/${promptId}`);
 
   const { friends } = await getMyFriendsDataAction();
 

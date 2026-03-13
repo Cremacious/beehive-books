@@ -32,11 +32,9 @@ export type ClubMember = {
 
 export type ClubMemberWithUser = ClubMember & {
   user: {
-    clerkId: string;
+    id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    imageUrl: string | null;
+    image: string | null;
   };
 };
 
@@ -60,11 +58,9 @@ export type ClubDiscussion = {
 
 export type ClubDiscussionWithAuthor = ClubDiscussion & {
   author: {
-    clerkId: string;
+    id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    imageUrl: string | null;
+    image: string | null;
   };
   likedByMe: boolean;
 };
@@ -82,11 +78,9 @@ export type ClubDiscussionReply = {
 
 export type ClubDiscussionReplyWithAuthor = ClubDiscussionReply & {
   author: {
-    clerkId: string;
+    id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    imageUrl: string | null;
+    image: string | null;
   };
   likedByMe: boolean;
   children: ClubDiscussionReplyWithAuthor[];
@@ -122,21 +116,21 @@ export type ClubDiscussionFormData = {
 };
 
 export type InvitableClubFriend = {
-  clerkId: string;
+  id: string;
   username: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export type PendingClubInvite = {
   id: string;
-  club: { id: string; name: string; imageUrl: string | null };
-  invitedBy: { username: string | null; imageUrl: string | null };
+  club: { id: string; name: string; image: string | null };
+  invitedBy: { username: string | null; image: string | null };
   createdAt: Date;
 };
 
 export type PendingJoinRequest = {
   id: string;
-  user: { clerkId: string; username: string | null; imageUrl: string | null };
+  user: { id: string; username: string | null; image: string | null };
   createdAt: Date;
 };
 

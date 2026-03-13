@@ -1,7 +1,9 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, count, desc, eq, gte, ilike, or } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import {
   users,
@@ -14,6 +16,7 @@ import {
   clubDiscussions,
   clubDiscussionReplies,
   notifications,
+  announcements,
 } from '@/db/schema';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
@@ -23,10 +26,10 @@ export type ActionResult = { success: boolean; message: string };
 const PAGE_SIZE = 25;
 
 async function requireAdmin() {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) throw new Error('Unauthorized');
   const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
+    where: eq(users.id, userId),
     columns: { role: true },
   });
   if (user?.role !== 'admin') throw new Error('Forbidden');
@@ -96,8 +99,6 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
     ? or(
         ilike(users.username, `%${search}%`),
         ilike(users.email, `%${search}%`),
-        ilike(users.firstName, `%${search}%`),
-        ilike(users.lastName, `%${search}%`),
       )
     : undefined;
 
@@ -108,12 +109,10 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
       limit: PAGE_SIZE,
       offset,
       columns: {
-        clerkId: true,
+        id: true,
         email: true,
-        firstName: true,
-        lastName: true,
         username: true,
-        imageUrl: true,
+        image: true,
         role: true,
         premium: true,
         createdAt: true,
@@ -126,23 +125,23 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
 }
 
 export async function updateUserRoleAction(
-  clerkId: string,
+  id: string,
   role: 'member' | 'moderator' | 'admin',
 ): Promise<ActionResult> {
   await requireAdmin();
   try {
-    await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.clerkId, clerkId));
+    await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, id));
     return { success: true, message: 'Role updated.' };
   } catch {
     return { success: false, message: 'Failed to update role.' };
   }
 }
 
-export async function toggleUserPremiumAction(clerkId: string): Promise<ActionResult> {
+export async function toggleUserPremiumAction(id: string): Promise<ActionResult> {
   await requireAdmin();
   try {
     const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId),
+      where: eq(users.id, id),
       columns: { premium: true },
     });
     if (!user) return { success: false, message: 'User not found.' };
@@ -150,7 +149,7 @@ export async function toggleUserPremiumAction(clerkId: string): Promise<ActionRe
     await db
       .update(users)
       .set({ premium: !user.premium, updatedAt: new Date() })
-      .where(eq(users.clerkId, clerkId));
+      .where(eq(users.id, id));
     return { success: true, message: `Premium ${!user.premium ? 'granted' : 'revoked'}.` };
   } catch {
     return { success: false, message: 'Failed to update premium status.' };
@@ -182,7 +181,7 @@ export async function getAllBooksAdminAction(page = 1, search?: string) {
         userId: true,
       },
       with: {
-        user: { columns: { username: true, firstName: true, lastName: true } },
+        user: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(books).where(where),
@@ -267,7 +266,7 @@ export async function getAllClubsAdminAction(page = 1, search?: string) {
         ownerId: true,
       },
       with: {
-        owner: { columns: { username: true, firstName: true, lastName: true } },
+        owner: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(bookClubs).where(where),
@@ -310,7 +309,7 @@ export async function getAllPromptsAdminAction(page = 1, search?: string) {
         privacy: true,
       },
       with: {
-        creator: { columns: { username: true, firstName: true, lastName: true } },
+        creator: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(prompts).where(where),
@@ -347,7 +346,7 @@ export async function getAllPromptEntriesAdminAction(page = 1) {
         promptId: true,
       },
       with: {
-        user: { columns: { username: true, firstName: true, lastName: true } },
+        user: { columns: { username: true } },
         prompt: { columns: { title: true } },
       },
     }),
@@ -390,7 +389,7 @@ export async function getAllDiscussionsAdminAction(page = 1, search?: string) {
         clubId: true,
       },
       with: {
-        author: { columns: { username: true, firstName: true, lastName: true } },
+        author: { columns: { username: true } },
         club: { columns: { name: true } },
       },
     }),
@@ -427,7 +426,7 @@ export async function getAllDiscussionRepliesAdminAction(page = 1) {
         discussionId: true,
       },
       with: {
-        author: { columns: { username: true, firstName: true, lastName: true } },
+        author: { columns: { username: true } },
         discussion: { columns: { title: true } },
       },
     }),
@@ -475,4 +474,61 @@ export async function getAllNotificationsAdminAction(page = 1) {
   ]);
 
   return { notifications: rows, total, page, pageSize: PAGE_SIZE };
+}
+
+// ---------------------------------------------------------------------------
+// Announcements
+// ---------------------------------------------------------------------------
+
+export type AnnouncementItem = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  createdBy: { username: string | null } | null;
+};
+
+export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
+  const rows = await db.query.announcements.findMany({
+    orderBy: desc(announcements.createdAt),
+    with: { createdBy: { columns: { username: true } } },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    createdAt: r.createdAt,
+    createdBy: r.createdBy,
+  }));
+}
+
+export async function getAllAnnouncementsAdminAction(): Promise<AnnouncementItem[]> {
+  await requireAdmin();
+  return getAnnouncementsAction();
+}
+
+export async function createAnnouncementAction(
+  title: string,
+  content: string,
+): Promise<ActionResult> {
+  const userId = await requireAdmin();
+  if (!title.trim() || !content.trim()) {
+    return { success: false, message: 'Title and content are required.' };
+  }
+  await db.insert(announcements).values({
+    title: title.trim(),
+    content: content.trim(),
+    createdById: userId,
+  });
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement created.' };
+}
+
+export async function deleteAnnouncementAdminAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  await db.delete(announcements).where(eq(announcements.id, id));
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement deleted.' };
 }

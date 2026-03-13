@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq, gte, lte, sum } from 'drizzle-orm';
 import { db } from '@/db';
@@ -12,12 +13,6 @@ import type {
   WordLog,
   HiveUser,
 } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -45,7 +40,7 @@ async function expireMonthlyGoals(hiveId: string) {
 }
 
 export async function getWordGoalsAction(hiveId: string): Promise<WordGoal[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -113,7 +108,7 @@ export async function getWordLogsAction(
   hiveId: string,
   limit = 20,
 ): Promise<WordLog[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({

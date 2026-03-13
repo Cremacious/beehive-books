@@ -1,11 +1,10 @@
 'use server';
 
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { requireAuth } from '@/lib/require-auth';
 import { cookies } from 'next/headers';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { syncUser } from '@/sync-user';
 
 export type OnboardingState = { error: string };
 
@@ -14,8 +13,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
 export async function checkUsernameAvailableAction(
   username: string,
 ): Promise<{ available: boolean; error?: string }> {
-  const { userId } = await auth();
-  if (!userId) return { available: false, error: 'Not authenticated.' };
+  const userId = await requireAuth();
 
   if (!USERNAME_REGEX.test(username)) {
     return {
@@ -26,11 +24,10 @@ export async function checkUsernameAvailableAction(
 
   const existing = await db.query.users.findFirst({
     where: sql`LOWER(${users.username}) = LOWER(${username})`,
-    columns: { clerkId: true },
+    columns: { id: true },
   });
 
-
-  if (existing && existing.clerkId !== userId) {
+  if (existing && existing.id !== userId) {
     return { available: false };
   }
 
@@ -41,8 +38,7 @@ export async function completeOnboarding(
   username: string,
   imageUrl?: string,
 ): Promise<OnboardingState> {
-  const { userId } = await auth();
-  if (!userId) return { error: 'Not authenticated.' };
+  const userId = await requireAuth();
 
   const trimmed = username.trim();
   if (!trimmed) return { error: 'Username is required.' };
@@ -53,8 +49,6 @@ export async function completeOnboarding(
   }
 
   try {
-    await syncUser();
-
     const updateFields: Record<string, unknown> = {
       username: trimmed,
       onboardingComplete: true,
@@ -62,18 +56,13 @@ export async function completeOnboarding(
     };
 
     if (imageUrl) {
-      updateFields.imageUrl = imageUrl;
+      updateFields.image = imageUrl;
     }
 
     await db
       .update(users)
       .set(updateFields)
-      .where(eq(users.clerkId, userId));
-
-    const client = await clerkClient();
-    await client.users.updateUserMetadata(userId, {
-      publicMetadata: { onboardingComplete: true, username: trimmed },
-    });
+      .where(eq(users.id, userId));
   } catch (err: unknown) {
     console.error('Onboarding error:', err);
     const msg = err instanceof Error ? err.message : String(err);
@@ -92,7 +81,6 @@ export async function completeOnboarding(
     }
     return { error: 'Something went wrong. Please try again.' };
   }
-
 
   const cookieStore = await cookies();
   cookieStore.set('onboarding-done', '1', {

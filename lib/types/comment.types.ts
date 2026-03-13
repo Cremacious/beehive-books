@@ -1,8 +1,6 @@
 export type CommentUser = {
   username: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export type Reply = {

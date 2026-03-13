@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useSession, signOut } from '@/lib/auth-client';
 import { useCurrentUserImage } from '@/hooks/use-current-user-image';
 import {
   Home,
@@ -26,7 +26,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo3.png';
 
 const navItems = [
-  { href: '/feed', label: 'Feed', icon: Home },
+  { href: '/home', label: 'Home', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
   { href: '/hive', label: 'Hives', icon: Hexagon },
@@ -38,8 +38,10 @@ const navItems = [
 
 export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { data: session } = useSession();
+  const user = session?.user;
+  const username = session?.user?.username ?? undefined;
+  
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isActive = (href: string) =>
@@ -47,18 +49,15 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  const dbUsername =
-    (user?.publicMetadata?.username as string | undefined) ??
-    user?.username ??
-    user?.firstName ??
+  
     undefined;
-  const avatarHref = `/u/${dbUsername ?? user?.id ?? ''}`;
+  const avatarHref = `/u/${username ?? user?.id ?? ''}`;
   const avatarUrl = useCurrentUserImage();
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-4 shadow-lg">
-        <Link href="/feed" className="flex items-center shrink-0">
+        <Link href="/home" className="flex items-center shrink-0">
           <Image
             src={logoImage}
             alt="Beehive Books"
@@ -78,7 +77,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
-                alt={dbUsername ?? 'User'}
+                alt={username ?? 'User'}
                 width={30}
                 height={30}
                 className="w-7.5 h-7.5 rounded-full object-cover ring-2 ring-[#FFC300]/25"
@@ -86,7 +85,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             ) : (
               <div className="w-7.5 h-7.5 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/25">
                 <span className="text-[#FFC300] text-xs font-bold">
-                  {dbUsername?.[0]?.toUpperCase() ?? ' '}
+                  {username?.[0]?.toUpperCase() ?? ' '}
                 </span>
               </div>
             )}
@@ -136,7 +135,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
-                alt={dbUsername ?? 'User'}
+                alt={username ?? 'User'}
                 width={40}
                 height={40}
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
@@ -144,13 +143,13 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             ) : (
               <div className="w-10 h-10 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
                 <span className="text-[#FFC300] text-sm font-bold">
-                  {dbUsername?.[0]?.toUpperCase() ?? '?'}
+                  {username?.[0]?.toUpperCase() ?? '?'}
                 </span>
               </div>
             )}
             <div className="min-w-0">
               <p className="text-white font-semibold truncate leading-tight">
-                {dbUsername ?? 'User'}
+                {username ?? 'User'}
               </p>
             </div>
           </Link>
@@ -230,7 +229,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             </Link>
             <button
               onClick={() => {
-                signOut({ redirectUrl: '/' });
+                signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
                 closeDrawer();
               }}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#514e4e] hover:border-red-400/20 transition-all"

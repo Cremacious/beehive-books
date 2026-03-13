@@ -23,9 +23,9 @@ function UserAvatar({ user, size = 6 }: { user: PromptUser; size?: number }) {
   const cls = `w-${size} h-${size} rounded-full shrink-0 overflow-hidden bg-[#2a0050] flex items-center justify-center`;
   return (
     <div className={cls}>
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={name}
           width={24}
           height={24}

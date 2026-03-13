@@ -111,9 +111,9 @@ function AuthorRow({
   const size = small ? 20 : 26;
   return (
     <div className="flex items-center gap-2 min-w-0">
-      {item.author.imageUrl ? (
+      {item.author.image ? (
         <Image
-          src={item.author.imageUrl}
+          src={item.author.image}
           alt={item.author.username ?? 'User'}
           width={size}
           height={size}
@@ -124,16 +124,14 @@ function AuthorRow({
           style={{ width: size, height: size }}
           className="rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 text-[#FFC300] font-bold text-[10px]"
         >
-          {(item.author.username ??
-            item.author.firstName ??
-            'U')[0]?.toUpperCase()}
+          {(item.author.username ?? 'U')[0]?.toUpperCase()}
         </div>
       )}
       <div className="min-w-0">
         <p
           className={`font-medium text-white truncate ${small ? 'text-[10px]' : 'text-xs'}`}
         >
-          {item.author.username ?? item.author.firstName ?? 'User'}
+          {item.author.username ?? 'User'}
         </p>
         <p className="text-[10px] text-white/30">{timeAgo(item.createdAt)}</p>
       </div>

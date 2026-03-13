@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from '@/lib/auth-client';
 import { getCurrentUserImageUrlAction } from '@/lib/actions/user.actions';
 
 
 export function useCurrentUserImage(): string | null {
-  const { user } = useUser();
+  const { data: session } = useSession();
   const [dbImageUrl, setDbImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!session?.user) return;
     getCurrentUserImageUrlAction().then((url) => setDbImageUrl(url));
-  }, [user?.id]);
+  }, [session?.user?.id]);
 
-  return dbImageUrl ?? user?.imageUrl ?? null;
+  const sessionImage = (session?.user as { image?: string | null } | undefined)?.image ?? null;
+  return dbImageUrl ?? sessionImage;
 }

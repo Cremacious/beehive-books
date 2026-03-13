@@ -84,7 +84,7 @@ export default function DiscussionReply({
   };
 
   const author = reply.author;
-  const authorName = author.username ?? author.firstName ?? 'Unknown';
+  const authorName = author.username ?? 'Unknown';
   const initials = authorName.charAt(0).toUpperCase();
 
   return (
@@ -93,9 +93,9 @@ export default function DiscussionReply({
         <div className="flex items-center gap-2 mb-2">
           {author.username ? (
             <Link href={`/u/${author.username}`} className="shrink-0 hover:opacity-80 transition-opacity">
-              {author.imageUrl ? (
+              {author.image ? (
                 <Image
-                  src={author.imageUrl}
+                  src={author.image}
                   alt={authorName}
                   width={28}
                   height={28}
@@ -109,9 +109,9 @@ export default function DiscussionReply({
                 </div>
               )}
             </Link>
-          ) : author.imageUrl ? (
+          ) : author.image ? (
             <Image
-              src={author.imageUrl}
+              src={author.image}
               alt={authorName}
               width={28}
               height={28}

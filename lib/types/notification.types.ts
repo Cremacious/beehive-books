@@ -25,11 +25,11 @@ export type NotificationType =
   | 'HIVE_JOIN_REQUEST';
 
 export type NotificationItem = {
-  id:        string;
-  type:      NotificationType;
-  isRead:    boolean;
-  link:      string;
-  metadata:  Record<string, string>;
+  id: string;
+  type: NotificationType;
+  isRead: boolean;
+  link: string;
+  metadata: Record<string, string>;
   createdAt: Date;
-  actor: { username: string | null; imageUrl: string | null } | null;
+  actor: { username: string | null; image: string | null } | null;
 };

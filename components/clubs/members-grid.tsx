@@ -123,9 +123,9 @@ function MemberCard({
       onClick={() => user.username && router.push(`/u/${user.username}`)}
       className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#3a3a3a] transition-all cursor-pointer"
     >
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={displayName}
           width={44}
           height={44}
@@ -252,9 +252,9 @@ function JoinRequestRow({
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
       {request.user.username ? (
         <Link href={`/u/${request.user.username}`} onClick={e => e.stopPropagation()} className="shrink-0">
-          {request.user.imageUrl ? (
+          {request.user.image ? (
             <Image
-              src={request.user.imageUrl}
+              src={request.user.image}
               alt={displayName}
               width={36}
               height={36}
@@ -268,9 +268,9 @@ function JoinRequestRow({
             </div>
           )}
         </Link>
-      ) : request.user.imageUrl ? (
+      ) : request.user.image ? (
         <Image
-          src={request.user.imageUrl}
+          src={request.user.image}
           alt={displayName}
           width={36}
           height={36}

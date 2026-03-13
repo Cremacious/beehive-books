@@ -20,7 +20,7 @@ type Discussion = {
   isPinned: boolean;
   createdAt: Date;
   clubId: string;
-  author: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  author: { username: string | null } | null;
   club: { name: string } | null;
 };
 
@@ -30,7 +30,7 @@ type Reply = {
   likeCount: number;
   createdAt: Date;
   discussionId: string;
-  author: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  author: { username: string | null } | null;
   discussion: { title: string } | null;
 };
 

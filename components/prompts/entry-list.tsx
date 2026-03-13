@@ -9,9 +9,9 @@ function UserAvatar({ user }: { user: PromptUser }) {
   const name = user.username || '?';
   return (
     <div className="w-8 h-8 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
-      {user.imageUrl ? (
+      {user.image ? (
         <Image
-          src={user.imageUrl}
+          src={user.image}
           alt={name}
           width={32}
           height={32}

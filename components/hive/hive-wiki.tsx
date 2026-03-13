@@ -326,9 +326,9 @@ function EntryCard({
       )}
 
       <div className="flex items-center gap-1.5 pt-0.5">
-        {entry.author.imageUrl ? (
+        {entry.author.image ? (
           <Image
-            src={entry.author.imageUrl}
+            src={entry.author.image}
             alt={entry.author.username ?? 'User'}
             width={16}
             height={16}
@@ -336,13 +336,11 @@ function EntryCard({
           />
         ) : (
           <div className="w-4 h-4 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[9px]">
-            {(entry.author.username ??
-              entry.author.firstName ??
-              'U')[0]?.toUpperCase()}
+            {(entry.author.username ?? 'U')[0]?.toUpperCase()}
           </div>
         )}
         <span className="text-[12px] text-white/90">
-          {entry.author.username ?? entry.author.firstName ?? 'User'}
+          {entry.author.username ?? 'User'}
           {' · '}
           {new Date(entry.updatedAt).toLocaleDateString([], {
             month: 'short',
@@ -541,9 +539,9 @@ export default function HiveWiki({
                 )}
 
                 <div className="flex items-center gap-2 pt-2 border-t border-[#2a2a2a]">
-                  {viewingEntry.author.imageUrl ? (
+                  {viewingEntry.author.image ? (
                     <Image
-                      src={viewingEntry.author.imageUrl}
+                      src={viewingEntry.author.image}
                       alt={viewingEntry.author.username ?? 'User'}
                       width={20}
                       height={20}
@@ -551,15 +549,11 @@ export default function HiveWiki({
                     />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] font-bold text-[10px]">
-                      {(viewingEntry.author.username ??
-                        viewingEntry.author.firstName ??
-                        'U')[0]?.toUpperCase()}
+                      {(viewingEntry.author.username ?? 'U')[0]?.toUpperCase()}
                     </div>
                   )}
                   <span className="text-xs text-white/50">
-                    {viewingEntry.author.username ??
-                      viewingEntry.author.firstName ??
-                      'User'}
+                    {viewingEntry.author.username ?? 'User'}
                     {' · '}
                     {new Date(viewingEntry.updatedAt).toLocaleDateString([], {
                       month: 'short',

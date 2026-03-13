@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from '@/lib/auth-client';
 import Image from 'next/image';
 import { Camera, Check, X, Loader2 } from 'lucide-react';
 import {
@@ -15,7 +15,8 @@ type Availability = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, isLoaded } = useUser();
+  const { data: session, isPending: sessionLoading } = useSession();
+  const userId = session?.user?.id;
 
   const [username, setUsername] = useState('');
   const [availability, setAvailability] = useState<Availability>('idle');
@@ -27,13 +28,13 @@ export default function OnboardingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { upload, uploading } = useCloudinaryUpload(
     'avatars',
-    user?.id ?? 'onboarding',
+    userId ?? 'onboarding',
   );
 
   const [submitError, setSubmitError] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, startTransition] = useTransition();
 
-  const isBusy = isPending || uploading;
+  const isBusy = isSubmitting || uploading;
   const canSubmit = availability === 'available' && !isBusy;
 
   useEffect(() => {
@@ -103,8 +104,7 @@ export default function OnboardingPage() {
         return;
       }
 
-      await user?.reload();
-      router.push('/feed');
+      router.push('/home');
     });
   }
 
@@ -134,7 +134,7 @@ export default function OnboardingPage() {
           <p className="mt-1 text-sm text-[#FFC300]">Set up your profile</p>
         </div>
 
-        {isLoaded && (
+        {!sessionLoading && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col items-center gap-3">
               <div className="relative">
@@ -234,7 +234,7 @@ export default function OnboardingPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Uploading photo…
                 </span>
-              ) : isPending ? (
+              ) : isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Saving…

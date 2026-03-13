@@ -18,12 +18,10 @@ import {
 type Role = 'member' | 'moderator' | 'admin';
 
 type User = {
-  clerkId: string;
+  id: string;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
   username: string | null;
-  imageUrl: string | null;
+  image: string | null;
   role: Role;
   premium: boolean;
   createdAt: Date;
@@ -36,13 +34,13 @@ interface Props {
   pageSize: number;
 }
 
-type PendingRoleChange = { clerkId: string; username: string | null; newRole: Role; currentRole: Role };
-type PendingPremiumToggle = { clerkId: string; username: string | null; currentPremium: boolean };
+type PendingRoleChange = { id: string; username: string | null; newRole: Role; currentRole: Role };
+type PendingPremiumToggle = { id: string; username: string | null; currentPremium: boolean };
 
 function UserAvatar({ u }: { u: User }) {
-  return u.imageUrl ? (
+  return u.image ? (
     <Image
-      src={u.imageUrl}
+      src={u.image}
       alt={u.username ?? ''}
       width={36}
       height={36}
@@ -51,7 +49,7 @@ function UserAvatar({ u }: { u: User }) {
   ) : (
     <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
       <span className="text-[#FFC300] text-xs font-bold">
-        {(u.username ?? u.firstName ?? '?')[0]?.toUpperCase()}
+        {(u.username ?? '?')[0]?.toUpperCase()}
       </span>
     </div>
   );
@@ -84,7 +82,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const confirmRoleChange = () => {
     if (!pendingRole) return;
     startTransition(async () => {
-      await updateUserRoleAction(pendingRole.clerkId, pendingRole.newRole);
+      await updateUserRoleAction(pendingRole.id, pendingRole.newRole);
       setPendingRole(null);
       router.refresh();
     });
@@ -93,14 +91,14 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const confirmPremiumToggle = () => {
     if (!pendingPremium) return;
     startTransition(async () => {
-      await toggleUserPremiumAction(pendingPremium.clerkId);
+      await toggleUserPremiumAction(pendingPremium.id);
       setPendingPremium(null);
       router.refresh();
     });
   };
 
   const displayName = (u: User) =>
-    u.username ? u.username : [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
+    u.username ?? u.email;
 
   const RoleSelect = ({ u }: { u: User }) => (
     <select
@@ -109,7 +107,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
       onChange={(e) => {
         const newRole = e.target.value as Role;
         if (newRole !== u.role) {
-          setPendingRole({ clerkId: u.clerkId, username: u.username, newRole, currentRole: u.role });
+          setPendingRole({ id: u.id, username: u.username, newRole, currentRole: u.role });
         }
       }}
       className="bg-transparent border-0 text-sm cursor-pointer focus:outline-none text-white"
@@ -122,7 +120,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
 
   const PremiumButton = ({ u }: { u: User }) => (
     <button
-      onClick={() => setPendingPremium({ clerkId: u.clerkId, username: u.username, currentPremium: u.premium })}
+      onClick={() => setPendingPremium({ id: u.id, username: u.username, currentPremium: u.premium })}
       disabled={pending}
       className="focus:outline-none"
     >
@@ -159,7 +157,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
 
       <div className="md:hidden rounded-2xl border border-[#2a2a2a] overflow-hidden divide-y divide-[#2a2a2a]">
         {users.map((u) => (
-          <div key={u.clerkId} className="p-4 hover:bg-white/2 transition-colors">
+          <div key={u.id} className="p-4 hover:bg-white/2 transition-colors">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <UserAvatar u={u} />
@@ -201,7 +199,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
           </thead>
           <tbody className="divide-y divide-[#2a2a2a]">
             {users.map((u) => (
-              <tr key={u.clerkId} className="hover:bg-white/2 transition-colors">
+              <tr key={u.id} className="hover:bg-white/2 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2.5">
                     <UserAvatar u={u} />
@@ -244,7 +242,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         <p className="text-sm text-white mb-1">
           Change role for{' '}
           <span className="text-white font-medium">
-            {pendingRole ? displayName(users.find((u) => u.clerkId === pendingRole.clerkId) ?? { username: pendingRole.username, firstName: null, lastName: null, email: '' } as User) : ''}
+            {pendingRole ? displayName(users.find((u) => u.id === pendingRole.id) ?? { username: pendingRole.username, email: '' } as unknown as User) : ''}
           </span>
         </p>
         <p className="text-sm text-white mb-6">
@@ -267,7 +265,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         <p className="text-sm text-white mb-6">
           {pendingPremium?.currentPremium ? 'Remove premium status from ' : 'Grant premium status to '}
           <span className="text-white font-medium">
-            {pendingPremium ? displayName(users.find((u) => u.clerkId === pendingPremium.clerkId) ?? { username: pendingPremium.username, firstName: null, lastName: null, email: '' } as User) : ''}
+            {pendingPremium ? displayName(users.find((u) => u.id === pendingPremium.id) ?? { username: pendingPremium.username, email: '' } as unknown as User) : ''}
           </span>?
         </p>
         <div className="flex justify-end gap-2">

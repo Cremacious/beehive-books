@@ -35,10 +35,10 @@ function Avatar({
   user: ChatMessageWithAuthor['author'];
   size?: number;
 }) {
-  const name = user.username ?? user.firstName ?? 'User';
-  return user.imageUrl ? (
+  const name = user.username ?? 'User';
+  return user.image ? (
     <Image
-      src={user.imageUrl}
+      src={user.image}
       alt={name}
       width={size}
       height={size}
@@ -126,7 +126,7 @@ export default function HiveChat({
             const isOwn = msg.authorId === currentUserId;
             const prevMsg = messages[idx - 1];
             const sameAuthor = prevMsg?.authorId === msg.authorId;
-            const name = msg.author.username ?? msg.author.firstName ?? 'User';
+            const name = msg.author.username ?? 'User';
 
             return (
               <div

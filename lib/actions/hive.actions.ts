@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
@@ -18,12 +19,6 @@ import type {
   PendingHiveJoinRequest,
   InvitableFriend,
 } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -106,7 +101,7 @@ export async function createHiveAction(
 }
 
 export async function getHiveAction(hiveId: string): Promise<HiveWithMembership | null> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const hive = await db.query.hives.findFirst({
     where: eq(hives.id, hiveId),
@@ -173,7 +168,7 @@ export async function getAllUserHivesAction(): Promise<HiveWithMembership[]> {
 }
 
 export async function searchHivesAction(query: string): Promise<HiveWithMembership[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const queryFilter = query.trim()
     ? or(ilike(hives.name, `%${query}%`), ilike(hives.description, `%${query}%`))
@@ -268,7 +263,7 @@ export async function joinHiveAction(hiveId: string): Promise<ActionResult> {
 }
 
 export async function requestToJoinHiveAction(hiveId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
@@ -329,7 +324,7 @@ export async function requestToJoinHiveAction(hiveId: string): Promise<ActionRes
 export async function checkHiveJoinRequestStatusAction(
   hiveId: string,
 ): Promise<'pending' | 'none'> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return 'none';
   const request = await db.query.hiveJoinRequests.findFirst({
     where: and(
@@ -344,7 +339,7 @@ export async function checkHiveJoinRequestStatusAction(
 export async function getPendingHiveJoinRequestsAction(
   hiveId: string,
 ): Promise<PendingHiveJoinRequest[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -354,19 +349,19 @@ export async function getPendingHiveJoinRequestsAction(
 
   const requests = await db.query.hiveJoinRequests.findMany({
     where: and(eq(hiveJoinRequests.hiveId, hiveId), eq(hiveJoinRequests.status, 'PENDING')),
-    with: { user: { columns: { clerkId: true, username: true, imageUrl: true } } },
+    with: { user: { columns: { id: true, username: true, image: true } } },
     orderBy: [desc(hiveJoinRequests.createdAt)],
   });
 
   return requests.map((r) => ({
     id: r.id,
-    user: { clerkId: r.user.clerkId, username: r.user.username, imageUrl: r.user.imageUrl },
+    user: { id: r.user.id, username: r.user.username, image: r.user.image },
     createdAt: r.createdAt,
   }));
 }
 
 export async function approveHiveJoinRequestAction(requestId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const request = await db.query.hiveJoinRequests.findFirst({
@@ -407,7 +402,7 @@ export async function approveHiveJoinRequestAction(requestId: string): Promise<A
 }
 
 export async function rejectHiveJoinRequestAction(requestId: string): Promise<ActionResult> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const request = await db.query.hiveJoinRequests.findFirst({
@@ -500,7 +495,7 @@ export async function inviteMemberAction(
       });
     }
 
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
     void insertNotification({
       recipientId: targetUserId,
       actorId: userId,
@@ -521,7 +516,7 @@ export async function acceptHiveInviteAction(
   inviteId: string,
 ): Promise<ActionResult & { hiveId?: string }> {
   try {
-    const { userId } = await auth();
+    const userId = await requireAuth();
     if (!userId) return { success: false, message: 'Unauthorized.' };
 
     const invite = await db.query.hiveInvites.findFirst({
@@ -561,7 +556,7 @@ export async function acceptHiveInviteAction(
       .set({ memberCount: sql`${hives.memberCount} + 1`, updatedAt: new Date() })
       .where(eq(hives.id, invite.hiveId));
 
-    const actor = await db.query.users.findFirst({ where: eq(users.clerkId, userId) });
+    const actor = await db.query.users.findFirst({ where: eq(users.id, userId) });
     void insertNotification({
       recipientId: invite.hive.ownerId,
       actorId: userId,
@@ -587,7 +582,7 @@ export async function declineHiveInviteAction(
   inviteId: string,
 ): Promise<ActionResult> {
   try {
-    const { userId } = await auth();
+    const userId = await requireAuth();
     if (!userId) return { success: false, message: 'Unauthorized.' };
 
     const invite = await db.query.hiveInvites.findFirst({
@@ -612,7 +607,7 @@ export async function declineHiveInviteAction(
 }
 
 export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const invites = await db.query.hiveInvites.findMany({
@@ -622,7 +617,7 @@ export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]
     ),
     with: {
       hive: { columns: { id: true, name: true, coverUrl: true } },
-      invitedBy: { columns: { username: true, imageUrl: true } },
+      invitedBy: { columns: { username: true, image: true } },
     },
     orderBy: [desc(hiveInvites.createdAt)],
   });
@@ -635,7 +630,7 @@ export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]
     role: inv.role as Exclude<HiveRole, 'OWNER'>,
     invitedBy: {
       username: inv.invitedBy.username,
-      imageUrl: inv.invitedBy.imageUrl,
+      image: inv.invitedBy.image,
     },
     createdAt: inv.createdAt,
   }));
@@ -644,7 +639,7 @@ export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]
 export async function getHiveFriendsForInviteAction(
   hiveId: string,
 ): Promise<InvitableFriend[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -688,15 +683,14 @@ export async function getHiveFriendsForInviteAction(
   if (invitableFriendIds.length === 0) return [];
 
   const friendUsers = await db.query.users.findMany({
-    where: inArray(users.clerkId, invitableFriendIds),
-    columns: { clerkId: true, username: true, firstName: true, imageUrl: true },
+    where: inArray(users.id, invitableFriendIds),
+    columns: { id: true, username: true, image: true },
   });
 
   return friendUsers.map((u) => ({
-    clerkId: u.clerkId,
+    id: u.id,
     username: u.username,
-    firstName: u.firstName,
-    imageUrl: u.imageUrl,
+    image: u.image,
   }));
 }
 
@@ -756,7 +750,7 @@ export async function updateMemberRoleAction(
 }
 
 export async function getHiveMembersAction(hiveId: string): Promise<HiveMemberWithUser[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const hive = await db.query.hives.findFirst({ where: eq(hives.id, hiveId) });
   if (!hive) return [];

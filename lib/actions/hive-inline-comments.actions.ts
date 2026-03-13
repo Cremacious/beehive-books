@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { revalidatePath } from 'next/cache';
 import { and, asc, desc, eq, ne } from 'drizzle-orm';
 import { db } from '@/db';
@@ -12,12 +13,6 @@ import type {
   InlineComment,
   HiveUser,
 } from '@/lib/types/hive.types';
-
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
 
 async function requireHiveMember(hiveId: string) {
   const userId = await requireAuth();
@@ -32,7 +27,7 @@ export async function getInlineCommentsAction(
   hiveId: string,
   chapterId: string,
 ): Promise<InlineComment[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -70,7 +65,7 @@ export async function getChapterContentAction(
   hiveId: string,
   chapterId: string,
 ): Promise<{ title: string; content: string } | null> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return null;
 
   const membership = await db.query.hiveMembers.findFirst({
@@ -126,7 +121,7 @@ export async function createInlineCommentAction(
       try {
         const [hive, actor, otherMembers] = await Promise.all([
           db.query.hives.findFirst({ where: eq(hives.id, hiveId), columns: { name: true } }),
-          db.query.users.findFirst({ where: eq(users.clerkId, userId), columns: { username: true } }),
+          db.query.users.findFirst({ where: eq(users.id, userId), columns: { username: true } }),
           db.query.hiveMembers.findMany({
             where: and(eq(hiveMembers.hiveId, hiveId), ne(hiveMembers.userId, userId)),
             columns: { userId: true },

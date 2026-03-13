@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, eq, or, inArray, gt, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -28,10 +29,9 @@ export type FeedEventType =
   | 'NEW_HIVE';
 
 export type FeedUser = {
-  clerkId: string;
+  id: string;
   username: string | null;
-  firstName: string | null;
-  imageUrl: string | null;
+  image: string | null;
 };
 
 export type FeedEvent = {
@@ -44,7 +44,7 @@ export type FeedEvent = {
 };
 
 export async function getFriendFeedAction(): Promise<FeedEvent[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
   if (!userId) return [];
 
 
@@ -78,8 +78,8 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     recentHives,
   ] = await Promise.all([
     db.query.users.findMany({
-      where: inArray(users.clerkId, friendIds),
-      columns: { clerkId: true, username: true, firstName: true, imageUrl: true },
+      where: inArray(users.id, friendIds),
+      columns: { id: true, username: true, image: true },
     }),
     db.query.books.findMany({
       where: and(
@@ -167,7 +167,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     }),
   ]);
 
-  const userMap = Object.fromEntries(friendUsers.map((u) => [u.clerkId, u]));
+  const userMap = Object.fromEntries(friendUsers.map((u) => [u.id, u]));
   const events: FeedEvent[] = [];
 
   for (const b of recentBooks) {
@@ -274,7 +274,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       timestamp: l.createdAt,
       user,
       meta: { title: l.title, listId: l.id },
-      link: `/u/${user.username ?? user.clerkId}`,
+      link: `/u/${user.username ?? user.id}`,
     });
   }
 

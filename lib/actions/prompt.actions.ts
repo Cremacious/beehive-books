@@ -1,6 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+
 import { and, eq, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
@@ -32,18 +33,10 @@ import type {
 
 type ActionResult = { success: boolean; message: string };
 
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) throw new Error('Unauthorized');
-  return userId;
-}
-
 const USER_COLUMNS = {
-  clerkId: true,
+  id: true,
   username: true,
-  firstName: true,
-  lastName: true,
-  imageUrl: true,
+  image: true,
 } as const;
 
 async function maybeEndPrompt(promptId: string, endDate: Date) {
@@ -131,7 +124,7 @@ export async function getMyPromptsAction(): Promise<PromptCard[]> {
 }
 
 export async function getPromptAction(promptId: string): Promise<PromptDetail> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const prompt = await db.query.prompts.findFirst({
     where: eq(prompts.id, promptId),
@@ -195,7 +188,7 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
 export async function getPromptEntriesAction(
   promptId: string,
 ): Promise<PromptEntry[]> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const prompt = await db.query.prompts.findFirst({
     where: eq(prompts.id, promptId),
@@ -238,7 +231,7 @@ export async function getEntryAction(
   promptId: string,
   entryId: string,
 ): Promise<EntryDetail> {
-  const { userId } = await auth();
+  const userId = await requireAuth();
 
   const entry = await db.query.promptEntries.findFirst({
     where: and(
@@ -369,7 +362,7 @@ export async function createPromptAction(
         .insert(promptInvites)
         .values(inviteUserIds.map((uid) => ({ promptId, userId: uid })));
       const actor = await db.query.users.findFirst({
-        where: eq(users.clerkId, userId),
+        where: eq(users.id, userId),
         columns: { username: true },
       });
       for (const uid of inviteUserIds) {
@@ -458,7 +451,7 @@ export async function updatePromptAction(
         .insert(promptInvites)
         .values(toAdd.map((uid) => ({ promptId, userId: uid })));
       const actor = await db.query.users.findFirst({
-        where: eq(users.clerkId, userId),
+        where: eq(users.id, userId),
         columns: { username: true },
       });
       for (const uid of toAdd) {
@@ -674,7 +667,7 @@ export async function createEntryAction(
       .where(eq(prompts.id, promptId));
 
     const actor = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId),
+      where: eq(users.id, userId),
       columns: { username: true },
     });
     void insertNotification({
@@ -779,7 +772,7 @@ export async function addEntryCommentAction(
 
     const promptId = entry.promptId;
     const actor = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId),
+      where: eq(users.id, userId),
       columns: { username: true },
     });
     const meta = { actorUsername: actor?.username ?? '', promptId, entryId };
@@ -858,7 +851,7 @@ export async function toggleEntryCommentLikeAction(
         .where(eq(promptEntryComments.id, commentId));
       if (comment) {
         const actor = await db.query.users.findFirst({
-          where: eq(users.clerkId, userId),
+          where: eq(users.id, userId),
           columns: { username: true },
         });
         void insertNotification({

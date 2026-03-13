@@ -1,26 +1,24 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { DesktopSidebar } from '@/components/nav/desktop-sidebar';
 import { MobileNavbar } from '@/components/nav/mobile-navbar';
-import { syncUser } from '@/sync-user';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { userId, sessionClaims } = await auth();
-  const meta = sessionClaims?.metadata as { onboardingComplete?: boolean; username?: string } | undefined;
-  if (!meta?.onboardingComplete || !meta?.username) {
-    await syncUser();
-  }
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) redirect('/sign-in');
 
-  let isAdmin = false;
-  if (userId) {
-    const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId),
-      columns: { role: true },
-    });
-    isAdmin = user?.role === 'admin';
-  }
+  const userId = session.user.id;
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { role: true },
+  });
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="flex h-screen overflow-hidden">

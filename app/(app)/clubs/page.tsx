@@ -1,4 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { Bell } from 'lucide-react';
 import { getAllUserClubsAction, getPendingClubInvitesAction } from '@/lib/actions/club.actions';
 import MyClubs from '@/components/clubs/my-clubs';
@@ -11,7 +12,8 @@ export const metadata = {
 };
 
 export default async function ClubsPage() {
-  const { userId } = await auth();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user?.id ?? null;
 
   const [userClubs, pendingInvites] = await Promise.all([
     userId ? getAllUserClubsAction() : [],

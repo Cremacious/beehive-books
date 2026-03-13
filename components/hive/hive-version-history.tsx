@@ -119,16 +119,16 @@ function SnapshotCard({
           <span className="text-xs text-white/30">{formatDate(snapshot.createdAt)}</span>
           <span className="text-xs text-white/20">·</span>
           <span className="flex items-center gap-1 text-xs text-white/30">
-            {snapshot.author.imageUrl ? (
+            {snapshot.author.image ? (
               <Image
-                src={snapshot.author.imageUrl}
+                src={snapshot.author.image}
                 alt=""
                 width={14}
                 height={14}
                 className="rounded-full"
               />
             ) : null}
-            {snapshot.author.username ?? snapshot.author.firstName ?? 'User'}
+            {snapshot.author.username ?? 'User'}
           </span>
         </div>
       </div>

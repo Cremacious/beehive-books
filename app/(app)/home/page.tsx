@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { getFriendFeedAction } from '@/lib/actions/feed.actions';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
+import { getAnnouncementsAction } from '@/lib/actions/admin.actions';
+import AnnouncementCard from '@/components/announcements/announcement-card';
 import type {
   FeedEvent,
   FeedEventType,
@@ -243,13 +245,13 @@ const EVENT_CONFIG: Record<FeedEventType, EventConfig> = {
 };
 
 function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
-  const name = user.username ?? user.firstName ?? '?';
+  const name = user.username ?? '?';
   return (
     <div
       className={`relative w-${size} h-${size} rounded-full overflow-hidden bg-[#2a2000] shrink-0`}
     >
-      {user.imageUrl ? (
-        <Image src={user.imageUrl} alt={name} fill className="object-cover" />
+      {user.image ? (
+        <Image src={user.image} alt={name} fill className="object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center">
           <span className="text-xs font-bold text-[#FFC300]">
@@ -326,7 +328,7 @@ function NewUserWelcome() {
                   <p className="text-sm font-semibold text-white mb-0.5">
                     {title}
                   </p>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/80 leading-relaxed">
                     {description}
                   </p>
                   <span
@@ -350,7 +352,7 @@ function NewUserWelcome() {
           <p className="text-sm font-semibold text-white">
             Find your writing community
           </p>
-          <p className="text-xs text-white/50 mt-0.5">
+          <p className="text-xs text-white/80 mt-0.5">
             Connect with friends to see their activity in this feed.
           </p>
         </div>
@@ -369,7 +371,7 @@ function NewUserWelcome() {
 function EventRow({ event }: { event: FeedEvent }) {
   const cfg = EVENT_CONFIG[event.type];
   const Icon = cfg.icon;
-  const name = event.user.username ?? event.user.firstName ?? 'Someone';
+  const name = event.user.username ?? 'Someone';
 
   return (
     <Link
@@ -399,7 +401,7 @@ function EventRow({ event }: { event: FeedEvent }) {
 function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-2">
+      <p className="text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-2">
         {label}
       </p>
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
@@ -426,9 +428,10 @@ function NoActivityEmpty() {
 }
 
 export default async function UserHomePage() {
-  const [events, { friends }] = await Promise.all([
+  const [events, { friends }, announcements] = await Promise.all([
     getFriendFeedAction(),
     getMyFriendsDataAction(),
+    getAnnouncementsAction(),
   ]);
 
   const hasFriends = friends.length > 0;
@@ -450,7 +453,7 @@ export default async function UserHomePage() {
         <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">
           Home
         </h1>
-        <p className="mt-1 text-sm text-white/60">
+        <p className="mt-1 text-sm text-white/80">
           {hasFriends
             ? 'The latest from your friends on Beehive Books.'
             : 'Your home on Beehive Books! Get started below.'}
@@ -458,6 +461,19 @@ export default async function UserHomePage() {
       </div>
 
       <QuickLinksBar />
+
+      {announcements.length > 0 && (
+        <div className="space-y-3 mb-8">
+          {announcements.map((a) => (
+            <AnnouncementCard
+              key={a.id}
+              title={a.title}
+              content={a.content}
+              createdAt={a.createdAt}
+            />
+          ))}
+        </div>
+      )}
 
       {!hasFriends ? (
         <NewUserWelcome />
