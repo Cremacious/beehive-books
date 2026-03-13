@@ -21,7 +21,7 @@ function displayName(user: CommentUser): string {
 }
 
 function initials(user: CommentUser): string {
-  return (user.username ?? displayName(user)).slice(0, 2).toUpperCase();
+  return (user.username ?? displayName(user)).slice(0, 1).toUpperCase();
 }
 
 function CurrentUserAvatar({ className }: { className: string }) {
@@ -32,7 +32,7 @@ function CurrentUserAvatar({ className }: { className: string }) {
     <Avatar
       imageUrl={avatarUrl}
       alt="You"
-      fallback={((user as { username?: string } | undefined)?.username ?? user?.name ?? 'Y').slice(0, 2).toUpperCase()}
+      fallback={(session?.user?.username ?? ' ').slice(0, 1).toUpperCase()}
       className={className}
     />
   );
@@ -61,7 +61,7 @@ function Avatar({
     );
   }
   return (
-    <div className={`rounded-full bg-white/10 flex items-center justify-center shrink-0 font-bold text-white ${className}`}>
+    <div className={`rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0 font-bold text-[#FFC300] ring-2 ring-[#FFC300]/20 ${className}`}>
       {fallback}
     </div>
   );

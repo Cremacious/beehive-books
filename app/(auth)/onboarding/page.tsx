@@ -104,7 +104,7 @@ export default function OnboardingPage() {
         return;
       }
 
-      router.push('/home');
+      window.location.href = '/home';
     });
   }
 
