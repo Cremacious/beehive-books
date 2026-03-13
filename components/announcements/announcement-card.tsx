@@ -16,7 +16,7 @@ export default function AnnouncementCard({ title, content, createdAt }: Props) {
         <span className="text-[10px] font-bold uppercase tracking-widest text-[#FFC300]/70">
           Announcement
         </span>
-        <span className="ml-auto text-xs text-white/30">
+        <span className="ml-auto text-xs text-white">
           {new Date(createdAt).toLocaleDateString([], {
             month: 'short',
             day: 'numeric',
@@ -25,7 +25,7 @@ export default function AnnouncementCard({ title, content, createdAt }: Props) {
         </span>
       </div>
       <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
-      <p className="text-sm text-white/65 leading-relaxed whitespace-pre-wrap">{content}</p>
+      <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{content}</p>
     </div>
   );
 }

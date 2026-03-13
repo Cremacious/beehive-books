@@ -328,7 +328,7 @@ function NewUserWelcome() {
                   <p className="text-sm font-semibold text-white mb-0.5">
                     {title}
                   </p>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/80 leading-relaxed">
                     {description}
                   </p>
                   <span
@@ -352,7 +352,7 @@ function NewUserWelcome() {
           <p className="text-sm font-semibold text-white">
             Find your writing community
           </p>
-          <p className="text-xs text-white/50 mt-0.5">
+          <p className="text-xs text-white/80 mt-0.5">
             Connect with friends to see their activity in this feed.
           </p>
         </div>
@@ -401,7 +401,7 @@ function EventRow({ event }: { event: FeedEvent }) {
 function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-2">
+      <p className="text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-2">
         {label}
       </p>
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
@@ -453,7 +453,7 @@ export default async function UserHomePage() {
         <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">
           Home
         </h1>
-        <p className="mt-1 text-sm text-white/60">
+        <p className="mt-1 text-sm text-white/80">
           {hasFriends
             ? 'The latest from your friends on Beehive Books.'
             : 'Your home on Beehive Books! Get started below.'}

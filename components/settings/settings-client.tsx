@@ -58,18 +58,18 @@ export function SettingsClient({ user }: SettingsClientProps) {
     <div className="space-y-5">
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] divide-y divide-[#2a2a2a]">
         <div className="flex items-center gap-3 px-5 py-4">
-          <User className="w-4 h-4 text-white/30 shrink-0" />
+          <User className="w-4 h-4 text-white/80 shrink-0" />
           <div className="min-w-0">
-            <p className="text-xs text-white/40 mb-0.5">Username</p>
+            <p className="text-xs text-white/80 mb-0.5">Username</p>
             <p className="text-sm text-white font-medium truncate">
               {user.username ?? '—'}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3 px-5 py-4">
-          <Mail className="w-4 h-4 text-white/30 shrink-0" />
+          <Mail className="w-4 h-4 text-white/80 shrink-0" />
           <div className="min-w-0">
-            <p className="text-xs text-white/40 mb-0.5">Email</p>
+            <p className="text-xs text-white/80 mb-0.5">Email</p>
             <p className="text-sm text-white font-medium truncate">
               {user.email}
             </p>
@@ -78,7 +78,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
       </div>
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
-        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">
+        <h2 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-5">
           Profile Photo
         </h2>
 
@@ -102,7 +102,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-white/50 mb-3 leading-relaxed">
+            <p className="text-sm text-white/80 mb-3 leading-relaxed">
               JPEG, PNG or WebP. Max 5 MB.
             </p>
 
@@ -154,7 +154,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
         <h2 className="text-xs font-semibold text-red-400/60 uppercase tracking-wider mb-2">
           Danger Zone
         </h2>
-        <p className="text-sm text-white/50 mb-5 leading-relaxed">
+        <p className="text-sm text-white/80 mb-5 leading-relaxed">
           Permanently deletes your account and all associated data — books,
           reading lists, clubs, hives, and prompts. This cannot be undone.
         </p>
