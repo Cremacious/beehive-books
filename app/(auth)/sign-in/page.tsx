@@ -16,7 +16,7 @@ export default function SignInPage() {
 
   async function handleGoogle() {
     setGoogleLoading(true);
-    await signIn.social({ provider: 'google', callbackURL: '/feed' });
+    await signIn.social({ provider: 'google', callbackURL: '/home' });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,7 +33,7 @@ export default function SignInPage() {
     }
 
     // Full page navigation so the session cookie is sent with the new request
-    window.location.href = '/feed';
+    window.location.href = '/home';
   }
 
   return (

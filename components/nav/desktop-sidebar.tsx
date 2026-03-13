@@ -22,7 +22,7 @@ import {
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
 const navItems = [
-  { href: '/feed', label: 'Feed', icon: Home },
+  { href: '/home', label: 'Home', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
   { href: '/hive', label: 'Hives', icon: Hexagon },

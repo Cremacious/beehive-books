@@ -520,7 +520,7 @@ export async function createAnnouncementAction(
     content: content.trim(),
     createdById: userId,
   });
-  revalidatePath('/feed');
+  revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement created.' };
 }
@@ -528,7 +528,7 @@ export async function createAnnouncementAction(
 export async function deleteAnnouncementAdminAction(id: string): Promise<ActionResult> {
   await requireAdmin();
   await db.delete(announcements).where(eq(announcements.id, id));
-  revalidatePath('/feed');
+  revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement deleted.' };
 }

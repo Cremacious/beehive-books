@@ -64,7 +64,7 @@ export default function AdminSidebar() {
 
       <div className="px-2 pb-4">
         <Link
-          href="/feed"
+          href="/home"
           className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-yellow-500 hover:text-white hover:bg-white/5 transition-all"
         >
           <ChevronLeft className="w-4 h-4" />

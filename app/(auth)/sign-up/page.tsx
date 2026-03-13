@@ -16,7 +16,7 @@ export default function SignUpPage() {
 
   async function handleGoogle() {
     setGoogleLoading(true);
-    await signIn.social({ provider: 'google', callbackURL: '/feed' });
+    await signIn.social({ provider: 'google', callbackURL: '/home' });
   }
 
   async function handleSubmit(e: React.FormEvent) {

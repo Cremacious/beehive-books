@@ -46,14 +46,14 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
-  // Onboarded user visiting root or onboarding → send to /feed
+  // Onboarded user visiting root or onboarding → send to /home
   if (onboarded && (pathname === '/' || pathname === ONBOARDING_PATH)) {
-    return NextResponse.redirect(new URL('/feed', request.url));
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // Signed-in user visiting sign-in/sign-up → send to /feed
+  // Signed-in user visiting sign-in/sign-up → send to /home
   if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
-    return NextResponse.redirect(new URL('/feed', request.url));
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
   return NextResponse.next();

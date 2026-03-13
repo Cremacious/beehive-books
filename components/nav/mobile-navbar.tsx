@@ -26,7 +26,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo3.png';
 
 const navItems = [
-  { href: '/feed', label: 'Feed', icon: Home },
+  { href: '/home', label: 'Home', icon: Home },
   { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/library', label: 'Library', icon: Library },
   { href: '/hive', label: 'Hives', icon: Hexagon },
@@ -57,7 +57,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-4 shadow-lg">
-        <Link href="/feed" className="flex items-center shrink-0">
+        <Link href="/home" className="flex items-center shrink-0">
           <Image
             src={logoImage}
             alt="Beehive Books"
