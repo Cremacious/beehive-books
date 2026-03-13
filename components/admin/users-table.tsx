@@ -20,8 +20,6 @@ type Role = 'member' | 'moderator' | 'admin';
 type User = {
   id: string;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
   username: string | null;
   image: string | null;
   role: Role;
@@ -51,7 +49,7 @@ function UserAvatar({ u }: { u: User }) {
   ) : (
     <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
       <span className="text-[#FFC300] text-xs font-bold">
-        {(u.username ?? u.firstName ?? '?')[0]?.toUpperCase()}
+        {(u.username ?? '?')[0]?.toUpperCase()}
       </span>
     </div>
   );
@@ -100,7 +98,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   };
 
   const displayName = (u: User) =>
-    u.username ? u.username : [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
+    u.username ?? u.email;
 
   const RoleSelect = ({ u }: { u: User }) => (
     <select
@@ -244,7 +242,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         <p className="text-sm text-white mb-1">
           Change role for{' '}
           <span className="text-white font-medium">
-            {pendingRole ? displayName(users.find((u) => u.id === pendingRole.id) ?? { username: pendingRole.username, firstName: null, lastName: null, email: '' } as User) : ''}
+            {pendingRole ? displayName(users.find((u) => u.id === pendingRole.id) ?? { username: pendingRole.username, email: '' } as unknown as User) : ''}
           </span>
         </p>
         <p className="text-sm text-white mb-6">
@@ -267,7 +265,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         <p className="text-sm text-white mb-6">
           {pendingPremium?.currentPremium ? 'Remove premium status from ' : 'Grant premium status to '}
           <span className="text-white font-medium">
-            {pendingPremium ? displayName(users.find((u) => u.id === pendingPremium.id) ?? { username: pendingPremium.username, firstName: null, lastName: null, email: '' } as User) : ''}
+            {pendingPremium ? displayName(users.find((u) => u.id === pendingPremium.id) ?? { username: pendingPremium.username, email: '' } as unknown as User) : ''}
           </span>?
         </p>
         <div className="flex justify-end gap-2">

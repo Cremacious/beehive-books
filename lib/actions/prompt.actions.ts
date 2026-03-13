@@ -36,8 +36,6 @@ type ActionResult = { success: boolean; message: string };
 const USER_COLUMNS = {
   id: true,
   username: true,
-  firstName: true,
-  lastName: true,
   image: true,
 } as const;
 

@@ -85,7 +85,7 @@ export default function HiveInvitePicker({
           const invited = successIds.has(friend.id);
           const loading = loadingId === friend.id;
           const displayName =
-            friend.username ?? friend.firstName ?? 'Unknown';
+            friend.username ?? 'Unknown';
 
           return (
             <div

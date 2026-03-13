@@ -128,7 +128,7 @@ function SnapshotCard({
                 className="rounded-full"
               />
             ) : null}
-            {snapshot.author.username ?? snapshot.author.firstName ?? 'User'}
+            {snapshot.author.username ?? 'User'}
           </span>
         </div>
       </div>

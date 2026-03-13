@@ -245,7 +245,7 @@ const EVENT_CONFIG: Record<FeedEventType, EventConfig> = {
 };
 
 function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
-  const name = user.username ?? user.firstName ?? '?';
+  const name = user.username ?? '?';
   return (
     <div
       className={`relative w-${size} h-${size} rounded-full overflow-hidden bg-[#2a2000] shrink-0`}
@@ -371,7 +371,7 @@ function NewUserWelcome() {
 function EventRow({ event }: { event: FeedEvent }) {
   const cfg = EVENT_CONFIG[event.type];
   const Icon = cfg.icon;
-  const name = event.user.username ?? event.user.firstName ?? 'Someone';
+  const name = event.user.username ?? 'Someone';
 
   return (
     <Link

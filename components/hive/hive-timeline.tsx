@@ -89,7 +89,7 @@ function TimelineCard({
             {formatDate(entry.createdAt)}
           </span>
           <span className="text-xs text-white/25">
-            by {entry.author.username ?? entry.author.firstName ?? 'User'}
+            by {entry.author.username ?? 'User'}
           </span>
         </div>
       </div>

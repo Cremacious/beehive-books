@@ -64,8 +64,6 @@ export default async function UserProfilePage({ params }: Props) {
     creator: {
       id: user.id,
       username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
       image: user.image,
     },
     myInviteStatus: null as 'PENDING' | 'ACCEPTED' | null,

@@ -40,7 +40,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user;
-  const username = (user as { username?: string } | undefined)?.username ?? user?.name ?? undefined;
+  const username = session?.user?.username ?? undefined;
   
   const [drawerOpen, setDrawerOpen] = useState(false);
 

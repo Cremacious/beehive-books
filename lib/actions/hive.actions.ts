@@ -684,13 +684,12 @@ export async function getHiveFriendsForInviteAction(
 
   const friendUsers = await db.query.users.findMany({
     where: inArray(users.id, invitableFriendIds),
-    columns: { id: true, username: true, firstName: true, image: true },
+    columns: { id: true, username: true, image: true },
   });
 
   return friendUsers.map((u) => ({
     id: u.id,
     username: u.username,
-    firstName: u.firstName,
     image: u.image,
   }));
 }

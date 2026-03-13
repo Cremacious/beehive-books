@@ -11,14 +11,14 @@ import { createId } from '@paralleldrive/cuid2';
 const PASSWORD = 'B33h!ve#Dev2026$';
 
 const SEED_USERS = [
-  { email: 'alice@beehive.dev', username: 'alice_monroe', firstName: 'Alice', lastName: 'Monroe' },
-  { email: 'bob@beehive.dev', username: 'bob_carter', firstName: 'Bob', lastName: 'Carter' },
-  { email: 'charlie@beehive.dev', username: 'charlie_stone', firstName: 'Charlie', lastName: 'Stone' },
-  { email: 'diana@beehive.dev', username: 'diana_wells', firstName: 'Diana', lastName: 'Wells' },
-  { email: 'evan@beehive.dev', username: 'evan_brooks', firstName: 'Evan', lastName: 'Brooks' },
-  { email: 'fiona@beehive.dev', username: 'fiona_hayes', firstName: 'Fiona', lastName: 'Hayes' },
-  { email: 'george@beehive.dev', username: 'george_lane', firstName: 'George', lastName: 'Lane' },
-  { email: 'hannah@beehive.dev', username: 'hannah_cross', firstName: 'Hannah', lastName: 'Cross' },
+  { email: 'alice@beehive.dev', username: 'alice_monroe' },
+  { email: 'bob@beehive.dev', username: 'bob_carter' },
+  { email: 'charlie@beehive.dev', username: 'charlie_stone' },
+  { email: 'diana@beehive.dev', username: 'diana_wells' },
+  { email: 'evan@beehive.dev', username: 'evan_brooks' },
+  { email: 'fiona@beehive.dev', username: 'fiona_hayes' },
+  { email: 'george@beehive.dev', username: 'george_lane' },
+  { email: 'hannah@beehive.dev', username: 'hannah_cross' },
 ] as const;
 
 if (!process.env.DATABASE_URL) {
@@ -43,9 +43,6 @@ async function upsertUser(user: (typeof SEED_USERS)[number]) {
   await db.insert(schema.users).values({
     id,
     email: user.email,
-    name: `${user.firstName} ${user.lastName}`,
-    firstName: user.firstName,
-    lastName: user.lastName,
     username: user.username,
     emailVerified: true,
     onboardingComplete: true,
@@ -60,7 +57,7 @@ async function main() {
   console.log('   Note: Users are seeded directly into the DB.\n   To set passwords, sign up via the app or use the Better Auth API.\n');
 
   for (const user of SEED_USERS) {
-    console.log(`→ ${user.firstName} ${user.lastName} <${user.email}>`);
+    console.log(`→ ${user.username} <${user.email}>`);
     try {
       await upsertUser(user);
     } catch (err) {

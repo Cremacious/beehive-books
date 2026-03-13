@@ -70,7 +70,7 @@ function relativeTime(date: Date): string {
 }
 
 function displayName(user: ActivityEvent['user']): string {
-  return user.username ?? user.firstName ?? 'Someone';
+  return user.username ?? 'Someone';
 }
 
 const EVENT_CONFIG: Record<
@@ -292,7 +292,7 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
         ) : (
           <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center">
             <span className="text-white/60 text-sm font-bold">
-              {(user.username ?? user.firstName ?? '?')[0]?.toUpperCase()}
+              {(user.username ?? '?')[0]?.toUpperCase()}
             </span>
           </div>
         )}

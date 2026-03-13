@@ -21,7 +21,7 @@ function AuthorChip({
   author: ClubDiscussionWithAuthor['author'];
 }) {
   const router = useRouter();
-  const name = author.username ?? author.firstName ?? '?';
+  const name = author.username ?? '?';
   const initials = name.charAt(0).toUpperCase();
 
   const avatar = author.image ? (

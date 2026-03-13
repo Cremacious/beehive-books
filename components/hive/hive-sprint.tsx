@@ -62,7 +62,7 @@ function ParticipantRow({
         <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 shrink-0" />
       )}
       <span className="flex-1 text-sm text-white/70 truncate min-w-0">
-        {p.user.username ?? p.user.firstName ?? 'User'}
+        {p.user.username ?? 'User'}
       </span>
       {isWinner && <Trophy className="w-3.5 h-3.5 text-[#FFC300] shrink-0" />}
       {p.wordsWritten !== null ? (

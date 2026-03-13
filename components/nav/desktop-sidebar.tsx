@@ -37,7 +37,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
   const user = session?.user;
-  const username = (user as { username?: string } | undefined)?.username ?? user?.name ?? undefined;
+  const username = session?.user?.username ?? undefined;
   const avatarUrl = useCurrentUserImage();
 
   const isActive = (href: string) =>

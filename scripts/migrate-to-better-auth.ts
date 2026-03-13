@@ -67,8 +67,8 @@ async function main() {
   if (nameCol.length === 0) {
     console.log('Adding name column…');
     await sql`ALTER TABLE users ADD COLUMN name text`;
-    // Populate from first_name for existing users
-    await sql`UPDATE users SET name = first_name WHERE name IS NULL AND first_name IS NOT NULL`;
+    // Populate from username for existing users
+    await sql`UPDATE users SET name = username WHERE name IS NULL AND username IS NOT NULL`;
     console.log('✓ Added name column');
   } else {
     console.log('name column already exists, skipping.');

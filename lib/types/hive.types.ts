@@ -48,15 +48,12 @@ export type PendingHiveInvite = {
 export type InvitableFriend = {
   id: string;
   username: string | null;
-  firstName: string | null;
   image: string | null;
 };
 
 export type HiveUser = {
   id: string;
   username: string | null;
-  firstName: string | null;
-  lastName: string | null;
   image: string | null;
 };
 

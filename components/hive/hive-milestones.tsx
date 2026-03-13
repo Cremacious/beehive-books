@@ -177,7 +177,7 @@ export default function HiveMilestones({
                         <div className="w-6 h-6 rounded-full bg-[#FFC300]/20" />
                       )}
                       <span className="flex-1 text-sm text-white/70">
-                        {m.user.username ?? m.user.firstName ?? 'User'}
+                        {m.user.username ?? 'User'}
                       </span>
                       <span className="text-xs text-white/30">
                         {formatDate(m.unlockedAt)}
@@ -229,7 +229,7 @@ export default function HiveMilestones({
                           />
                         )}
                         <span className="text-xs text-white/40">
-                          {m.user.username ?? m.user.firstName ?? 'User'}
+                          {m.user.username ?? 'User'}
                         </span>
                       </div>
                     </div>

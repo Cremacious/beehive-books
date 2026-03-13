@@ -99,8 +99,6 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
     ? or(
         ilike(users.username, `%${search}%`),
         ilike(users.email, `%${search}%`),
-        ilike(users.firstName, `%${search}%`),
-        ilike(users.lastName, `%${search}%`),
       )
     : undefined;
 
@@ -113,8 +111,6 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
       columns: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
         username: true,
         image: true,
         role: true,
@@ -185,7 +181,7 @@ export async function getAllBooksAdminAction(page = 1, search?: string) {
         userId: true,
       },
       with: {
-        user: { columns: { username: true, firstName: true, lastName: true } },
+        user: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(books).where(where),
@@ -270,7 +266,7 @@ export async function getAllClubsAdminAction(page = 1, search?: string) {
         ownerId: true,
       },
       with: {
-        owner: { columns: { username: true, firstName: true, lastName: true } },
+        owner: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(bookClubs).where(where),
@@ -313,7 +309,7 @@ export async function getAllPromptsAdminAction(page = 1, search?: string) {
         privacy: true,
       },
       with: {
-        creator: { columns: { username: true, firstName: true, lastName: true } },
+        creator: { columns: { username: true } },
       },
     }),
     db.select({ total: count() }).from(prompts).where(where),
@@ -350,7 +346,7 @@ export async function getAllPromptEntriesAdminAction(page = 1) {
         promptId: true,
       },
       with: {
-        user: { columns: { username: true, firstName: true, lastName: true } },
+        user: { columns: { username: true } },
         prompt: { columns: { title: true } },
       },
     }),
@@ -393,7 +389,7 @@ export async function getAllDiscussionsAdminAction(page = 1, search?: string) {
         clubId: true,
       },
       with: {
-        author: { columns: { username: true, firstName: true, lastName: true } },
+        author: { columns: { username: true } },
         club: { columns: { name: true } },
       },
     }),
@@ -430,7 +426,7 @@ export async function getAllDiscussionRepliesAdminAction(page = 1) {
         discussionId: true,
       },
       with: {
-        author: { columns: { username: true, firstName: true, lastName: true } },
+        author: { columns: { username: true } },
         discussion: { columns: { title: true } },
       },
     }),
@@ -489,13 +485,13 @@ export type AnnouncementItem = {
   title: string;
   content: string;
   createdAt: Date;
-  createdBy: { username: string | null; firstName: string | null } | null;
+  createdBy: { username: string | null } | null;
 };
 
 export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
   const rows = await db.query.announcements.findMany({
     orderBy: desc(announcements.createdAt),
-    with: { createdBy: { columns: { username: true, firstName: true } } },
+    with: { createdBy: { columns: { username: true } } },
   });
   return rows.map((r) => ({
     id: r.id,

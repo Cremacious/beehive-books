@@ -50,8 +50,6 @@ export async function getFriendshipStatusAction(
 export type FriendUser = {
   id: string;
   username: string | null;
-  firstName: string | null;
-  lastName: string | null;
   image: string | null;
 };
 
@@ -68,8 +66,6 @@ export async function getMyFriendsDataAction() {
         columns: {
           id: true,
           username: true,
-          firstName: true,
-          lastName: true,
           image: true,
         },
       },
@@ -77,8 +73,6 @@ export async function getMyFriendsDataAction() {
         columns: {
           id: true,
           username: true,
-          firstName: true,
-          lastName: true,
           image: true,
         },
       },
@@ -126,8 +120,6 @@ export async function searchUsersAction(
     columns: {
       id: true,
       username: true,
-      firstName: true,
-      lastName: true,
       image: true,
       email: true,
     },

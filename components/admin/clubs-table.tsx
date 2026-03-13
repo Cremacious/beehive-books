@@ -17,7 +17,7 @@ type Club = {
   memberCount: number;
   createdAt: Date;
   ownerId: string;
-  owner: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  owner: { username: string | null } | null;
 };
 
 interface Props {

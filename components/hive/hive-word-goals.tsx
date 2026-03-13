@@ -474,7 +474,7 @@ export default function HiveWordGoals({
                   <div className="w-5 h-5 rounded-full bg-[#FFC300]/20 shrink-0" />
                 )}
                 <span className="text-sm text-white flex-1 min-w-0 truncate">
-                  {log.user.username ?? log.user.firstName ?? 'User'}
+                  {log.user.username ?? 'User'}
                 </span>
                 <span className="text-sm font-semibold text-[#FFC300] shrink-0">
                   +{log.wordsAdded.toLocaleString()}

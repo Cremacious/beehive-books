@@ -250,8 +250,6 @@ export async function getChapterWithContextAction(chapterId: string) {
           columns: {
             username: true,
             image: true,
-            firstName: true,
-            lastName: true,
           },
         },
         replies: {
@@ -260,8 +258,6 @@ export async function getChapterWithContextAction(chapterId: string) {
               columns: {
                 username: true,
                 image: true,
-                firstName: true,
-                lastName: true,
               },
             },
           },

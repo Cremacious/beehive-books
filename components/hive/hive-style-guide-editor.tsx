@@ -66,7 +66,7 @@ export default function HiveStyleGuideEditor({
               <Clock className="w-3 h-3" />
               Last saved {formatUpdated(lastSaved.updatedAt)}
               {lastSaved.updatedBy && (
-                <> by {lastSaved.updatedBy.username ?? lastSaved.updatedBy.firstName ?? 'someone'}</>
+                <> by {lastSaved.updatedBy.username ?? 'someone'}</>
               )}
             </span>
           )}

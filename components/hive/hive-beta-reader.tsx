@@ -143,8 +143,7 @@ function ChapterRow({
                   className="rounded-full"
                 />
               ) : null}
-              {chapter.betaStatus.updatedBy.username ??
-                chapter.betaStatus.updatedBy.firstName}
+              {chapter.betaStatus.updatedBy.username}
             </span>
           )}
         </div>

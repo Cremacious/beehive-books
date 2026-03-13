@@ -22,8 +22,6 @@ export const users = pgTable('users', {
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image_url'),
   // App-specific fields
-  firstName: text('first_name'),
-  lastName: text('last_name'),
   username: text('username').unique(),
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
   premium: boolean('premium').default(false).notNull(),

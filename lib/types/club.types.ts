@@ -34,8 +34,6 @@ export type ClubMemberWithUser = ClubMember & {
   user: {
     id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
     image: string | null;
   };
 };
@@ -62,8 +60,6 @@ export type ClubDiscussionWithAuthor = ClubDiscussion & {
   author: {
     id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
     image: string | null;
   };
   likedByMe: boolean;
@@ -84,8 +80,6 @@ export type ClubDiscussionReplyWithAuthor = ClubDiscussionReply & {
   author: {
     id: string;
     username: string | null;
-    firstName: string | null;
-    lastName: string | null;
     image: string | null;
   };
   likedByMe: boolean;

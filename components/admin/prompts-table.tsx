@@ -21,7 +21,7 @@ type Prompt = {
   endDate: Date | null;
   createdAt: Date;
   privacy: string;
-  creator: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  creator: { username: string | null } | null;
 };
 
 type Entry = {
@@ -31,7 +31,7 @@ type Entry = {
   likeCount: number;
   createdAt: Date;
   promptId: string;
-  user: { username: string | null; firstName: string | null; lastName: string | null } | null;
+  user: { username: string | null } | null;
   prompt: { title: string } | null;
 };
 

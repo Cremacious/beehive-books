@@ -31,7 +31,6 @@ export type FeedEventType =
 export type FeedUser = {
   id: string;
   username: string | null;
-  firstName: string | null;
   image: string | null;
 };
 
@@ -80,7 +79,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
   ] = await Promise.all([
     db.query.users.findMany({
       where: inArray(users.id, friendIds),
-      columns: { id: true, username: true, firstName: true, image: true },
+      columns: { id: true, username: true, image: true },
     }),
     db.query.books.findMany({
       where: and(

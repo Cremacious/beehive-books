@@ -153,7 +153,7 @@ const EVENT_CONFIG: Record<
 function EventRow({ event }: { event: ActivityEvent }) {
   const cfg = EVENT_CONFIG[event.type];
   const Icon = cfg.icon;
-  const name = event.user.username ?? event.user.firstName ?? 'Someone';
+  const name = event.user.username ?? 'Someone';
 
   return (
     <div className="flex items-start gap-3 py-2.5">

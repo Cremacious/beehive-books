@@ -23,7 +23,7 @@ export default function DiscussionListItem({
   clubId,
 }: DiscussionListItemProps) {
   const author = discussion.author;
-  const authorName = author.username ?? author.firstName ?? 'Unknown';
+  const authorName = author.username ?? 'Unknown';
   const initials = authorName.charAt(0).toUpperCase();
 
   return (

@@ -84,7 +84,7 @@ export default function DiscussionReply({
   };
 
   const author = reply.author;
-  const authorName = author.username ?? author.firstName ?? 'Unknown';
+  const authorName = author.username ?? 'Unknown';
   const initials = authorName.charAt(0).toUpperCase();
 
   return (

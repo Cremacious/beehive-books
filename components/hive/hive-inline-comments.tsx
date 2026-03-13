@@ -116,13 +116,11 @@ function AuthorRow({ comment }: { comment: InlineComment }) {
         />
       ) : (
         <div className="w-3.5 h-3.5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] text-[8px] font-bold">
-          {(comment.author.username ??
-            comment.author.firstName ??
-            'U')[0]?.toUpperCase()}
+          {(comment.author.username ?? 'U')[0]?.toUpperCase()}
         </div>
       )}
       <span className="text-[11px] text-white/50">
-        {comment.author.username ?? comment.author.firstName ?? 'User'}
+        {comment.author.username ?? 'User'}
         {' · '}
         {timeAgo(comment.createdAt)}
       </span>
@@ -256,13 +254,11 @@ function AnnotationDetail({
           />
         ) : (
           <div className="w-5 h-5 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[#FFC300] text-[10px] font-bold">
-            {(comment.author.username ??
-              comment.author.firstName ??
-              'U')[0]?.toUpperCase()}
+            {(comment.author.username ?? 'U')[0]?.toUpperCase()}
           </div>
         )}
         <span className="text-xs text-white/55">
-          {comment.author.username ?? comment.author.firstName ?? 'User'}
+          {comment.author.username ?? 'User'}
           {' · '}
           {timeAgo(comment.createdAt)}
         </span>
