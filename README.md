@@ -95,9 +95,9 @@ Hives are the core collaborative feature. A Hive is a shared writing project whe
 
 ### Auth & Onboarding
 
-- Authentication via **Clerk** — sign up, sign in, session management
+- Authentication via **better-auth** — sign up, sign in, session management
+- Social login with **Google** and **GitHub** OAuth
 - Guided onboarding flow — choose a username and upload a profile photo before accessing the app
-- Self-healing metadata sync — Clerk JWT is kept in sync with the database, making middleware auth essentially zero-cost after first login
 
 ### Premium Tier
 
@@ -116,7 +116,7 @@ Hives are the core collaborative feature. A Hive is a shared writing project whe
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 + shadcn/ui |
 | Database | Neon (PostgreSQL) via Drizzle ORM |
-| Auth | Clerk |
+| Auth | better-auth (email/password + Google OAuth + GitHub OAuth) |
 | State | Zustand + React Query |
 | Editor | TipTap |
 | Drag & Drop | @dnd-kit |
@@ -164,7 +164,8 @@ db/
 
 - Node.js 18+
 - A [Neon](https://neon.tech) PostgreSQL database
-- A [Clerk](https://clerk.com) application
+- A [Google Cloud](https://console.cloud.google.com) OAuth application
+- A [GitHub OAuth App](https://github.com/settings/developers)
 - A [Cloudinary](https://cloudinary.com) account
 
 ### Setup
@@ -175,17 +176,20 @@ cd beehive-books-online
 npm install
 ```
 
-Create a `.env` file:
+Create a `.env.local` file:
 
 ```env
 DATABASE_URL=your_neon_connection_string
 
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboarding
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+GOOGLE_AUTH_CLIENT_ID=your_google_client_id
+GOOGLE_AUTH_CLIENT_SECRET=your_google_client_secret
+
+GITHUB_AUTH_CLIENT_ID=your_github_client_id
+GITHUB_AUTH_CLIENT_SECRET=your_github_client_secret
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
