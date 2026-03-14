@@ -26,6 +26,11 @@ export const users = pgTable('users', {
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
   premium: boolean('premium').default(false).notNull(),
   role: text('role', { enum: ['member', 'moderator', 'admin'] }).notNull().default('member'),
+  // Stripe billing
+  stripeCustomerId: text('stripe_customer_id').unique(),
+  stripeSubscriptionId: text('stripe_subscription_id').unique(),
+  stripePriceId: text('stripe_price_id'),
+  stripeCurrentPeriodEnd: timestamp('stripe_current_period_end'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
