@@ -29,7 +29,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const onboarded = session.user.onboardingComplete === true;
+  const onboarded = session?.user.onboardingComplete === true;
 
   // Not yet onboarded → must go to /onboarding (except public routes)
   if (!onboarded && pathname !== ONBOARDING_PATH && !isPublic(pathname)) {
