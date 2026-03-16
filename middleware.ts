@@ -29,12 +29,10 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Authenticated user visiting sign-in/sign-up/root → send to /home
-  if (
-    pathname === '/' ||
-    pathname.startsWith('/sign-in') ||
-    pathname.startsWith('/sign-up')
-  ) {
+  // Authenticated user visiting root → send to /home
+  // /sign-in and /sign-up are handled by the auth layout with proper session
+  // validation, to avoid redirect loops when the session cookie is stale.
+  if (pathname === '/') {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 

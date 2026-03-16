@@ -102,26 +102,31 @@ export default function ClubForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Club Name <span className="text-red-400">*</span>
+        <label htmlFor="club-name" className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Club Name <span className="text-red-400" aria-hidden="true">*</span>
+          <span className="sr-only">(required)</span>
         </label>
         <input
           {...register('name')}
+          id="club-name"
+          aria-required="true"
+          aria-describedby={errors.name ? 'club-name-error' : undefined}
           placeholder="e.g. Midnight Mystery Readers…"
           className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.name && (
-          <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+          <p id="club-name-error" role="alert" className="text-xs text-red-400 mt-1">{errors.name.message}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+        <label htmlFor="club-description" className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Description{' '}
           <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <textarea
           {...register('description')}
+          id="club-description"
           rows={3}
           placeholder="What is this club about? What kinds of books do you read?"
           className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
@@ -175,6 +180,9 @@ export default function ClubForm({
         </div>
         <button
           type="button"
+          role="switch"
+          aria-checked={explorableValue}
+          aria-label="Make this club explorable"
           onClick={() => {
             const next = !explorableValue;
             setValue('explorable', next);
@@ -185,6 +193,7 @@ export default function ClubForm({
           }`}
         >
           <span
+            aria-hidden="true"
             className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
               explorableValue ? 'translate-x-5' : 'translate-x-0'
             }`}
@@ -193,12 +202,13 @@ export default function ClubForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+        <label htmlFor="club-rules" className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Club Rules{' '}
           <span className="text-white/80 font-normal">(optional)</span>
         </label>
         <textarea
           {...register('rules')}
+          id="club-rules"
           rows={4}
           placeholder="Any rules or guidelines for members? e.g. Be respectful, finish the book before posting spoilers…"
           className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
@@ -214,7 +224,9 @@ export default function ClubForm({
         </label>
         <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
           <div className="flex gap-2">
+            <label htmlFor="tag-input" className="sr-only">Add a tag</label>
             <input
+              id="tag-input"
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
@@ -231,9 +243,10 @@ export default function ClubForm({
               type="button"
               onClick={addTag}
               disabled={!tagInput.trim() || tags.length >= 10}
+              aria-label="Add tag"
               className="px-3 py-2 rounded-lg bg-[#FFC300]/15 text-[#FFC300] hover:bg-[#FFC300]/25 disabled:opacity-30 transition-colors shrink-0"
             >
-              <Plus className="w-4 h-4" />
+              <Plus aria-hidden="true" className="w-4 h-4" />
             </button>
           </div>
 
@@ -248,9 +261,10 @@ export default function ClubForm({
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
+                    aria-label={`Remove tag: ${tag}`}
                     className="text-white/80 hover:text-red-400 transition-colors"
                   >
-                    <X className="w-3 h-3" />
+                    <X aria-hidden="true" className="w-3 h-3" />
                   </button>
                 </span>
               ))}
@@ -293,6 +307,8 @@ export default function ClubForm({
                       key={f.id}
                       type="button"
                       onClick={() => toggleInvite(f.id)}
+                      aria-pressed={selected}
+                      aria-label={`${selected ? 'Remove' : 'Invite'} ${name}`}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors ${
                         selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                       }`}
@@ -330,7 +346,7 @@ export default function ClubForm({
       )}
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+        <p role="alert" className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
           {error}
         </p>
       )}

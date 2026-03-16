@@ -63,7 +63,7 @@ export function RichTextEditor({
 
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl overflow-hidden">
-      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-[#2a2a2a] flex-wrap">
+      <div role="toolbar" aria-label="Text formatting" className="flex items-center gap-0.5 px-3 py-2 border-b border-[#2a2a2a] flex-wrap">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}
@@ -148,7 +148,12 @@ export function RichTextEditor({
           <Redo className="w-3.5 h-3.5" />
         </ToolbarButton>
 
-        <span className="ml-auto text-xs text-white">
+        <span
+          className="ml-auto text-xs text-white"
+          aria-live="polite"
+          aria-label={`${editor.getText().trim().split(/\s+/).filter(Boolean).length} words`}
+          aria-atomic="true"
+        >
           {editor.getText().trim().split(/\s+/).filter(Boolean).length} words
         </span>
       </div>
@@ -189,6 +194,8 @@ function ToolbarButton({
     <button
       type="button"
       title={title}
+      aria-label={title}
+      aria-pressed={active}
       onClick={onClick}
       className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
         active
@@ -196,11 +203,11 @@ function ToolbarButton({
           : 'text-white hover:text-white hover:bg-white/[0.07]'
       }`}
     >
-      {children}
+      <span aria-hidden="true">{children}</span>
     </button>
   );
 }
 
 function Divider() {
-  return <span className="w-px h-4 bg-[#333] mx-1 shrink-0" />;
+  return <span aria-hidden="true" className="w-px h-4 bg-[#333] mx-1 shrink-0" />;
 }

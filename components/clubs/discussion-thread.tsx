@@ -151,27 +151,29 @@ export default function DiscussionThread({
         </p>
 
         {error && (
-          <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5 mb-3">
+          <p role="alert" className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5 mb-3">
             {error}
           </p>
         )}
 
         <div className="flex items-center gap-3 pt-3 border-t border-[#2a2a2a]">
           <button
+            type="button"
             onClick={handleLike}
             disabled={!currentUserId}
+            aria-label={`${likeCount} like${likeCount !== 1 ? 's' : ''}, ${likedByMe ? 'unlike' : 'like'} this discussion`}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all ${
               likedByMe
                 ? 'text-red-400 bg-red-400/10 hover:bg-red-400/15'
                 : 'text-white/80 hover:text-white hover:bg-white/10'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            <Heart className={`w-4 h-4 ${likedByMe ? 'fill-red-400' : ''}`} />
-            <span>{likeCount}</span>
+            <Heart aria-hidden="true" className={`w-4 h-4 ${likedByMe ? 'fill-red-400' : ''}`} />
+            <span aria-hidden="true">{likeCount}</span>
           </button>
 
           <span className="inline-flex items-center gap-1.5 text-sm text-white/80">
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare aria-hidden="true" className="w-4 h-4" />
             {discussion.replies.length} repl
             {discussion.replies.length !== 1 ? 'ies' : 'y'}
           </span>
@@ -179,16 +181,18 @@ export default function DiscussionThread({
           <div className="ml-auto flex items-center gap-2">
             {isMod && (
               <button
+                type="button"
                 onClick={handlePin}
                 disabled={pinning}
+                aria-label={discussion.isPinned ? 'Unpin discussion' : 'Pin discussion'}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/80 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
               >
                 {pinning ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 aria-hidden="true" className="w-3.5 h-3.5 animate-spin" />
                 ) : discussion.isPinned ? (
-                  <PinOff className="w-3.5 h-3.5" />
+                  <PinOff aria-hidden="true" className="w-3.5 h-3.5" />
                 ) : (
-                  <Pin className="w-3.5 h-3.5" />
+                  <Pin aria-hidden="true" className="w-3.5 h-3.5" />
                 )}
                 {discussion.isPinned ? 'Unpin' : 'Pin'}
               </button>
@@ -203,8 +207,8 @@ export default function DiscussionThread({
                   router.push(`/clubs/${clubId}/discussions`);
                 }}
                 trigger={
-                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all">
-                    <Trash2 className="w-3.5 h-3.5" />
+                  <button type="button" aria-label="Delete discussion" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all">
+                    <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
                     Delete
                   </button>
                 }
