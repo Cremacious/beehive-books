@@ -143,8 +143,10 @@ export default function DiscussionReply({
 
         <div className="flex items-center gap-2 pl-9">
           <button
+            type="button"
             onClick={handleLike}
             disabled={!currentUserId}
+            aria-label={`${likeCount} like${likeCount !== 1 ? 's' : ''}, ${likedByMe ? 'unlike' : 'like'} this reply`}
             className={`inline-flex items-center gap-1 text-xs transition-all ${
               likedByMe
                 ? 'text-red-400 hover:text-red-300'
@@ -152,17 +154,21 @@ export default function DiscussionReply({
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Heart
+              aria-hidden="true"
               className={`w-3.5 h-3.5 ${likedByMe ? 'fill-red-400' : ''}`}
             />
-            {likeCount > 0 && <span>{likeCount}</span>}
+            {likeCount > 0 && <span aria-hidden="true">{likeCount}</span>}
           </button>
 
           {isMember && depth < 2 && (
             <button
+              type="button"
               onClick={() => setShowReplyInput((v) => !v)}
+              aria-expanded={showReplyInput}
+              aria-label={showReplyInput ? 'Cancel reply' : `Reply to ${authorName}`}
               className="inline-flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors"
             >
-              <Reply className="w-3.5 h-3.5" />
+              <Reply aria-hidden="true" className="w-3.5 h-3.5" />
               Reply
             </button>
           )}
@@ -176,8 +182,8 @@ export default function DiscussionReply({
                 router.refresh();
               }}
               trigger={
-                <button className="inline-flex items-center gap-1 text-xs text-red-400/80 hover:text-red-400 transition-colors">
-                  <Trash2 className="w-3.5 h-3.5" />
+                <button type="button" aria-label="Delete reply" className="inline-flex items-center gap-1 text-xs text-red-400/80 hover:text-red-400 transition-colors">
+                  <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
                 </button>
               }
             />
@@ -186,24 +192,30 @@ export default function DiscussionReply({
 
         {showReplyInput && (
           <div className="mt-3 pl-9 space-y-2">
+            <label htmlFor={`reply-input-${reply.id}`} className="sr-only">
+              Reply to {authorName}
+            </label>
             <textarea
+              id={`reply-input-${reply.id}`}
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               rows={2}
               placeholder={`Replying to ${authorName}…`}
               className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
             />
-            {replyError && <p className="text-xs text-red-400">{replyError}</p>}
+            {replyError && <p role="alert" className="text-xs text-red-400">{replyError}</p>}
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={handlePostReply}
                 disabled={posting || !replyContent.trim()}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#e0ac01] disabled:opacity-50 transition-colors"
               >
-                {posting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {posting && <Loader2 aria-hidden="true" className="w-3.5 h-3.5 animate-spin" />}
                 Post Reply
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setShowReplyInput(false);
                   setReplyContent('');

@@ -44,7 +44,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
     pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <aside className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
+    <aside aria-label="Main navigation" className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
         <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-5">
           <Image
@@ -72,6 +72,8 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                 <li key={href}>
                   <Link
                     href={href}
+                    aria-label={label}
+                    aria-current={active ? 'page' : undefined}
                     className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
                         ? 'text-[#FFC300]'
@@ -79,10 +81,11 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     }`}
                   >
                     <Icon
+                      aria-hidden="true"
                       className="w-5.5 h-5.5 shrink-0"
                       strokeWidth={active ? 2.5 : 1.75}
                     />
-                    <span className="hidden lg:block">{label}</span>
+                    <span className="hidden lg:block" aria-hidden="true">{label}</span>
                   </Link>
                 </li>
               );
@@ -92,6 +95,8 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               <li>
                 <Link
                   href={`/u/${username ?? user.id}`}
+                  aria-label="Profile"
+                  aria-current={isActive('/u') ? 'page' : undefined}
                   className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                     isActive('/u')
                       ? 'text-[#FFC300]'
@@ -99,10 +104,11 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                   }`}
                 >
                   <User
+                    aria-hidden="true"
                     className="w-5.5 h-5.5 shrink-0"
                     strokeWidth={isActive('/u') ? 2.5 : 1.75}
                   />
-                  <span className="hidden lg:block">Profile</span>
+                  <span className="hidden lg:block" aria-hidden="true">Profile</span>
                 </Link>
               </li>
             )}
@@ -111,6 +117,8 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               <li>
                 <Link
                   href="/admin"
+                  aria-label="Admin"
+                  aria-current={isActive('/admin') ? 'page' : undefined}
                   className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                     isActive('/admin')
                       ? 'text-[#FFC300]'
@@ -118,10 +126,11 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                   }`}
                 >
                   <ShieldCheck
+                    aria-hidden="true"
                     className="w-5.5 h-5.5 shrink-0"
                     strokeWidth={isActive('/admin') ? 2.5 : 1.75}
                   />
-                  <span className="hidden lg:block">Admin</span>
+                  <span className="hidden lg:block" aria-hidden="true">Admin</span>
                 </Link>
               </li>
             )}
@@ -158,17 +167,18 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               <div className="hidden lg:flex items-center gap-0.5 shrink-0">
                 <Link
                   href="/settings"
-                  title="Settings"
+                  aria-label="Settings"
                   className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings aria-hidden="true" className="w-5 h-5" />
                 </Link>
                 <button
+                  type="button"
                   onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
-                  title="Sign out"
+                  aria-label="Sign out"
                   className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut aria-hidden="true" className="w-5 h-5" />
                 </button>
               </div>
             </div>

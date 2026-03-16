@@ -105,41 +105,37 @@ function NotificationRow({
   const { Icon, bg, fg } = getTypeIcon(type);
 
   return (
-    <Link
-      href={link}
-      onClick={onClose}
-      className={`flex items-start gap-3 px-4 py-3.5 hover:bg-[#FFC300]/5 transition-colors ${
-        !isRead ? 'bg-white/3' : ''
-      }`}
-    >
+    <div role="listitem">
+      <Link
+        href={link}
+        onClick={onClose}
+        aria-label={`${!isSystem && actorUsername ? actorUsername + ' ' : ''}${messageBody(type, metadata)}${!isRead ? ', unread' : ''}`}
+        className={`flex items-start gap-3 px-4 py-3.5 hover:bg-[#FFC300]/5 transition-colors ${
+          !isRead ? 'bg-white/3' : ''
+        }`}
+      >
+        <div aria-hidden="true" className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
+          <Icon className={`w-4 h-4 ${fg}`} />
+        </div>
 
-      <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
-        <Icon className={`w-4 h-4 ${fg}`} />
-      </div>
+        <div className="flex-1 min-w-0" aria-hidden="true">
+          <p className={`text-sm leading-snug ${isRead ? 'text-white/80' : 'text-white'}`}>
+            {!isSystem && actorUsername ? (
+              <>
+                <span className="font-semibold text-[#FFC300]">{actorUsername}</span>
+                {' '}
+              </>
+            ) : null}
+            {messageBody(type, metadata)}
+          </p>
+          <p className="text-xs text-white/80 mt-1">{timeAgo(createdAt)}</p>
+        </div>
 
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm leading-snug ${isRead ? 'text-white/80' : 'text-white'}`}>
-          {!isSystem && actorUsername ? (
-            <>
-              <Link
-                href={`/u/${actorUsername}`}
-                onClick={(e) => e.stopPropagation()}
-                className="font-semibold text-[#FFC300] hover:underline"
-              >
-                {actorUsername}
-              </Link>
-              {' '}
-            </>
-          ) : null}
-          {messageBody(type, metadata)}
-        </p>
-        <p className="text-xs text-white/80 mt-1">{timeAgo(createdAt)}</p>
-      </div>
-
-      {!isRead && (
-        <div className="w-1.5 h-1.5 rounded-full bg-[#FFC300] shrink-0 mt-2" />
-      )}
-    </Link>
+        {!isRead && (
+          <div aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-[#FFC300] shrink-0 mt-2" />
+        )}
+      </Link>
+    </div>
   );
 }
 
@@ -159,20 +155,24 @@ export function NotificationPanel({ notifications, onClose }: Props) {
   }
 
   return (
-    <div className="w-80 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden">
-
+    <section
+      role="region"
+      aria-label="Notifications"
+      className="w-80 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden"
+    >
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#2a2a2a]">
         <div className="flex items-center gap-2">
-          <Bell className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-sm font-semibold text-white">Notifications</h3>
+          <Bell aria-hidden="true" className="w-4 h-4 text-[#FFC300]" />
+          <h2 className="text-sm font-semibold text-white">Notifications</h2>
           {unread > 0 && (
-            <span className="bg-[#FFC300] text-black text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+            <span aria-hidden="true" className="bg-[#FFC300] text-black text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
               {unread}
             </span>
           )}
         </div>
         {unread > 0 && (
           <button
+            type="button"
             onClick={handleMarkAllRead}
             className="text-xs text-[#FFC300] hover:underline transition-colors"
           >
@@ -181,11 +181,10 @@ export function NotificationPanel({ notifications, onClose }: Props) {
         )}
       </div>
 
-
-      <div className="max-h-100 overflow-y-auto divide-y divide-[#2a2a2a]">
+      <div role="list" aria-label="Notification list" className="max-h-100 overflow-y-auto divide-y divide-[#2a2a2a]">
         {notifications.length === 0 ? (
-          <div className="px-4 py-10 text-center">
-            <Bell className="w-8 h-8 text-white/80 mx-auto mb-2" />
+          <div role="status" className="px-4 py-10 text-center">
+            <Bell aria-hidden="true" className="w-8 h-8 text-white/80 mx-auto mb-2" />
             <p className="text-sm text-white/80">No notifications yet</p>
           </div>
         ) : (
@@ -195,10 +194,10 @@ export function NotificationPanel({ notifications, onClose }: Props) {
         )}
       </div>
 
-
       {notifications.length > 0 && (
         <div className="border-t border-[#2a2a2a] px-4 py-2.5">
           <button
+            type="button"
             onClick={() => { router.push('/notifications'); onClose(); }}
             className="w-full text-center text-sm text-white hover:text-[#FFC300] py-1 transition-colors"
           >
@@ -207,6 +206,6 @@ export function NotificationPanel({ notifications, onClose }: Props) {
         </div>
       )}
 
-    </div>
+    </section>
   );
 }

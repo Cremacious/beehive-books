@@ -38,7 +38,7 @@ function RoleBadge({ role }: { role: ClubRole }) {
   if (role === 'OWNER') {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-[#FFC300] bg-[#FFC300]/10 rounded-full px-2 py-0.5">
-        <Crown className="w-3 h-3" />
+        <Crown aria-hidden="true" className="w-3 h-3" />
         Owner
       </span>
     );
@@ -46,14 +46,14 @@ function RoleBadge({ role }: { role: ClubRole }) {
   if (role === 'MODERATOR') {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-blue-400 bg-blue-400/10 rounded-full px-2 py-0.5">
-        <Shield className="w-3 h-3" />
+        <Shield aria-hidden="true" className="w-3 h-3" />
         Moderator
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 text-[11px] text-green-400 bg-green-400/10 rounded-full px-2 py-0.5">
-      <Check className="w-3 h-3" />
+      <Check aria-hidden="true" className="w-3 h-3" />
       Member
     </span>
   );
@@ -120,7 +120,16 @@ function MemberCard({
 
   return (
     <div
+      role={user.username ? 'link' : undefined}
+      tabIndex={user.username ? 0 : undefined}
+      aria-label={user.username ? `View ${displayName}'s profile` : undefined}
       onClick={() => user.username && router.push(`/u/${user.username}`)}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && user.username) {
+          e.preventDefault();
+          router.push(`/u/${user.username}`);
+        }
+      }}
       className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#3a3a3a] transition-all cursor-pointer"
     >
       {user.image ? (
@@ -153,49 +162,59 @@ function MemberCard({
       {canManage && (
         <div className="relative shrink-0" ref={menuRef}>
           {loading ? (
-            <div className="p-1.5">
-              <Loader2 className="w-4 h-4 text-white/80 animate-spin" />
+            <div className="p-1.5" aria-label="Loading">
+              <Loader2 aria-hidden="true" className="w-4 h-4 text-white/80 animate-spin" />
             </div>
           ) : (
             <button
+              type="button"
+              aria-label={`Manage ${displayName}`}
+              aria-expanded={showMenu}
+              aria-haspopup="menu"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowMenu((v) => !v);
               }}
               className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all"
             >
-              <MoreVertical className="w-4 h-4" />
+              <MoreVertical aria-hidden="true" className="w-4 h-4" />
             </button>
           )}
 
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+            <div role="menu" className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
               {myRole === 'OWNER' && member.role === 'MEMBER' && (
                 <button
+                  type="button"
+                  role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePromote();
                   }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
-                  <Shield className="w-4 h-4 text-blue-400 shrink-0" />
+                  <Shield aria-hidden="true" className="w-4 h-4 text-blue-400 shrink-0" />
                   Promote to Moderator
                 </button>
               )}
               {myRole === 'OWNER' && member.role === 'MODERATOR' && (
                 <button
+                  type="button"
+                  role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDemote();
                   }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
-                  <Check className="w-4 h-4 text-green-400 shrink-0" />
+                  <Check aria-hidden="true" className="w-4 h-4 text-green-400 shrink-0" />
                   Demote to Member
                 </button>
               )}
-              <div className="my-1 border-t border-[#2a2a2a]" />
+              <div aria-hidden="true" className="my-1 border-t border-[#2a2a2a]" />
               <button
+                type="button"
+                role="menuitem"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRemove();
@@ -297,19 +316,23 @@ function JoinRequestRow({
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <button
+          type="button"
+          aria-label={`Approve ${displayName}'s join request`}
           onClick={handleApprove}
           disabled={approving || rejecting}
           className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-green-500/25 text-green-400/80 hover:bg-green-500/10 transition-all"
         >
-          {approving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+          {approving ? <Loader2 aria-hidden="true" className="w-3 h-3 animate-spin" /> : <Check aria-hidden="true" className="w-3 h-3" />}
           Approve
         </button>
         <button
+          type="button"
+          aria-label={`Reject ${displayName}'s join request`}
           onClick={handleReject}
           disabled={approving || rejecting}
           className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-red-500/20 text-red-400/80 hover:bg-red-500/10 transition-all"
         >
-          {rejecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+          {rejecting ? <Loader2 aria-hidden="true" className="w-3 h-3 animate-spin" /> : <X aria-hidden="true" className="w-3 h-3" />}
           Reject
         </button>
       </div>
@@ -367,15 +390,17 @@ export default function MembersGrid({
       {isOwnerOrMod && (
         <div className="mb-5">
           <button
+            type="button"
+            aria-expanded={showInvitePicker}
             onClick={() => setShowInvitePicker((v) => !v)}
             className="flex items-center gap-2 text-sm font-medium text-[#FFC300]/80 hover:text-[#FFC300] border border-[#FFC300]/20 hover:border-[#FFC300]/40 px-4 py-2 rounded-xl bg-[#FFC300]/5 hover:bg-[#FFC300]/10 transition-all"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus aria-hidden="true" className="w-4 h-4" />
             Invite Friend
             {showInvitePicker ? (
-              <ChevronUp className="w-3.5 h-3.5" />
+              <ChevronUp aria-hidden="true" className="w-3.5 h-3.5" />
             ) : (
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown aria-hidden="true" className="w-3.5 h-3.5" />
             )}
           </button>
           {showInvitePicker && (
@@ -391,9 +416,10 @@ export default function MembersGrid({
       )}
 
       <div className="relative mb-4">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
+        <Search aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
         <input
           type="text"
+          aria-label="Search members"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search members…"
@@ -408,6 +434,8 @@ export default function MembersGrid({
           return (
             <button
               key={value}
+              type="button"
+              aria-pressed={roleFilter === value}
               onClick={() => setRoleFilter(value)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 roleFilter === value
@@ -428,10 +456,11 @@ export default function MembersGrid({
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/10 mb-3" />
+          <Search aria-hidden="true" className="w-8 h-8 text-white/10 mb-3" />
           <p className="text-sm text-white/80">No members found.</p>
           {query && (
             <button
+              type="button"
               onClick={() => setQuery('')}
               className="text-xs text-[#FFC300]/80 hover:text-[#FFC300] transition-colors mt-2"
             >
