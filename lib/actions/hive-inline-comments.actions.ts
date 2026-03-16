@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, asc, desc, eq, ne } from 'drizzle-orm';
@@ -96,6 +97,8 @@ export async function createInlineCommentAction(
 ): Promise<ActionResult & { commentId?: string }> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     if (!content.trim()) return { success: false, message: 'Comment text is required.' };
     if (content.length > 2000) return { success: false, message: 'Comment too long (max 2000 chars).' };

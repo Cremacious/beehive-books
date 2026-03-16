@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
@@ -423,6 +424,8 @@ export async function createClubDiscussionAction(
   data: ClubDiscussionFormData,
 ): Promise<ActionResult & { discussionId?: string }> {
   const { userId } = await requireClubMember(clubId);
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
   const parsed = clubDiscussionSchema.safeParse(data);
   if (!parsed.success) return { success: false, message: parsed.error.issues[0].message };
 
@@ -661,6 +664,8 @@ export async function createDiscussionReplyAction(
   parentId?: string,
 ): Promise<ActionResult & { replyId?: string }> {
   const { userId } = await requireClubMember(clubId);
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
   const parsed = clubReplySchema.safeParse({ content });
   if (!parsed.success) return { success: false, message: parsed.error.issues[0].message };
 

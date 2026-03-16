@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, asc, desc, eq, ne } from 'drizzle-orm';
@@ -88,6 +89,8 @@ export async function createWikiEntryAction(
 ): Promise<ActionResult & { entryId?: string }> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     if (!title.trim()) return { success: false, message: 'Title is required.' };
     if (title.length > 200) return { success: false, message: 'Title too long (max 200 chars).' };

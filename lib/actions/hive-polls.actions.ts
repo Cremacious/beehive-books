@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
@@ -103,6 +104,8 @@ export async function createPollAction(
 ): Promise<ActionResult & { pollId?: string }> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     if (!question.trim()) return { success: false, message: 'Question is required.' };
     const cleanOptions = options.map((o) => o.trim()).filter(Boolean);
@@ -160,6 +163,8 @@ export async function voteOnPollAction(
 ): Promise<ActionResult> {
   try {
     const userId = await requireAuth();
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     const poll = await db.query.hivePolls.findFirst({
       where: eq(hivePolls.id, pollId),

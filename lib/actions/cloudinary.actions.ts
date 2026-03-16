@@ -1,7 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
-
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 import { cloudinary } from '@/lib/cloudinary';
 
 type UploadFolder = 'covers' | 'avatars';
@@ -9,6 +9,8 @@ type UploadFolder = 'covers' | 'avatars';
 export async function generateUploadSignatureAction(folder: UploadFolder, entityId: string) {
   const userId = await requireAuth();
   if (!userId) throw new Error('Unauthorized');
+  const limited = await checkActionRateLimit(userId);
+  if (limited) throw new Error(limited);
 
   const cloudFolder = folder === 'covers' ? 'hive-covers' : 'hive-avatars';
   const timestamp   = Math.round(Date.now() / 1000);

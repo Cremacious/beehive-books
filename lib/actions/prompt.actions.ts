@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { and, eq, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -601,6 +602,8 @@ export async function createEntryAction(
   content: string,
 ): Promise<ActionResult & { entryId?: string }> {
   const userId = await requireAuth();
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
 
   const prompt = await db.query.prompts.findFirst({
     where: eq(prompts.id, promptId),
@@ -738,6 +741,8 @@ export async function addEntryCommentAction(
   parentId?: string | null,
 ): Promise<ActionResult> {
   const userId = await requireAuth();
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
 
   const parsed = entryCommentSchema.safeParse({ content });
   if (!parsed.success)
