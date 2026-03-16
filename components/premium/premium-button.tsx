@@ -8,17 +8,21 @@ export function UpgradeButton({ className }: { className?: string }) {
 
   async function handleUpgrade() {
     setLoading(true);
-    const res = await fetch('/api/stripe/checkout', { method: 'POST' });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
+    try {
+      const res = await fetch('/api/stripe/checkout', { method: 'POST' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // network error
+    } finally {
       setLoading(false);
     }
   }
 
   return (
     <button
+      type="button"
       onClick={handleUpgrade}
       disabled={loading}
       className={className}
@@ -38,17 +42,21 @@ export function ManageSubscriptionButton({ className }: { className?: string }) 
 
   async function handlePortal() {
     setLoading(true);
-    const res = await fetch('/api/stripe/portal', { method: 'POST' });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // network error
+    } finally {
       setLoading(false);
     }
   }
 
   return (
     <button
+      type="button"
       onClick={handlePortal}
       disabled={loading}
       className={className}

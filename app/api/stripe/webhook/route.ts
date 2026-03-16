@@ -109,10 +109,16 @@ export async function POST(req: NextRequest) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
         if (!invoice.customer) break;
-        await db
-          .update(users)
-          .set({ premium: false, updatedAt: new Date() })
-          .where(eq(users.stripeCustomerId, invoice.customer as string));
+        const subscriptionId = (invoice as unknown as { parent?: { subscription_details?: { subscription?: string } } }).parent?.subscription_details?.subscription;
+        if (!subscriptionId) break;
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const terminalStatuses = ['canceled', 'unpaid', 'incomplete_expired'];
+        if (terminalStatuses.includes(subscription.status)) {
+          await db
+            .update(users)
+            .set({ premium: false, updatedAt: new Date() })
+            .where(eq(users.stripeCustomerId, invoice.customer as string));
+        }
         break;
       }
     }
