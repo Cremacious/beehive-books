@@ -16,8 +16,8 @@ function isPublic(pathname: string) {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Let better-auth handle its own API routes without interference
-  if (pathname.startsWith('/api/auth')) {
+  // Let auth and payment API routes pass through without session checks
+  if (pathname.startsWith('/api/auth') || pathname.startsWith('/api/stripe')) {
     return NextResponse.next();
   }
 

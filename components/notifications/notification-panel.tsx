@@ -48,7 +48,7 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'CLUB_JOIN_REQUEST':      return 'wants to join your book club';
     case 'CLUB_DISCUSSION':        return 'posted a new discussion in your club';
     case 'CLUB_REPLY':             return 'replied to your discussion';
-    case 'HIVE_INVITE':            return 'invited you to a hive';
+    case 'HIVE_INVITE':            return 'accepted your hive invite';
     case 'HIVE_INVITE_PENDING':    return 'invited you to join a hive';
     case 'HIVE_CHAPTER_CLAIMED':   return 'claimed a chapter in the hive';
     case 'HIVE_SPRINT_STARTED':    return 'started a writing sprint';
