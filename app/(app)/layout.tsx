@@ -15,8 +15,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
-    columns: { role: true },
+    columns: { role: true, onboardingComplete: true },
   });
+
+  if (!user?.onboardingComplete) redirect('/onboarding');
 
   const isAdmin = user?.role === 'admin';
 

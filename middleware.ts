@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 
 const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up'];
-const ONBOARDING_PATH = '/onboarding';
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some((p) =>
@@ -10,39 +8,33 @@ function isPublic(pathname: string) {
   );
 }
 
-export default async function middleware(request: NextRequest) {
+export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Let auth and payment API routes pass through without session checks
+  // Let auth and payment API routes pass through
   if (pathname.startsWith('/api/auth') || pathname.startsWith('/api/stripe')) {
     return NextResponse.next();
   }
 
-  const session = await auth.api.getSession({ headers: request.headers });
-  const userId = session?.user?.id ?? null;
+  const sessionToken =
+    request.cookies.get('better-auth.session_token') ??
+    request.cookies.get('__Secure-better-auth.session_token');
 
-  // Unauthenticated: only allow public routes
-  if (!userId) {
+  const isAuthenticated = !!sessionToken;
+
+  if (!isAuthenticated) {
     if (!isPublic(pathname)) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
     return NextResponse.next();
   }
 
-  const onboarded = session?.user.onboardingComplete === true;
-
-  // Not yet onboarded → must go to /onboarding (except public routes)
-  if (!onboarded && pathname !== ONBOARDING_PATH && !isPublic(pathname)) {
-    return NextResponse.redirect(new URL('/onboarding', request.url));
-  }
-
-  // Onboarded user visiting root or onboarding → send to /home
-  if (onboarded && (pathname === '/' || pathname === ONBOARDING_PATH)) {
-    return NextResponse.redirect(new URL('/home', request.url));
-  }
-
-  // Signed-in user visiting sign-in/sign-up → send to /home
-  if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
+  // Authenticated user visiting sign-in/sign-up/root → send to /home
+  if (
+    pathname === '/' ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up')
+  ) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
