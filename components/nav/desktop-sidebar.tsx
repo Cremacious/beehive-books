@@ -51,7 +51,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             src={logoImage}
             alt="Beehive Books"
             height={50}
-            width={150200}
+            width={200}
             className="hidden lg:block"
             priority
           />

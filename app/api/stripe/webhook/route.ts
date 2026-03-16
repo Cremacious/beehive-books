@@ -13,9 +13,10 @@ async function setUserPremium(
   subscription: Stripe.Subscription,
   isPremium: boolean,
 ) {
-  const priceId = subscription.items.data[0]?.price.id ?? null;
-  const periodEnd = subscription.current_period_end
-    ? new Date(subscription.current_period_end * 1000)
+  const item = subscription.items.data[0];
+  const priceId = item?.price.id ?? null;
+  const periodEnd = item?.current_period_end
+    ? new Date(item.current_period_end * 1000)
     : null;
 
   await db
@@ -97,10 +98,9 @@ export async function POST(req: NextRequest) {
 
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
-        if (!invoice.subscription) break;
-        const subscription = await stripe.subscriptions.retrieve(
-          invoice.subscription as string,
-        );
+        const subscriptionId = (invoice as unknown as { parent?: { subscription_details?: { subscription?: string } } }).parent?.subscription_details?.subscription;
+        if (!subscriptionId) break;
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         const customerId = invoice.customer as string;
         await setUserPremium(customerId, subscription, true);
         break;
