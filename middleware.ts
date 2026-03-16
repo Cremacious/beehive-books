@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 
 const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up'];
 const ONBOARDING_PATH = '/onboarding';
@@ -32,14 +29,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Authenticated: check onboarding status
-  const [dbUser] = await db
-    .select({ onboardingComplete: users.onboardingComplete })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
-
-  const onboarded = dbUser?.onboardingComplete === true;
+  const onboarded = session.user.onboardingComplete === true;
 
   // Not yet onboarded → must go to /onboarding (except public routes)
   if (!onboarded && pathname !== ONBOARDING_PATH && !isPublic(pathname)) {
