@@ -48,6 +48,7 @@ async function requireHiveOwner(hiveId: string) {
 
 export async function createHiveAction(
   data: HiveFormData,
+  invitedIds: string[] = [],
 ): Promise<ActionResult & { hiveId?: string }> {
   const userId = await requireAuth();
   const limitError = await checkCreateLimit(userId, 'hives');
@@ -92,6 +93,27 @@ export async function createHiveAction(
       userId,
       role: 'OWNER',
     });
+
+    if (invitedIds.length > 0) {
+      await db.insert(hiveInvites).values(
+        invitedIds.map((friendId) => ({
+          hiveId: hive.id,
+          invitedUserId: friendId,
+          invitedByUserId: userId,
+          role: 'CONTRIBUTOR' as const,
+          status: 'PENDING' as const,
+        })),
+      );
+      for (const friendId of invitedIds) {
+        void insertNotification({
+          recipientId: friendId,
+          actorId: userId,
+          type: 'HIVE_INVITE_PENDING',
+          link: `/hive`,
+          metadata: { hiveId: hive.id, hiveName: parsed.data.name },
+        });
+      }
+    }
 
     revalidatePath('/hive');
     return { success: true, message: 'Hive created!', hiveId: hive.id };

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
+import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import type { HiveSchemaData } from '@/lib/validations/hive.schema';
@@ -54,12 +55,14 @@ export default function HiveForm({
   defaultValues,
   cancelHref,
   userBooks = [],
+  friends = [],
 }: HiveFormProps) {
   const router = useRouter();
   const store = useHiveStore();
 
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
+  const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>(
     'new',
@@ -125,7 +128,7 @@ export default function HiveForm({
     };
 
     if (mode === 'create') {
-      const result = await store.createHive(payload);
+      const result = await store.createHive(payload, invitedIds);
       if (result.success && result.hiveId) {
         router.push(`/hive/${result.hiveId}`);
       } else {
@@ -412,6 +415,14 @@ export default function HiveForm({
             </div>
           )}
         </div>
+      )}
+
+      {mode === 'create' && privacy === 'PRIVATE' && (
+        <FriendInvitePicker
+          friends={friends}
+          selectedIds={invitedIds}
+          onChange={setInvitedIds}
+        />
       )}
 
       {error && (

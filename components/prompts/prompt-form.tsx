@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Image from 'next/image';
-import { Search, X, Loader2, Users, Compass } from 'lucide-react';
+import { Loader2, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
 import {
   promptSchema,
   type PromptFormData,
@@ -22,27 +22,6 @@ interface Props {
   mode: 'create' | 'edit';
   prompt?: PromptDetail;
   friends: FriendUser[];
-}
-
-function FriendAvatar({ user }: { user: FriendUser }) {
-  const name = user.username || '?';
-  return (
-    <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2a2000] flex items-center justify-center shrink-0">
-      {user.image ? (
-        <Image
-          src={user.image}
-          alt={name}
-          width={28}
-          height={28}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <span className="text-[9px] font-bold text-[#FFC300]">
-          {(name[0] || '?').toUpperCase()}
-        </span>
-      )}
-    </div>
-  );
 }
 
 function toDateInputValue(d: Date): string {
@@ -64,7 +43,6 @@ const PRIVACY_OPTIONS = [
 export function PromptForm({ mode, prompt, friends }: Props) {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
-  const [inviteSearch, setInviteSearch] = useState('');
 
   const initialInvited = prompt?.invites.map((i) => i.user.id) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
@@ -88,20 +66,6 @@ export function PromptForm({ mode, prompt, friends }: Props) {
 
   const privacyValue = watch('privacy');
   const explorableValue = watch('explorable');
-
-  function toggleInvite(id: string) {
-    setInvitedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((existingId) => existingId !== id)
-        : [...prev, id],
-    );
-  }
-
-  const filteredFriends = friends.filter((f) => {
-    if (!inviteSearch) return true;
-    const q = inviteSearch.toLowerCase();
-    return f.username?.toLowerCase().includes(q);
-  });
 
   async function onSubmit(data: PromptFormData) {
     setServerError('');
@@ -236,82 +200,11 @@ export function PromptForm({ mode, prompt, friends }: Props) {
       </div>
 
       {privacyValue === 'PRIVATE' && (
-        <div>
-          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-            <Users className="inline w-3.5 h-3.5 mr-1 text-yellow-500" />
-            Invite Friends
-            {invitedIds.length > 0 && (
-              <span className="ml-2 text-xs text-[#FFC300] font-normal">
-                {invitedIds.length} selected
-              </span>
-            )}
-          </label>
-
-          {friends.length === 0 ? (
-            <p className="text-sm text-white/80 py-3">
-              You have no friends to invite yet.
-            </p>
-          ) : (
-            <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#2a2a2a]">
-                <Search className="w-3.5 h-3.5 text-white/80 shrink-0" />
-                <input
-                  value={inviteSearch}
-                  onChange={(e) => setInviteSearch(e.target.value)}
-                  placeholder="Search friends…"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none"
-                />
-              </div>
-
-              <ul className="max-h-48 overflow-y-auto">
-                {filteredFriends.length === 0 ? (
-                  <li className="px-4 py-3 text-sm text-white/80">
-                    No matches
-                  </li>
-                ) : (
-                  filteredFriends.map((f) => {
-                    const selected = invitedIds.includes(f.id);
-                    const name = f.username || 'Unknown';
-                    return (
-                      <li key={f.id}>
-                        <button
-                          type="button"
-                          onClick={() => toggleInvite(f.id)}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                            selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
-                          }`}
-                        >
-                          <FriendAvatar user={f} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm text-white truncate">
-                              {name}
-                            </p>
-                            {f.username && (
-                              <p className="text-sm text-white/80">
-                                @{f.username}
-                              </p>
-                            )}
-                          </div>
-                          <div
-                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                              selected
-                                ? 'bg-[#FFC300] border-[#FFC300]'
-                                : 'border-white/20'
-                            }`}
-                          >
-                            {selected && (
-                              <X className="w-2.5 h-2.5 text-black" />
-                            )}
-                          </div>
-                        </button>
-                      </li>
-                    );
-                  })
-                )}
-              </ul>
-            </div>
-          )}
-        </div>
+        <FriendInvitePicker
+          friends={friends}
+          selectedIds={invitedIds}
+          onChange={setInvitedIds}
+        />
       )}
 
       {serverError && (

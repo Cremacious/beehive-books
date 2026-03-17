@@ -17,7 +17,7 @@ import {
 import type { HiveFormData, HiveRole, ActionResult } from '@/lib/types/hive.types';
 
 interface HiveStore {
-  createHive: (data: HiveFormData) => Promise<ActionResult & { hiveId?: string }>;
+  createHive: (data: HiveFormData, invitedIds?: string[]) => Promise<ActionResult & { hiveId?: string }>;
   updateHive: (hiveId: string, data: HiveFormData) => Promise<ActionResult>;
   deleteHive: (hiveId: string) => Promise<ActionResult>;
 
@@ -39,7 +39,7 @@ interface HiveStore {
 }
 
 export const useHiveStore = create<HiveStore>(() => ({
-  createHive: (data) => createHiveAction(data),
+  createHive: (data, invitedIds) => createHiveAction(data, invitedIds),
   updateHive: (hiveId, data) => updateHiveAction(hiveId, data),
   deleteHive: (hiveId) => deleteHiveAction(hiveId),
 

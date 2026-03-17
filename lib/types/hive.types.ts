@@ -124,6 +124,7 @@ export interface HiveFormProps {
   defaultValues?: Partial<Hive>;
   cancelHref: string;
   userBooks?: HiveBookOption[];
+  friends?: { id: string; username: string | null; image: string | null }[];
 }
 
 
