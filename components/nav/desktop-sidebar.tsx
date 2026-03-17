@@ -21,30 +21,33 @@ import {
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
-const navItems = [
-  { href: '/home', label: 'Home', icon: Home },
-  { href: '/explore', label: 'Explore', icon: Compass },
-  { href: '/library', label: 'Library', icon: Library },
-  { href: '/hive', label: 'Hives', icon: Hexagon },
-  { href: '/clubs', label: 'Clubs', icon: Users },
-  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
-  { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
-  { href: '/friends', label: 'Friends', icon: Users2 },
-] as const;
+import { useTranslations } from 'next-intl';
 import logoImage from '@/public/logo3.png';
 
 export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
+  const t = useTranslations('nav');
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
   const user = session?.user;
   const username = session?.user?.username ?? undefined;
   const avatarUrl = useCurrentUserImage();
 
+  const navItems = [
+    { href: '/home', label: t('home'), icon: Home },
+    { href: '/explore', label: t('explore'), icon: Compass },
+    { href: '/library', label: t('library'), icon: Library },
+    { href: '/hive', label: t('hives'), icon: Hexagon },
+    { href: '/clubs', label: t('clubs'), icon: Users },
+    { href: '/prompts', label: t('prompts'), icon: Lightbulb },
+    { href: '/reading-lists', label: t('readingLists'), icon: BookMarked },
+    { href: '/friends', label: t('friends'), icon: Users2 },
+  ] as const;
+
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <aside aria-label="Main navigation" className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
+    <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
       <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
         <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-5">
           <Image
@@ -108,7 +111,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     className="w-5.5 h-5.5 shrink-0"
                     strokeWidth={isActive('/u') ? 2.5 : 1.75}
                   />
-                  <span className="hidden lg:block" aria-hidden="true">Profile</span>
+                  <span className="hidden lg:block" aria-hidden="true">{t('profile')}</span>
                 </Link>
               </li>
             )}
@@ -130,7 +133,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     className="w-5.5 h-5.5 shrink-0"
                     strokeWidth={isActive('/admin') ? 2.5 : 1.75}
                   />
-                  <span className="hidden lg:block" aria-hidden="true">Admin</span>
+                  <span className="hidden lg:block" aria-hidden="true">{t('admin')}</span>
                 </Link>
               </li>
             )}
@@ -167,7 +170,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               <div className="hidden lg:flex items-center gap-0.5 shrink-0">
                 <Link
                   href="/settings"
-                  aria-label="Settings"
+                  aria-label={t('settings')}
                   className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
                 >
                   <Settings aria-hidden="true" className="w-5 h-5" />
@@ -175,7 +178,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                 <button
                   type="button"
                   onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
-                  aria-label="Sign out"
+                  aria-label={t('signOut')}
                   className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"
                 >
                   <LogOut aria-hidden="true" className="w-5 h-5" />

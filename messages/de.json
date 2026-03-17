@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "explore": "Entdecken",
+    "library": "Bibliothek",
+    "hives": "Bienenstöcke",
+    "clubs": "Clubs",
+    "prompts": "Schreibimpulse",
+    "readingLists": "Leselisten",
+    "friends": "Freunde",
+    "profile": "Profil",
+    "admin": "Admin",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden",
+    "mainNavigation": "Hauptnavigation"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto? Anmelden",
+    "createFreeAccount": "Kostenloses Konto erstellen"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Etwas ist schiefgelaufen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "back": "Zurück",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "daysAgo": "Vor {days} Tagen",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "siteNavigation": "Seitennavigation",
+    "mainNavigation": "Hauptnavigation"
+  },
+  "landing": {
+    "headline": "Schreiben, bearbeiten und entdecken.",
+    "tagline": "Beehive Books ist Ihr kreatives Zuhause! Veröffentlichen Sie Ihre Werke, treten Sie Bearbeitungsbienenstöcken bei, lesen Sie gemeinsam in Buchclubs und verbinden Sie sich mit Lesern, die dieselben Geschichten lieben wie Sie.",
+    "readyToJoin": "Bereit, Ihren Bienenstock zu finden?",
+    "readyTagline": "Treten Sie Beehive Books noch heute bei! Es ist kostenlos! Schreiben Sie Ihr erstes Kapitel, entdecken Sie eine Lesegemeinschaft oder erkunden Sie Tausende von Geschichten von Autoren wie Ihnen.",
+    "features": {
+      "library": "Persönliche Bibliothek",
+      "hives": "Schreib-Bienenstöcke",
+      "clubs": "Buchclubs",
+      "readingLists": "Leselisten",
+      "prompts": "Schreibimpulse"
+    },
+    "sections": {
+      "libraryTitle": "Ihre persönliche Schreibbibliothek",
+      "libraryDesc": "Veröffentlichen Sie Bücher Kapitel für Kapitel, organisieren Sie Kapitel in Sammlungen, schreiben Sie Autorennotizen und teilen Sie Ihre Arbeit mit der Welt oder halten Sie sie privat, bis Sie bereit sind.",
+      "hivesTitle": "Schreiben Sie Ihren nächsten Roman mit Ihrem Team",
+      "hivesDesc": "Ein Bienenstock verbindet Ihre Freunde mit einem Ihrer Bücher, damit Sie es gemeinsam bearbeiten können. Wie Bienen, die einen Bienenstock bauen, trägt jeder Mitarbeiter bei, indem er Anmerkungen hinterlässt, das Welt-Wiki füllt und sich gegenseitig auf Kurs hält.",
+      "clubsTitle": "Gemeinsam lesen und diskutieren",
+      "clubsDesc": "Erstellen Sie Buchclubs mit Freunden oder treten Sie ihnen bei. Wählen Sie, was Sie als nächstes lesen möchten, führen Sie Diskussionen und teilen Sie Ihre Gedanken in einem Raum für Leser, die sich über die Bücher verbinden möchten, die sie lieben.",
+      "moreTitle": "Noch mehr Möglichkeiten zum Mitmachen",
+      "moreTagline": "Kuratieren Sie Ihr Lesen, wecken Sie Ihre Kreativität und lassen Sie sich jeden Tag inspirieren."
+    }
+  },
+  "home": {
+    "title": "Startseite"
+  },
+  "library": {
+    "title": "Bibliothek"
+  },
+  "explore": {
+    "title": "Entdecken"
+  },
+  "clubs": {
+    "title": "Clubs"
+  },
+  "prompts": {
+    "title": "Schreibimpulse"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "selectLanguage": "Sprache auswählen"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "explore": "Explorar",
+    "library": "Biblioteca",
+    "hives": "Colmenas",
+    "clubs": "Clubes",
+    "prompts": "Prompts",
+    "readingLists": "Listas de lectura",
+    "friends": "Amigos",
+    "profile": "Perfil",
+    "admin": "Admin",
+    "settings": "Configuración",
+    "signOut": "Cerrar sesión",
+    "mainNavigation": "Navegación principal"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "createFreeAccount": "Crea tu cuenta gratis"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Volver",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "daysAgo": "Hace {days} días",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "siteNavigation": "Navegación del sitio",
+    "mainNavigation": "Navegación principal"
+  },
+  "landing": {
+    "headline": "Escribe, edita y descubre.",
+    "tagline": "¡Beehive Books es tu hogar creativo! Publica tus escritos, únete a colmenas de edición, lee junto a otros en clubes de lectura y conecta con lectores que aman las mismas historias que tú.",
+    "readyToJoin": "¿Listo para encontrar tu colmena?",
+    "readyTagline": "¡Únete a Beehive Books hoy! ¡Es gratis! Escribe tu primer capítulo, descubre una comunidad lectora o explora miles de historias de escritores como tú.",
+    "features": {
+      "library": "Biblioteca personal",
+      "hives": "Colmenas de escritura",
+      "clubs": "Clubes de lectura",
+      "readingLists": "Listas de lectura",
+      "prompts": "Prompts de escritura"
+    },
+    "sections": {
+      "libraryTitle": "Tu biblioteca personal de escritura",
+      "libraryDesc": "Publica libros capítulo por capítulo, organiza capítulos en colecciones, escribe notas de autor y comparte tu trabajo con el mundo o mantenlo privado hasta que estés listo.",
+      "hivesTitle": "Construye tu próxima novela con tu equipo",
+      "hivesDesc": "Una Colmena conecta a tus amigos con uno de tus libros para que puedan editarlo juntos. Como abejas construyendo una colmena, cada colaborador contribuye dejando anotaciones, llenando el wiki del mundo y manteniéndose mutuamente en el buen camino.",
+      "clubsTitle": "Lee y debate juntos",
+      "clubsDesc": "Crea o únete a clubes de lectura con amigos. Elige qué leer a continuación, organiza debates y comparte tus pensamientos en un espacio diseñado para lectores que quieren conectar a través de los libros que aman.",
+      "moreTitle": "Aún más formas de participar",
+      "moreTagline": "Cuida tu lectura, despierta tu creatividad e inspírate cada día."
+    }
+  },
+  "home": {
+    "title": "Inicio"
+  },
+  "library": {
+    "title": "Biblioteca"
+  },
+  "explore": {
+    "title": "Explorar"
+  },
+  "clubs": {
+    "title": "Clubes"
+  },
+  "prompts": {
+    "title": "Prompts"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar idioma"
+  }
+}
