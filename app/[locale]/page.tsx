@@ -36,12 +36,12 @@ export default function LandingPage() {
             height={200}
           />
           <h1 className="mb-6 text-4xl font-bold mainFont">
-            Get <span className='text-yellow-500'>buzzed</span> about writing!
+            Get <span className="text-yellow-500">buzzed</span> about writing!
           </h1>
           <p className="mb-10 text-lg text-white/80 leading-relaxed max-w-3xl mx-auto">
             Beehive Books is your creative writing home! Post your writing, join
-            editing groups, read together in book clubs, and connect with readers
-            who love the same stories you do.
+            editing groups, read together in book clubs, and connect with
+            readers who love the same stories you do.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <Button className="w-full md:w-auto" asChild size="lg">
@@ -69,14 +69,14 @@ export default function LandingPage() {
               {
                 icon: BookOpen,
                 label: 'Personal Library',
-                color: 'text-blue-400',
-                bg: 'bg-blue-400/10',
+                color: 'text-[#FFC300]',
+                bg: 'bg-[#FFC300]/10',
               },
               {
                 icon: Hexagon,
                 label: 'Writing Hives',
-                color: 'text-[#FFC300]',
-                bg: 'bg-[#FFC300]/10',
+                color: 'text-blue-400',
+                bg: 'bg-blue-400/10',
               },
               {
                 icon: Users,
@@ -96,8 +96,11 @@ export default function LandingPage() {
                 color: 'text-purple-400',
                 bg: 'bg-purple-400/10',
               },
-            ].map(({ icon: Icon, label, color, bg }) => (
-              <div key={label} className="flex flex-col items-center gap-2.5">
+            ].map(({ icon: Icon, label, color, bg }, i) => (
+              <div
+                key={label}
+                className={`flex flex-col items-center gap-2.5 ${i === 0 ? 'col-span-2 sm:col-span-1' : ''}`}
+              >
                 <div
                   className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}
                 >
@@ -117,7 +120,8 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Your personal writing library
+                Your <span className="text-[#FFC300]">personal</span> writing
+                library
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
                 Publish books chapter by chapter, organize chapters into
@@ -133,7 +137,7 @@ export default function LandingPage() {
                   'Readers can comment and like individual chapters',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FFC300]" />
                     {item}
                   </li>
                 ))}
@@ -141,9 +145,9 @@ export default function LandingPage() {
             </div>
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
-              <div className="h-0.5 w-full bg-linear-to-r from-blue-500 via-indigo-400 to-blue-500" />
+              <div className="h-0.5 w-full bg-[#FFC300]" />
 
-              <div className="relative h-28 bg-linear-to-br from-blue-900/60 via-indigo-900/40 to-[#1c1c1c] px-5 pt-4 pb-0 flex flex-col justify-end">
+              <div className="relative h-28 bg-linear-to-br from-[#3d2e00]/60 via-[#2a1e00]/40 to-[#1c1c1c] px-5 pt-4 pb-0 flex flex-col justify-end">
                 <div className="absolute inset-0 bg-linear-to-t from-[#1c1c1c] to-transparent" />
                 <div className="relative flex items-end justify-between pb-3">
                   <div>
@@ -161,7 +165,7 @@ export default function LandingPage() {
                 {['Fantasy', 'Adventure'].map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-blue-400/10 px-2.5 py-0.5 text-[11px] text-blue-300 font-medium"
+                    className="rounded-full bg-[#FFC300]/10 px-2.5 py-0.5 text-[11px] text-[#FFC300] font-medium"
                   >
                     {tag}
                   </span>
@@ -175,22 +179,22 @@ export default function LandingPage() {
                 {[
                   { title: 'Prologue', read: true, likes: 128, comments: 34 },
                   {
-                    title: 'Chapter 1 — The Awakening',
+                    title: 'Chapter 1: The Awakening',
                     read: true,
                     likes: 247,
                     comments: 61,
                   },
                   {
-                    title: 'Chapter 2 — Beneath the Waves',
+                    title: 'Chapter 2: Beneath the Waves',
                     read: false,
                     likes: 89,
                     comments: 12,
                   },
-                  { title: 'Chapter 3 — The Old King', draft: true },
-                ].map(({ title, read, likes, comments, draft }) => (
+                  { title: 'Chapter 3: The Old King', draft: true },
+                ].map(({ title, read, comments, draft }) => (
                   <div
                     key={title}
-                    className={`flex items-center justify-between px-5 py-3 ${draft ? 'opacity-50' : ''}`}
+                    className={`flex items-center justify-between px-5 py-3 `}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span
@@ -226,12 +230,12 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
-              <div className="h-0.5 w-full bg-[#FFC300]" />
+              <div className="h-0.5 w-full bg-blue-400" />
 
               <div className="px-5 py-4 border-b border-[#2a2a2a] flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FFC300]/10 flex items-center justify-center">
-                    <Hexagon className="w-5 h-5 text-[#FFC300]" />
+                  <div className="w-10 h-10 rounded-xl bg-blue-400/10 flex items-center justify-center">
+                    <Hexagon className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
                     <p className="font-semibold text-white mainFont">
@@ -242,13 +246,13 @@ export default function LandingPage() {
                     </p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5 text-[#FFC300] bg-[#FFC300]/10">
+                <span className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5 text-blue-400 bg-blue-400/10">
                   <Crown className="w-3 h-3" /> Owner
                 </span>
               </div>
 
-              <div className="px-5 py-3 border-b border-[#2a2a2a] flex items-center gap-3 bg-[#FFC300]/5">
-                <BookOpen className="w-4 h-4 text-[#FFC300] shrink-0" />
+              <div className="px-5 py-3 border-b border-[#2a2a2a] flex items-center gap-3 bg-blue-400/5">
+                <BookOpen className="w-4 h-4 text-blue-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] text-white/80 uppercase tracking-widest font-semibold">
                     Linked Book
@@ -303,7 +307,6 @@ export default function LandingPage() {
                 {[
                   {
                     initials: 'AV',
-                    bg: 'bg-purple-600',
                     icon: TrendingUp,
                     iconColor: 'text-emerald-400',
                     iconBg: 'bg-emerald-400/10',
@@ -312,7 +315,6 @@ export default function LandingPage() {
                   },
                   {
                     initials: 'MK',
-                    bg: 'bg-blue-600',
                     icon: BookOpen,
                     iconColor: 'text-sky-400',
                     iconBg: 'bg-sky-400/10',
@@ -321,7 +323,6 @@ export default function LandingPage() {
                   },
                   {
                     initials: 'SR',
-                    bg: 'bg-emerald-700',
                     icon: MessageSquare,
                     iconColor: 'text-pink-400',
                     iconBg: 'bg-pink-400/10',
@@ -330,7 +331,6 @@ export default function LandingPage() {
                   },
                   {
                     initials: 'TL',
-                    bg: 'bg-rose-600',
                     icon: BookMarked,
                     iconColor: 'text-orange-400',
                     iconBg: 'bg-orange-400/10',
@@ -338,29 +338,14 @@ export default function LandingPage() {
                     time: '3h ago',
                   },
                 ].map(
-                  ({
-                    initials,
-                    bg,
-                    icon: Icon,
-                    iconColor,
-                    iconBg,
-                    text,
-                    time,
-                  }) => (
+                  ({ initials, icon: Icon, iconColor, iconBg, text, time }) => (
                     <div
                       key={initials}
                       className="flex items-start gap-3 py-2.5"
                     >
                       <div className="relative shrink-0">
-                        <div
-                          className={`w-7 h-7 rounded-full ${bg} flex items-center justify-center text-[10px] font-bold text-white`}
-                        >
+                        <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 text-[10px] font-bold text-[#FFC300]">
                           {initials}
-                        </div>
-                        <div
-                          className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center ${iconBg} ring-2 ring-[#1c1c1c]`}
-                        >
-                          <Icon className={`w-2.5 h-2.5 ${iconColor}`} />
                         </div>
                       </div>
                       <p className="text-sm text-white/80 leading-snug flex-1">
@@ -377,7 +362,8 @@ export default function LandingPage() {
 
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Build your next novel with your crew
+                <span className="text-[#FFC300]">Build</span> your next novel
+                with your crew
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
                 A Hive links your friends to one of your books so you can edit
@@ -394,7 +380,7 @@ export default function LandingPage() {
                   'Word goals with daily, weekly, and even monthly progress',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FFC300]" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
                     {item}
                   </li>
                 ))}
@@ -409,7 +395,8 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Read and discuss together
+                Read and discuss{' '}
+                <span className="text-[#FFC300]">together</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
                 Create or join book clubs with friends. Pick what you&apos;re
@@ -426,7 +413,7 @@ export default function LandingPage() {
                   'Manage members with moderator roles',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" />
                     {item}
                   </li>
                 ))}
@@ -473,7 +460,6 @@ export default function LandingPage() {
                 {[
                   {
                     initials: 'SM',
-                    bg: 'bg-rose-600',
                     name: 'Sarah M.',
                     text: '"The ending of chapter 5 absolutely destroyed me. Can we talk about it?"',
                     likes: 8,
@@ -482,7 +468,6 @@ export default function LandingPage() {
                   },
                   {
                     initials: 'JK',
-                    bg: 'bg-blue-600',
                     name: 'James K.',
                     text: '"Who else thinks the magic system is totally underexplained so far?"',
                     likes: 5,
@@ -491,52 +476,44 @@ export default function LandingPage() {
                   },
                   {
                     initials: 'RP',
-                    bg: 'bg-[#FFC300]',
                     name: 'Admin',
                     text: '"I added some more books to our reading list! Check them out and vote for what we should read next."',
                     likes: 11,
                     replies: 3,
                     pinned: true,
                   },
-                ].map(
-                  ({ initials, bg, name, text, likes, replies, pinned }) => (
-                    <div
-                      key={name}
-                      className="px-5 py-3 flex items-start gap-3"
-                    >
-                      <div
-                        className={`w-7 h-7 shrink-0 rounded-full ${bg} flex items-center justify-center text-[10px] font-bold ${bg === 'bg-[#FFC300]' ? 'text-black' : 'text-white'}`}
-                      >
-                        {initials}
+                ].map(({ initials, name, text, likes, replies, pinned }) => (
+                  <div key={name} className="px-5 py-3 flex items-start gap-3">
+                    <div className="w-7 h-7 shrink-0 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 text-[10px] font-bold text-[#FFC300]">
+                      {initials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs font-semibold text-white">
+                          {name}
+                        </span>
+                        {pinned && (
+                          <span className="text-[10px] text-[#FFC300] bg-[#FFC300]/10 rounded px-1.5 py-0.5">
+                            📌 Pinned
+                          </span>
+                        )}
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-semibold text-white">
-                            {name}
-                          </span>
-                          {pinned && (
-                            <span className="text-[10px] text-[#FFC300] bg-[#FFC300]/10 rounded px-1.5 py-0.5">
-                              📌 Pinned
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-white/80 leading-snug">
-                          {text}
-                        </p>
-                        <div className="flex items-center gap-3 mt-1.5 text-xs text-white/80">
-                          <span className="flex items-center gap-1">
-                            <Heart className="w-3 h-3" />
-                            {likes}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageSquare className="w-3 h-3" />
-                            {replies} replies
-                          </span>
-                        </div>
+                      <p className="text-sm text-white/80 leading-snug">
+                        {text}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-white/80">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3 h-3" />
+                          {likes}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageSquare className="w-3 h-3" />
+                          {replies} replies
+                        </span>
                       </div>
                     </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -557,7 +534,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-lg font-bold mainFont">Reading Lists</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">Reading Lists</h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Curate collections of books you love, want to read, or recommend
@@ -586,7 +563,7 @@ export default function LandingPage() {
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-lg font-bold mainFont">Writing Prompts</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">Writing Prompts</h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Browse community writing prompts, submit your own story entries,
@@ -631,7 +608,6 @@ export default function LandingPage() {
       <section className="px-6 py-14 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(255,195,0,0.06),transparent)]" />
         <div className="mx-auto max-w-2xl relative">
-      
           <h2 className="mb-4 text-4xl font-bold mainFont">
             Ready to find your hive?
           </h2>
