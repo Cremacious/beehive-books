@@ -7,6 +7,7 @@ import { Camera, Loader2, Trash2, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { PremiumStatusCard } from '@/components/settings/premium-status-card';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import {
   updateUserAvatarAction,
@@ -19,6 +20,8 @@ interface SettingsClientProps {
     username: string | null;
     email: string;
     image: string | null;
+    premium: boolean;
+    stripeCurrentPeriodEnd: Date | null;
   };
 }
 
@@ -77,15 +80,6 @@ export function SettingsClient({ user }: SettingsClientProps) {
           </div>
         </div>
       </div>
-
-      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-white">Language</p>
-          <p className="text-xs text-white/60 mt-0.5">Choose your preferred language</p>
-        </div>
-        <LocaleSwitcher />
-      </div>
-
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <h2 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-5">
           Profile Photo
@@ -158,6 +152,20 @@ export function SettingsClient({ user }: SettingsClientProps) {
           </div>
         </div>
       </div>
+      <PremiumStatusCard
+        premium={user.premium}
+        stripeCurrentPeriodEnd={user.stripeCurrentPeriodEnd}
+      />
+
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-white">Language</p>
+          <p className="text-xs text-white/60 mt-0.5">
+            Choose your preferred language
+          </p>
+        </div>
+        <LocaleSwitcher />
+      </div>
 
       <div className="rounded-2xl bg-[#252525] border border-red-900/25 p-6">
         <h2 className="text-xs font-semibold text-red-400/60 uppercase tracking-wider mb-2">
@@ -172,7 +180,13 @@ export function SettingsClient({ user }: SettingsClientProps) {
           onDelete={async () => {
             const result = await deleteUserAccountAction();
             if (!result.success) throw new Error(result.message);
-            await signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
+            await signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  window.location.href = '/';
+                },
+              },
+            });
           }}
           trigger={
             <Button variant="destructive" size="sm" type="button">
