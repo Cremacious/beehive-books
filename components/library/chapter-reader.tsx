@@ -60,11 +60,11 @@ export function ChapterReader({
           <RichTextEditor content={chapter.content} editable={false} />
         )}
 
-        <div className="flex items-center justify-between gap-4 mt-14 pt-8 border-t border-[#2a2a2a]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mt-14 pt-8 border-t border-[#2a2a2a]">
           {prev ? (
             <Link
               href={`${basePath}/${bookId}/${prev.id}`}
-              className="flex items-center gap-2 group"
+              className="flex items-center gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors"
             >
               <ChevronLeft className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
               <div className="min-w-0">
@@ -78,24 +78,24 @@ export function ChapterReader({
               </div>
             </Link>
           ) : (
-            <div />
+            <div className="hidden sm:block" />
           )}
           <Link
             href={`${basePath}/${bookId}`}
-            className="flex flex-col items-center gap-1 group"
+            className="flex items-center justify-center gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors sm:flex-col sm:gap-1"
           >
             <ChevronUp className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors" />
             <p className="text-xs text-yellow-500">Back To Book</p>
-            <p className="text-sm font-medium text-white group-hover:text-[#FFC300] truncate transition-colors max-w-32 text-center">
+            <p className="text-sm font-medium text-white group-hover:text-[#FFC300] truncate transition-colors sm:max-w-32 text-center">
               {book.title}
             </p>
           </Link>
           {next ? (
             <Link
               href={`${basePath}/${bookId}/${next.id}`}
-              className="flex items-center gap-2 text-right group"
+              className="flex items-center justify-end gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 text-right">
                 <p className="text-xs text-yellow-500">Next</p>
                 {next.collectionName && (
                   <p className="text-xs text-white/80 truncate">{next.collectionName}</p>
@@ -107,7 +107,7 @@ export function ChapterReader({
               <ChevronRight className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
             </Link>
           ) : (
-            <div />
+            <div className="hidden sm:block" />
           )}
         </div>
 

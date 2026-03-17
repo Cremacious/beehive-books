@@ -8,7 +8,7 @@ import { ClubInviteActions } from '@/components/clubs/club-invite-actions';
 export const metadata = {
   title: 'Book Clubs',
   description:
-    'Join and host book clubs — read together, discuss, and share your thoughts with a group.',
+    'Join and host book clubs - read together, discuss, and share your thoughts with a group.',
 };
 
 export default async function ClubsPage() {

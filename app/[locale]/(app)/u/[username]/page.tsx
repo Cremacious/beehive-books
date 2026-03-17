@@ -108,7 +108,7 @@ export default async function UserProfilePage({ params }: Props) {
             </div>
             <div className="pb-1 flex items-center gap-2">
               {isOwnProfile && (
-                <button className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all cursor-not-allowed opacity-60">
+                <button className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all cursor-not-allowed">
                   Edit Profile
                 </button>
               )}
