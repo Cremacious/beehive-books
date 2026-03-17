@@ -139,14 +139,14 @@ export default function ClubForm({
         </label>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
-            <label key={value} className="relative cursor-pointer">
+            <label key={value} className="relative cursor-pointer h-full">
               <input
                 {...register('privacy')}
                 type="radio"
                 value={value}
                 className="sr-only peer"
               />
-              <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
+              <div className="h-full flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
                 <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
