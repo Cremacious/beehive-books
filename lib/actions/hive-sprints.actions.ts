@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq } from 'drizzle-orm';
@@ -191,6 +192,8 @@ export async function submitWordsAction(
 ): Promise<ActionResult> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     const participant = await db.query.hiveSprintParticipants.findFirst({
       where: and(

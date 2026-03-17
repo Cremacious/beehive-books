@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, asc, desc, eq } from 'drizzle-orm';
@@ -80,6 +81,8 @@ export async function sendChatMessageAction(
 ): Promise<ActionResult> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
     const trimmed = content.trim();
     if (!trimmed) return { success: false, message: 'Message cannot be empty.' };
     if (trimmed.length > 2000) return { success: false, message: 'Message too long (max 2000 chars).' };

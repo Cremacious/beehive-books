@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
@@ -602,6 +603,8 @@ export async function addCommentAction(
   parentId?: string | null,
 ): Promise<ActionResult> {
   const userId = await requireAuth();
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
 
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),

@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { and, desc, eq, ne, sql } from 'drizzle-orm';
@@ -55,6 +56,8 @@ export async function createBuzzItemAction(
 ): Promise<ActionResult & { itemId?: string }> {
   try {
     const { userId } = await requireHiveMember(hiveId);
+    const limited = await checkActionRateLimit(userId);
+    if (limited) return { success: false, message: limited };
 
     const trimmed = content.trim();
     if (!trimmed) return { success: false, message: 'Content is required.' };
