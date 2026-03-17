@@ -11,9 +11,11 @@ import { EntryList } from '@/components/prompts/entry-list';
 import { InviteActions } from '@/components/prompts/invite-actions';
 import { DeletePromptButton } from '@/components/prompts/delete-prompt-button';
 import { EndPromptButton } from '@/components/prompts/end-prompt-button';
+import { PromptInvitePanel } from '@/components/prompts/prompt-invite-panel';
 import {
   getPromptAction,
   getPromptEntriesAction,
+  getPromptFriendsForInviteAction,
 } from '@/lib/actions/prompt.actions';
 import type { PromptUser } from '@/lib/types/prompt.types';
 
@@ -95,7 +97,10 @@ export default async function PromptDetailPage({ params }: Props) {
     !hasEntry &&
     (isCreator || myInvite === 'ACCEPTED' || prompt.privacy !== 'PRIVATE');
 
-  const entries = await getPromptEntriesAction(promptId);
+  const [entries, invitableFriends] = await Promise.all([
+    getPromptEntriesAction(promptId),
+    isCreator && !isEnded ? getPromptFriendsForInviteAction(promptId) : Promise.resolve([]),
+  ]);
 
   const creatorName = prompt.creator.username || 'Unknown';
 
@@ -211,6 +216,10 @@ export default async function PromptDetailPage({ params }: Props) {
             })}
           </div>
         </div>
+      )}
+
+      {isCreator && !isEnded && invitableFriends.length > 0 && (
+        <PromptInvitePanel promptId={promptId} friends={invitableFriends} />
       )}
 
       {myInvite === 'PENDING' && !isCreator && (

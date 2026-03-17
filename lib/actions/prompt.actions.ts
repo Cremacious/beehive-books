@@ -880,3 +880,94 @@ export async function toggleEntryCommentLikeAction(
     return { success: false, message: 'Failed to toggle like.' };
   }
 }
+
+export type InvitableFriend = {
+  id: string;
+  username: string | null;
+  image: string | null;
+};
+
+export async function getPromptFriendsForInviteAction(
+  promptId: string,
+): Promise<InvitableFriend[]> {
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({
+    where: and(eq(prompts.id, promptId), eq(prompts.creatorId, userId)),
+    columns: { id: true },
+  });
+  if (!prompt) return [];
+
+  const [allFriendships, alreadyInvited] = await Promise.all([
+    db.query.friendships.findMany({
+      where: and(
+        or(
+          eq(friendships.requesterId, userId),
+          eq(friendships.addresseeId, userId),
+        ),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+      with: {
+        requester: { columns: { id: true, username: true, image: true } },
+        addressee: { columns: { id: true, username: true, image: true } },
+      },
+    }),
+    db.query.promptInvites.findMany({
+      where: eq(promptInvites.promptId, promptId),
+      columns: { userId: true },
+    }),
+  ]);
+
+  const invitedIds = new Set(alreadyInvited.map((i) => i.userId));
+
+  return allFriendships
+    .map((f) => (f.requesterId === userId ? f.addressee : f.requester))
+    .filter((u) => !invitedIds.has(u.id));
+}
+
+export async function inviteFriendsToPromptAction(
+  promptId: string,
+  invitedIds: string[],
+): Promise<ActionResult> {
+  if (invitedIds.length === 0) return { success: true, message: 'No invites sent.' };
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({
+    where: and(eq(prompts.id, promptId), eq(prompts.creatorId, userId)),
+    columns: { id: true, title: true },
+  });
+  if (!prompt) return { success: false, message: 'Prompt not found or unauthorized.' };
+
+  const existing = await db.query.promptInvites.findMany({
+    where: eq(promptInvites.promptId, promptId),
+    columns: { userId: true },
+  });
+  const existingIds = new Set(existing.map((i) => i.userId));
+  const toAdd = invitedIds.filter((id) => !existingIds.has(id));
+  if (toAdd.length === 0) return { success: true, message: 'All selected friends are already invited.' };
+
+  try {
+    await db.insert(promptInvites).values(toAdd.map((uid) => ({ promptId, userId: uid })));
+    const actor = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { username: true },
+    });
+    for (const uid of toAdd) {
+      void insertNotification({
+        recipientId: uid,
+        actorId: userId,
+        type: 'PROMPT_INVITE',
+        link: `/prompts/${promptId}`,
+        metadata: {
+          actorUsername: actor?.username ?? '',
+          promptId,
+          promptTitle: prompt.title,
+        },
+      });
+    }
+    revalidatePath(`/prompts/${promptId}`);
+    return { success: true, message: `${toAdd.length} invite${toAdd.length !== 1 ? 's' : ''} sent!` };
+  } catch {
+    return { success: false, message: 'Failed to send invites.' };
+  }
+}
