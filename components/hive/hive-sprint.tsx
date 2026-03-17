@@ -61,7 +61,7 @@ function ParticipantRow({
       ) : (
         <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 shrink-0" />
       )}
-      <span className="flex-1 text-sm text-white/70 truncate min-w-0">
+      <span className="flex-1 text-sm text-white/80 truncate min-w-0">
         {p.user.username ?? 'User'}
       </span>
       {isWinner && <Trophy className="w-3.5 h-3.5 text-[#FFC300] shrink-0" />}
@@ -70,7 +70,7 @@ function ParticipantRow({
           +{p.wordsWritten.toLocaleString()} words
         </span>
       ) : (
-        <span className="text-xs text-white/25 shrink-0">—</span>
+        <span className="text-xs text-white/80 shrink-0">—</span>
       )}
     </div>
   );
@@ -185,7 +185,7 @@ function ActiveSprint({
         >
           {timeUp ? "Time's Up!" : formatCountdown(remaining)}
         </div>
-        <p className="text-xs text-white/30">{sprint.durationMinutes} min sprint</p>
+        <p className="text-xs text-white/80">{sprint.durationMinutes} min sprint</p>
         <div className="mt-4 h-1.5 rounded-full bg-[#1e1e1e] overflow-hidden">
           <div
             className="h-full rounded-full bg-[#FFC300] transition-all duration-1000"
@@ -197,7 +197,7 @@ function ActiveSprint({
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider flex items-center gap-2">
+          <h4 className="text-xs font-semibold text-white/80 uppercase tracking-wider flex items-center gap-2">
             <Users className="w-3.5 h-3.5" />
             {sprint.participants.length} Participant
             {sprint.participants.length !== 1 ? 's' : ''}
@@ -205,14 +205,14 @@ function ActiveSprint({
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-1 text-white/30 hover:text-white/60 transition-colors"
+            className="p-1 text-white/80 hover:text-white/80 transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
         {sprint.participants.length === 0 ? (
-          <p className="text-xs text-white/30 py-2">No participants yet.</p>
+          <p className="text-xs text-white/80 py-2">No participants yet.</p>
         ) : (
           <div className="divide-y divide-[#2a2a2a]">
             {sprint.participants.map((p) => (
@@ -224,7 +224,7 @@ function ActiveSprint({
 
       {!hasJoined && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3">
-          <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-white/80 uppercase tracking-wider">
             Join Sprint
           </h4>
           <div>
@@ -254,7 +254,7 @@ function ActiveSprint({
 
       {hasJoined && !hasSubmitted && (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 space-y-3">
-          <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-white/80 uppercase tracking-wider">
             Submit Your Words
           </h4>
           <div>
@@ -293,7 +293,7 @@ function ActiveSprint({
         <div className="rounded-2xl bg-green-500/10 border border-green-500/20 p-4 text-center">
           <Check className="w-5 h-5 text-green-400 mx-auto mb-1" />
           <p className="text-sm text-green-400 font-medium">Words submitted!</p>
-          <p className="text-xs text-white/30 mt-0.5">
+          <p className="text-xs text-white/80 mt-0.5">
             You wrote{' '}
             {(
               (myParticipant!.wordsAfter ?? myParticipant!.wordsBefore) -
@@ -401,7 +401,7 @@ export default function HiveSprint({
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   duration === d
                     ? 'bg-[#FFC300] text-black'
-                    : 'bg-[#1e1e1e] text-white/40 hover:text-white/70'
+                    : 'bg-[#1e1e1e] text-white/80 hover:text-white/80'
                 }`}
               >
                 {d}m
@@ -435,7 +435,7 @@ export default function HiveSprint({
  
       {pastSprints.length > 0 ? (
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-white/80 uppercase tracking-wider">
             Past Sprints
           </h3>
           {pastSprints.map((s) => {
@@ -445,12 +445,12 @@ export default function HiveSprint({
             return (
               <div key={s.id} className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-white/40">{formatDate(s.startTime)}</span>
-                  <span className="text-xs text-white/30">{s.durationMinutes} min</span>
+                  <span className="text-xs text-white/80">{formatDate(s.startTime)}</span>
+                  <span className="text-xs text-white/80">{s.durationMinutes} min</span>
                 </div>
                 <div className="divide-y divide-[#2a2a2a]">
                   {sorted.length === 0 ? (
-                    <p className="text-xs text-white/25 py-2">No submissions.</p>
+                    <p className="text-xs text-white/80 py-2">No submissions.</p>
                   ) : (
                     sorted.map((p, i) => (
                       <ParticipantRow
@@ -470,8 +470,8 @@ export default function HiveSprint({
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
             <Timer className="w-6 h-6 text-[#FFC300]/40" />
           </div>
-          <p className="text-sm text-white/40">No sprints yet.</p>
-          <p className="text-xs text-white/25 max-w-xs">
+          <p className="text-sm text-white/80">No sprints yet.</p>
+          <p className="text-xs text-white/80 max-w-xs">
             Start a sprint to write together with your hive members.
           </p>
         </div>

@@ -45,7 +45,7 @@ const HIGHLIGHTS = [
 ];
 
 const btnClass =
-  'w-full max-w-xs mx-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#FFC300] text-black font-bold text-base hover:bg-[#FFD54F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed';
+  'w-full max-w-xs mx-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#FFC300] text-black font-bold text-base hover:bg-[#FFD040] transition-colors disabled:opacity-60 disabled:cursor-not-allowed';
 
 export default async function PremiumPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -88,7 +88,7 @@ export default async function PremiumPage() {
                 <Sparkles className="w-3.5 h-3.5 text-[#FFC300]" />
                 <span className="text-sm font-bold text-[#FFC300]">Active Subscription</span>
               </div>
-              <p className="text-white/70 text-sm mb-7">
+              <p className="text-white/80 text-sm mb-7">
                 You&apos;re on Premium. Manage or cancel anytime below.
               </p>
               <ManageSubscriptionButton className={btnClass} />
@@ -170,7 +170,7 @@ export default async function PremiumPage() {
         <div className="mt-10 rounded-2xl border border-[#2a2a2a] bg-[#252525] p-7 text-center">
           <p className="text-base font-bold text-white mainFont mb-1">Ready to upgrade?</p>
           <p className="text-sm text-white/80 mb-5">Join thousands of writers on Beehive Premium.</p>
-          <UpgradeButton className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#FFC300] text-black font-bold text-sm hover:bg-[#FFD54F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed" />
+          <UpgradeButton className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#FFC300] text-black font-bold text-sm hover:bg-[#FFD040] transition-colors disabled:opacity-60 disabled:cursor-not-allowed" />
         </div>
       )}
 

@@ -85,9 +85,9 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false }
         <div className="space-y-4">
 
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Share Link</p>
-            <div className="flex items-center gap-2 rounded-xl bg-[#1e1e1e] border border-[#333] px-3 py-2.5">
-              <span className="flex-1 text-sm text-white/70 truncate">
+            <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Share Link</p>
+            <div className="flex items-center gap-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2.5">
+              <span className="flex-1 text-sm text-white/80 truncate">
                 {typeof window !== 'undefined' ? getShareUrl() : `/books/${bookId}`}
               </span>
             </div>
@@ -109,7 +109,7 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false }
  
           {isOwner && (
             <div className="space-y-2 pt-1 border-t border-[#2a2a2a]">
-              <p className="text-xs font-semibold text-white/50 uppercase tracking-wider pt-1">Export</p>
+              <p className="text-xs font-semibold text-white/80 uppercase tracking-wider pt-1">Export</p>
               {exportError && (
                 <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg px-3 py-2">
                   {exportError}

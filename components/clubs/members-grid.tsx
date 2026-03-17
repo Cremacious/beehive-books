@@ -130,7 +130,7 @@ function MemberCard({
           router.push(`/u/${user.username}`);
         }
       }}
-      className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#3a3a3a] transition-all cursor-pointer"
+      className="relative flex items-center gap-3 rounded-xl bg-[#252525] border border-[#2a2a2a] p-3 hover:border-[#2a2a2a] transition-all cursor-pointer"
     >
       {user.image ? (
         <Image
@@ -182,7 +182,7 @@ function MemberCard({
           )}
 
           {showMenu && (
-            <div role="menu" className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+            <div role="menu" className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
               {myRole === 'OWNER' && member.role === 'MEMBER' && (
                 <button
                   type="button"
@@ -440,7 +440,7 @@ export default function MembersGrid({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 roleFilter === value
                   ? 'bg-[#FFC300] text-black'
-                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
+                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#2a2a2a]'
               }`}
             >
               {label}
@@ -456,7 +456,7 @@ export default function MembersGrid({
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center py-16 text-center">
-          <Search aria-hidden="true" className="w-8 h-8 text-white/10 mb-3" />
+          <Search aria-hidden="true" className="w-8 h-8 text-white/80 mb-3" />
           <p className="text-sm text-white/80">No members found.</p>
           {query && (
             <button

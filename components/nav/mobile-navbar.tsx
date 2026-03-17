@@ -200,7 +200,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                 className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
                   isActive('/u')
                     ? 'text-[#FFC300] bg-[#FFC300]/8'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    : 'text-white/80 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <User
@@ -218,7 +218,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                 className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
                   isActive('/admin')
                     ? 'text-[#FFC300] bg-[#FFC300]/8'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    : 'text-white/80 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <ShieldCheck
@@ -236,7 +236,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             <Link
               href="/settings"
               onClick={closeDrawer}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#514e4e] hover:border-white/70 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-[#FFC300] hover:bg-[#FFC300]/8 border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-all"
             >
               <Settings className="w-4 h-4" />
               {t('settings')}
@@ -246,7 +246,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                 signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
                 closeDrawer();
               }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#514e4e] hover:border-red-400/20 transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#2a2a2a] hover:border-red-400/20 transition-all"
             >
               <LogOut className="w-4 h-4" />
               {t('signOut')}

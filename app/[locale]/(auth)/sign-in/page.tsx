@@ -46,7 +46,7 @@ export default function SignInPage() {
 
         <div className="w-full rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] shadow-2xl p-8">
           <h1 className="text-xl font-bold text-white mb-1 mainFont">Sign in</h1>
-          <p className="text-sm text-white/50 mb-6">Welcome back to Beehive Books</p>
+          <p className="text-sm text-white/80 mb-6">Welcome back to Beehive Books</p>
 
           <button
             type="button"
@@ -72,7 +72,7 @@ export default function SignInPage() {
               <div className="w-full border-t border-[#2a2a2a]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-[#1c1c1c] px-2 text-white/30">or</span>
+              <span className="bg-[#1c1c1c] px-2 text-white/80">or</span>
             </div>
           </div>
 
@@ -88,7 +88,7 @@ export default function SignInPage() {
                 required
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="w-full rounded-xl bg-[#252525] border border-[#333] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
               />
             </div>
 
@@ -103,7 +103,7 @@ export default function SignInPage() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full rounded-xl bg-[#252525] border border-[#333] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
               />
             </div>
 
@@ -129,7 +129,7 @@ export default function SignInPage() {
             </button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-white/50">
+          <p className="mt-5 text-center text-sm text-white/80">
             Don&apos;t have an account?{' '}
             <Link href="/sign-up" className="text-[#FFC300] hover:text-[#FFD040] font-medium">
               Sign up

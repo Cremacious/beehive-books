@@ -33,7 +33,7 @@ export default function Pagination({ page, totalPages, onPageChange, className =
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className="px-4 py-2 rounded-xl text-sm text-white/60 bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#2a2a2a]"
+        className="px-4 py-2 rounded-xl text-sm text-white/80 bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#2a2a2a]"
       >
         Previous
       </button>
@@ -43,7 +43,7 @@ export default function Pagination({ page, totalPages, onPageChange, className =
           n === '...' ? (
             <span
               key={`ellipsis-${i}`}
-              className="w-9 h-9 flex items-center justify-center text-sm text-white/25"
+              className="w-9 h-9 flex items-center justify-center text-sm text-white/80"
             >
               …
             </span>
@@ -54,7 +54,7 @@ export default function Pagination({ page, totalPages, onPageChange, className =
               className={`w-9 h-9 rounded-xl text-sm font-medium transition-colors ${
                 n === page
                   ? 'bg-[#FFC300] text-[#1a1a1a]'
-                  : 'text-white/40 hover:text-white hover:bg-white/6'
+                  : 'text-white/80 hover:text-white hover:bg-white/6'
               }`}
             >
               {n}
@@ -66,7 +66,7 @@ export default function Pagination({ page, totalPages, onPageChange, className =
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
-        className="px-4 py-2 rounded-xl text-sm text-white/60 bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#2a2a2a]"
+        className="px-4 py-2 rounded-xl text-sm text-white/80 bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[#2a2a2a]"
       >
         Next
       </button>

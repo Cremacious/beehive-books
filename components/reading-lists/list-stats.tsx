@@ -37,7 +37,7 @@ export function ListStats({ bookCount, readCount }: ListStatsProps) {
           <span className="text-sm text-white/80">Read</span>
         </div>
         <div className="flex flex-col items-center gap-1 p-2 rounded-lg bg-[#1e1e1e]">
-          <BookOpen className="w-5 h-5 text-white/20" />
+          <BookOpen className="w-5 h-5 text-white/80" />
           <span className="text-base font-bold text-white leading-none">
             {remaining}
           </span>

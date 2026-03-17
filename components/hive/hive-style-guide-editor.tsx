@@ -62,7 +62,7 @@ export default function HiveStyleGuideEditor({
           <FileText className="w-4 h-4 text-[#FFC300] shrink-0" />
           <h2 className="text-sm font-semibold text-white">Style Guide</h2>
           {lastSaved?.updatedAt && (
-            <span className="flex items-center gap-1 text-xs text-white/30">
+            <span className="flex items-center gap-1 text-xs text-white/80">
               <Clock className="w-3 h-3" />
               Last saved {formatUpdated(lastSaved.updatedAt)}
               {lastSaved.updatedBy && (
@@ -99,7 +99,7 @@ export default function HiveStyleGuideEditor({
       </div>
 
       {isDirty && !isPending && (
-        <p className="text-xs text-white/30 text-right">Unsaved changes</p>
+        <p className="text-xs text-white/80 text-right">Unsaved changes</p>
       )}
     </div>
   );

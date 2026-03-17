@@ -117,7 +117,7 @@ export function CommentSection({ chapterId, comments, currentUserId }: CommentSe
               <button
                 onClick={handleSubmitComment}
                 disabled={!commentText.trim() || submitting}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD040] transition-colors"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Submit
@@ -264,7 +264,7 @@ function CommentItem({
           <button
             onClick={handleReply}
             disabled={!replyText.trim() || submitting}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors shrink-0"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD040] transition-colors shrink-0"
           >
             {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
             Reply

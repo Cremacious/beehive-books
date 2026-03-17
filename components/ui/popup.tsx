@@ -72,7 +72,7 @@ export default function Popup({
           )}
           <button
             onClick={onClose}
-            className="ml-auto p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors shrink-0"
+            className="ml-auto p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-colors shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />

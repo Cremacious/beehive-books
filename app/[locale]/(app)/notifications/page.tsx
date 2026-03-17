@@ -89,7 +89,7 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'COMMENT_LIKE':        return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'PROMPT_INVITE':       return { Icon: Lightbulb,       bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
     case 'PROMPT_ENTRY':        return { Icon: FileText,        bg: 'bg-orange-500/20', fg: 'text-orange-400' };
-    case 'PROMPT_ENDED':        return { Icon: Clock,           bg: 'bg-white/10',      fg: 'text-white/60'   };
+    case 'PROMPT_ENDED':        return { Icon: Clock,           bg: 'bg-white/10',      fg: 'text-white/80'   };
     case 'ENTRY_COMMENT':       return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'ENTRY_COMMENT_LIKE':  return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'CLUB_INVITE':         return { Icon: Users,           bg: 'bg-teal-500/20',   fg: 'text-teal-400'   };
@@ -127,7 +127,7 @@ function NotificationRow({ n }: { n: NotificationItem }) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className={`text-sm leading-snug ${n.isRead ? 'text-white/70' : 'text-white'}`}>
+        <p className={`text-sm leading-snug ${n.isRead ? 'text-white/80' : 'text-white'}`}>
           {!isSystem && actorUsername ? (
             <>
               <span className="font-semibold text-[#FFC300]">{actorUsername}</span>
@@ -136,7 +136,7 @@ function NotificationRow({ n }: { n: NotificationItem }) {
           ) : null}
           {messageBody(n.type, n.metadata)}
         </p>
-        <p className="text-xs text-white/35 mt-1">{timeAgo(n.createdAt)}</p>
+        <p className="text-xs text-white/80 mt-1">{timeAgo(n.createdAt)}</p>
       </div>
 
       {!n.isRead && (
@@ -174,8 +174,8 @@ export default async function NotificationsPage({
 
 
       <div className="flex items-start gap-3 px-4 py-3 mb-5 rounded-xl bg-white/4 border border-white/8">
-        <Info className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
-        <p className="text-xs text-white/40 leading-relaxed">
+        <Info className="w-4 h-4 text-white/80 shrink-0 mt-0.5" />
+        <p className="text-xs text-white/80 leading-relaxed">
           Notifications older than 30 days are automatically deleted.
         </p>
       </div>
@@ -184,8 +184,8 @@ export default async function NotificationsPage({
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <Bell className="w-8 h-8 text-white/15" />
-            <p className="text-sm text-white/35">No notifications yet</p>
+            <Bell className="w-8 h-8 text-white/80" />
+            <p className="text-sm text-white/80">No notifications yet</p>
           </div>
         ) : (
           <div className="divide-y divide-[#2a2a2a]">

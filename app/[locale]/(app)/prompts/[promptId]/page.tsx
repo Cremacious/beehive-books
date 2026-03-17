@@ -135,7 +135,7 @@ export default async function PromptDetailPage({ params }: Props) {
               <div className="flex items-center gap-2">
                 <Link
                   href={`/prompts/${promptId}/edit`}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white/5 text-white/80 border border-[#333] hover:text-white hover:border-[#FFC300]/40 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white/5 text-white/80 border border-[#2a2a2a] hover:text-white hover:border-[#FFC300]/40 transition-all"
                 >
                   <PenLine className="w-3.5 h-3.5" />
                   Edit
@@ -205,7 +205,7 @@ export default async function PromptDetailPage({ params }: Props) {
               return (
                 <div key={inv.id} className="flex items-center gap-2">
                   <UserAvatar user={inv.user} size={7} />
-                  <p className="text-xs font-medium text-white/70">{name}</p>
+                  <p className="text-xs font-medium text-white/80">{name}</p>
                 </div>
               );
             })}
@@ -229,13 +229,13 @@ export default async function PromptDetailPage({ params }: Props) {
             <p className="font-semibold text-white">
               Ready to participate?
             </p>
-            <p className="text-sm text-white/70 mt-0.5">
+            <p className="text-sm text-white/80 mt-0.5">
               Write and submit your entry before the deadline.
             </p>
           </div>
           <Link
             href={`/prompts/${promptId}/create`}
-            className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD54F] transition-colors"
+            className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD040] transition-colors"
           >
             <PenLine className="w-4 h-4" />
             Write Entry

@@ -150,7 +150,7 @@ export default function HiveSettings({
                 className="w-12 h-16 rounded-lg object-cover shrink-0"
               />
             ) : (
-              <div className="w-12 h-16 rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+              <div className="w-12 h-16 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center shrink-0">
                 <BookOpen className="w-5 h-5 text-white/80" />
               </div>
             )}
@@ -313,7 +313,7 @@ export default function HiveSettings({
                                 className="w-8 h-11 rounded object-cover shrink-0"
                               />
                             ) : (
-                              <div className="w-8 h-11 rounded bg-[#252525] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+                              <div className="w-8 h-11 rounded bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
                                 <BookOpen className="w-4 h-4 text-white/80" />
                               </div>
                             )}

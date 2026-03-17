@@ -119,7 +119,7 @@ function AuthorRow({ comment }: { comment: InlineComment }) {
           {(comment.author.username ?? 'U')[0]?.toUpperCase()}
         </div>
       )}
-      <span className="text-[11px] text-white/50">
+      <span className="text-[11px] text-white/80">
         {comment.author.username ?? 'User'}
         {' · '}
         {timeAgo(comment.createdAt)}
@@ -168,7 +168,7 @@ function AnnotationPreviewCard({
       </div>
 
       {comment.selectedText && (
-        <p className="border-l-2 border-[#FFC300]/30 pl-2 text-[11px] text-white/55 italic leading-relaxed line-clamp-2">
+        <p className="border-l-2 border-[#FFC300]/30 pl-2 text-[11px] text-white/80 italic leading-relaxed line-clamp-2">
           &ldquo;{comment.selectedText}&rdquo;
         </p>
       )}
@@ -257,7 +257,7 @@ function AnnotationDetail({
             {(comment.author.username ?? 'U')[0]?.toUpperCase()}
           </div>
         )}
-        <span className="text-xs text-white/55">
+        <span className="text-xs text-white/80">
           {comment.author.username ?? 'User'}
           {' · '}
           {timeAgo(comment.createdAt)}
@@ -347,7 +347,7 @@ function AddCommentForm({
         <h4 className="text-xs font-semibold text-white">Add Annotation</h4>
         <button
           onClick={onCancel}
-          className="p-1 text-white/30 hover:text-white/60"
+          className="p-1 text-white/80 hover:text-white/80"
         >
           <X className="w-4 h-4" />
         </button>
@@ -362,7 +362,7 @@ function AddCommentForm({
             className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border transition-all ${
               layer === value
                 ? `${bg} ${color}`
-                : 'border-[#2a2a2a] text-white/50 hover:text-white hover:border-white/20'
+                : 'border-[#2a2a2a] text-white/80 hover:text-white hover:border-white/20'
             }`}
           >
             <Icon className="w-3 h-3" />
@@ -445,7 +445,7 @@ function LayerFilterDropdown({
 
   const currentConf = activeLayer === 'ALL' ? null : layerConfig(activeLayer);
   const CurrentIcon = currentConf?.Icon ?? SlidersHorizontal;
-  const currentColor = currentConf ? currentConf.color : 'text-white/50';
+  const currentColor = currentConf ? currentConf.color : 'text-white/80';
   const currentLabel = currentConf ? currentConf.label : 'All';
   const currentCount =
     activeLayer === 'ALL'
@@ -463,7 +463,7 @@ function LayerFilterDropdown({
           <CurrentIcon className={`w-4 h-4 ${currentColor}`} />
           <span>{currentLabel}</span>
           {currentCount > 0 && (
-            <span className="text-xs text-white/40">({currentCount} open)</span>
+            <span className="text-xs text-white/80">({currentCount} open)</span>
           )}
           {showResolved && resolvedCount > 0 && (
             <span className="text-xs text-green-400/60">
@@ -472,7 +472,7 @@ function LayerFilterDropdown({
           )}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-white/40 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-white/80 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -491,12 +491,12 @@ function LayerFilterDropdown({
           >
             <span className="flex items-center gap-2.5">
               <SlidersHorizontal
-                className={`w-4 h-4 ${activeLayer === 'ALL' ? 'text-[#FFC300]' : 'text-white/50'}`}
+                className={`w-4 h-4 ${activeLayer === 'ALL' ? 'text-[#FFC300]' : 'text-white/80'}`}
               />
               <span>All</span>
               {openCount > 0 && (
                 <span
-                  className={`text-xs ${activeLayer === 'ALL' ? 'text-[#FFC300]/60' : 'text-white/40'}`}
+                  className={`text-xs ${activeLayer === 'ALL' ? 'text-[#FFC300]/60' : 'text-white/80'}`}
                 >
                   {openCount} open
                 </span>
@@ -532,7 +532,7 @@ function LayerFilterDropdown({
                   <span>{label}</span>
                   {count > 0 && (
                     <span
-                      className={`text-xs ${isActive ? 'text-[#FFC300]/60' : 'text-white/40'}`}
+                      className={`text-xs ${isActive ? 'text-[#FFC300]/60' : 'text-white/80'}`}
                     >
                       {count}
                     </span>
@@ -549,16 +549,16 @@ function LayerFilterDropdown({
               className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-sm font-medium transition-colors border-t border-[#2a2a2a] ${
                 showResolved
                   ? 'text-green-400 bg-green-400/8'
-                  : 'text-white/50 hover:bg-white/5 hover:text-white'
+                  : 'text-white/80 hover:bg-white/5 hover:text-white'
               }`}
             >
               <span className="flex items-center gap-2.5">
                 <CheckCircle2
-                  className={`w-4 h-4 ${showResolved ? 'text-green-400' : 'text-white/40'}`}
+                  className={`w-4 h-4 ${showResolved ? 'text-green-400' : 'text-white/80'}`}
                 />
                 <span>{showResolved ? 'Hide' : 'Show'} Resolved</span>
                 <span
-                  className={`text-xs ${showResolved ? 'text-green-400/60' : 'text-white/40'}`}
+                  className={`text-xs ${showResolved ? 'text-green-400/60' : 'text-white/80'}`}
                 >
                   {resolvedCount}
                 </span>
@@ -704,7 +704,7 @@ export default function HiveInlineComments({
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center py-8 text-center gap-2">
                 <MessageSquare className="w-6 h-6 text-[#FFC300]/40" />
-                <p className="text-sm text-white/50">
+                <p className="text-sm text-white/80">
                   {comments.length === 0
                     ? 'No annotations on this chapter yet.'
                     : 'No annotations match the current filter.'}
@@ -737,12 +737,12 @@ export default function HiveInlineComments({
                     dangerouslySetInnerHTML={{
                       __html:
                         chapterContent.content ||
-                        '<p class="text-white/30 italic">No content yet.</p>',
+                        '<p class="text-white/80 italic">No content yet.</p>',
                     }}
                   />
                 </>
               ) : (
-                <div className="flex items-center justify-center py-16 text-white/30">
+                <div className="flex items-center justify-center py-16 text-white/80">
                   <Loader2 className="w-5 h-5 animate-spin" />
                 </div>
               )}
@@ -763,7 +763,7 @@ export default function HiveInlineComments({
               {filtered.length === 0 ? (
                 <div className="flex flex-col items-center py-12 text-center gap-2">
                   <MessageSquare className="w-6 h-6 text-[#FFC300]/40" />
-                  <p className="text-sm text-white/50">
+                  <p className="text-sm text-white/80">
                     {comments.length === 0
                       ? 'No annotations on this chapter yet.'
                       : 'No annotations match the current filter.'}

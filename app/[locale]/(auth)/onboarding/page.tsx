@@ -110,15 +110,15 @@ export default function OnboardingPage() {
 
   const indicatorColor: Record<Availability, string> = {
     idle: '',
-    checking: 'text-white/40',
+    checking: 'text-white/80',
     available: 'text-green-400',
     taken: 'text-red-400',
     invalid: 'text-red-400',
   };
 
   const borderColor: Record<Availability, string> = {
-    idle: 'border-[#333]',
-    checking: 'border-[#333]',
+    idle: 'border-[#2a2a2a]',
+    checking: 'border-[#2a2a2a]',
     available: 'border-green-500/50',
     taken: 'border-red-500/50',
     invalid: 'border-red-500/50',
@@ -152,7 +152,7 @@ export default function OnboardingPage() {
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                      <Camera className="h-8 w-8 text-white/20 group-hover:text-white/40 transition-colors" />
+                      <Camera className="h-8 w-8 text-white/80 group-hover:text-white/80 transition-colors" />
                     </div>
                   )}
 
@@ -195,7 +195,7 @@ export default function OnboardingPage() {
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   {availability === 'checking' && (
-                    <Loader2 className="h-4 w-4 animate-spin text-white/40" />
+                    <Loader2 className="h-4 w-4 animate-spin text-white/80" />
                   )}
                   {availability === 'available' && (
                     <Check className="h-4 w-4 text-green-400" />

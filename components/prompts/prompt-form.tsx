@@ -132,7 +132,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
         <input
           {...register('title')}
           placeholder="e.g. Write a scene where two strangers share an umbrella…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.title && (
           <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
@@ -147,7 +147,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           {...register('description')}
           rows={4}
           placeholder="Describe the creative challenge, set the scene, give inspiration…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.description && (
           <p className="mt-1 text-xs text-red-400">
@@ -164,7 +164,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
           type="date"
           {...register('endDate')}
           min={toDateInputValue(new Date(Date.now() + 86400000))}
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
         />
         {errors.endDate && (
           <p className="mt-1 text-xs text-red-400">

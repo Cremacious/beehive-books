@@ -14,12 +14,12 @@ export default function PremiumSuccessPage() {
         </span>
       </div>
       <h1 className="text-3xl font-bold text-white mainFont mb-3">You&apos;re all set!</h1>
-      <p className="text-white/60 mb-8">
+      <p className="text-white/80 mb-8">
         Your premium subscription is active. Enjoy unlimited writing, clubs, hives, and more.
       </p>
       <Link
         href="/feed"
-        className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#FFC300] text-black font-bold text-sm hover:bg-[#FFD54F] transition-colors"
+        className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#FFC300] text-black font-bold text-sm hover:bg-[#FFD040] transition-colors"
       >
         Start writing
       </Link>

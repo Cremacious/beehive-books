@@ -85,13 +85,13 @@ export function SortableChapterRow({
           ? () => router.push(`${basePath}/${bookId}/${chapter.id}`)
           : undefined
       }
-      className={`flex items-center gap-4 px-5 py-4  hover:bg-[#2e2e2e] transition-colors group border-b border-[#3f3f3f] ${
+      className={`flex items-center gap-4 px-5 py-4  hover:bg-[#2e2e2e] transition-colors group border-b border-[#2a2a2a] ${
         indent ? 'pl-12' : ''
       } ${reorderMode ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
     >
       {reorderMode && (
         <div className="shrink-0">
-          <GripVertical className="w-4 h-4 text-white/50" />
+          <GripVertical className="w-4 h-4 text-white/80" />
         </div>
       )}
 
@@ -100,7 +100,7 @@ export function SortableChapterRow({
           {chapter.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
-          <p className="text-sm text-white/70">
+          <p className="text-sm text-white/80">
             {chapter.wordCount.toLocaleString()} words
           </p>
           {reorderMode && currentCollection && (
@@ -119,7 +119,7 @@ export function SortableChapterRow({
           <>
             <Link
               href={`${basePath}/${bookId}/${chapter.id}`}
-              className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
+              className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2a2a2a] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
             >
               Read
             </Link>
@@ -127,7 +127,7 @@ export function SortableChapterRow({
               <>
                 <Link
                   href={`/library/${bookId}/${chapter.id}/edit`}
-                  className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2e2e2e] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
+                  className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2a2a2a] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
                 >
                   Edit
                 </Link>
@@ -139,7 +139,7 @@ export function SortableChapterRow({
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
                   {showMenu && (
-                    <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
                       <Link
                         href={`${basePath}/${bookId}/${chapter.id}`}
                         className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
@@ -155,7 +155,7 @@ export function SortableChapterRow({
                       <div className="sm:hidden my-1 border-t border-[#2a2a2a]" />
                       {hasMoveItems && (
                         <>
-                          <p className="px-3 py-1.5 text-[10px] text-white/40 uppercase tracking-wider">
+                          <p className="px-3 py-1.5 text-[10px] text-white/80 uppercase tracking-wider">
                             Move to
                           </p>
                           {chapter.collectionId && (

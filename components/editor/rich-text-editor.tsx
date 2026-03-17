@@ -166,11 +166,11 @@ export function RichTextEditor({
           [&_.ProseMirror_p]:mb-4
           [&_.ProseMirror_h1]:text-white [&_.ProseMirror_h1]:text-xl [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:mb-3
           [&_.ProseMirror_h2]:text-white [&_.ProseMirror_h2]:text-lg [&_.ProseMirror_h2]:font-semibold [&_.ProseMirror_h2]:mb-2
-          [&_.ProseMirror_blockquote]:border-l-2 [&_.ProseMirror_blockquote]:border-[#FFC300]/30 [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-white/50 [&_.ProseMirror_blockquote]:italic
+          [&_.ProseMirror_blockquote]:border-l-2 [&_.ProseMirror_blockquote]:border-[#FFC300]/30 [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-white/80 [&_.ProseMirror_blockquote]:italic
           [&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:pl-5 [&_.ProseMirror_ul]:text-white/80
           [&_.ProseMirror_ol]:list-decimal [&_.ProseMirror_ol]:pl-5 [&_.ProseMirror_ol]:text-white/80
           [&_.ProseMirror_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]
-          [&_.ProseMirror_.is-editor-empty:first-child::before]:text-white/20
+          [&_.ProseMirror_.is-editor-empty:first-child::before]:text-white/80
           [&_.ProseMirror_.is-editor-empty:first-child::before]:pointer-events-none
           [&_.ProseMirror_.is-editor-empty:first-child::before]:float-left
           [&_.ProseMirror_.is-editor-empty:first-child::before]:h-0"

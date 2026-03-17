@@ -62,7 +62,7 @@ function BookRow({
         {optimisticRead ? (
           <CheckCircle2 className="w-4 h-4 text-[#FFC300]" />
         ) : (
-          <Circle className="w-4 h-4 text-white/70" />
+          <Circle className="w-4 h-4 text-white/80" />
         )}
       </div>
 
@@ -92,7 +92,7 @@ function BookRow({
         >
           {removing ? (
             <div className="p-1.5">
-              <Loader2 className="w-4 h-4 text-white/30 animate-spin" />
+              <Loader2 className="w-4 h-4 text-white/80 animate-spin" />
             </div>
           ) : (
             <button
@@ -105,7 +105,7 @@ function BookRow({
           )}
 
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#333] shadow-xl py-1 overflow-hidden">
+            <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
               <button
                 onClick={() => {
                   onSetCurrentlyReading();

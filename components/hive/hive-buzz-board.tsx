@@ -73,7 +73,7 @@ const BUZZ_TYPES: {
     value: 'OTHER',
     label: 'Other',
     Icon: MoreHorizontal,
-    color: 'text-white/50',
+    color: 'text-white/80',
     cardAccent: 'border-[#2a2a2a] bg-[#252525]',
   },
 ];
@@ -133,7 +133,7 @@ function AuthorRow({
         >
           {item.author.username ?? 'User'}
         </p>
-        <p className="text-[10px] text-white/30">{timeAgo(item.createdAt)}</p>
+        <p className="text-[10px] text-white/80">{timeAgo(item.createdAt)}</p>
       </div>
     </div>
   );
@@ -296,7 +296,7 @@ function CreateBuzzForm({
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               type === value
                 ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
-                : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/50 hover:border-white/20'
+                : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/80 hover:border-white/20'
             }`}
           >
             <Icon

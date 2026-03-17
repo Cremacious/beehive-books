@@ -48,7 +48,7 @@ export default async function ClubsPage() {
             >
               <div className="min-w-0">
                 <p className="text-sm font-medium text-white truncate">{invite.club.name}</p>
-                <p className="text-xs text-white/60 mt-0.5">
+                <p className="text-xs text-white/80 mt-0.5">
                   Invited by {invite.invitedBy.username ?? 'Unknown'}
                 </p>
               </div>

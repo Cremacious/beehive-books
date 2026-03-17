@@ -139,7 +139,7 @@ function ChapterRow({
             : 'bg-[#1e1e1e] border-[#2a2a2a]'
       }`}
     >
-      <span className="text-xs text-white/30 font-mono w-8 shrink-0 text-right">
+      <span className="text-xs text-white/80 font-mono w-8 shrink-0 text-right">
         {String(chapter.order + 1).padStart(2, '0')}
       </span>
 
@@ -147,14 +147,14 @@ function ChapterRow({
         <p
           className={`text-sm font-medium truncate ${
             claim?.status === 'COMPLETED'
-              ? 'text-white/50 line-through'
+              ? 'text-white/80 line-through'
               : 'text-white'
           }`}
         >
           {chapter.title}
         </p>
         {chapter.wordCount > 0 && (
-          <p className="text-xs text-white/30">
+          <p className="text-xs text-white/80">
             {chapter.wordCount.toLocaleString()} words
           </p>
         )}
@@ -176,7 +176,7 @@ function ChapterRow({
                 {(claim.claimer.username ?? 'U')[0]?.toUpperCase()}
               </div>
             )}
-            <span className="text-xs text-white/40 hidden sm:block">
+            <span className="text-xs text-white/80 hidden sm:block">
               {claim.claimer.username ?? 'User'}
             </span>
           </div>
@@ -199,7 +199,7 @@ function ChapterRow({
             <button
               onClick={handleUnclaim}
               disabled={unclaiming}
-              className="text-xs text-white/25 hover:text-red-400 transition-colors px-1"
+              className="text-xs text-white/80 hover:text-red-400 transition-colors px-1"
               title="Unclaim"
             >
               {unclaiming ? (
@@ -279,8 +279,8 @@ export default function HiveChapterClaims({
         <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
           <BookOpen className="w-6 h-6 text-[#FFC300]/40" />
         </div>
-        <p className="text-sm font-medium text-white/60">No book linked</p>
-        <p className="text-xs text-white/30 max-w-xs">
+        <p className="text-sm font-medium text-white/80">No book linked</p>
+        <p className="text-xs text-white/80 max-w-xs">
           Link a book to this hive in Settings before you can claim chapters.
         </p>
         {myRole === 'OWNER' && (
@@ -298,7 +298,7 @@ export default function HiveChapterClaims({
         <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
           <BookOpen className="w-6 h-6 text-[#FFC300]/40" />
         </div>
-        <p className="text-sm text-white/40">No chapters in this book yet.</p>
+        <p className="text-sm text-white/80">No chapters in this book yet.</p>
       </div>
     );
   }
@@ -320,7 +320,7 @@ export default function HiveChapterClaims({
               </span>
             </div>
           )}
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/80">
             {claimedCount} of {chapters.length} claimed
             {completedCount > 0 && ` · ${completedCount} completed`}
           </p>

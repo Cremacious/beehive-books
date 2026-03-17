@@ -43,7 +43,7 @@ const STATUS_CONFIG: Record<
   DRAFT: {
     label: 'Draft',
     short: 'Draft',
-    color: 'text-white/40',
+    color: 'text-white/80',
     bg: 'bg-white/5 border-white/10',
     Icon: FileText,
   },
@@ -113,26 +113,26 @@ function ChapterRow({
           : 'bg-[#252525] border-[#2a2a2a]'
       }`}
     >
-      <span className="text-xs text-white/30 font-mono w-8 shrink-0 text-right">
+      <span className="text-xs text-white/80 font-mono w-8 shrink-0 text-right">
         {String(chapter.order + 1).padStart(2, '0')}
       </span>
 
       <div className="flex-1 min-w-0">
         <p
           className={`text-sm font-medium truncate ${
-            currentStatus === 'REVIEWED' ? 'text-white/50' : 'text-white'
+            currentStatus === 'REVIEWED' ? 'text-white/80' : 'text-white'
           }`}
         >
           {chapter.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
           {chapter.wordCount > 0 && (
-            <span className="text-xs text-white/30">
+            <span className="text-xs text-white/80">
               {chapter.wordCount.toLocaleString()} words
             </span>
           )}
           {chapter.betaStatus?.updatedBy && (
-            <span className="flex items-center gap-1 text-[10px] text-white/25">
+            <span className="flex items-center gap-1 text-[10px] text-white/80">
               <span>·</span>
               {chapter.betaStatus.updatedBy.image ? (
                 <Image
@@ -154,7 +154,7 @@ function ChapterRow({
           <button
             onClick={regress}
             disabled={loading}
-            className="text-xs text-white/20 hover:text-white/50 transition-colors px-1"
+            className="text-xs text-white/80 hover:text-white/80 transition-colors px-1"
             title={`Back to ${STATUS_CONFIG[prevStatus].label}`}
           >
             ‹
@@ -221,8 +221,8 @@ export default function HiveBetaReader({
         <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
           <BookOpen className="w-6 h-6 text-[#FFC300]/40" />
         </div>
-        <p className="text-sm font-medium text-white/60">No book linked</p>
-        <p className="text-xs text-white/30 max-w-xs">
+        <p className="text-sm font-medium text-white/80">No book linked</p>
+        <p className="text-xs text-white/80 max-w-xs">
           Link a book to this hive in Settings to use the beta reading workflow.
         </p>
       </div>
@@ -235,7 +235,7 @@ export default function HiveBetaReader({
         <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
           <BookOpen className="w-6 h-6 text-[#FFC300]/40" />
         </div>
-        <p className="text-sm text-white/40">No chapters in this book yet.</p>
+        <p className="text-sm text-white/80">No chapters in this book yet.</p>
       </div>
     );
   }
@@ -268,7 +268,7 @@ export default function HiveBetaReader({
               {bookTitle}
             </p>
           )}
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/80">
             Click a status badge to advance · {reviewed} of {total} reviewed
           </p>
         </div>
@@ -289,7 +289,7 @@ export default function HiveBetaReader({
           className={`text-xs px-3 py-1 rounded-full transition-all ${
             activeFilter === 'ALL'
               ? 'bg-[#FFC300]/15 text-[#FFC300]'
-              : 'text-white/40 hover:text-white/60'
+              : 'text-white/80 hover:text-white/80'
           }`}
         >
           All ({total})
@@ -303,7 +303,7 @@ export default function HiveBetaReader({
               className={`flex items-center gap-1 text-xs px-3 py-1 rounded-full transition-all ${
                 activeFilter === s
                   ? `${c.bg} ${c.color}`
-                  : 'text-white/40 hover:text-white/60'
+                  : 'text-white/80 hover:text-white/80'
               }`}
             >
               <c.Icon className="w-3 h-3" />

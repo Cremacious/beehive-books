@@ -49,7 +49,7 @@ function CharacterCard({
       className={`rounded-2xl border transition-all cursor-pointer ${
         isSelected
           ? 'bg-[#FFC300]/10 border-[#FFC300]/40'
-          : 'bg-[#252525] border-[#2a2a2a] hover:border-[#3a3a3a]'
+          : 'bg-[#252525] border-[#2a2a2a] hover:border-[#2a2a2a]'
       }`}
       onClick={() => onSelect(isSelected ? null : character.id)}
     >
@@ -63,7 +63,7 @@ function CharacterCard({
         </h3>
 
         {preview && (
-          <p className="text-xs text-white/40 leading-relaxed line-clamp-3 mb-3">
+          <p className="text-xs text-white/80 leading-relaxed line-clamp-3 mb-3">
             {preview}
           </p>
         )}
@@ -81,7 +81,7 @@ function CharacterCard({
               </span>
             ))}
             {character.tags.length > 4 && (
-              <span className="text-xs text-white/30">
+              <span className="text-xs text-white/80">
                 +{character.tags.length - 4}
               </span>
             )}
@@ -91,7 +91,7 @@ function CharacterCard({
 
       {isSelected && (
         <div className="border-t border-[#FFC300]/20 px-4 py-3 flex items-center justify-between">
-          <p className="text-xs text-white/30">
+          <p className="text-xs text-white/80">
             Added{' '}
             {new Date(character.createdAt).toLocaleDateString([], {
               month: 'short',
@@ -133,10 +133,10 @@ export default function HiveCharacterMap({
           <Users className="w-7 h-7 text-[#FFC300]/40" />
         </div>
         <div>
-          <p className="text-sm font-medium text-white/60 mb-1">
+          <p className="text-sm font-medium text-white/80 mb-1">
             No characters yet
           </p>
-          <p className="text-xs text-white/30 max-w-xs">
+          <p className="text-xs text-white/80 max-w-xs">
             Add characters from the wiki by selecting the{' '}
             <span className="text-[#FFC300]/70">Character</span> category. Use
             tags to indicate relationships (e.g. &ldquo;sister:aria&rdquo;,
@@ -157,7 +157,7 @@ export default function HiveCharacterMap({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/80 pointer-events-none" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -167,7 +167,7 @@ export default function HiveCharacterMap({
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white/80"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -181,13 +181,13 @@ export default function HiveCharacterMap({
         </Link>
       </div>
 
-      <p className="text-xs text-white/30">
+      <p className="text-xs text-white/80">
         {filtered.length} character{filtered.length !== 1 ? 's' : ''}
         {search ? ` matching "${search}"` : ''} · click to expand
       </p>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-white/30 text-center py-12">
+        <p className="text-sm text-white/80 text-center py-12">
           No characters match your search.
         </p>
       ) : (

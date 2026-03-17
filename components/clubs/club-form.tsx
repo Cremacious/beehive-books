@@ -255,7 +255,7 @@ export default function ClubForm({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#3a3a3a] rounded-full px-2.5 py-1"
+                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
                 >
                   {tag}
                   <button

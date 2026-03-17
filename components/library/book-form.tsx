@@ -159,7 +159,7 @@ export function BookForm({
 
 
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white ' +
     'placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
@@ -190,13 +190,13 @@ export function BookForm({
                   </div>
                 </div>
               ) : (
-                <div className="w-36 h-52 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] flex flex-col items-center justify-center gap-2 group-hover:border-[#FFC300]/40 transition-colors">
+                <div className="w-36 h-52 rounded-xl border-2 border-dashed border-[#2a2a2a] bg-[#1e1e1e] flex flex-col items-center justify-center gap-2 group-hover:border-[#FFC300]/40 transition-colors">
                   {uploading ? (
                     <Loader2 className="w-6 h-6 text-[#FFC300]/50 animate-spin" />
                   ) : (
                     <>
-                      <Upload className="w-6 h-6 text-white/25 group-hover:text-[#FFC300]/50 transition-colors" />
-                      <span className="text-xs text-white/80 text-center px-3 leading-snug group-hover:text-white/50 transition-colors">
+                      <Upload className="w-6 h-6 text-white/80 group-hover:text-[#FFC300]/50 transition-colors" />
+                      <span className="text-xs text-white/80 text-center px-3 leading-snug group-hover:text-white/80 transition-colors">
                         Upload cover
                       </span>
                       <span className="text-[10px] text-white/80">
@@ -366,7 +366,7 @@ export function BookForm({
                   className={`flex flex-col items-center gap-1 rounded-xl p-3 border text-center transition-all duration-200 ${
                     privacy === opt.value
                       ? 'border-[#FFC300] bg-[#FFC300]/10 text-[#FFC300]'
-                      : 'border-[#333] bg-[#1e1e1e] text-white/85 hover:border-[#444] hover:text-white/65'
+                      : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/85 hover:border-[#444] hover:text-white/80'
                   }`}
                 >
                   <span className="text-sm font-semibold">{opt.label}</span>
@@ -437,7 +437,7 @@ export function BookForm({
               <button
                 type="button"
                 onClick={() => setBookDocxOpen((o) => !o)}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/85 hover:text-white/75 hover:bg-white/3 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/85 hover:text-white/80 hover:bg-white/3 transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-yellow-500" />
@@ -472,12 +472,12 @@ export function BookForm({
                       </p>
                       <div className="rounded-lg bg-[#252525] border border-[#2a2a2a] p-3 space-y-1.5 font-mono text-[11px]">
                         <p className="text-[#FFC300]/80">▸ Heading 1 — &quot;The Beginning&quot;</p>
-                        <p className="text-white/60 pl-3">It was a dark and stormy night…</p>
-                        <p className="text-white/60 pl-3">She ran through the forest…</p>
+                        <p className="text-white/80 pl-3">It was a dark and stormy night…</p>
+                        <p className="text-white/80 pl-3">She ran through the forest…</p>
                         <p className="text-[#FFC300]/80 pt-1">▸ Heading 1 — &quot;The Conflict&quot;</p>
-                        <p className="text-white/60 pl-3">Two weeks had passed since…</p>
+                        <p className="text-white/80 pl-3">Two weeks had passed since…</p>
                         <p className="text-[#FFC300]/80 pt-1">▸ Heading 1 — &quot;The Reckoning&quot;</p>
-                        <p className="text-white/60 pl-3">She hadn&apos;t expected to see him…</p>
+                        <p className="text-white/80 pl-3">She hadn&apos;t expected to see him…</p>
                       </div>
                       <p className="text-[11px] text-white/80">
                         → Beehive creates <strong className="text-white">3 chapters</strong> from this document.
@@ -493,11 +493,11 @@ export function BookForm({
                     </div>
                   </div>
 
-                  <label className="relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+                  <label className="relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#2a2a2a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
                     {bookDocxFileName ? (
                       <>
                         <FileText className="w-5 h-5 text-[#FFC300]/70" />
-                        <span className="text-xs text-white/60">
+                        <span className="text-xs text-white/80">
                           {bookDocxFileName}
                         </span>
                         {bookDocxChapterCount !== null && (
@@ -536,7 +536,7 @@ export function BookForm({
 
                   {bookDocxChapterCount !== null &&
                     bookDocxChapterCount > 0 && (
-                      <p className="text-xs text-white/35">
+                      <p className="text-xs text-white/80">
                         When you click &quot;Create Book&quot;, the book will be
                         saved first, then all {bookDocxChapterCount} chapter
                         {bookDocxChapterCount !== 1 ? 's' : ''} will be imported

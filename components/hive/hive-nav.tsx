@@ -76,7 +76,7 @@ export default function HiveNav({ hiveId, isOwner }: HiveNavProps) {
             {currentItem.label}
           </span>
           <ChevronDown
-            className={`w-4 h-4 text-white/40 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 text-white/80 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           />
         </button>
 

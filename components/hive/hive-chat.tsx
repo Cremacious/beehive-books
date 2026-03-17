@@ -117,7 +117,7 @@ export default function HiveChat({
             <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
               <MessageSquare className="w-6 h-6 text-[#FFC300]/40" />
             </div>
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-white/80">
               No messages yet. Say hello! 🐝
             </p>
           </div>
@@ -150,18 +150,18 @@ export default function HiveChat({
                 >
                   {!sameAuthor && !isOwn && (
                     msg.author.username ? (
-                      <Link href={`/u/${msg.author.username}`} className="text-xs text-white/40 px-1 hover:text-white/70 transition-colors">
+                      <Link href={`/u/${msg.author.username}`} className="text-xs text-white/80 px-1 hover:text-white/80 transition-colors">
                         {name}
                       </Link>
                     ) : (
-                      <span className="text-xs text-white/40 px-1">{name}</span>
+                      <span className="text-xs text-white/80 px-1">{name}</span>
                     )
                   )}
                   <div className="flex items-center gap-1.5 group/bubble">
                     {canDelete(msg) && (
                       <button
                         onClick={() => handleDelete(msg.id)}
-                        className={`opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1 text-white/20 hover:text-red-400 shrink-0 ${isOwn ? 'order-first' : 'order-last'}`}
+                        className={`opacity-0 group-hover/bubble:opacity-100 transition-opacity p-1 text-white/80 hover:text-red-400 shrink-0 ${isOwn ? 'order-first' : 'order-last'}`}
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -180,7 +180,7 @@ export default function HiveChat({
                   {(!messages[idx + 1] ||
                     messages[idx + 1]?.authorId !== msg.authorId) && (
                     <span
-                      className={`text-[10px] text-white/25 px-1 ${isOwn ? 'text-right' : ''}`}
+                      className={`text-[10px] text-white/80 px-1 ${isOwn ? 'text-right' : ''}`}
                     >
                       {formatTime(msg.createdAt)}
                     </span>

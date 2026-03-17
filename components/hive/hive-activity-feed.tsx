@@ -191,7 +191,7 @@ function EventRow({ event }: { event: ActivityEvent }) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white/75 leading-snug">
+        <p className="text-sm text-white/80 leading-snug">
           {event.type === 'MILESTONE' && (
             <span className="mr-1">{event.meta.icon}</span>
           )}
@@ -199,7 +199,7 @@ function EventRow({ event }: { event: ActivityEvent }) {
         </p>
       </div>
 
-      <span className="text-xs text-white/25 shrink-0 mt-0.5">
+      <span className="text-xs text-white/80 shrink-0 mt-0.5">
         {timeAgo(event.timestamp)}
       </span>
     </div>
@@ -234,14 +234,14 @@ export default function HiveActivityFeed({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white/30">
+        <p className="text-xs text-white/80">
           {events.length} event{events.length !== 1 ? 's' : ''} in the last 30
           days
         </p>
         <button
           onClick={refresh}
           disabled={refreshing}
-          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-white/80 hover:text-white/80 transition-colors"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`}
@@ -253,8 +253,8 @@ export default function HiveActivityFeed({
       {events.length === 0 ? (
         <div className="flex flex-col items-center py-20 text-center gap-3">
           <div className="text-4xl">🐝</div>
-          <p className="text-sm text-white/40">No activity yet.</p>
-          <p className="text-xs text-white/25 max-w-xs">
+          <p className="text-sm text-white/80">No activity yet.</p>
+          <p className="text-xs text-white/80 max-w-xs">
             Events like word logs, milestones, sprints, and chapter claims will
             appear here.
           </p>
@@ -263,7 +263,7 @@ export default function HiveActivityFeed({
         <div className="space-y-5">
           {groups.map((group) => (
             <div key={group.label}>
-              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">
                 {group.label}
               </p>
               <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">

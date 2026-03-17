@@ -13,10 +13,10 @@ export function UncategorizedZone({ isOver }: { isOver: boolean }) {
       }`}
     >
       <FileText
-        className={`w-4 h-4 transition-colors ${isOver ? 'text-white/60' : 'text-white/20'}`}
+        className={`w-4 h-4 transition-colors ${isOver ? 'text-white/80' : 'text-white/80'}`}
       />
       <span
-        className={`text-sm font-semibold transition-colors ${isOver ? 'text-white/80' : 'text-white/30'}`}
+        className={`text-sm font-semibold transition-colors ${isOver ? 'text-white/80' : 'text-white/80'}`}
       >
         Uncategorized
       </span>

@@ -279,7 +279,7 @@ export default function HiveForm({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#3a3a3a] rounded-full px-2.5 py-1"
+                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
                 >
                   {tag}
                   <button
@@ -386,7 +386,7 @@ export default function HiveForm({
                               className="w-8 h-11 rounded object-cover shrink-0"
                             />
                           ) : (
-                            <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+                            <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center shrink-0">
                               <BookOpen className="w-4 h-4 text-white/80" />
                             </div>
                           )}
