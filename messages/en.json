@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "library": "Library",
+    "hives": "Hives",
+    "clubs": "Clubs",
+    "prompts": "Prompts",
+    "readingLists": "Reading Lists",
+    "friends": "Friends",
+    "profile": "Profile",
+    "admin": "Admin",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "mainNavigation": "Main navigation"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "createFreeAccount": "Create your free account"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{days} days ago",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "siteNavigation": "Site navigation",
+    "mainNavigation": "Main navigation"
+  },
+  "landing": {
+    "headline": "Write, edit, and discover.",
+    "tagline": "Beehive Books is your creative home! Publish your writing, join editing hives, read together in book clubs, and connect with readers who love the same stories you do.",
+    "readyToJoin": "Ready to find your hive?",
+    "readyTagline": "Join Beehive Books today! It's free! Write your first chapter, discover a reading community, or explore thousands of stories from writers just like you.",
+    "features": {
+      "library": "Personal Library",
+      "hives": "Writing Hives",
+      "clubs": "Book Clubs",
+      "readingLists": "Reading Lists",
+      "prompts": "Writing Prompts"
+    },
+    "sections": {
+      "libraryTitle": "Your personal writing library",
+      "libraryDesc": "Publish books chapter by chapter, organize chapters into collections, write author notes, and share your work with the world or keep it private until you're ready.",
+      "hivesTitle": "Build your next novel with your crew",
+      "hivesDesc": "A Hive links your friends to one of your books so you can edit it together. Like bees building a hive, every collaborator contributes by leaving annotations, filling out the world wiki, and keeping each other on track.",
+      "clubsTitle": "Read and discuss together",
+      "clubsDesc": "Create or join book clubs with friends. Pick what you're reading next, hold discussions, and share your thoughts in a space built for readers who want to connect over the books they love.",
+      "moreTitle": "Even more ways to engage",
+      "moreTagline": "Curate your reading, spark creativity, and stay inspired every day."
+    }
+  },
+  "home": {
+    "title": "Home"
+  },
+  "library": {
+    "title": "Library"
+  },
+  "explore": {
+    "title": "Explore"
+  },
+  "clubs": {
+    "title": "Clubs"
+  },
+  "prompts": {
+    "title": "Prompts"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select language"
+  }
+}

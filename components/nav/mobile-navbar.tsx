@@ -24,24 +24,27 @@ import {
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo3.png';
-
-const navItems = [
-  { href: '/home', label: 'Home', icon: Home },
-  { href: '/explore', label: 'Explore', icon: Compass },
-  { href: '/library', label: 'Library', icon: Library },
-  { href: '/hive', label: 'Hives', icon: Hexagon },
-  { href: '/clubs', label: 'Clubs', icon: Users },
-  { href: '/prompts', label: 'Prompts', icon: Lightbulb },
-  { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
-  { href: '/friends', label: 'Friends', icon: Users2 },
-] as const;
+import { useTranslations } from 'next-intl';
 
 export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
+  const t = useTranslations('nav');
+  const tc = useTranslations('common');
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user;
   const username = session?.user?.username ?? undefined;
-  
+
+  const navItems = [
+    { href: '/home', label: t('home'), icon: Home },
+    { href: '/explore', label: t('explore'), icon: Compass },
+    { href: '/library', label: t('library'), icon: Library },
+    { href: '/hive', label: t('hives'), icon: Hexagon },
+    { href: '/clubs', label: t('clubs'), icon: Users },
+    { href: '/prompts', label: t('prompts'), icon: Lightbulb },
+    { href: '/reading-lists', label: t('readingLists'), icon: BookMarked },
+    { href: '/friends', label: t('friends'), icon: Users2 },
+  ] as const;
+
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isActive = (href: string) =>
@@ -95,7 +98,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             type="button"
             onClick={() => setDrawerOpen(true)}
             className="p-2 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 active:bg-white/10 transition-all"
-            aria-label="Open menu"
+            aria-label={tc('openMenu')}
             aria-expanded={drawerOpen}
             aria-controls="mobile-drawer"
           >
@@ -118,7 +121,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
         id="mobile-drawer"
         role="dialog"
         aria-modal="true"
-        aria-label="Site navigation"
+        aria-label={tc('siteNavigation')}
         className={`fixed top-0 right-0 z-70 h-full w-72 bg-[#252525] border-l border-[#2a2a2a] shadow-2xl flex flex-col md:hidden transition-transform duration-300 ease-out ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -129,7 +132,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             type="button"
             onClick={closeDrawer}
             className="p-1.5 rounded-full text-yellow-500 hover:text-white hover:bg-white/8 transition-all"
-            aria-label="Close menu"
+            aria-label={tc('closeMenu')}
           >
             <X aria-hidden="true" className="w-5 h-5" />
           </button>
@@ -204,7 +207,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                   className="w-5 h-5 shrink-0"
                   strokeWidth={isActive('/u') ? 2.5 : 1.75}
                 />
-                Profile
+                {t('profile')}
               </Link>
             )}
 
@@ -222,7 +225,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                   className="w-5 h-5 shrink-0"
                   strokeWidth={isActive('/admin') ? 2.5 : 1.75}
                 />
-                Admin
+                {t('admin')}
               </Link>
             )}
           </div>
@@ -236,7 +239,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-white hover:bg-white/75 border border-[#514e4e] hover:border-white/70 transition-all"
             >
               <Settings className="w-4 h-4" />
-              Settings
+              {t('settings')}
             </Link>
             <button
               onClick={() => {
@@ -246,7 +249,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white hover:text-red-400 hover:bg-red-400/10 border border-[#514e4e] hover:border-red-400/20 transition-all"
             >
               <LogOut className="w-4 h-4" />
-              Sign out
+              {t('signOut')}
             </button>
           </div>
         </div>

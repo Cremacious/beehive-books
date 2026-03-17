@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Início",
+    "explore": "Explorar",
+    "library": "Biblioteca",
+    "hives": "Colmeias",
+    "clubs": "Clubes",
+    "prompts": "Prompts",
+    "readingLists": "Listas de leitura",
+    "friends": "Amigos",
+    "profile": "Perfil",
+    "admin": "Admin",
+    "settings": "Configurações",
+    "signOut": "Sair",
+    "mainNavigation": "Navegação principal"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "alreadyHaveAccount": "Já tem uma conta? Entre",
+    "createFreeAccount": "Crie sua conta gratuita"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "back": "Voltar",
+    "today": "Hoje",
+    "yesterday": "Ontem",
+    "daysAgo": "Há {days} dias",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "siteNavigation": "Navegação do site",
+    "mainNavigation": "Navegação principal"
+  },
+  "landing": {
+    "headline": "Escreva, edite e descubra.",
+    "tagline": "Beehive Books é o seu lar criativo! Publique seus escritos, junte-se a colmeias de edição, leia juntos em clubes do livro e conecte-se com leitores que amam as mesmas histórias que você.",
+    "readyToJoin": "Pronto para encontrar sua colmeia?",
+    "readyTagline": "Junte-se ao Beehive Books hoje! É gratuito! Escreva seu primeiro capítulo, descubra uma comunidade de leitores ou explore milhares de histórias de escritores como você.",
+    "features": {
+      "library": "Biblioteca pessoal",
+      "hives": "Colmeias de escrita",
+      "clubs": "Clubes do livro",
+      "readingLists": "Listas de leitura",
+      "prompts": "Prompts de escrita"
+    },
+    "sections": {
+      "libraryTitle": "Sua biblioteca pessoal de escrita",
+      "libraryDesc": "Publique livros capítulo por capítulo, organize capítulos em coleções, escreva notas de autor e compartilhe seu trabalho com o mundo ou mantenha-o privado até estar pronto.",
+      "hivesTitle": "Construa seu próximo romance com sua equipe",
+      "hivesDesc": "Uma Colmeia conecta seus amigos a um de seus livros para que vocês possam editá-lo juntos. Como abelhas construindo uma colmeia, cada colaborador contribui deixando anotações, preenchendo o wiki do mundo e mantendo uns aos outros no caminho certo.",
+      "clubsTitle": "Ler e discutir juntos",
+      "clubsDesc": "Crie ou participe de clubes do livro com amigos. Escolha o que ler a seguir, realize discussões e compartilhe seus pensamentos em um espaço criado para leitores que desejam se conectar através dos livros que amam.",
+      "moreTitle": "Ainda mais formas de participar",
+      "moreTagline": "Cuide da sua leitura, desperte sua criatividade e inspire-se todos os dias."
+    }
+  },
+  "home": {
+    "title": "Início"
+  },
+  "library": {
+    "title": "Biblioteca"
+  },
+  "explore": {
+    "title": "Explorar"
+  },
+  "clubs": {
+    "title": "Clubes"
+  },
+  "prompts": {
+    "title": "Prompts"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "selectLanguage": "Selecionar idioma"
+  }
+}

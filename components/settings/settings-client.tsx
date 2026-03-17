@@ -6,6 +6,7 @@ import { signOut } from '@/lib/auth-client';
 import { Camera, Loader2, Trash2, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import {
   updateUserAvatarAction,
@@ -75,6 +76,14 @@ export function SettingsClient({ user }: SettingsClientProps) {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-white">Language</p>
+          <p className="text-xs text-white/60 mt-0.5">Choose your preferred language</p>
+        </div>
+        <LocaleSwitcher />
       </div>
 
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">

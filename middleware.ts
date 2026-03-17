@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signUpLimiter, signInLimiter, checkoutLimiter, apiLimiter, pageLimiter } from '@/lib/rate-limit';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from '@/i18n/routing';
+import {
+  signUpLimiter,
+  signInLimiter,
+  checkoutLimiter,
+  apiLimiter,
+  pageLimiter,
+} from '@/lib/rate-limit';
 
+const intlMiddleware = createMiddleware(routing);
+
+// Public paths WITHOUT locale prefix (next-intl strips it before matching)
 const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up'];
 
 // Known malicious/scanner user-agent fragments
@@ -10,9 +21,15 @@ const BLOCKED_UA_PATTERNS = [
   'nessus', 'openvas', 'w3af', 'skipfish',
 ];
 
-function isPublic(pathname: string) {
-  return PUBLIC_PATHS.some((p) =>
-    p === '/' ? pathname === '/' : pathname === p || pathname.startsWith(p + '/'),
+/** Strip a leading locale segment (e.g. /es/home → /home, /home → /home) */
+function stripLocale(pathname: string): string {
+  return pathname.replace(/^\/(en|es|fr|de|pt)(?=\/|$)/, '') || '/';
+}
+
+function isPublic(pathname: string): boolean {
+  const p = stripLocale(pathname);
+  return PUBLIC_PATHS.some((pub) =>
+    pub === '/' ? p === '/' : p === pub || p.startsWith(pub + '/'),
   );
 }
 
@@ -91,19 +108,18 @@ export default async function middleware(request: NextRequest) {
     request.cookies.get('__Secure-better-auth.session_token');
 
   const isAuthenticated = !!sessionToken;
+  const pathWithoutLocale = stripLocale(pathname);
 
-  if (!isAuthenticated) {
-    if (!isPublic(pathname)) {
-      return NextResponse.redirect(new URL('/sign-in', request.url));
-    }
-    return NextResponse.next();
+  if (!isAuthenticated && !isPublic(pathname)) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  if (pathname === '/') {
+  if (isAuthenticated && pathWithoutLocale === '/') {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  return NextResponse.next();
+  // ── Delegate to next-intl for locale detection + cookie/header injection ──
+  return intlMiddleware(request);
 }
 
 export const config = {

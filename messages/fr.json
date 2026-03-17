@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "library": "Bibliothèque",
+    "hives": "Ruches",
+    "clubs": "Clubs",
+    "prompts": "Prompts",
+    "readingLists": "Listes de lecture",
+    "friends": "Amis",
+    "profile": "Profil",
+    "admin": "Admin",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter",
+    "mainNavigation": "Navigation principale"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "alreadyHaveAccount": "Vous avez déjà un compte ? Connectez-vous",
+    "createFreeAccount": "Créer votre compte gratuit"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "daysAgo": "Il y a {days} jours",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "siteNavigation": "Navigation du site",
+    "mainNavigation": "Navigation principale"
+  },
+  "landing": {
+    "headline": "Écrivez, éditez et découvrez.",
+    "tagline": "Beehive Books est votre espace créatif ! Publiez vos écrits, rejoignez des ruches d'édition, lisez ensemble dans des clubs de lecture et connectez-vous avec des lecteurs qui aiment les mêmes histoires que vous.",
+    "readyToJoin": "Prêt à trouver votre ruche ?",
+    "readyTagline": "Rejoignez Beehive Books aujourd'hui ! C'est gratuit ! Écrivez votre premier chapitre, découvrez une communauté de lecteurs ou explorez des milliers d'histoires d'auteurs comme vous.",
+    "features": {
+      "library": "Bibliothèque personnelle",
+      "hives": "Ruches d'écriture",
+      "clubs": "Clubs de lecture",
+      "readingLists": "Listes de lecture",
+      "prompts": "Prompts d'écriture"
+    },
+    "sections": {
+      "libraryTitle": "Votre bibliothèque personnelle",
+      "libraryDesc": "Publiez des livres chapitre par chapitre, organisez les chapitres en collections, rédigez des notes d'auteur et partagez votre travail avec le monde ou gardez-le privé jusqu'à ce que vous soyez prêt.",
+      "hivesTitle": "Construisez votre prochain roman avec votre équipe",
+      "hivesDesc": "Une Ruche connecte vos amis à l'un de vos livres pour que vous puissiez l'éditer ensemble. Comme des abeilles construisant une ruche, chaque collaborateur contribue en laissant des annotations, en remplissant le wiki du monde et en se maintenant mutuellement sur la bonne voie.",
+      "clubsTitle": "Lire et discuter ensemble",
+      "clubsDesc": "Créez ou rejoignez des clubs de lecture avec des amis. Choisissez votre prochaine lecture, organisez des discussions et partagez vos pensées dans un espace conçu pour les lecteurs qui souhaitent se connecter autour des livres qu'ils aiment.",
+      "moreTitle": "Encore plus de façons de s'engager",
+      "moreTagline": "Organisez votre lecture, stimulez votre créativité et restez inspiré chaque jour."
+    }
+  },
+  "home": {
+    "title": "Accueil"
+  },
+  "library": {
+    "title": "Bibliothèque"
+  },
+  "explore": {
+    "title": "Explorer"
+  },
+  "clubs": {
+    "title": "Clubs"
+  },
+  "prompts": {
+    "title": "Prompts"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "selectLanguage": "Sélectionner la langue"
+  }
+}
