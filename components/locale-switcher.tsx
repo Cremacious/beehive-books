@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { locales, type Locale } from '@/i18n/config';
 import { Globe } from 'lucide-react';
 
@@ -17,28 +17,16 @@ export function LocaleSwitcher() {
   const t = useTranslations('settings');
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname(); // locale-stripped path e.g. /home, /settings
 
   function handleChange(newLocale: string) {
-    // Replace (or add) the locale prefix in the current path.
-    // With localePrefix: 'as-needed', English has no prefix.
-    const pathWithoutLocale = pathname.replace(
-      new RegExp(`^/(${locales.join('|')})(?=/|$)`),
-      '',
-    ) || '/';
-
-    const newPath =
-      newLocale === 'en'
-        ? pathWithoutLocale
-        : `/${newLocale}${pathWithoutLocale}`;
-
-    router.push(newPath);
+    router.replace(pathname, { locale: newLocale });
   }
 
   return (
     <div className="flex items-center gap-2">
       <Globe className="w-4 h-4 text-white/60 shrink-0" aria-hidden="true" />
-      <label htmlFor="locale-select" className="text-sm text-white/70 sr-only">
+      <label htmlFor="locale-select" className="sr-only">
         {t('selectLanguage')}
       </label>
       <select

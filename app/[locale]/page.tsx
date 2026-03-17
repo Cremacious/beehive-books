@@ -18,7 +18,7 @@ import {
   BookMarked,
   Crown,
 } from 'lucide-react';
-import logoImage from '../public/logo3.png';
+import logoImage from '@/public/logo3.png';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
