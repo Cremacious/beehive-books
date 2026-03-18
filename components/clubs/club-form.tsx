@@ -26,6 +26,7 @@ export default function ClubForm({
   defaultValues,
   cancelHref,
   friends = [],
+  pendingFriends = [],
 }: ClubFormProps & { friends?: FriendUser[] }) {
   const router = useRouter();
   const store = useClubStore();
@@ -279,9 +280,10 @@ export default function ClubForm({
         )}
       </div>
 
-      {friends.length > 0 && (
+      {(friends.length > 0 || pendingFriends.length > 0) && (
         <FriendInvitePicker
           friends={friends}
+          pendingFriends={pendingFriends}
           selectedIds={invitedIds}
           onChange={setInvitedIds}
         />

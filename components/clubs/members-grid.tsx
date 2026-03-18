@@ -239,6 +239,7 @@ interface MembersGridProps {
   myRole: ClubRole;
   pendingRequests?: PendingJoinRequest[];
   invitableFriends?: InvitableClubFriend[];
+  pendingInvitedFriends?: InvitableClubFriend[];
 }
 
 function JoinRequestRow({
@@ -347,6 +348,7 @@ export default function MembersGrid({
   myRole,
   pendingRequests = [],
   invitableFriends = [],
+  pendingInvitedFriends = [],
 }: MembersGridProps) {
   const store = useClubStore();
   const [query, setQuery] = useState('');
@@ -412,6 +414,7 @@ export default function MembersGrid({
             <div className="mt-3 rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
               <FriendInvitePicker
                 friends={invitableFriends as FriendUser[]}
+                pendingFriends={pendingInvitedFriends as FriendUser[]}
                 selectedIds={selectedInviteIds}
                 onChange={setSelectedInviteIds}
               />

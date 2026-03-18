@@ -141,4 +141,5 @@ export interface ClubFormProps {
   clubId?: string;
   defaultValues?: Partial<BookClub>;
   cancelHref: string;
+  pendingFriends?: { id: string; username: string | null; image: string | null }[];
 }

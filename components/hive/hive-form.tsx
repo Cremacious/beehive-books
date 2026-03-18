@@ -56,6 +56,7 @@ export default function HiveForm({
   cancelHref,
   userBooks = [],
   friends = [],
+  pendingFriends = [],
 }: HiveFormProps) {
   const router = useRouter();
   const store = useHiveStore();
@@ -137,6 +138,9 @@ export default function HiveForm({
     } else {
       const result = await store.updateHive(hiveId!, payload);
       if (result.success) {
+        for (const friendId of invitedIds) {
+          await store.inviteMember(hiveId!, friendId);
+        }
         router.push(`/hive/${hiveId}`);
       } else {
         setError(result.message);
@@ -417,9 +421,10 @@ export default function HiveForm({
         </div>
       )}
 
-      {mode === 'create' && privacy === 'PRIVATE' && (
+      {(friends.length > 0 || pendingFriends.length > 0) && (
         <FriendInvitePicker
           friends={friends}
+          pendingFriends={pendingFriends}
           selectedIds={invitedIds}
           onChange={setInvitedIds}
         />

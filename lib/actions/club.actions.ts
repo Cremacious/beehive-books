@@ -998,6 +998,49 @@ export async function getClubFriendsForInviteAction(
   }));
 }
 
+export async function getClubPendingInvitedFriendsAction(
+  clubId: string,
+): Promise<InvitableClubFriend[]> {
+  const userId = await requireAuth();
+  if (!userId) return [];
+
+  const membership = await db.query.clubMembers.findFirst({
+    where: and(eq(clubMembers.clubId, clubId), eq(clubMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return [];
+  }
+
+  const friendRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+    columns: { requesterId: true, addresseeId: true },
+  });
+  const friendIds = new Set(
+    friendRows.map((r) => (r.requesterId === userId ? r.addresseeId : r.requesterId)),
+  );
+  if (friendIds.size === 0) return [];
+
+  const pendingInvites = await db.query.clubInvites.findMany({
+    where: and(eq(clubInvites.clubId, clubId), eq(clubInvites.status, 'PENDING')),
+    columns: { invitedUserId: true },
+  });
+  const pendingFriendIds = pendingInvites
+    .map((i) => i.invitedUserId)
+    .filter((id) => friendIds.has(id));
+
+  if (pendingFriendIds.length === 0) return [];
+
+  const friendUsers = await db.query.users.findMany({
+    where: inArray(users.id, pendingFriendIds),
+    columns: { id: true, username: true, image: true },
+  });
+
+  return friendUsers.map((u) => ({ id: u.id, username: u.username, image: u.image }));
+}
+
 export async function inviteToClubAction(
   clubId: string,
   friendClerkId: string,

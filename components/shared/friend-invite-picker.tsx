@@ -2,17 +2,19 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Check, Search, Users } from 'lucide-react';
+import { Check, Clock, Search, Users } from 'lucide-react';
 import type { FriendUser } from '@/lib/actions/friend.actions';
 
 interface FriendInvitePickerProps {
   friends: FriendUser[];
+  pendingFriends?: FriendUser[];
   selectedIds: string[];
   onChange: (ids: string[]) => void;
 }
 
 export function FriendInvitePicker({
   friends,
+  pendingFriends = [],
   selectedIds,
   onChange,
 }: FriendInvitePickerProps) {
@@ -26,10 +28,10 @@ export function FriendInvitePicker({
     );
   }
 
-  const filtered = friends.filter((f) => {
-    if (!search) return true;
-    return f.username?.toLowerCase().includes(search.toLowerCase());
-  });
+  const q = search.toLowerCase();
+  const filtered = friends.filter((f) => !search || f.username?.toLowerCase().includes(q));
+  const filteredPending = pendingFriends.filter((f) => !search || f.username?.toLowerCase().includes(q));
+  const hasAny = friends.length > 0 || pendingFriends.length > 0;
 
   return (
     <div>
@@ -42,9 +44,14 @@ export function FriendInvitePicker({
             {selectedIds.length} selected
           </span>
         )}
+        {pendingFriends.length > 0 && (
+          <span className="ml-2 text-xs text-amber-400/80 font-normal">
+            {pendingFriends.length} pending
+          </span>
+        )}
       </label>
 
-      {friends.length === 0 ? (
+      {!hasAny ? (
         <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] px-4 py-4">
           <p className="text-sm text-white/80 text-center">
             No friends to invite yet.
@@ -64,57 +71,85 @@ export function FriendInvitePicker({
           </div>
 
           <ul className="max-h-48 overflow-y-auto" role="list">
-            {filtered.length === 0 ? (
+            {filtered.length === 0 && filteredPending.length === 0 ? (
               <li className="px-4 py-3 text-sm text-white/80">No matches</li>
             ) : (
-              filtered.map((f) => {
-                const selected = selectedIds.includes(f.id);
-                const name = f.username ?? 'Unknown';
-                return (
-                  <li key={f.id}>
-                    <button
-                      type="button"
-                      onClick={() => toggle(f.id)}
-                      aria-pressed={selected}
-                      aria-label={`${selected ? 'Remove' : 'Invite'} ${name}`}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                        selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
-                      }`}
-                    >
-                      {f.image ? (
-                        <Image
-                          src={f.image}
-                          alt={name}
-                          width={28}
-                          height={28}
-                          className="w-7 h-7 rounded-full object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 ring-2 ring-[#FFC300]/20 flex items-center justify-center shrink-0">
-                          <span className="text-[#FFC300] text-[10px] font-bold">
-                            {name[0]?.toUpperCase() ?? '?'}
-                          </span>
-                        </div>
-                      )}
-                      <span className="flex-1 text-sm text-white truncate">
-                        {name}
-                      </span>
-                      <div
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
-                          selected
-                            ? 'bg-[#FFC300] border-[#FFC300]'
-                            : 'border-white/20'
+              <>
+                {filtered.map((f) => {
+                  const selected = selectedIds.includes(f.id);
+                  const name = f.username ?? 'Unknown';
+                  return (
+                    <li key={f.id}>
+                      <button
+                        type="button"
+                        onClick={() => toggle(f.id)}
+                        aria-pressed={selected}
+                        aria-label={`${selected ? 'Remove' : 'Invite'} ${name}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                          selected ? 'bg-[#FFC300]/8' : 'hover:bg-white/4'
                         }`}
-                        aria-hidden="true"
                       >
-                        {selected && (
-                          <Check className="w-2.5 h-2.5 text-black" />
+                        {f.image ? (
+                          <Image
+                            src={f.image}
+                            alt={name}
+                            width={28}
+                            height={28}
+                            className="w-7 h-7 rounded-full object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 ring-2 ring-[#FFC300]/20 flex items-center justify-center shrink-0">
+                            <span className="text-[#FFC300] text-[10px] font-bold">
+                              {name[0]?.toUpperCase() ?? '?'}
+                            </span>
+                          </div>
                         )}
+                        <span className="flex-1 text-sm text-white truncate">
+                          {name}
+                        </span>
+                        <div
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+                            selected ? 'bg-[#FFC300] border-[#FFC300]' : 'border-white/20'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {selected && <Check className="w-2.5 h-2.5 text-black" />}
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+
+                {filteredPending.map((f) => {
+                  const name = f.username ?? 'Unknown';
+                  return (
+                    <li key={f.id} className="opacity-60">
+                      <div className="w-full flex items-center gap-3 px-4 py-2.5">
+                        {f.image ? (
+                          <Image
+                            src={f.image}
+                            alt={name}
+                            width={28}
+                            height={28}
+                            className="w-7 h-7 rounded-full object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 ring-2 ring-[#FFC300]/20 flex items-center justify-center shrink-0">
+                            <span className="text-[#FFC300] text-[10px] font-bold">
+                              {name[0]?.toUpperCase() ?? '?'}
+                            </span>
+                          </div>
+                        )}
+                        <span className="flex-1 text-sm text-white truncate">{name}</span>
+                        <span className="flex items-center gap-1 text-xs text-amber-400/80 shrink-0">
+                          <Clock className="w-3 h-3" />
+                          Pending
+                        </span>
                       </div>
-                    </button>
-                  </li>
-                );
-              })
+                    </li>
+                  );
+                })}
+              </>
             )}
           </ul>
         </div>

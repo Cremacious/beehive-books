@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { books } from '@/db/schema';
-import { getHiveAction, getHiveFriendsForInviteAction } from '@/lib/actions/hive.actions';
+import { getHiveAction, getHiveFriendsForInviteAction, getHivePendingInvitedFriendsAction } from '@/lib/actions/hive.actions';
 import { getUserBooksAction } from '@/lib/actions/book.actions';
 import HiveSettings from '@/components/hive/hive-settings';
 import type { Metadata } from 'next';
@@ -33,12 +33,13 @@ export default async function HiveSettingsPage({
   if (!hive) notFound();
   if (hive.myRole !== 'OWNER') redirect(`/hive/${hiveId}`);
 
-  const [userBooks, linkedBook, invitableFriends] = await Promise.all([
+  const [userBooks, linkedBook, invitableFriends, pendingInvitedFriends] = await Promise.all([
     getUserBooksAction(),
     hive.bookId
       ? db.query.books.findFirst({ where: eq(books.id, hive.bookId) })
       : Promise.resolve(null),
     getHiveFriendsForInviteAction(hiveId),
+    getHivePendingInvitedFriendsAction(hiveId),
   ]);
 
   return (
@@ -50,6 +51,7 @@ export default async function HiveSettingsPage({
         userBooks={userBooks}
         linkedBook={linkedBook ?? null}
         invitableFriends={invitableFriends}
+        pendingInvitedFriends={pendingInvitedFriends}
       />
     </div>
   );
