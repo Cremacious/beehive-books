@@ -925,6 +925,42 @@ export async function getPromptFriendsForInviteAction(
     .filter((u) => !invitedIds.has(u.id));
 }
 
+export async function getPromptPendingInvitedFriendsAction(
+  promptId: string,
+): Promise<InvitableFriend[]> {
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({
+    where: and(eq(prompts.id, promptId), eq(prompts.creatorId, userId)),
+    columns: { id: true },
+  });
+  if (!prompt) return [];
+
+  const [allFriendships, pendingInvites] = await Promise.all([
+    db.query.friendships.findMany({
+      where: and(
+        or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+        eq(friendships.status, 'ACCEPTED'),
+      ),
+      with: {
+        requester: { columns: { id: true, username: true, image: true } },
+        addressee: { columns: { id: true, username: true, image: true } },
+      },
+    }),
+    db.query.promptInvites.findMany({
+      where: and(eq(promptInvites.promptId, promptId), eq(promptInvites.status, 'PENDING')),
+      columns: { userId: true },
+    }),
+  ]);
+
+  const pendingIds = new Set(pendingInvites.map((i) => i.userId));
+  const friendUsers = allFriendships.map((f) =>
+    f.requesterId === userId ? f.addressee : f.requester,
+  );
+
+  return friendUsers.filter((u) => pendingIds.has(u.id));
+}
+
 export async function inviteFriendsToPromptAction(
   promptId: string,
   invitedIds: string[],

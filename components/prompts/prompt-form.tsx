@@ -22,6 +22,7 @@ interface Props {
   mode: 'create' | 'edit';
   prompt?: PromptDetail;
   friends: FriendUser[];
+  pendingFriends?: FriendUser[];
 }
 
 function toDateInputValue(d: Date): string {
@@ -40,11 +41,12 @@ const PRIVACY_OPTIONS = [
   { value: 'PUBLIC' as const, label: 'Public', desc: 'Anyone on Beehive Books can join' },
 ];
 
-export function PromptForm({ mode, prompt, friends }: Props) {
+export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props) {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
 
-  const initialInvited = prompt?.invites.map((i) => i.user.id) ?? [];
+  const pendingIds = new Set(pendingFriends.map((f) => f.id));
+  const initialInvited = prompt?.invites.map((i) => i.user.id).filter((id) => !pendingIds.has(id)) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
 
   const {
@@ -78,7 +80,7 @@ export function PromptForm({ mode, prompt, friends }: Props) {
         setServerError(result.message);
       }
     } else {
-      const result = await updatePromptAction(prompt!.id, data, invitedIds);
+      const result = await updatePromptAction(prompt!.id, data, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
       if (result.success) {
         router.push(`/prompts/${prompt!.id}`);
       } else {
@@ -199,9 +201,10 @@ export function PromptForm({ mode, prompt, friends }: Props) {
         </button>
       </div>
 
-      {privacyValue === 'PRIVATE' && (
+      {(friends.length > 0 || pendingFriends.length > 0) && (
         <FriendInvitePicker
           friends={friends}
+          pendingFriends={pendingFriends}
           selectedIds={invitedIds}
           onChange={setInvitedIds}
         />
