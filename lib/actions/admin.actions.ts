@@ -17,6 +17,7 @@ import {
   clubDiscussionReplies,
   notifications,
   announcements,
+  featureFlags,
 } from '@/db/schema';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
@@ -531,4 +532,114 @@ export async function deleteAnnouncementAdminAction(id: string): Promise<ActionR
   revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement deleted.' };
+}
+
+// ---------------------------------------------------------------------------
+// Feature flags
+// ---------------------------------------------------------------------------
+
+export type FeatureFlagItem = {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  rolloutPercentage: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export async function getAllFeatureFlagsAdminAction(): Promise<FeatureFlagItem[]> {
+  await requireAdmin();
+  return db.query.featureFlags.findMany({
+    orderBy: desc(featureFlags.createdAt),
+  });
+}
+
+export async function createFeatureFlagAction(
+  key: string,
+  name: string,
+  description: string,
+): Promise<ActionResult> {
+  await requireAdmin();
+
+  const trimmedKey = key.trim().toLowerCase().replace(/\s+/g, '_');
+  if (!trimmedKey || !name.trim()) {
+    return { success: false, message: 'Key and name are required.' };
+  }
+  if (!/^[a-z0-9_]+$/.test(trimmedKey)) {
+    return { success: false, message: 'Key may only contain lowercase letters, digits, and underscores.' };
+  }
+
+  const existing = await db.query.featureFlags.findFirst({
+    where: eq(featureFlags.key, trimmedKey),
+    columns: { id: true },
+  });
+  if (existing) {
+    return { success: false, message: `A flag with key "${trimmedKey}" already exists.` };
+  }
+
+  await db.insert(featureFlags).values({
+    key: trimmedKey,
+    name: name.trim(),
+    description: description.trim(),
+    enabled: false,
+    rolloutPercentage: 100,
+  });
+
+  revalidatePath('/admin/feature-flags');
+  return { success: true, message: 'Feature flag created.' };
+}
+
+export async function toggleFeatureFlagAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  try {
+    const flag = await db.query.featureFlags.findFirst({
+      where: eq(featureFlags.id, id),
+      columns: { enabled: true },
+    });
+    if (!flag) return { success: false, message: 'Flag not found.' };
+
+    await db
+      .update(featureFlags)
+      .set({ enabled: !flag.enabled, updatedAt: new Date() })
+      .where(eq(featureFlags.id, id));
+
+    revalidatePath('/admin/feature-flags');
+    return { success: true, message: `Flag ${!flag.enabled ? 'enabled' : 'disabled'}.` };
+  } catch {
+    return { success: false, message: 'Failed to toggle flag.' };
+  }
+}
+
+export async function updateFeatureFlagRolloutAction(
+  id: string,
+  rolloutPercentage: number,
+): Promise<ActionResult> {
+  await requireAdmin();
+  if (rolloutPercentage < 0 || rolloutPercentage > 100) {
+    return { success: false, message: 'Rollout percentage must be between 0 and 100.' };
+  }
+  try {
+    await db
+      .update(featureFlags)
+      .set({ rolloutPercentage, updatedAt: new Date() })
+      .where(eq(featureFlags.id, id));
+
+    revalidatePath('/admin/feature-flags');
+    return { success: true, message: 'Rollout percentage updated.' };
+  } catch {
+    return { success: false, message: 'Failed to update rollout percentage.' };
+  }
+}
+
+export async function deleteFeatureFlagAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  try {
+    await db.delete(featureFlags).where(eq(featureFlags.id, id));
+    revalidatePath('/admin/feature-flags');
+    return { success: true, message: 'Feature flag deleted.' };
+  } catch {
+    return { success: false, message: 'Failed to delete flag.' };
+  }
 }

@@ -295,6 +295,19 @@ export const announcements = pgTable('announcements', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const featureFlags = pgTable('feature_flags', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  key: text('key').notNull().unique(),
+  name: text('name').notNull(),
+  description: text('description').notNull().default(''),
+  enabled: boolean('enabled').notNull().default(false),
+  rolloutPercentage: integer('rollout_percentage').notNull().default(100),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------

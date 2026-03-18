@@ -2,6 +2,7 @@ import { and, count, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { users, books, bookClubs, hives, readingLists, prompts } from '@/db/schema';
 import { PREMIUM_CONFIG, type PremiumResource } from '@/lib/config/premium.config';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 
 const resourceCountQuery: Record<
   PremiumResource,
@@ -56,6 +57,10 @@ export async function checkCreateLimit(
   userId: string,
   resource: PremiumResource,
 ): Promise<string | null> {
+  // Feature flag: bypass all resource limits for users in the rollout
+  const limitsDisabled = await isFeatureEnabled('disable_premium_limits', userId);
+  if (limitsDisabled) return null;
+
   const [[userRow], currentCount] = await Promise.all([
     db.select({ premium: users.premium }).from(users).where(eq(users.id, userId)).limit(1),
     resourceCountQuery[resource](userId),
