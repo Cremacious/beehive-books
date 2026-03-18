@@ -67,6 +67,7 @@ interface HiveSettingsProps {
     coverUrl: string | null;
   } | null;
   invitableFriends?: InvitableFriend[];
+  pendingInvitedFriends?: InvitableFriend[];
 }
 
 export default function HiveSettings({
@@ -74,6 +75,7 @@ export default function HiveSettings({
   userBooks,
   linkedBook,
   invitableFriends = [],
+  pendingInvitedFriends = [],
 }: HiveSettingsProps) {
   const router = useRouter();
 
@@ -366,11 +368,18 @@ export default function HiveSettings({
             <UserPlus className="w-4 h-4 text-[#FFC300]" />
             Invite Members
           </span>
-          {invitableFriends.length > 0 && (
-            <span className="text-xs text-white/80">
-              {invitableFriends.length} friend{invitableFriends.length !== 1 ? 's' : ''} available
-            </span>
-          )}
+          <span className="flex items-center gap-2">
+            {pendingInvitedFriends.length > 0 && (
+              <span className="text-xs text-amber-400/80">
+                {pendingInvitedFriends.length} pending
+              </span>
+            )}
+            {invitableFriends.length > 0 && (
+              <span className="text-xs text-white/80">
+                {invitableFriends.length} friend{invitableFriends.length !== 1 ? 's' : ''} available
+              </span>
+            )}
+          </span>
         </button>
         {showInvitePicker && (
           <div className="px-6 pb-6 border-t border-[#2a2a2a]">
@@ -378,6 +387,7 @@ export default function HiveSettings({
               <HiveInvitePicker
                 hiveId={hive.id}
                 friends={invitableFriends}
+                pendingFriends={pendingInvitedFriends}
                 onInvited={() => router.refresh()}
               />
             </div>

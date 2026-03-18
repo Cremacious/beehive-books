@@ -7,6 +7,7 @@ import {
   getClubMembersAction,
   getPendingJoinRequestsAction,
   getClubFriendsForInviteAction,
+  getClubPendingInvitedFriendsAction,
 } from '@/lib/actions/club.actions';
 import MembersGrid from '@/components/clubs/members-grid';
 import type { Metadata } from 'next';
@@ -40,10 +41,11 @@ export default async function ClubMembersPage({
   const myRole = club.myRole ?? 'MEMBER';
   const isOwnerOrMod = myRole === 'OWNER' || myRole === 'MODERATOR';
 
-  const [members, pendingRequests, invitableFriends] = await Promise.all([
+  const [members, pendingRequests, invitableFriends, pendingInvitedFriends] = await Promise.all([
     getClubMembersAction(clubId),
     isOwnerOrMod ? getPendingJoinRequestsAction(clubId) : Promise.resolve([]),
     isOwnerOrMod ? getClubFriendsForInviteAction(clubId) : Promise.resolve([]),
+    isOwnerOrMod ? getClubPendingInvitedFriendsAction(clubId) : Promise.resolve([]),
   ]);
 
   return (
@@ -64,6 +66,7 @@ export default async function ClubMembersPage({
         myRole={myRole}
         pendingRequests={pendingRequests}
         invitableFriends={invitableFriends}
+        pendingInvitedFriends={pendingInvitedFriends}
       />
     </div>
   );

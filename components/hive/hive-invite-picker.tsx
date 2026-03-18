@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { UserPlus, Loader2, Check, Users } from 'lucide-react';
+import { UserPlus, Loader2, Check, Users, Clock } from 'lucide-react';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import type { InvitableFriend, HiveRole } from '@/lib/types/hive.types';
 
@@ -14,12 +14,14 @@ const ROLE_OPTIONS: { value: Exclude<HiveRole, 'OWNER' | 'BETA_READER'>; label: 
 interface HiveInvitePickerProps {
   hiveId: string;
   friends: InvitableFriend[];
+  pendingFriends?: InvitableFriend[];
   onInvited?: () => void;
 }
 
 export default function HiveInvitePicker({
   hiveId,
   friends,
+  pendingFriends = [],
   onInvited,
 }: HiveInvitePickerProps) {
   const store = useHiveStore();
@@ -41,7 +43,7 @@ export default function HiveInvitePicker({
     }
   };
 
-  if (friends.length === 0) {
+  if (friends.length === 0 && pendingFriends.length === 0) {
     return (
       <div className="flex flex-col items-center py-8 text-center gap-2">
         <Users className="w-6 h-6 text-white/80" />
@@ -57,35 +59,35 @@ export default function HiveInvitePicker({
 
   return (
     <div className="space-y-3">
-   
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-white/80 shrink-0">Invite as:</span>
-        <div className="flex gap-1.5 flex-wrap">
-          {ROLE_OPTIONS.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => setSelectedRole(value)}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
-                selectedRole === value
-                  ? 'bg-[#FFC300]/15 border-[#FFC300]/30 text-[#FFC300]'
-                  : 'border-[#2a2a2a] text-white/80 hover:text-white hover:border-white/20'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+
+      {friends.length > 0 && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-white/80 shrink-0">Invite as:</span>
+          <div className="flex gap-1.5 flex-wrap">
+            {ROLE_OPTIONS.map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => setSelectedRole(value)}
+                className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
+                  selectedRole === value
+                    ? 'bg-[#FFC300]/15 border-[#FFC300]/30 text-[#FFC300]'
+                    : 'border-[#2a2a2a] text-white/80 hover:text-white hover:border-white/20'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {error && <p className="text-xs text-red-400">{error}</p>}
 
-  
       <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
         {friends.map((friend) => {
           const invited = successIds.has(friend.id);
           const loading = loadingId === friend.id;
-          const displayName =
-            friend.username ?? 'Unknown';
+          const displayName = friend.username ?? 'Unknown';
 
           return (
             <div
@@ -130,6 +132,41 @@ export default function HiveInvitePicker({
                 )}
                 {invited ? 'Invited' : 'Invite'}
               </button>
+            </div>
+          );
+        })}
+
+        {pendingFriends.map((friend) => {
+          const displayName = friend.username ?? 'Unknown';
+          return (
+            <div
+              key={friend.id}
+              className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] opacity-60"
+            >
+              {friend.image ? (
+                <Image
+                  src={friend.image}
+                  alt={displayName}
+                  width={28}
+                  height={28}
+                  className="rounded-full shrink-0"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
+                  <span className="text-[#FFC300] text-xs font-bold">
+                    {displayName[0]?.toUpperCase()}
+                  </span>
+                </div>
+              )}
+
+              <span className="flex-1 text-sm text-white truncate">
+                {displayName}
+              </span>
+
+              <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-amber-400/25 text-amber-400/70 bg-amber-400/8 shrink-0">
+                <Clock className="w-3 h-3" />
+                Pending
+              </span>
             </div>
           );
         })}

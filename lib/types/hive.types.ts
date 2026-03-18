@@ -125,6 +125,7 @@ export interface HiveFormProps {
   cancelHref: string;
   userBooks?: HiveBookOption[];
   friends?: { id: string; username: string | null; image: string | null }[];
+  pendingFriends?: { id: string; username: string | null; image: string | null }[];
 }
 
 

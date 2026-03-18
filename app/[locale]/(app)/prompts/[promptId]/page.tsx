@@ -16,6 +16,7 @@ import {
   getPromptAction,
   getPromptEntriesAction,
   getPromptFriendsForInviteAction,
+  getPromptPendingInvitedFriendsAction,
 } from '@/lib/actions/prompt.actions';
 import type { PromptUser } from '@/lib/types/prompt.types';
 
@@ -97,9 +98,10 @@ export default async function PromptDetailPage({ params }: Props) {
     !hasEntry &&
     (isCreator || myInvite === 'ACCEPTED' || prompt.privacy !== 'PRIVATE');
 
-  const [entries, invitableFriends] = await Promise.all([
+  const [entries, invitableFriends, pendingInvitedFriends] = await Promise.all([
     getPromptEntriesAction(promptId),
     isCreator && !isEnded ? getPromptFriendsForInviteAction(promptId) : Promise.resolve([]),
+    isCreator && !isEnded ? getPromptPendingInvitedFriendsAction(promptId) : Promise.resolve([]),
   ]);
 
   const creatorName = prompt.creator.username || 'Unknown';
@@ -218,8 +220,8 @@ export default async function PromptDetailPage({ params }: Props) {
         </div>
       )}
 
-      {isCreator && !isEnded && invitableFriends.length > 0 && (
-        <PromptInvitePanel promptId={promptId} friends={invitableFriends} />
+      {isCreator && !isEnded && (invitableFriends.length > 0 || pendingInvitedFriends.length > 0) && (
+        <PromptInvitePanel promptId={promptId} friends={invitableFriends} pendingFriends={pendingInvitedFriends} />
       )}
 
       {myInvite === 'PENDING' && !isCreator && (

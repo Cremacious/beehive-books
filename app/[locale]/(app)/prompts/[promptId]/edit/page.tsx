@@ -33,6 +33,16 @@ export default async function EditPromptPage({ params }: Props) {
 
   const { friends } = await getMyFriendsDataAction();
 
+  const pendingInviteIds = new Set(
+    prompt.invites.filter((i) => i.status === 'PENDING').map((i) => i.user.id),
+  );
+  const invitableFriends = friends
+    .map((f) => f.user)
+    .filter((u) => !pendingInviteIds.has(u.id));
+  const pendingFriends = friends
+    .map((f) => f.user)
+    .filter((u) => pendingInviteIds.has(u.id));
+
   return (
     <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto">
       <BackButton href={`/prompts/${promptId}`} label="Back to Prompt" />
@@ -56,7 +66,8 @@ export default async function EditPromptPage({ params }: Props) {
       <PromptForm
         mode="edit"
         prompt={prompt}
-        friends={friends.map((f) => f.user)}
+        friends={invitableFriends}
+        pendingFriends={pendingFriends}
       />
     </div>
   );
