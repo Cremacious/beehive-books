@@ -55,11 +55,26 @@ async function createTestBook(page: Page): Promise<string> {
     .locator('textarea[placeholder="Write a compelling description of your book…"]')
     .fill('E2E test book created for chapter tests. Will be deleted automatically.');
   await page.getByRole('button', { name: 'Create Book' }).click();
-  await page.waitForURL('/library', { timeout: 15_000 });
+
+  // Race: success redirect, free-tier error, or stale-session redirect.
+  const errorLocator = page.locator('p.text-red-400, p[class*="text-red"]');
+  const result = await Promise.race([
+    page.waitForURL('/library', { waitUntil: 'domcontentloaded', timeout: 75_000 }).then(() => 'navigated' as const),
+    errorLocator.waitFor({ state: 'visible', timeout: 75_000 }).then(() => 'error' as const),
+    page.waitForURL(/\/sign-in/, { waitUntil: 'domcontentloaded', timeout: 75_000 }).then(() => 'unauthenticated' as const),
+  ]);
+
+  if (result === 'unauthenticated') {
+    throw new Error('Session expired — re-run: npx playwright test auth/auth.setup.ts --project=chromium');
+  }
+  if (result === 'error') {
+    const msg = await errorLocator.first().textContent();
+    throw new Error(`Book creation blocked: "${msg}". Delete leftover [E2E] books from /library and re-run.`);
+  }
 
   // Navigate into the newly created book to get its ID
   await page.getByText(BOOK_TITLE).first().click();
-  await page.waitForURL(/\/library\/[a-z0-9]+$/, { timeout: 10_000 });
+  await page.waitForURL(/\/library\/[a-z0-9]+$/, { waitUntil: 'domcontentloaded', timeout: 30_000 });
   return page.url().split('/').pop()!;
 }
 
@@ -70,6 +85,7 @@ test.describe('chapter CRUD and features', () => {
   // ── 0. Setup — create the test book ──────────────────────────────────
 
   test('setup: create test book', async ({ page }) => {
+    test.setTimeout(90_000); // covers cold-start delay in createTestBook
     test.skip(!fs.existsSync(authFile), 'Auth setup has not run');
     bookId = await createTestBook(page);
     expect(bookId).toBeTruthy();

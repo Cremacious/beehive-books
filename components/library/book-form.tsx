@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertTriangle,
@@ -70,6 +70,7 @@ export function BookForm({
     handleSubmit,
     watch,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
@@ -89,7 +90,6 @@ export function BookForm({
   // eslint-disable-next-line react-hooks/incompatible-library
   const privacy = watch('privacy');
   const explorable = watch('explorable');
-  const draftStatus = watch('draftStatus');
   const descriptionValue = watch('description') ?? '';
   const descChars = descriptionValue.length;
   const descWords = descriptionValue.trim()
@@ -383,21 +383,21 @@ export function BookForm({
             <label className="text-sm font-medium text-yellow-500 mainFont">
               Draft Status
             </label>
-            <select
-              value={draftStatus}
-              onChange={(e) =>
-                setValue('draftStatus', e.target.value as DraftStatus)
-              }
-              className={inputClass + ' appearance-none'}
-            >
-              {(
-                Object.entries(DRAFT_STATUS_LABELS) as [DraftStatus, string][]
-              ).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="draftStatus"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className={inputClass + ' appearance-none'}>
+                  {(
+                    Object.entries(DRAFT_STATUS_LABELS) as [DraftStatus, string][]
+                  ).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
             <p className="text-sm text-white/80">
               Track which revision your book is on. Drafts show a status label
               on your book page.

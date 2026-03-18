@@ -74,7 +74,7 @@ test.describe('guest', () => {
       await page.locator('input[type="password"]').fill(process.env.TEST_USER_PASSWORD!);
       await page.getByRole('button', { name: 'Sign in' }).click();
 
-      await page.waitForURL('/home', { timeout: 30_000 });
+      await page.waitForURL('/home', { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await expect(page).toHaveURL('/home');
     });
 
@@ -115,7 +115,7 @@ test.describe('guest', () => {
       await page.locator('input[type="password"]').fill('TestPassword123!');
       await page.getByRole('button', { name: 'Create account' }).click();
 
-      await page.waitForURL('/onboarding', { timeout: 10_000 });
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
       await expect(page).toHaveURL('/onboarding');
     });
 
@@ -127,7 +127,7 @@ test.describe('guest', () => {
       await page.locator('input[type="email"]').fill(uniqueEmail);
       await page.locator('input[type="password"]').fill('TestPassword123!');
       await page.getByRole('button', { name: 'Create account' }).click();
-      await page.waitForURL('/onboarding', { timeout: 10_000 });
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
 
       // Try navigating directly to a protected route
       await page.goto('/home');
@@ -145,7 +145,7 @@ test.describe('guest', () => {
       await page.locator('input[type="email"]').fill(uniqueEmail);
       await page.locator('input[type="password"]').fill('TestPassword123!');
       await page.getByRole('button', { name: 'Create account' }).click();
-      await page.waitForURL('/onboarding', { timeout: 10_000 });
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
 
       // Fill username — wait for the availability check (400 ms debounce + API call)
       await page.locator('input[placeholder="e.g. KikiTheCat"]').fill(uniqueUsername);
@@ -154,7 +154,7 @@ test.describe('guest', () => {
 
       // Submit
       await page.getByRole('button', { name: 'Continue' }).click();
-      await page.waitForURL('/home', { timeout: 10_000 });
+      await page.waitForURL('/home', { waitUntil: 'domcontentloaded' });
       await expect(page).toHaveURL('/home');
     });
   });
@@ -173,7 +173,7 @@ test.describe('authenticated', () => {
   test('visiting / redirects to /home when signed in', async ({ page }) => {
     test.skip(!fs.existsSync(authFile), 'Auth setup has not run — no session file');
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL('/home');
   });
 
