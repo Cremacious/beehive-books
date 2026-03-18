@@ -87,6 +87,10 @@ export default function ClubForm({
     } else {
       const result = await store.updateClub(clubId!, payload);
       if (result.success) {
+        // Send any new invites selected on the settings form
+        for (const friendId of invitedIds) {
+          await store.inviteToClub(clubId!, friendId);
+        }
         router.push(`/clubs/${clubId}`);
       } else {
         setError(result.message);
@@ -275,7 +279,7 @@ export default function ClubForm({
         )}
       </div>
 
-      {mode === 'create' && privacy === 'PRIVATE' && (
+      {friends.length > 0 && (
         <FriendInvitePicker
           friends={friends}
           selectedIds={invitedIds}

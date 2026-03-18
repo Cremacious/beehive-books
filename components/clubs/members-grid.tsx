@@ -23,7 +23,8 @@ import type {
   PendingJoinRequest,
   InvitableClubFriend,
 } from '@/lib/types/club.types';
-import ClubInvitePicker from '@/components/clubs/club-invite-picker';
+import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
+import type { FriendUser } from '@/lib/actions/friend.actions';
 
 type RoleFilter = 'ALL' | 'OWNER' | 'MODERATOR' | 'MEMBER';
 
@@ -347,9 +348,13 @@ export default function MembersGrid({
   pendingRequests = [],
   invitableFriends = [],
 }: MembersGridProps) {
+  const store = useClubStore();
   const [query, setQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('ALL');
   const [showInvitePicker, setShowInvitePicker] = useState(false);
+  const [selectedInviteIds, setSelectedInviteIds] = useState<string[]>([]);
+  const [sending, setSending] = useState(false);
+  const [sentCount, setSentCount] = useState(0);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -404,12 +409,43 @@ export default function MembersGrid({
             )}
           </button>
           {showInvitePicker && (
-            <div className="mt-3 rounded-xl border border-[#2a2a2a] bg-[#252525] p-3">
-              <ClubInvitePicker
-                clubId={clubId}
-                friends={invitableFriends}
-                onInvited={() => setShowInvitePicker(false)}
+            <div className="mt-3 rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
+              <FriendInvitePicker
+                friends={invitableFriends as FriendUser[]}
+                selectedIds={selectedInviteIds}
+                onChange={setSelectedInviteIds}
               />
+              {sentCount > 0 && (
+                <p className="text-xs text-green-400">
+                  {sentCount} invite{sentCount !== 1 ? 's' : ''} sent!
+                </p>
+              )}
+              <button
+                type="button"
+                disabled={selectedInviteIds.length === 0 || sending}
+                onClick={async () => {
+                  setSending(true);
+                  let count = 0;
+                  for (const friendId of selectedInviteIds) {
+                    const result = await store.inviteToClub(clubId, friendId);
+                    if (result.success) count++;
+                  }
+                  setSentCount(count);
+                  setSelectedInviteIds([]);
+                  setSending(false);
+                  if (count > 0) setShowInvitePicker(false);
+                }}
+                className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl bg-[#FFC300] text-black hover:bg-[#FFC300]/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                {sending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                ) : (
+                  <UserPlus className="w-3.5 h-3.5" aria-hidden="true" />
+                )}
+                {sending
+                  ? 'Sending…'
+                  : `Send Invite${selectedInviteIds.length !== 1 ? 's' : ''}${selectedInviteIds.length > 0 ? ` (${selectedInviteIds.length})` : ''}`}
+              </button>
             </div>
           )}
         </div>
