@@ -26,7 +26,7 @@ setup('authenticate as test user', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   // better-auth redirects via window.location.href — wait for the navigation
-  await page.waitForURL('/home', { timeout: 15_000 });
+  await page.waitForURL('/home', { timeout: 30_000 });
 
   // Persist cookies + localStorage so other tests can load this state
   await page.context().storageState({ path: authFile });

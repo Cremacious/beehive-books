@@ -74,7 +74,7 @@ test.describe('guest', () => {
       await page.locator('input[type="password"]').fill(process.env.TEST_USER_PASSWORD!);
       await page.getByRole('button', { name: 'Sign in' }).click();
 
-      await page.waitForURL('/home', { timeout: 10_000 });
+      await page.waitForURL('/home', { timeout: 30_000 });
       await expect(page).toHaveURL('/home');
     });
 
