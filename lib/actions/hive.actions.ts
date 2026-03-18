@@ -658,6 +658,49 @@ export async function getPendingHiveInvitesAction(): Promise<PendingHiveInvite[]
   }));
 }
 
+export async function getHivePendingInvitedFriendsAction(
+  hiveId: string,
+): Promise<InvitableFriend[]> {
+  const userId = await requireAuth();
+  if (!userId) return [];
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership || (membership.role !== 'OWNER' && membership.role !== 'MODERATOR')) {
+    return [];
+  }
+
+  const friendRows = await db.query.friendships.findMany({
+    where: and(
+      or(eq(friendships.requesterId, userId), eq(friendships.addresseeId, userId)),
+      eq(friendships.status, 'ACCEPTED'),
+    ),
+    columns: { requesterId: true, addresseeId: true },
+  });
+  const friendIds = new Set(
+    friendRows.map((r) => (r.requesterId === userId ? r.addresseeId : r.requesterId)),
+  );
+  if (friendIds.size === 0) return [];
+
+  const pendingInvites = await db.query.hiveInvites.findMany({
+    where: and(eq(hiveInvites.hiveId, hiveId), eq(hiveInvites.status, 'PENDING')),
+    columns: { invitedUserId: true },
+  });
+  const pendingFriendIds = pendingInvites
+    .map((i) => i.invitedUserId)
+    .filter((id) => friendIds.has(id));
+
+  if (pendingFriendIds.length === 0) return [];
+
+  const friendUsers = await db.query.users.findMany({
+    where: inArray(users.id, pendingFriendIds),
+    columns: { id: true, username: true, image: true },
+  });
+
+  return friendUsers.map((u) => ({ id: u.id, username: u.username, image: u.image }));
+}
+
 export async function getHiveFriendsForInviteAction(
   hiveId: string,
 ): Promise<InvitableFriend[]> {

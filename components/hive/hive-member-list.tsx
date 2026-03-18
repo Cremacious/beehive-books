@@ -50,6 +50,7 @@ interface HiveMemberListProps {
   myRole: HiveRole | null;
   currentUserId: string | null;
   invitableFriends?: InvitableFriend[];
+  pendingInvitedFriends?: InvitableFriend[];
 }
 
 export default function HiveMemberList({
@@ -58,6 +59,7 @@ export default function HiveMemberList({
   myRole,
   currentUserId,
   invitableFriends = [],
+  pendingInvitedFriends = [],
 }: HiveMemberListProps) {
   const store = useHiveStore();
   const router = useRouter();
@@ -99,11 +101,18 @@ export default function HiveMemberList({
               <UserPlus className="w-4 h-4 text-[#FFC300]" />
               Invite Friends (click to expand)
             </span>
-            {invitableFriends.length > 0 && (
-              <span className="text-xs text-white/80">
-                {invitableFriends.length} available
-              </span>
-            )}
+            <span className="flex items-center gap-2">
+              {pendingInvitedFriends.length > 0 && (
+                <span className="text-xs text-amber-400/80">
+                  {pendingInvitedFriends.length} pending
+                </span>
+              )}
+              {invitableFriends.length > 0 && (
+                <span className="text-xs text-white/80">
+                  {invitableFriends.length} available
+                </span>
+              )}
+            </span>
           </button>
           {showInvitePicker && (
             <div className="px-4 pb-4 border-t border-[#2a2a2a]">
@@ -111,6 +120,7 @@ export default function HiveMemberList({
                 <HiveInvitePicker
                   hiveId={hiveId}
                   friends={invitableFriends}
+                  pendingFriends={pendingInvitedFriends}
                   onInvited={() => router.refresh()}
                 />
               </div>

@@ -5,6 +5,7 @@ import {
   getHiveAction,
   getHiveMembersAction,
   getHiveFriendsForInviteAction,
+  getHivePendingInvitedFriendsAction,
 } from '@/lib/actions/hive.actions';
 import HiveMemberList from '@/components/hive/hive-member-list';
 import type { Metadata } from 'next';
@@ -36,9 +37,12 @@ export default async function HiveMembersPage({
   if (!hive) notFound();
 
   const canManage = hive.myRole === 'OWNER' || hive.myRole === 'MODERATOR';
-  const invitableFriends = canManage
-    ? await getHiveFriendsForInviteAction(hiveId)
-    : [];
+  const [invitableFriends, pendingInvitedFriends] = canManage
+    ? await Promise.all([
+        getHiveFriendsForInviteAction(hiveId),
+        getHivePendingInvitedFriendsAction(hiveId),
+      ])
+    : [[], []];
 
   return (
     <div className="max-w-2xl">
@@ -55,6 +59,7 @@ export default async function HiveMembersPage({
         myRole={hive.myRole}
         currentUserId={userId ?? null}
         invitableFriends={invitableFriends}
+        pendingInvitedFriends={pendingInvitedFriends}
       />
     </div>
   );
