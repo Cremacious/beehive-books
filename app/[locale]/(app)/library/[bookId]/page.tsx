@@ -139,6 +139,7 @@ export default async function BookPage({
             <ShareBookButton
               bookId={book.id}
               isOwner={isOwner}
+              size="default"
               className="flex-1"
             />
           </div>
