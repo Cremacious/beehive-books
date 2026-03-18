@@ -1,4 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Load .env so process.env.TEST_USER_EMAIL / TEST_USER_PASSWORD are available
+// in test files (Next.js loads .env for the dev server, but Playwright runs
+// in a separate Node process that doesn't get those vars automatically).
+dotenv.config();
 
 export default defineConfig({
   testDir: './tests/e2e',
