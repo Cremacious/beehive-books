@@ -62,24 +62,28 @@ export default async function middleware(request: NextRequest) {
     return new NextResponse(null, { status: 403 });
   }
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   // ── Rate limit auth endpoints ──────────────────────────────────────────────
   if (pathname.startsWith('/api/auth')) {
-    let result;
-    if (pathname.includes('/sign-up')) {
-      result = await signUpLimiter.limit(ip);
-    } else if (pathname.includes('/sign-in')) {
-      result = await signInLimiter.limit(ip);
-    } else {
-      result = await apiLimiter.limit(ip);
+    if (!isDev) {
+      let result;
+      if (pathname.includes('/sign-up')) {
+        result = await signUpLimiter.limit(ip);
+      } else if (pathname.includes('/sign-in')) {
+        result = await signInLimiter.limit(ip);
+      } else {
+        result = await apiLimiter.limit(ip);
+      }
+      if (!result.success) return rateLimitedResponse();
     }
-    if (!result.success) return rateLimitedResponse();
     return NextResponse.next();
   }
 
   // ── Rate limit Stripe endpoints ────────────────────────────────────────────
   if (pathname.startsWith('/api/stripe')) {
     // Webhooks come from Stripe servers — never rate limit them
-    if (!pathname.includes('/webhook')) {
+    if (!isDev && !pathname.includes('/webhook')) {
       const result = await checkoutLimiter.limit(ip);
       if (!result.success) return rateLimitedResponse(3600);
     }
@@ -88,18 +92,22 @@ export default async function middleware(request: NextRequest) {
 
   // ── Rate limit all other API routes ───────────────────────────────────────
   if (pathname.startsWith('/api/')) {
-    const result = await apiLimiter.limit(ip);
-    if (!result.success) return rateLimitedResponse();
+    if (!isDev) {
+      const result = await apiLimiter.limit(ip);
+      if (!result.success) return rateLimitedResponse();
+    }
     return NextResponse.next();
   }
 
   // ── Rate limit page routes (DDoS protection) ──────────────────────────────
-  const pageResult = await pageLimiter.limit(ip);
-  if (!pageResult.success) {
-    return new NextResponse('Too many requests', {
-      status: 429,
-      headers: { 'Retry-After': '60', 'Content-Type': 'text/plain' },
-    });
+  if (!isDev) {
+    const pageResult = await pageLimiter.limit(ip);
+    if (!pageResult.success) {
+      return new NextResponse('Too many requests', {
+        status: 429,
+        headers: { 'Retry-After': '60', 'Content-Type': 'text/plain' },
+      });
+    }
   }
 
   // ── Page route auth guard ─────────────────────────────────────────────────
