@@ -51,7 +51,7 @@ export default function DiscussionList({
       {discussions.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl bg-[#252525] border border-[#2a2a2a]">
           <div className="w-16 h-16 rounded-2xl bg-[#1e1e1e] flex items-center justify-center mb-4">
-            <MessageSquare className="w-7 h-7 text-white/15" />
+            <MessageSquare className="w-7 h-7 text-white/80" />
           </div>
           <h3 className="text-base font-semibold text-white/80 mb-1">
             No discussions yet
@@ -93,7 +93,7 @@ export default function DiscussionList({
           {page > 1 ? (
             <Link
               href={`/clubs/${clubId}/discussions?page=${page - 1}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#3a3a3a] text-sm text-white/80 hover:text-white hover:border-[#4a4a4a] transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white hover:border-[#2a2a2a] transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -112,7 +112,7 @@ export default function DiscussionList({
           {page < totalPages ? (
             <Link
               href={`/clubs/${clubId}/discussions?page=${page + 1}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#3a3a3a] text-sm text-white/80 hover:text-white hover:border-[#4a4a4a] transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white hover:border-[#2a2a2a] transition-all"
             >
               Next
               <ChevronRight className="w-4 h-4" />

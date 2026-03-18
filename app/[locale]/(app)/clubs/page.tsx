@@ -8,7 +8,7 @@ import { ClubInviteActions } from '@/components/clubs/club-invite-actions';
 export const metadata = {
   title: 'Book Clubs',
   description:
-    'Join and host book clubs — read together, discuss, and share your thoughts with a group.',
+    'Join and host book clubs - read together, discuss, and share your thoughts with a group.',
 };
 
 export default async function ClubsPage() {
@@ -48,7 +48,7 @@ export default async function ClubsPage() {
             >
               <div className="min-w-0">
                 <p className="text-sm font-medium text-white truncate">{invite.club.name}</p>
-                <p className="text-xs text-white/60 mt-0.5">
+                <p className="text-xs text-white/80 mt-0.5">
                   Invited by {invite.invitedBy.username ?? 'Unknown'}
                 </p>
               </div>

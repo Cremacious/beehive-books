@@ -51,7 +51,7 @@ export function ClubAddBookForm({ clubId }: { clubId: string }) {
         <button
           type="submit"
           disabled={!title.trim() || !author.trim() || submitting}
-          className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD54F] transition-colors"
+          className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-semibold disabled:opacity-40 hover:bg-[#FFD040] transition-colors"
         >
           {submitting ? (
             <Loader2 className="w-4 h-4 animate-spin" />

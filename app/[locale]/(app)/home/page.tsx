@@ -358,7 +358,7 @@ function NewUserWelcome() {
         </div>
         <Link
           href="/friends?tab=find"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD54F] transition-colors shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           Find People
@@ -387,11 +387,11 @@ function EventRow({ event }: { event: FeedEvent }) {
         </div>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white/75 leading-snug group-hover:text-white/90 transition-colors">
+        <p className="text-sm text-white/80 leading-snug group-hover:text-white/90 transition-colors">
           {cfg.describe(event.meta, name)}
         </p>
       </div>
-      <span className="text-xs text-white/25 shrink-0 mt-0.5 whitespace-nowrap">
+      <span className="text-xs text-white/80 shrink-0 mt-0.5 whitespace-nowrap">
         {timeAgo(event.timestamp)}
       </span>
     </Link>

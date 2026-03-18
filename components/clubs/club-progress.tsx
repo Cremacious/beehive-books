@@ -152,7 +152,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               type="button"
               onClick={handleCancelBook}
               disabled={savingBook}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-sm hover:text-white hover:border-[#4a4a4a] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 text-sm hover:text-white hover:border-[#2a2a2a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
               Cancel
@@ -231,7 +231,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               type="button"
               onClick={handleCancelProgress}
               disabled={savingProgress}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#3a3a3a] text-white/80 text-xs hover:text-white hover:border-[#4a4a4a] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 text-xs hover:text-white hover:border-[#2a2a2a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
               Cancel
@@ -258,7 +258,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 {isMember && !editingProgress && (
                   <button
                     onClick={() => setEditingProgress(true)}
-                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm  hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#3a3a3a] hover:border-[#FFC300]/30 transition-all font-semibold text-white"
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm  hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-all font-semibold text-white"
                   >
                     <Edit2 className="w-4 h-4 text-[#FFC300]" />
                     Update Progress

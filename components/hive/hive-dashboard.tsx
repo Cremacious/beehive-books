@@ -291,7 +291,7 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
           />
         ) : (
           <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center">
-            <span className="text-white/60 text-sm font-bold">
+            <span className="text-white/80 text-sm font-bold">
               {(user.username ?? '?')[0]?.toUpperCase()}
             </span>
           </div>
@@ -400,7 +400,7 @@ export default function HiveDashboard({
                   Friends
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-xs text-white/60 bg-white/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Lock className="w-3 h-3" />
                   Private
                 </span>
@@ -453,7 +453,7 @@ export default function HiveDashboard({
                 {hive.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs text-white/50 bg-[#2a2a2a] rounded-full px-2 py-0.5"
+                    className="text-xs text-white/80 bg-[#2a2a2a] rounded-full px-2 py-0.5"
                   >
                     {tag}
                   </span>
@@ -465,7 +465,7 @@ export default function HiveDashboard({
           <div className="flex items-center gap-2 shrink-0">
             {!isMember && hive.privacy !== 'PRIVATE' && (
               requestSent ? (
-                <Button size="sm" variant="outline" disabled className="text-white/60 border-white/20">
+                <Button size="sm" variant="outline" disabled className="text-white/80 border-white/20">
                   Request Pending
                 </Button>
               ) : (
@@ -524,7 +524,7 @@ export default function HiveDashboard({
                     />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center shrink-0">
-                      <span className="text-white/60 text-sm font-bold">
+                      <span className="text-white/80 text-sm font-bold">
                         {(req.user.username ?? '?')[0]?.toUpperCase()}
                       </span>
                     </div>
@@ -587,8 +587,8 @@ export default function HiveDashboard({
                 className="rounded-lg object-cover shrink-0"
               />
             ) : (
-              <div className="w-20 shrink-0 aspect-2/3 rounded-lg bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-white/20" />
+              <div className="w-20 shrink-0 aspect-2/3 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-white/80" />
               </div>
             )}
             <div className="flex-1 min-w-0">
@@ -622,11 +622,11 @@ export default function HiveDashboard({
         </div>
       ) : isMember ? (
         <div className="rounded-2xl bg-[#252525] border border-dashed border-[#2a2a2a] p-5 flex flex-col items-center text-center gap-2">
-          <BookOpen className="w-8 h-8 text-white/30" />
-          <p className="text-sm font-medium text-white/60">
+          <BookOpen className="w-8 h-8 text-white/80" />
+          <p className="text-sm font-medium text-white/80">
             No book linked yet
           </p>
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/80">
             {isOwner
               ? 'Go to Settings to link or create a book for this hive.'
               : 'The hive owner will link a book soon.'}
@@ -649,7 +649,7 @@ export default function HiveDashboard({
             <button
               onClick={handleRefreshActivity}
               disabled={refreshing}
-              className="flex items-center gap-1.5 text-xs text-white hover:text-white/70 transition-colors disabled:opacity-40"
+              className="flex items-center gap-1.5 text-xs text-white hover:text-white/80 transition-colors disabled:opacity-40"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`}
@@ -667,7 +667,7 @@ export default function HiveDashboard({
               <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] flex items-center justify-center">
                 <GitBranch className="w-7 h-7 text-white" />
               </div>
-              <p className="text-sm font-medium text-white/40">
+              <p className="text-sm font-medium text-white/80">
                 No activity yet
               </p>
               <p className="text-xs text-white/80 max-w-xs">

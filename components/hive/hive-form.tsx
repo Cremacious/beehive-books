@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
+import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import type { HiveSchemaData } from '@/lib/validations/hive.schema';
@@ -54,12 +55,14 @@ export default function HiveForm({
   defaultValues,
   cancelHref,
   userBooks = [],
+  friends = [],
 }: HiveFormProps) {
   const router = useRouter();
   const store = useHiveStore();
 
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
+  const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [bookOption, setBookOption] = useState<'new' | 'existing' | 'later'>(
     'new',
@@ -125,7 +128,7 @@ export default function HiveForm({
     };
 
     if (mode === 'create') {
-      const result = await store.createHive(payload);
+      const result = await store.createHive(payload, invitedIds);
       if (result.success && result.hiveId) {
         router.push(`/hive/${result.hiveId}`);
       } else {
@@ -279,7 +282,7 @@ export default function HiveForm({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#3a3a3a] rounded-full px-2.5 py-1"
+                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
                 >
                   {tag}
                   <button
@@ -386,7 +389,7 @@ export default function HiveForm({
                               className="w-8 h-11 rounded object-cover shrink-0"
                             />
                           ) : (
-                            <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#3a3a3a] flex items-center justify-center shrink-0">
+                            <div className="w-8 h-11 rounded bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center shrink-0">
                               <BookOpen className="w-4 h-4 text-white/80" />
                             </div>
                           )}
@@ -412,6 +415,14 @@ export default function HiveForm({
             </div>
           )}
         </div>
+      )}
+
+      {mode === 'create' && privacy === 'PRIVATE' && (
+        <FriendInvitePicker
+          friends={friends}
+          selectedIds={invitedIds}
+          onChange={setInvitedIds}
+        />
       )}
 
       {error && (

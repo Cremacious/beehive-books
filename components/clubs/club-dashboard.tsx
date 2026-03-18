@@ -112,7 +112,7 @@ export default function ClubDashboard({
                 {club.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs text-white/80 bg-[#1e1e1e] border border-[#3a3a3a] rounded-full px-2.5 py-0.5"
+                    className="text-xs text-white/80 bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-0.5"
                   >
                     {tag}
                   </span>

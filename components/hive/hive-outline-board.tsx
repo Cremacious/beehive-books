@@ -221,7 +221,7 @@ function ItemForm({
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               type === value
                 ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
-                : 'border-[#3a3a3a] bg-[#1e1e1e] text-white/90 hover:border-white/20'
+                : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/90 hover:border-white/20'
             }`}
           >
             <Icon
@@ -343,7 +343,7 @@ function SortableItemRow({
       <button
         {...attributes}
         {...listeners}
-        className="mt-0.5 p-1 text-white hover:text-white/50 cursor-grab active:cursor-grabbing transition-colors shrink-0"
+        className="mt-0.5 p-1 text-white hover:text-white/80 cursor-grab active:cursor-grabbing transition-colors shrink-0"
       >
         <GripVertical className="w-5 h-5" />
       </button>
@@ -366,7 +366,7 @@ function SortableItemRow({
           </p>
         </div>
         {item.description && (
-          <p className="text-xs text-white/60 mt-0.5 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-white/80 mt-0.5 line-clamp-2 leading-relaxed">
             {item.description}
           </p>
         )}
@@ -401,7 +401,7 @@ function DragGhost({ item }: { item: OutlineItem }) {
   const Icon = conf.Icon;
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-[#252525] border border-[#FFC300]/40 p-3 shadow-2xl opacity-95 w-full">
-      <GripVertical className="w-5 h-5 text-white/30 shrink-0" />
+      <GripVertical className="w-5 h-5 text-white/80 shrink-0" />
       <div
         className="w-2.5 h-2.5 rounded-full shrink-0"
         style={{ backgroundColor: item.color }}
@@ -478,13 +478,13 @@ function SortableGroupCard({
         transition,
         opacity: isDragging ? 0.4 : 1,
       }}
-      className="rounded-2xl border border-[#3a3a3a] bg-[#1e1e1e] overflow-hidden"
+      className="rounded-2xl border border-[#2a2a2a] bg-[#1e1e1e] overflow-hidden"
     >
       <div className="flex items-center gap-2 px-3 py-2.5 bg-[#252525] group">
         <button
           {...attributes}
           {...listeners}
-          className="p-1 text-white/40 hover:text-white/60 cursor-grab active:cursor-grabbing transition-colors shrink-0"
+          className="p-1 text-white/80 hover:text-white/80 cursor-grab active:cursor-grabbing transition-colors shrink-0"
         >
           <GripVertical className="w-4 h-4" />
         </button>
@@ -499,14 +499,14 @@ function SortableGroupCard({
           className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
         >
           {collapsed ? (
-            <ChevronRight className="w-3.5 h-3.5 text-white/40 shrink-0" />
+            <ChevronRight className="w-3.5 h-3.5 text-white/80 shrink-0" />
           ) : (
-            <ChevronDown className="w-3.5 h-3.5 text-white/40 shrink-0" />
+            <ChevronDown className="w-3.5 h-3.5 text-white/80 shrink-0" />
           )}
           <span className="text-sm font-semibold text-white truncate">
             {group.title}
           </span>
-          <span className="text-xs text-white/40 shrink-0 ml-1">
+          <span className="text-xs text-white/80 shrink-0 ml-1">
             {childItems.length} item{childItems.length !== 1 ? 's' : ''}
           </span>
         </button>
@@ -561,7 +561,7 @@ function SortableGroupCard({
           ) : (
             <button
               onClick={() => setAddingInGroup(group.id)}
-              className="w-full flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-white/70 hover:text-white/70 hover:bg-white/5 transition-colors border border-dashed border-[#3a3a3a] hover:border-white/20"
+              className="w-full flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-white/80 hover:text-white/80 hover:bg-white/5 transition-colors border border-dashed border-[#2a2a2a] hover:border-white/20"
             >
               <Plus className="w-3.5 h-3.5" />
               Add item to group, or drag item in/out of group

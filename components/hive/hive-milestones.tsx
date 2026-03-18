@@ -70,7 +70,7 @@ export default function HiveMilestones({
             className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
               tab === t
                 ? 'bg-[#FFC300] text-black'
-                : 'text-white/80 hover:text-white/60'
+                : 'text-white/80 hover:text-white/80'
             }`}
           >
             {t === 'grid' ? 'All Milestones' : 'Recent Unlocks'}
@@ -96,19 +96,19 @@ export default function HiveMilestones({
                     unlocked
                       ? isMine
                         ? 'bg-[#FFC300]/10 border-[#FFC300]/30 hover:border-[#FFC300]/50'
-                        : 'bg-[#252525] border-[#2a2a2a] hover:border-[#3a3a3a]'
+                        : 'bg-[#252525] border-[#2a2a2a] hover:border-[#2a2a2a]'
                       : 'bg-[#1a1a1a] border-[#222] opacity-40 cursor-default'
                   } ${isSelected ? 'ring-1 ring-[#FFC300]/50' : ''}`}
                 >
                   <div className="text-2xl mb-2">{info.icon}</div>
                   <p
                     className={`text-xs font-semibold ${
-                      unlocked ? 'text-white' : 'text-white/30'
+                      unlocked ? 'text-white' : 'text-white/80'
                     }`}
                   >
                     {info.label}
                   </p>
-                  <p className="text-xs text-white/30 mt-0.5 leading-snug line-clamp-2">
+                  <p className="text-xs text-white/80 mt-0.5 leading-snug line-clamp-2">
                     {info.description}
                   </p>
                   {unlocked && (
@@ -133,7 +133,7 @@ export default function HiveMilestones({
                           ),
                         )}
                       {earners.length > 5 && (
-                        <span className="text-xs text-white/30 pl-2">
+                        <span className="text-xs text-white/80 pl-2">
                           +{earners.length - 5}
                         </span>
                       )}
@@ -152,13 +152,13 @@ export default function HiveMilestones({
                   <p className="text-sm font-semibold text-white">
                     {MILESTONE_INFO[filter].label}
                   </p>
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-white/80">
                     {MILESTONE_INFO[filter].description}
                   </p>
                 </div>
               </div>
               {(byType[filter] ?? []).length === 0 ? (
-                <p className="text-sm text-white/30 italic">
+                <p className="text-sm text-white/80 italic">
                   No one has earned this yet.
                 </p>
               ) : (
@@ -176,10 +176,10 @@ export default function HiveMilestones({
                       ) : (
                         <div className="w-6 h-6 rounded-full bg-[#FFC300]/20" />
                       )}
-                      <span className="flex-1 text-sm text-white/70">
+                      <span className="flex-1 text-sm text-white/80">
                         {m.user.username ?? 'User'}
                       </span>
-                      <span className="text-xs text-white/30">
+                      <span className="text-xs text-white/80">
                         {formatDate(m.unlockedAt)}
                       </span>
                     </div>
@@ -228,12 +228,12 @@ export default function HiveMilestones({
                             className="rounded-full"
                           />
                         )}
-                        <span className="text-xs text-white/40">
+                        <span className="text-xs text-white/80">
                           {m.user.username ?? 'User'}
                         </span>
                       </div>
                     </div>
-                    <span className="text-xs text-white/25 shrink-0">
+                    <span className="text-xs text-white/80 shrink-0">
                       {formatDate(m.unlockedAt)}
                     </span>
                   </div>

@@ -44,16 +44,16 @@ function PreviewModal({
         <div className="flex items-center justify-between px-5 py-3 border-b border-[#2a2a2a] shrink-0">
           <div>
             <h3 className="text-sm font-semibold text-white">{snapshot.name}</h3>
-            <p className="text-xs text-white/30">{formatDate(snapshot.createdAt)}</p>
+            <p className="text-xs text-white/80">{formatDate(snapshot.createdAt)}</p>
           </div>
-          <button onClick={onClose} className="p-1 text-white/30 hover:text-white/60">
+          <button onClick={onClose} className="p-1 text-white/80 hover:text-white/80">
             <X className="w-4 h-4" />
           </button>
         </div>
         <div
-          className="flex-1 overflow-y-auto p-5 prose prose-invert prose-sm max-w-none text-white/70 leading-relaxed"
+          className="flex-1 overflow-y-auto p-5 prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed"
           dangerouslySetInnerHTML={{
-            __html: snapshot.content || '<p class="text-white/30 italic">No content.</p>',
+            __html: snapshot.content || '<p class="text-white/80 italic">No content.</p>',
           }}
         />
       </div>
@@ -112,13 +112,13 @@ function SnapshotCard({
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-white truncate">{snapshot.name}</p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-white/80">
             {snapshot.wordCount.toLocaleString()} words
           </span>
-          <span className="text-xs text-white/20">·</span>
-          <span className="text-xs text-white/30">{formatDate(snapshot.createdAt)}</span>
-          <span className="text-xs text-white/20">·</span>
-          <span className="flex items-center gap-1 text-xs text-white/30">
+          <span className="text-xs text-white/80">·</span>
+          <span className="text-xs text-white/80">{formatDate(snapshot.createdAt)}</span>
+          <span className="text-xs text-white/80">·</span>
+          <span className="flex items-center gap-1 text-xs text-white/80">
             {snapshot.author.image ? (
               <Image
                 src={snapshot.author.image}
@@ -137,7 +137,7 @@ function SnapshotCard({
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
         <button
           onClick={() => onPreview(snapshot)}
-          className="p-1.5 text-white/30 hover:text-white/70 transition-colors"
+          className="p-1.5 text-white/80 hover:text-white/80 transition-colors"
           title="Preview content"
         >
           <Eye className="w-4 h-4" />
@@ -146,7 +146,7 @@ function SnapshotCard({
           <button
             onClick={handleRestore}
             disabled={restoring}
-            className="p-1.5 text-white/30 hover:text-[#FFC300] transition-colors"
+            className="p-1.5 text-white/80 hover:text-[#FFC300] transition-colors"
             title="Restore this snapshot"
           >
             {restoring
@@ -158,7 +158,7 @@ function SnapshotCard({
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-1.5 text-white/30 hover:text-red-400 transition-colors"
+            className="p-1.5 text-white/80 hover:text-red-400 transition-colors"
             title="Delete snapshot"
           >
             {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -231,7 +231,7 @@ export default function HiveVersionHistory({
         <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
           <History className="w-6 h-6 text-[#FFC300]/40" />
         </div>
-        <p className="text-sm text-white/40">
+        <p className="text-sm text-white/80">
           {!bookId
             ? 'Link a book to this hive to use version history.'
             : 'No chapters available yet.'}
@@ -308,16 +308,16 @@ export default function HiveVersionHistory({
             <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
               <History className="w-6 h-6 text-[#FFC300]/40" />
             </div>
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-white/80">
               No snapshots for this chapter yet.
             </p>
-            <p className="text-xs text-white/25 max-w-xs">
+            <p className="text-xs text-white/80 max-w-xs">
               Save a snapshot before making big revisions so you can always roll back.
             </p>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-xs text-white/30">
+            <p className="text-xs text-white/80">
               {snapshots.length} snapshot{snapshots.length !== 1 ? 's' : ''}
               {myRole === 'OWNER' || myRole === 'MODERATOR'
                 ? ' · hover to restore'

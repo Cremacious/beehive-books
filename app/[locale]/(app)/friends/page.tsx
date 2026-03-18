@@ -26,7 +26,7 @@ export default async function FriendsPage({ searchParams }: Props) {
     <div className="max-w-4xl mx-auto px-4 py-6 md:px-8">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">Friends</h1>
-        <p className="mt-1 text-sm text-white/70">
+        <p className="mt-1 text-sm text-white/80">
           Connect with other writers on Beehive
         </p>
       </div>
@@ -193,7 +193,7 @@ function FriendCard({
       <div className="flex items-center gap-2 mt-1">
         <Link
           href={`/u/${user.username ?? user.id}`}
-          className="text-xs px-3 py-1.5 rounded-lg border border-[#333] text-white/70 hover:text-white hover:border-[#FFC300]/40 transition-all"
+          className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all"
         >
           View Profile
         </Link>

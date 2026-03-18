@@ -52,7 +52,7 @@ export default async function PromptsPage() {
                 >
                   {p.title}
                 </Link>
-                <p className="text-xs text-white/70 mt-0.5">
+                <p className="text-xs text-white/80 mt-0.5">
                   by {p.creator.username || 'Unknown'}
                 </p>
               </div>

@@ -147,7 +147,7 @@ function btn(variant: 'yellow' | 'gray' | 'red' | 'green', compact: boolean) {
 
   const colors: Record<string, string> = {
     yellow: 'bg-[#FFC300] text-black hover:bg-[#e6b000]',
-    gray: 'bg-[#2a2a2a] text-white/70 border border-[#333] hover:text-white hover:border-[#444]',
+    gray: 'bg-[#2a2a2a] text-white/80 border border-[#2a2a2a] hover:text-white hover:border-[#444]',
     red: 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20',
     green:
       'bg-[#FFC300]/10 text-[#FFC300] border border-[#FFC300]/20 hover:bg-[#FFC300]/20',

@@ -92,7 +92,7 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
                           className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
                             isChecked
                               ? 'bg-[#FFC300] border-[#FFC300]'
-                              : 'border-[#3a3a3a] bg-transparent group-hover:border-[#FFC300]/50'
+                              : 'border-[#2a2a2a] bg-transparent group-hover:border-[#FFC300]/50'
                           }`}
                         >
                           {isChecked && (

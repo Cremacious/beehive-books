@@ -122,10 +122,10 @@ function PollCard({
             </div>
           )}
           <div className="min-w-0">
-            <p className="text-xs text-white/40">
+            <p className="text-xs text-white/80">
               {poll.author.username ?? 'User'}
               {poll.endsAt && !isClosed && (
-                <span className="ml-2 text-white/30">
+                <span className="ml-2 text-white/80">
                   · Ends {formatDate(poll.endsAt)}
                 </span>
               )}
@@ -134,7 +134,7 @@ function PollCard({
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {isClosed ? (
-            <span className="flex items-center gap-1 text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-xs text-white/80 bg-white/5 px-2 py-0.5 rounded-full">
               <Lock className="w-3 h-3" /> Closed
             </span>
           ) : (
@@ -148,7 +148,7 @@ function PollCard({
                 <button
                   onClick={handleClose}
                   disabled={closing}
-                  className="p-1 text-white/30 hover:text-white/60 transition-colors"
+                  className="p-1 text-white/80 hover:text-white/80 transition-colors"
                   title="Close poll"
                 >
                   {closing ? (
@@ -161,7 +161,7 @@ function PollCard({
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="p-1 text-white/30 hover:text-red-400 transition-colors"
+                className="p-1 text-white/80 hover:text-red-400 transition-colors"
                 title="Delete poll"
               >
                 {deleting ? (
@@ -195,7 +195,7 @@ function PollCard({
               <div key={idx} className="space-y-0.5">
                 <div className="flex items-center justify-between text-xs">
                   <span
-                    className={`${myPick ? 'text-[#FFC300]' : 'text-white/70'} flex items-center gap-1.5`}
+                    className={`${myPick ? 'text-[#FFC300]' : 'text-white/80'} flex items-center gap-1.5`}
                   >
                     {myPick && (
                       <CheckSquare className="w-3 h-3 text-[#FFC300] shrink-0" />
@@ -207,7 +207,7 @@ function PollCard({
                       </span>
                     )}
                   </span>
-                  <span className="text-white/40 ml-4 shrink-0">
+                  <span className="text-white/80 ml-4 shrink-0">
                     {pct}% · {count}
                   </span>
                 </div>
@@ -220,7 +220,7 @@ function PollCard({
               </div>
             );
           })}
-          <p className="text-xs text-white/30 pt-1">
+          <p className="text-xs text-white/80 pt-1">
             {poll.totalVotes} vote{poll.totalVotes !== 1 ? 's' : ''}
             {poll.isMultiChoice && ' · multi-choice'}
           </p>
@@ -244,7 +244,7 @@ function PollCard({
                   selected ? (
                     <CheckSquare className="w-4 h-4 shrink-0 text-[#FFC300]" />
                   ) : (
-                    <Square className="w-4 h-4 shrink-0 text-white/30" />
+                    <Square className="w-4 h-4 shrink-0 text-white/80" />
                   )
                 ) : (
                   <div
@@ -266,7 +266,7 @@ function PollCard({
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={() => setShowResults(true)}
-              className="text-xs text-white/30 hover:text-white/50 transition-colors"
+              className="text-xs text-white/80 hover:text-white/80 transition-colors"
             >
               View results
             </button>
@@ -285,7 +285,7 @@ function PollCard({
       {showResults && !isClosed && (
         <button
           onClick={() => setShowResults(false)}
-          className="text-xs text-white/30 hover:text-white/50 transition-colors"
+          className="text-xs text-white/80 hover:text-white/80 transition-colors"
         >
           {hasVoted ? 'Change my vote' : 'Cast a vote'}
         </button>
@@ -375,7 +375,7 @@ function CreatePollForm({
               <button
                 type="button"
                 onClick={() => removeOption(idx)}
-                className="p-1.5 text-white/30 hover:text-red-400 transition-colors"
+                className="p-1.5 text-white/80 hover:text-red-400 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -490,7 +490,7 @@ export default function HivePollList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-white/80">
           {polls.length} poll{polls.length !== 1 ? 's' : ''}
         </p>
         {!showCreate && (
@@ -514,7 +514,7 @@ export default function HivePollList({
           <div className="w-12 h-12 rounded-2xl bg-[#252525] flex items-center justify-center">
             <VoteIcon className="w-6 h-6 text-[#FFC300]/40" />
           </div>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/80">
             No polls yet. Start one to get the hive&apos;s opinion!
           </p>
         </div>

@@ -19,7 +19,7 @@ export default function BookCard({ book }: { book: Book }) {
             className="object-cover"
           />
         ) : (
-          <BookOpen className="w-5 h-5 text-white/8" />
+          <BookOpen className="w-5 h-5 text-white/80" />
         )}
       </div>
 

@@ -54,7 +54,7 @@ export default async function PublicBookPage({
 
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
-            <div className="flex w-40 mx-auto sm:mx-0 sm:w-40 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#333] items-center justify-center overflow-hidden relative">
+            <div className="flex w-40 mx-auto sm:mx-0 sm:w-40 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] items-center justify-center overflow-hidden relative">
               {book.coverUrl ? (
                 <>
                   <Image
@@ -66,7 +66,7 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <BookOpen className="w-10 h-10 text-white/10" />
+                <BookOpen className="w-10 h-10 text-white/80" />
               )}
             </div>
 

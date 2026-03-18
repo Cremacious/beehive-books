@@ -178,7 +178,7 @@ export default function HiveMemberList({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="w-8 h-8 text-white/40 hover:text-white"
+                  className="w-8 h-8 text-white/80 hover:text-white"
                   onClick={() =>
                     setOpenMenuId(
                       openMenuId === member.userId ? null : member.userId,
@@ -192,7 +192,7 @@ export default function HiveMemberList({
                 {openMenuId === member.userId && (
                   <div className="absolute right-0 top-9 z-10 w-44 bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl shadow-xl overflow-hidden">
                     <div className="p-1">
-                      <p className="text-[10px] text-white/40 px-2 py-1 uppercase tracking-wider">
+                      <p className="text-[10px] text-white/80 px-2 py-1 uppercase tracking-wider">
                         Change role
                       </p>
                       {ASSIGNABLE_ROLES.map((role) => (

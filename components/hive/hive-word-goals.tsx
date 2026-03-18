@@ -108,7 +108,7 @@ function GoalCard({
               {meta.label}
             </span>
             {!goal.isActive && (
-              <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-white/80 bg-white/5 px-2 py-0.5 rounded-full">
                 Inactive
               </span>
             )}
@@ -320,7 +320,7 @@ export default function HiveWordGoals({
                   className={`py-1.5 rounded-lg text-xs font-medium transition-all ${
                     goalType === t
                       ? 'bg-[#FFC300] text-black'
-                      : 'bg-[#1e1e1e] text-white hover:text-white/70'
+                      : 'bg-[#1e1e1e] text-white hover:text-white/80'
                   }`}
                 >
                   {t.charAt(0) + t.slice(1).toLowerCase()}
@@ -438,7 +438,7 @@ export default function HiveWordGoals({
 
         {inactiveGoals.length > 0 && (
           <div className="space-y-2 pt-2">
-            <p className="text-xs text-white/25">Past goals</p>
+            <p className="text-xs text-white/80">Past goals</p>
             {inactiveGoals.map((g) => (
               <GoalCard
                 key={g.id}

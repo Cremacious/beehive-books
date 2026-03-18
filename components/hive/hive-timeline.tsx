@@ -41,7 +41,7 @@ function TimelineCard({
 
       <div
         className={`ml-7 flex-1 rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 transition-all ${
-          expanded ? '' : 'hover:border-[#3a3a3a]'
+          expanded ? '' : 'hover:border-[#2a2a2a]'
         }`}
       >
         <div className="flex items-start justify-between gap-3">
@@ -59,7 +59,7 @@ function TimelineCard({
             <h3 className="text-sm font-semibold text-white">{entry.title}</h3>
             {preview && (
               <p
-                className={`text-xs text-white/40 mt-1 leading-relaxed ${
+                className={`text-xs text-white/80 mt-1 leading-relaxed ${
                   expanded ? '' : 'line-clamp-2'
                 }`}
               >
@@ -68,7 +68,7 @@ function TimelineCard({
             )}
             {expanded && entry.content && (
               <div
-                className="mt-3 prose prose-invert prose-xs max-w-none text-white/60 text-sm leading-relaxed"
+                className="mt-3 prose prose-invert prose-xs max-w-none text-white/80 text-sm leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: entry.content }}
               />
             )}
@@ -77,7 +77,7 @@ function TimelineCard({
             {preview.length > 120 && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                className="text-xs text-white/80 hover:text-white/80 transition-colors"
               >
                 {expanded ? 'Less' : 'More'}
               </button>
@@ -85,10 +85,10 @@ function TimelineCard({
           </div>
         </div>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-white/25">
+          <span className="text-xs text-white/80">
             {formatDate(entry.createdAt)}
           </span>
-          <span className="text-xs text-white/25">
+          <span className="text-xs text-white/80">
             by {entry.author.username ?? 'User'}
           </span>
         </div>
@@ -109,10 +109,10 @@ export default function HiveTimeline({
           <Clock className="w-7 h-7 text-[#FFC300]/40" />
         </div>
         <div>
-          <p className="text-sm font-medium text-white/60 mb-1">
+          <p className="text-sm font-medium text-white/80 mb-1">
             No timeline events yet
           </p>
-          <p className="text-xs text-white/30 max-w-xs">
+          <p className="text-xs text-white/80 max-w-xs">
             Add events from the wiki by selecting the{' '}
             <span className="text-[#FFC300]/70">Timeline</span> category. Events
             appear here sorted alphabetically — prefix titles with dates or
@@ -132,7 +132,7 @@ export default function HiveTimeline({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-white/30">
+        <p className="text-xs text-white/80">
           {entries.length} event{entries.length !== 1 ? 's' : ''} · sorted
           alphabetically
         </p>
@@ -155,8 +155,8 @@ export default function HiveTimeline({
       </div>
 
       <div className="rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-3 flex items-start gap-2">
-        <Clock className="w-3.5 h-3.5 text-white/30 mt-0.5 shrink-0" />
-        <p className="text-xs text-white/30">
+        <Clock className="w-3.5 h-3.5 text-white/80 mt-0.5 shrink-0" />
+        <p className="text-xs text-white/80">
           Timeline events are wiki entries with the{' '}
           <span className="text-[#FFC300]/60">Timeline</span> category. Prefix
           titles with dates or chapter numbers (e.g. &quot;Year 1 — The

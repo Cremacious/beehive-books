@@ -160,7 +160,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5 flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-white">Language</p>
-          <p className="text-xs text-white/60 mt-0.5">
+          <p className="text-xs text-white/80 mt-0.5">
             Choose your preferred language
           </p>
         </div>

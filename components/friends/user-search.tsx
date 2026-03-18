@@ -31,16 +31,16 @@ export function UserSearch() {
   return (
     <div>
       <div className="relative mb-6">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
         {isPending && (
-          <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 animate-spin pointer-events-none" />
+          <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 animate-spin pointer-events-none" />
         )}
         <input
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           placeholder="Search by username or email…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#333] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 

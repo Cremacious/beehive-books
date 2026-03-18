@@ -270,7 +270,7 @@ export function ReadingListForm({
                             className={`w-5 h-5 transition-colors ${
                               isCR
                                 ? 'text-[#FFC300]'
-                                : 'text-white/20 hover:text-white/50'
+                                : 'text-white/80 hover:text-white/80'
                             }`}
                           />
                         </button>

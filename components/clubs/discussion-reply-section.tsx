@@ -103,7 +103,7 @@ export default function DiscussionReplySection({
 
       {topLevel.length === 0 ? (
         <div className="flex flex-col items-center py-12 text-center rounded-xl bg-[#252525] border border-[#2a2a2a]">
-          <MessageSquare className="w-8 h-8 text-white/10 mb-2" />
+          <MessageSquare className="w-8 h-8 text-white/80 mb-2" />
           <p className="text-sm text-white/80">
             No replies yet. {isMember ? 'Be the first to reply!' : ''}
           </p>

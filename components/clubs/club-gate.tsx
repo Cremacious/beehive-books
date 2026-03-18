@@ -61,7 +61,7 @@ export default function ClubGate({
           <p className="text-sm text-white/80 mb-4 leading-relaxed">{description}</p>
         )}
 
-        <p className="text-xs text-white/60 mb-6">
+        <p className="text-xs text-white/80 mb-6">
           {memberCount} {memberCount === 1 ? 'member' : 'members'}
         </p>
 

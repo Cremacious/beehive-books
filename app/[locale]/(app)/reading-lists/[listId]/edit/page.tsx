@@ -32,7 +32,7 @@ export default async function EditReadingListPage({
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white mainFont">Edit Reading List</h1>
-        <p className="text-sm text-white/45 mt-1">
+        <p className="text-sm text-white/80 mt-1">
           Update your list&apos;s details.
         </p>
       </div>

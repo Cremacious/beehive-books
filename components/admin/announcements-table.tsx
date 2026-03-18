@@ -58,30 +58,30 @@ export default function AnnouncementsTable({ announcements }: Props) {
         </h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-white/60 mb-1">Title</label>
+            <label className="block text-xs font-medium text-white/80 mb-1">Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Announcement title"
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#FFC300]/40"
+              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-[#FFC300]/40"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-white/60 mb-1">Content</label>
+            <label className="block text-xs font-medium text-white/80 mb-1">Content</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Announcement content…"
               rows={4}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#FFC300]/40 resize-none"
+              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-[#FFC300]/40 resize-none"
             />
           </div>
           {createError && <p className="text-xs text-red-400">{createError}</p>}
           <Button
             onClick={handleCreate}
             disabled={isPending || !title.trim() || !content.trim()}
-            className="bg-[#FFC300] text-black hover:bg-[#FFD54F] font-semibold"
+            className="bg-[#FFC300] text-black hover:bg-[#FFD040] font-semibold"
           >
             {isPending ? 'Posting…' : 'Post Announcement'}
           </Button>
@@ -95,7 +95,7 @@ export default function AnnouncementsTable({ announcements }: Props) {
         </h2>
         {announcements.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[#2a2a2a] py-12 text-center">
-            <p className="text-sm text-white/40">No announcements yet.</p>
+            <p className="text-sm text-white/80">No announcements yet.</p>
           </div>
         ) : (
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] divide-y divide-[#2a2a2a] overflow-hidden">
@@ -103,10 +103,10 @@ export default function AnnouncementsTable({ announcements }: Props) {
               <div key={a.id} className="flex items-start gap-4 px-5 py-4">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white">{a.title}</p>
-                  <p className="text-xs text-white/50 mt-0.5 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-white/80 mt-0.5 leading-relaxed line-clamp-2">
                     {a.content}
                   </p>
-                  <p className="text-xs text-white/25 mt-1.5">
+                  <p className="text-xs text-white/80 mt-1.5">
                     {new Date(a.createdAt).toLocaleDateString([], {
                       month: 'short',
                       day: 'numeric',
@@ -119,7 +119,7 @@ export default function AnnouncementsTable({ announcements }: Props) {
                 </div>
                 <button
                   onClick={() => setDeleteId(a.id)}
-                  className="shrink-0 text-white/30 hover:text-red-400 transition-colors mt-0.5"
+                  className="shrink-0 text-white/80 hover:text-red-400 transition-colors mt-0.5"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

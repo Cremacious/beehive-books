@@ -58,7 +58,7 @@ const CATEGORY_COLORS: Record<WikiCategory, string> = {
   TIMELINE: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
   LORE: 'text-orange-400 bg-orange-400/10 border-orange-400/20',
   TERMINOLOGY: 'text-pink-400 bg-pink-400/10 border-pink-400/20',
-  OTHER: 'text-white/40 bg-white/5 border-white/10',
+  OTHER: 'text-white/80 bg-white/5 border-white/10',
 };
 
 
@@ -126,7 +126,7 @@ function EntryForm({
         </h3>
         <button
           onClick={onCancel}
-          className="p-1 text-white hover:text-white/70 transition-colors"
+          className="p-1 text-white hover:text-white/80 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -179,7 +179,7 @@ function EntryForm({
           <button
             type="button"
             onClick={addTag}
-            className="p-1.5 text-white/40 hover:text-white/70 transition-colors"
+            className="p-1.5 text-white/80 hover:text-white/80 transition-colors"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -275,7 +275,7 @@ function EntryCard({
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
             <button
               onClick={() => onEdit(entry)}
-              className="p-1 text-white hover:text-white/70 transition-colors"
+              className="p-1 text-white hover:text-white/80 transition-colors"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -299,7 +299,7 @@ function EntryCard({
       {entry.content && (
         <div className="space-y-1">
           {preview && (
-            <p className="text-sm text-white/70 leading-relaxed line-clamp-3">
+            <p className="text-sm text-white/80 leading-relaxed line-clamp-3">
               {preview}
             </p>
           )}
@@ -317,7 +317,7 @@ function EntryCard({
           {entry.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] text-white/40"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] text-white/80"
             >
               {tag}
             </span>
@@ -427,12 +427,12 @@ export default function HiveWiki({
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
             activeCategory === 'ALL'
               ? 'bg-[#FFC300]/15 text-[#FFC300]'
-              : 'text-white/50 hover:text-white/70'
+              : 'text-white/80 hover:text-white/80'
           }`}
         >
           <BookOpen className="w-3 h-3" />
           All
-          <span className="text-[10px] text-white/30 ml-0.5">
+          <span className="text-[10px] text-white/80 ml-0.5">
             ({counts.ALL})
           </span>
         </button>
@@ -444,7 +444,7 @@ export default function HiveWiki({
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
               activeCategory === value
                 ? 'bg-[#FFC300]/15 text-[#FFC300]'
-                : 'text-white/90 hover:text-white/70'
+                : 'text-white/90 hover:text-white/80'
             }`}
           >
             <Icon className="w-3 h-3" />
@@ -552,7 +552,7 @@ export default function HiveWiki({
                       {(viewingEntry.author.username ?? 'U')[0]?.toUpperCase()}
                     </div>
                   )}
-                  <span className="text-xs text-white/50">
+                  <span className="text-xs text-white/80">
                     {viewingEntry.author.username ?? 'User'}
                     {' · '}
                     {new Date(viewingEntry.updatedAt).toLocaleDateString([], {

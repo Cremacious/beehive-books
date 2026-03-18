@@ -54,7 +54,7 @@ export default async function HivePage() {
                 <p className="text-sm font-medium text-white truncate">
                   {invite.hiveName}
                 </p>
-                <p className="text-xs text-white/60 mt-0.5">
+                <p className="text-xs text-white/80 mt-0.5">
                   Invited by {invite.invitedBy.username ?? 'Unknown'} · as{' '}
                   {invite.role.replace('_', ' ').toLowerCase()}
                 </p>

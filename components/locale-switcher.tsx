@@ -25,7 +25,7 @@ export function LocaleSwitcher() {
 
   return (
     <div className="flex items-center gap-2">
-      <Globe className="w-4 h-4 text-white/60 shrink-0" aria-hidden="true" />
+      <Globe className="w-4 h-4 text-white/80 shrink-0" aria-hidden="true" />
       <label htmlFor="locale-select" className="sr-only">
         {t('selectLanguage')}
       </label>
@@ -33,7 +33,7 @@ export function LocaleSwitcher() {
         id="locale-select"
         value={locale}
         onChange={(e) => handleChange(e.target.value)}
-        className="bg-[#2a2a2a] border border-[#3a3a3a] text-white text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#FFC300]/50 cursor-pointer"
+        className="bg-[#2a2a2a] border border-[#2a2a2a] text-white text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#FFC300]/50 cursor-pointer"
         aria-label={t('selectLanguage')}
       >
         {locales.map((l) => (

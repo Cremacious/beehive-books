@@ -23,24 +23,24 @@ function PromptCard({ prompt }: { prompt: HivePromptCard }) {
   const urgent = days <= 3;
 
   return (
-    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 flex flex-col gap-3 hover:border-[#3a3a3a] transition-all">
+    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-4 flex flex-col gap-3 hover:border-[#2a2a2a] transition-all">
       <div className="flex-1">
         <h3 className="text-sm font-semibold text-white leading-snug mb-1.5">
           {prompt.title}
         </h3>
-        <p className="text-xs text-white/40 leading-relaxed line-clamp-3">
+        <p className="text-xs text-white/80 leading-relaxed line-clamp-3">
           {prompt.description}
         </p>
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="flex items-center gap-1 text-xs text-white/30">
+        <span className="flex items-center gap-1 text-xs text-white/80">
           <Users className="w-3 h-3" />
           {prompt.entryCount} {prompt.entryCount === 1 ? 'entry' : 'entries'}
         </span>
         <span
           className={`flex items-center gap-1 text-xs ${
-            urgent ? 'text-red-400' : 'text-white/30'
+            urgent ? 'text-red-400' : 'text-white/80'
           }`}
         >
           <Clock className="w-3 h-3" />
@@ -78,14 +78,14 @@ export default function HivePrompts({ hiveId, initialPrompts }: HivePromptsProps
             <Sparkles className="w-4 h-4 text-[#FFC300]" />
             Writing Prompts
           </h3>
-          <p className="text-xs text-white/30 mt-0.5">
+          <p className="text-xs text-white/80 mt-0.5">
             Active public prompts from the community — spark your next scene.
           </p>
         </div>
         <button
           onClick={refresh}
           disabled={refreshing}
-          className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-white/80 hover:text-white/80 transition-colors"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
@@ -97,8 +97,8 @@ export default function HivePrompts({ hiveId, initialPrompts }: HivePromptsProps
           <div className="w-14 h-14 rounded-2xl bg-[#252525] flex items-center justify-center">
             <Sparkles className="w-7 h-7 text-[#FFC300]/40" />
           </div>
-          <p className="text-sm text-white/40">No active prompts right now.</p>
-          <p className="text-xs text-white/25 max-w-xs">
+          <p className="text-sm text-white/80">No active prompts right now.</p>
+          <p className="text-xs text-white/80 max-w-xs">
             Check back later, or{' '}
             <Link href="/prompts/create" className="text-[#FFC300]/60 hover:text-[#FFC300]">
               create a prompt
@@ -117,7 +117,7 @@ export default function HivePrompts({ hiveId, initialPrompts }: HivePromptsProps
       <div className="text-center pt-2">
         <Link
           href="/prompts"
-          className="text-xs text-white/30 hover:text-white/60 transition-colors"
+          className="text-xs text-white/80 hover:text-white/80 transition-colors"
         >
           Browse all prompts →
         </Link>

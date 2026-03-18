@@ -44,7 +44,7 @@ export default async function HiveMembersPage({
     <div className="max-w-2xl">
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-white mainFont">Members</h2>
-        <p className="text-sm text-white/60 mt-0.5">
+        <p className="text-sm text-white/80 mt-0.5">
           {members.length} member{members.length !== 1 ? 's' : ''} in this hive
         </p>
       </div>

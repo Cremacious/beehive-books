@@ -108,7 +108,7 @@ export default async function UserProfilePage({ params }: Props) {
             </div>
             <div className="pb-1 flex items-center gap-2">
               {isOwnProfile && (
-                <button className="text-xs px-3 py-1.5 rounded-lg border border-[#333] text-white/70 hover:text-white hover:border-[#FFC300]/40 transition-all cursor-not-allowed opacity-60">
+                <button className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all cursor-not-allowed">
                   Edit Profile
                 </button>
               )}
@@ -124,7 +124,7 @@ export default async function UserProfilePage({ params }: Props) {
             <h1 className="text-xl md:text-2xl font-bold text-white mainFont">
               {displayName}
             </h1>
-            <p className="text-xs text-white/40 mt-0.5">
+            <p className="text-xs text-white/80 mt-0.5">
               Member since {memberSince}
             </p>
           </div>
@@ -218,7 +218,7 @@ export default async function UserProfilePage({ params }: Props) {
 function PrivacyBadge({ privacy }: { privacy: 'PRIVATE' | 'FRIENDS' }) {
   const isPrivate = privacy === 'PRIVATE';
   return (
-    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-sm border border-white/10 text-white/70">
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-sm border border-white/10 text-white/80">
       {isPrivate ? (
         <Lock className="w-2.5 h-2.5" />
       ) : (

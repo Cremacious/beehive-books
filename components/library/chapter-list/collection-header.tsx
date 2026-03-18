@@ -113,7 +113,7 @@ export function SortableCollectionHeader({
         <button
           onClick={handleRename}
           disabled={saving}
-          className="text-xs text-[#FFC300] hover:text-[#FFD54F] transition-colors shrink-0"
+          className="text-xs text-[#FFC300] hover:text-[#FFD040] transition-colors shrink-0"
         >
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save'}
         </button>
@@ -122,7 +122,7 @@ export function SortableCollectionHeader({
             setRenaming(false);
             setNameInput(col.name);
           }}
-          className="text-xs text-white/40 hover:text-white/70 transition-colors shrink-0"
+          className="text-xs text-white/80 hover:text-white/80 transition-colors shrink-0"
         >
           Cancel
         </button>
@@ -181,13 +181,13 @@ export function SortableCollectionHeader({
       {isReordering ? (
         <div className="flex items-center gap-1 shrink-0">
           <GripVertical
-            className={`w-4 h-4 ${isChapterDragOver ? 'text-[#FFC300]/60' : 'text-white/25'}`}
+            className={`w-4 h-4 ${isChapterDragOver ? 'text-[#FFC300]/60' : 'text-white/80'}`}
           />
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => { e.stopPropagation(); onToggleCollapse(); }}
-            className="p-0.5 text-white/30 hover:text-white/60 transition-colors"
+            className="p-0.5 text-white/80 hover:text-white/80 transition-colors"
             title={collapsed ? 'Expand collection' : 'Collapse collection'}
           >
             {collapsed ? (
@@ -223,10 +223,10 @@ export function SortableCollectionHeader({
           {col.name}
         </span>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-sm text-white/70 shrink-0">
+          <span className="text-sm text-white/80 shrink-0">
             {col.chapters.length} chapter{col.chapters.length !== 1 ? 's' : ''}
           </span>
-          <span className="text-sm text-white/70 shrink-0">
+          <span className="text-sm text-white/80 shrink-0">
             ·{' '}
             {col.chapters
               .reduce((sum, chapter) => sum + chapter.wordCount, 0)
@@ -254,7 +254,7 @@ export function SortableCollectionHeader({
             <MoreHorizontal className="w-4 h-4" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 z-50 min-w-36 rounded-xl bg-[#1a1a1a] border border-[#333] shadow-xl py-1 overflow-hidden">
+            <div className="absolute right-0 top-full mt-1 z-50 min-w-36 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
               <button
                 onClick={() => {
                   setRenaming(true);

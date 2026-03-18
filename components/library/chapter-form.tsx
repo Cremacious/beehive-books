@@ -106,7 +106,7 @@ export function ChapterForm({
 
 
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white ' +
     'placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
@@ -227,7 +227,7 @@ export function ChapterForm({
                 </p>
               </div>
 
-              <label className="flex flex-col items-center justify-center gap-3 w-full h-32 rounded-xl border-2 border-dashed border-[#3a3a3a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+              <label className="flex flex-col items-center justify-center gap-3 w-full h-32 rounded-xl border-2 border-dashed border-[#2a2a2a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
                 {docxParsing ? (
                   <Loader2 className="w-6 h-6 text-[#FFC300]/50 animate-spin" />
                 ) : docxFileName ? (

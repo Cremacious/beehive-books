@@ -125,7 +125,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
    
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 pointer-events-none" />
           <input
             type="text"
             value={query}
@@ -171,7 +171,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 roleFilter === value
                   ? 'bg-[#FFC300] text-black'
-                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#3a3a3a]'
+                  : 'bg-[#252525] border border-[#2a2a2a] text-white hover:text-yellow-500 hover:border-[#2a2a2a]'
               }`}
             >
               {label}
@@ -190,8 +190,8 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
    
       {displayed.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/10 mb-3" />
-          <p className="text-sm text-white/40 mb-1">
+          <Search className="w-8 h-8 text-white/80 mb-3" />
+          <p className="text-sm text-white/80 mb-1">
             {query ? (
               <>No results for &ldquo;{query}&rdquo;</>
             ) : (

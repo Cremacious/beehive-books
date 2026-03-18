@@ -38,9 +38,9 @@ export default function ClubInvitePicker({
   if (friends.length === 0) {
     return (
       <div className="flex flex-col items-center py-8 text-center gap-2">
-        <Users className="w-6 h-6 text-white/20" />
-        <p className="text-sm text-white/40">No friends available to invite.</p>
-        <p className="text-xs text-white/25">
+        <Users className="w-6 h-6 text-white/80" />
+        <p className="text-sm text-white/80">No friends available to invite.</p>
+        <p className="text-xs text-white/80">
           All your friends are already members or have pending invites.
         </p>
       </div>
