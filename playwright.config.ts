@@ -14,8 +14,23 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    // Runs first: signs in and saves session to tests/.auth/user.json
+    {
+      name: 'setup',
+      testMatch: '**/auth.setup.ts',
+    },
+
+    // Main test browsers — depend on setup so auth file is ready
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['setup'],
+    },
   ],
 
   // Auto-start the dev server before running tests
