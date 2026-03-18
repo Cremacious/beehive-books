@@ -138,8 +138,8 @@ export default async function BookPage({
             )}
             <ShareBookButton
               bookId={book.id}
-              variant="icon"
               isOwner={isOwner}
+              className="flex-1"
             />
           </div>
         </div>

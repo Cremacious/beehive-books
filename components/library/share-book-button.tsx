@@ -11,9 +11,10 @@ interface ShareBookButtonProps {
   bookId: string;
   variant?: 'default' | 'icon';
   isOwner?: boolean;
+  className?: string;
 }
 
-export function ShareBookButton({ bookId, variant = 'default', isOwner = false }: ShareBookButtonProps) {
+export function ShareBookButton({ bookId, variant = 'default', isOwner = false, className }: ShareBookButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exportingDocx, setExportingDocx] = useState(false);
@@ -71,11 +72,11 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false }
   return (
     <>
       {variant === 'icon' ? (
-        <Button variant="outline" size="icon-sm" onClick={() => setOpen(true)}>
+        <Button variant="outline" size="icon-sm" onClick={() => setOpen(true)} className={className}>
           <Share2 />
         </Button>
       ) : (
-        <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        <Button variant="outline" size="sm" onClick={() => setOpen(true)} className={className}>
           <Share2 className="w-3.5 h-3.5" />
           Share/Export
         </Button>
