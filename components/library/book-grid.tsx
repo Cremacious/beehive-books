@@ -185,6 +185,15 @@ export default function BookGrid({ books }: { books: Book[] }) {
           />
         </div>
 
+        {/* Mobile-only full-width New Book button — sits between search and controls */}
+        <Link
+          href="/library/create"
+          className="sm:hidden flex justify-center items-center gap-2 w-full px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors mainFont leading-none"
+        >
+          <Plus className="w-4 h-4" />
+          New Book
+        </Link>
+
         <div className="flex gap-3">
           <div className="relative flex-1 sm:flex-none">
             <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-500 pointer-events-none" />
@@ -224,9 +233,10 @@ export default function BookGrid({ books }: { books: Book[] }) {
             </button>
           </div>
 
+          {/* Desktop-only New Book button — inline with controls */}
           <Link
             href="/library/create"
-            className="flex mainFont leading-none items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
+            className="hidden sm:flex mainFont leading-none items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
           >
             <Plus className="w-4 h-4" />
             New Book
