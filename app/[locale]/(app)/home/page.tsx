@@ -401,7 +401,7 @@ function EventRow({ event }: { event: FeedEvent }) {
 function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-2">
+      <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">
         {label}
       </p>
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
@@ -489,10 +489,10 @@ export default async function UserHomePage() {
       ) : (
         <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-white uppercase tracking-[0.15em]">
+            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em]">
               Friend Activity
             </p>
-            <p className="text-xs text-white">
+            <p className="text-sm text-white">
               {events.length} update{events.length !== 1 ? 's' : ''} · last 30
               days
             </p>
