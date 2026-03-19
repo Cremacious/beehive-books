@@ -15,6 +15,9 @@ import {
   commentLikes,
   friendships,
   users,
+  hives,
+  hiveMembers,
+  hiveWordLogs,
 } from '@/db/schema';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {
@@ -331,7 +334,7 @@ export async function createChapterAction(
   bookId: string,
   data: ChapterFormData,
 ): Promise<ActionResult & { chapterId?: string }> {
-  await requireBookOwner(bookId);
+  const { userId: authorId } = await requireBookOwner(bookId);
   const parsed = chapterSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -363,6 +366,48 @@ export async function createChapterAction(
       })
       .where(eq(books.id, bookId));
     revalidatePath(`/library/${bookId}`);
+
+    // Fire-and-forget: auto-log word count to any hive linked to this book
+    if (wordCount > 0) {
+      void (async () => {
+        try {
+          const linkedHive = await db.query.hives.findFirst({
+            where: eq(hives.bookId, bookId),
+            columns: { id: true },
+          });
+          if (!linkedHive) return;
+
+          const membership = await db.query.hiveMembers.findFirst({
+            where: and(
+              eq(hiveMembers.hiveId, linkedHive.id),
+              eq(hiveMembers.userId, authorId),
+            ),
+            columns: { id: true },
+          });
+          if (!membership) return;
+
+          // Guard against duplicate logs for the same chapter
+          const existing = await db.query.hiveWordLogs.findFirst({
+            where: and(
+              eq(hiveWordLogs.hiveId, linkedHive.id),
+              eq(hiveWordLogs.chapterId, inserted.id),
+            ),
+            columns: { id: true },
+          });
+          if (existing) return;
+
+          await db.insert(hiveWordLogs).values({
+            hiveId: linkedHive.id,
+            userId: authorId,
+            chapterId: inserted.id,
+            wordsAdded: wordCount,
+          });
+
+          revalidatePath(`/hive/${linkedHive.id}/word-goals`);
+        } catch {}
+      })();
+    }
+
     return { success: true, message: 'Chapter added.', chapterId: inserted.id };
   } catch {
     return { success: false, message: 'Failed to create chapter.' };

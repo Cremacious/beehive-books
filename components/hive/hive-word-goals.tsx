@@ -12,6 +12,7 @@ import {
   Trophy,
   X,
   TrendingUp,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
@@ -476,6 +477,15 @@ export default function HiveWordGoals({
                 <span className="text-sm text-white flex-1 min-w-0 truncate">
                   {log.user.username ?? 'User'}
                 </span>
+                {log.chapterId && (
+                  <span
+                    className="flex items-center gap-1 text-[10px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-1.5 py-0.5 rounded-full shrink-0"
+                    title="Auto-logged from chapter upload"
+                  >
+                    <BookOpen className="w-2.5 h-2.5" />
+                    chapter
+                  </span>
+                )}
                 <span className="text-sm font-semibold text-[#FFC300] shrink-0">
                   +{log.wordsAdded.toLocaleString()}
                 </span>
