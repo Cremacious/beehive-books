@@ -13,7 +13,6 @@ import {
   MoreHorizontal,
   Trash2,
   CheckCircle2,
-  Circle,
 } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books.types';
 
@@ -132,14 +131,10 @@ export function SortableChapterRow({
                 className={`p-1.5 rounded-lg transition-all ${
                   isRead
                     ? 'text-[#FFC300] hover:text-[#FFC300]/70 hover:bg-[#FFC300]/10'
-                    : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                    : 'text-white/20 hover:text-white/50 hover:bg-white/5'
                 }`}
               >
-                {isRead ? (
-                  <CheckCircle2 className="w-4 h-4" />
-                ) : (
-                  <Circle className="w-4 h-4" />
-                )}
+                <CheckCircle2 className="w-4 h-4" />
               </button>
             )}
             <Link
