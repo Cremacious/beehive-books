@@ -34,6 +34,7 @@ type Props = {
   chapters: Chapter[];
   collections: Collection[];
   isOwner?: boolean;
+  basePath?: '/library' | '/books';
   readChapterIds?: string[];
 };
 
@@ -78,10 +79,11 @@ export default function ChapterList({
   chapters,
   collections,
   isOwner = true,
+  basePath: basePathProp,
   readChapterIds,
 }: Props) {
   const router = useRouter();
-  const basePath: '/library' | '/books' = isOwner ? '/library' : '/books';
+  const basePath: '/library' | '/books' = basePathProp ?? (isOwner ? '/library' : '/books');
   const {
     reorderMode,
     setReorderMode,

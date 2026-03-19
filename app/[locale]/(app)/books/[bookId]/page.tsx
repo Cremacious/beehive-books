@@ -152,6 +152,7 @@ export default async function PublicBookPage({
           chapters={chapters}
           collections={collections}
           isOwner={isOwner}
+          basePath="/books"
           readChapterIds={readChapterIds}
         />
       </div>

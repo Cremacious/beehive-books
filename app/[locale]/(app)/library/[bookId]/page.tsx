@@ -83,7 +83,6 @@ export default async function BookPage({
                       <Link
                         href={`/u/${book.user.username}`}
                         className="ml-1 text-white/50 hover:text-[#FFC300] transition-colors"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         ({book.user.username})
                       </Link>

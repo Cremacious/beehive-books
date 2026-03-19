@@ -4,10 +4,16 @@ import Link from 'next/link';
 import type { Book } from '@/lib/types/books.types';
 import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
 
-export default function BookCard({ book }: { book: Book }) {
+export default function BookCard({
+  book,
+  basePath = '/library',
+}: {
+  book: Book;
+  basePath?: '/library' | '/books';
+}) {
   return (
     <Link
-      href={`/library/${book.id}`}
+      href={`${basePath}/${book.id}`}
       className="group flex flex-col rounded-lg bg-[#181818] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/30 hover:bg-[#232323] transition-all duration-200"
     >
       <div className="relative w-full aspect-2/3 bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
