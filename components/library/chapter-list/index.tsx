@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -23,6 +23,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, FolderOpen, FileText, Loader2 } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books.types';
 import { useBookStore } from '@/lib/stores/book-store';
+import { toggleChapterReadAction } from '@/lib/actions/reading.actions';
+import { ReadingProgress } from '@/components/library/reading-progress';
 import { UncategorizedZone } from './uncategorized-zone';
 import { SortableCollectionHeader } from './collection-header';
 import { SortableChapterRow } from './chapter-row';
@@ -32,6 +34,7 @@ type Props = {
   chapters: Chapter[];
   collections: Collection[];
   isOwner?: boolean;
+  readChapterIds?: string[];
 };
 
 type TopLevelItem =
@@ -75,6 +78,7 @@ export default function ChapterList({
   chapters,
   collections,
   isOwner = true,
+  readChapterIds,
 }: Props) {
   const router = useRouter();
   const basePath: '/library' | '/books' = isOwner ? '/library' : '/books';
@@ -87,6 +91,32 @@ export default function ChapterList({
     assignChapterToCollection,
   } = useBookStore();
 
+
+  const [readSet, setReadSet] = useState<Set<string>>(
+    () => new Set(readChapterIds ?? []),
+  );
+
+  useEffect(() => {
+    if (readChapterIds !== undefined) setReadSet(new Set(readChapterIds));
+  }, [readChapterIds]);
+
+  async function handleToggleRead(chapterId: string) {
+    setReadSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(chapterId)) next.delete(chapterId);
+      else next.add(chapterId);
+      return next;
+    });
+    const result = await toggleChapterReadAction(chapterId);
+    if (!result.success) {
+      setReadSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(chapterId)) next.delete(chapterId);
+        else next.add(chapterId);
+        return next;
+      });
+    }
+  }
 
   const [pendingFlatList, setPendingFlatList] = useState<string[] | null>(null);
 
@@ -408,6 +438,10 @@ export default function ChapterList({
         )}
       </div>
 
+      {readChapterIds !== undefined && chapters.length > 0 && (
+        <ReadingProgress readCount={readSet.size} total={chapters.length} />
+      )}
+
       <div className="divide-y divide-[#2a2a2a]">
         <DndContext
           sensors={sensors}
@@ -480,6 +514,8 @@ export default function ChapterList({
                         basePath={basePath}
                         onAssignCollection={(colId) => handleAssignCollection(chapter.id, colId)}
                         onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                        isRead={readChapterIds !== undefined ? readSet.has(chapter.id) : undefined}
+                        onToggleRead={readChapterIds !== undefined ? () => handleToggleRead(chapter.id) : undefined}
                       />
                     );
                   }
@@ -510,6 +546,8 @@ export default function ChapterList({
                             basePath={basePath}
                             onAssignCollection={(colId) => handleAssignCollection(chapter.id, colId)}
                             onDeleteChapter={() => handleDeleteChapter(chapter.id)}
+                            isRead={readChapterIds !== undefined ? readSet.has(chapter.id) : undefined}
+                            onToggleRead={readChapterIds !== undefined ? () => handleToggleRead(chapter.id) : undefined}
                           />
                         ))}
                     </div>

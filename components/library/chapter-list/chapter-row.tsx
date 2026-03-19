@@ -12,6 +12,8 @@ import {
   FolderOpen,
   MoreHorizontal,
   Trash2,
+  CheckCircle2,
+  Circle,
 } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books.types';
 
@@ -25,6 +27,8 @@ export function SortableChapterRow({
   basePath = '/library',
   onAssignCollection,
   onDeleteChapter,
+  isRead,
+  onToggleRead,
 }: {
   chapter: Chapter;
   bookId: string;
@@ -35,6 +39,8 @@ export function SortableChapterRow({
   basePath?: '/library' | '/books';
   onAssignCollection: (collectionId: string | null) => void;
   onDeleteChapter: () => void;
+  isRead?: boolean;
+  onToggleRead?: () => void;
 }) {
   const {
     attributes,
@@ -117,6 +123,25 @@ export function SortableChapterRow({
           onClick={(e) => e.stopPropagation()}
         >
           <>
+            {onToggleRead !== undefined && (
+              <button
+                onClick={onToggleRead}
+                role="checkbox"
+                aria-checked={!!isRead}
+                aria-label={isRead ? 'Mark as unread' : 'Mark as read'}
+                className={`p-1.5 rounded-lg transition-all ${
+                  isRead
+                    ? 'text-[#FFC300] hover:text-[#FFC300]/70 hover:bg-[#FFC300]/10'
+                    : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                }`}
+              >
+                {isRead ? (
+                  <CheckCircle2 className="w-4 h-4" />
+                ) : (
+                  <Circle className="w-4 h-4" />
+                )}
+              </button>
+            )}
             <Link
               href={`${basePath}/${bookId}/${chapter.id}`}
               className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2a2a2a] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
