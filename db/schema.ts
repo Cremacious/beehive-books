@@ -138,6 +138,17 @@ export const chapters = pgTable('chapters', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const userChapterReads = pgTable(
+  'user_chapter_reads',
+  {
+    id: text('id').primaryKey().$defaultFn(() => createId()),
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    chapterId: text('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+    readAt: timestamp('read_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('user_chapter_reads_user_chapter_idx').on(t.userId, t.chapterId)],
+);
+
 export const chapterComments = pgTable('chapter_comments', {
   id: text('id')
     .primaryKey()
@@ -367,6 +378,12 @@ export const chaptersRelations = relations(chapters, ({ one, many }) => ({
     references: [collections.id],
   }),
   comments: many(chapterComments),
+  reads: many(userChapterReads),
+}));
+
+export const userChapterReadsRelations = relations(userChapterReads, ({ one }) => ({
+  user: one(users, { fields: [userChapterReads.userId], references: [users.id] }),
+  chapter: one(chapters, { fields: [userChapterReads.chapterId], references: [chapters.id] }),
 }));
 
 export const chapterCommentsRelations = relations(

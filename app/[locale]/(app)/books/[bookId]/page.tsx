@@ -10,6 +10,7 @@ import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
+import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -39,8 +40,12 @@ export default async function PublicBookPage({
   const { bookId } = await params;
 
   let book;
+  let readChapterIds: string[] = [];
   try {
-    book = await getBookForViewAction(bookId);
+    [book, readChapterIds] = await Promise.all([
+      getBookForViewAction(bookId),
+      getBookReadStatusAction(bookId).catch(() => [] as string[]),
+    ]);
   } catch {
     notFound();
   }
@@ -78,6 +83,14 @@ export default async function PublicBookPage({
                   </h1>
                   <p className="text-base text-white mt-1.5">
                     by {book.author}
+                    {book.user?.username && (
+                      <Link
+                        href={`/u/${book.user.username}`}
+                        className="ml-1 text-white/50 hover:text-[#FFC300] transition-colors"
+                      >
+                        ({book.user.username})
+                      </Link>
+                    )}
                   </p>
                 </div>
 
@@ -139,6 +152,8 @@ export default async function PublicBookPage({
           chapters={chapters}
           collections={collections}
           isOwner={isOwner}
+          basePath="/books"
+          readChapterIds={readChapterIds}
         />
       </div>
     </div>

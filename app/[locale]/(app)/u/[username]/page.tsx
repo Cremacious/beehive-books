@@ -142,7 +142,7 @@ export default async function UserProfilePage({ params }: Props) {
       >
         {books.map((book) => (
           <div key={book.id} className="relative">
-            <BookCard book={book} />
+            <BookCard book={book} basePath={isOwnProfile ? '/library' : '/books'} />
             {isOwnProfile && book.privacy !== 'PUBLIC' && (
               <div className="absolute top-1.5 right-1.5 z-10">
                 <PrivacyBadge privacy={book.privacy as 'PRIVATE' | 'FRIENDS'} />

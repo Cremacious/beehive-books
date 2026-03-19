@@ -79,6 +79,14 @@ export default async function BookPage({
                   </h1>
                   <p className="text-base text-white mt-1.5">
                     by {book.author}
+                    {book.user?.username && (
+                      <Link
+                        href={`/u/${book.user.username}`}
+                        className="ml-1 text-white/50 hover:text-[#FFC300] transition-colors"
+                      >
+                        ({book.user.username})
+                      </Link>
+                    )}
                   </p>
                 </div>
 

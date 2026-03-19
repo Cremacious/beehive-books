@@ -91,6 +91,7 @@ export async function getBookForViewAction(bookId: string) {
     with: {
       chapters: { orderBy: (c, { asc }) => [asc(c.order)] },
       collections: { orderBy: (c, { asc }) => [asc(c.order)] },
+      user: { columns: { username: true } },
     },
   });
   if (!book) throw new Error('Book not found');
