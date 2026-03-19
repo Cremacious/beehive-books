@@ -1136,7 +1136,7 @@ export const hiveOutlineItems = pgTable('hive_outline_items', {
   }),
   title: text('title').notNull(),
   description: text('description').notNull().default(''),
-  type: text('type', { enum: ['CHAPTER', 'SCENE', 'BEAT', 'NOTE', 'GROUP'] })
+  type: text('type', { enum: ['CHAPTER', 'SCENE', 'BEAT', 'NOTE', 'GROUP', 'ACT', 'SUBPLOT', 'CHARACTER_ARC', 'PLOT_POINT', 'CONFLICT', 'THEME', 'WORLD_BUILDING', 'DIALOGUE'] })
     .notNull()
     .default('CHAPTER'),
   order: integer('order').notNull().default(0),
@@ -1162,7 +1162,7 @@ export const hiveWikiEntries = pgTable('hive_wiki_entries', {
   title: text('title').notNull(),
   content: text('content').notNull().default(''),
   category: text('category', {
-    enum: ['CHARACTER', 'LOCATION', 'TIMELINE', 'LORE', 'TERMINOLOGY', 'OTHER'],
+    enum: ['CHARACTER', 'LOCATION', 'TIMELINE', 'LORE', 'TERMINOLOGY', 'OTHER', 'PLOT', 'ARTIFACT', 'FACTION', 'CULTURE', 'LANGUAGE', 'BIOLOGY', 'THEME', 'ECONOMY'],
   })
     .notNull()
     .default('OTHER'),

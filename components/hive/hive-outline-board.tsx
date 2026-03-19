@@ -35,6 +35,14 @@ import {
   ChevronDown,
   ChevronRight,
   FolderPlus,
+  Bookmark,
+  GitFork,
+  TrendingUp,
+  Flag,
+  AlertTriangle,
+  Eye,
+  Globe,
+  MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
@@ -66,16 +74,20 @@ const ITEM_TYPES: {
   label: string;
   Icon: React.ElementType;
   color: string;
+  tooltip: string;
 }[] = [
-  {
-    value: 'CHAPTER',
-    label: 'Chapter',
-    Icon: BookOpen,
-    color: 'text-[#FFC300]',
-  },
-  { value: 'SCENE', label: 'Scene', Icon: Film, color: 'text-blue-400' },
-  { value: 'BEAT', label: 'Beat', Icon: Zap, color: 'text-green-400' },
-  { value: 'NOTE', label: 'Note', Icon: StickyNote, color: 'text-purple-400' },
+  { value: 'CHAPTER',       label: 'Chapter',           Icon: BookOpen,      color: 'text-[#FFC300]',  tooltip: 'A major narrative division of the story' },
+  { value: 'ACT',           label: 'Act',               Icon: Bookmark,      color: 'text-amber-400',  tooltip: 'A top-level story segment (e.g. Act 1, Act 2, Act 3)' },
+  { value: 'SCENE',         label: 'Scene',             Icon: Film,          color: 'text-blue-400',   tooltip: 'A self-contained unit of action in a single location' },
+  { value: 'BEAT',          label: 'Beat',              Icon: Zap,           color: 'text-green-400',  tooltip: 'A small unit of action or reaction within a scene' },
+  { value: 'PLOT_POINT',    label: 'Plot Point',        Icon: Flag,          color: 'text-orange-400', tooltip: 'An inciting incident, turning point, or climactic moment' },
+  { value: 'SUBPLOT',       label: 'Subplot',           Icon: GitFork,       color: 'text-cyan-400',   tooltip: 'A secondary storyline running parallel to the main plot' },
+  { value: 'CHARACTER_ARC', label: 'Character Arc',     Icon: TrendingUp,    color: 'text-rose-400',   tooltip: 'Character milestones and growth throughout the story' },
+  { value: 'CONFLICT',      label: 'Conflict',          Icon: AlertTriangle, color: 'text-red-400',    tooltip: 'An internal or external struggle driving narrative tension' },
+  { value: 'THEME',         label: 'Theme',             Icon: Eye,           color: 'text-sky-400',    tooltip: 'A recurring idea, symbol, or motif for thematic consistency' },
+  { value: 'WORLD_BUILDING',label: 'World-Building',    Icon: Globe,         color: 'text-emerald-400',tooltip: 'Important setting or lore details for the story world' },
+  { value: 'DIALOGUE',      label: 'Dialogue Block',    Icon: MessageCircle, color: 'text-violet-400', tooltip: 'A planned key conversation or exchange between characters' },
+  { value: 'NOTE',          label: 'Note',              Icon: StickyNote,    color: 'text-purple-400', tooltip: 'A freeform note or reminder about any story element' },
 ];
 
 const PRESET_COLORS = [
@@ -212,24 +224,35 @@ function ItemForm({
 
   return (
     <div className="rounded-2xl bg-[#2a2a2a] border border-[#FFC300]/20 p-4 space-y-3">
-      <div className="flex gap-1.5 flex-wrap">
-        {ITEM_TYPES.map(({ value, label, Icon, color: col }) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setType(value)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
-              type === value
-                ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
-                : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/90 hover:border-white/20'
-            }`}
-          >
-            <Icon
-              className={`w-3 h-3 ${type === value ? 'text-[#FFC300]' : col}`}
-            />
-            {label}
-          </button>
-        ))}
+      <div className="relative">
+        {(() => {
+          const selected = ITEM_TYPES.find((t) => t.value === type) ?? ITEM_TYPES[0];
+          const SelectedIcon = selected.Icon;
+          return (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <SelectedIcon className={`w-3.5 h-3.5 ${selected.color}`} />
+              </div>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as OutlineItemType)}
+                title={selected.tooltip}
+                className="w-full appearance-none pl-8 pr-8 py-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-sm font-medium text-white focus:outline-none focus:border-[#FFC300]/40 cursor-pointer transition-colors"
+              >
+                {ITEM_TYPES.map(({ value, label }) => (
+                  <option key={value} value={value} className="bg-[#1e1e1e]">
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <svg className="w-3.5 h-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </>
+          );
+        })()}
       </div>
 
       <input
