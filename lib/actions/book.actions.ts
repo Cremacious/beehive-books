@@ -108,7 +108,7 @@ export async function getBookForViewAction(bookId: string) {
 export async function getHiveBookAction(bookId: string) {
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
-    columns: { id: true, title: true, author: true, coverUrl: true, privacy: true },
+    columns: { id: true, title: true, author: true, coverUrl: true, privacy: true, userId: true },
   });
   return book ?? null;
 }
