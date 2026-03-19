@@ -15,6 +15,15 @@ import {
   Loader2,
   X,
   Tag,
+  Type,
+  GitBranch,
+  Package,
+  Landmark,
+  Globe,
+  MessageSquare,
+  Leaf,
+  Layers,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
@@ -43,13 +52,22 @@ const CATEGORIES: {
   value: WikiCategory;
   label: string;
   Icon: React.ElementType;
+  tooltip: string;
 }[] = [
-  { value: 'CHARACTER', label: 'Characters', Icon: User },
-  { value: 'LOCATION', label: 'Locations', Icon: MapPin },
-  { value: 'TIMELINE', label: 'Timeline', Icon: Clock },
-  { value: 'LORE', label: 'Lore', Icon: Scroll },
-
-  { value: 'OTHER', label: 'Other', Icon: MoreHorizontal },
+  { value: 'CHARACTER', label: 'Characters', Icon: User, tooltip: 'People, protagonists, antagonists, and supporting cast' },
+  { value: 'LOCATION', label: 'Locations', Icon: MapPin, tooltip: 'Places, maps, settings, and geography' },
+  { value: 'TIMELINE', label: 'Timeline', Icon: Clock, tooltip: 'Chronological events, dates, and historical context' },
+  { value: 'LORE', label: 'Lore', Icon: Scroll, tooltip: 'World history, myths, legends, and backstory' },
+  { value: 'PLOT', label: 'Plot', Icon: GitBranch, tooltip: 'Story arcs, act structures, subplots, and narrative beats' },
+  { value: 'ARTIFACT', label: 'Artifacts', Icon: Package, tooltip: 'Important objects, relics, weapons, and tools with plot significance' },
+  { value: 'FACTION', label: 'Factions', Icon: Landmark, tooltip: 'Governments, organizations, wars, and power structures' },
+  { value: 'CULTURE', label: 'Culture', Icon: Globe, tooltip: 'Rituals, holidays, societal norms, traditions, and taboos' },
+  { value: 'LANGUAGE', label: 'Languages', Icon: MessageSquare, tooltip: 'Fictional languages, unique slang, and dialects' },
+  { value: 'BIOLOGY', label: 'Biology', Icon: Leaf, tooltip: 'Races, creatures, species, traits, and habitats' },
+  { value: 'THEME', label: 'Themes', Icon: Layers, tooltip: 'Recurring ideas, symbols, and philosophical elements' },
+  { value: 'ECONOMY', label: 'Economy', Icon: TrendingUp, tooltip: 'Wealth, commerce, resources, and currency systems' },
+  { value: 'TERMINOLOGY', label: 'Terminology', Icon: Type, tooltip: 'Glossary of unique terms, jargon, and concepts' },
+  { value: 'OTHER', label: 'Other', Icon: MoreHorizontal, tooltip: 'Anything that doesn\'t fit another category' },
 ];
 
 const CATEGORY_COLORS: Record<WikiCategory, string> = {
@@ -57,6 +75,14 @@ const CATEGORY_COLORS: Record<WikiCategory, string> = {
   LOCATION: 'text-green-400 bg-green-400/10 border-green-400/20',
   TIMELINE: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
   LORE: 'text-orange-400 bg-orange-400/10 border-orange-400/20',
+  PLOT: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20',
+  ARTIFACT: 'text-teal-400 bg-teal-400/10 border-teal-400/20',
+  FACTION: 'text-red-400 bg-red-400/10 border-red-400/20',
+  CULTURE: 'text-violet-400 bg-violet-400/10 border-violet-400/20',
+  LANGUAGE: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/20',
+  BIOLOGY: 'text-lime-400 bg-lime-400/10 border-lime-400/20',
+  THEME: 'text-sky-400 bg-sky-400/10 border-sky-400/20',
+  ECONOMY: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
   TERMINOLOGY: 'text-pink-400 bg-pink-400/10 border-pink-400/20',
   OTHER: 'text-white/80 bg-white/5 border-white/10',
 };
@@ -141,10 +167,11 @@ function EntryForm({
       />
 
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map(({ value, label, Icon }) => (
+        {CATEGORIES.map(({ value, label, Icon, tooltip }) => (
           <button
             key={value}
             type="button"
+            title={tooltip}
             onClick={() => setCategory(value)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               category === value
@@ -248,7 +275,7 @@ function EntryCard({
   onDelete: (id: string) => void;
   onReadMore: (entry: WikiEntryWithAuthor) => void;
 }) {
-  const catConf = CATEGORIES.find((c) => c.value === entry.category)!;
+  const catConf = CATEGORIES.find((c) => c.value === entry.category) ?? CATEGORIES[CATEGORIES.length - 1];
   const CatIcon = catConf.Icon;
   const canEdit =
     entry.authorId === currentUserId ||
@@ -421,41 +448,39 @@ export default function HiveWiki({
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
-        <button
-          onClick={() => setActiveCategory('ALL')}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-            activeCategory === 'ALL'
-              ? 'bg-[#FFC300]/15 text-[#FFC300]'
-              : 'text-white/80 hover:text-white/80'
-          }`}
-        >
-          <BookOpen className="w-3 h-3" />
-          All
-          <span className="text-[10px] text-white/80 ml-0.5">
-            ({counts.ALL})
-          </span>
-        </button>
-
-        {CATEGORIES.map(({ value, label, Icon }) => (
-          <button
-            key={value}
-            onClick={() => setActiveCategory(value)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
-              activeCategory === value
-                ? 'bg-[#FFC300]/15 text-[#FFC300]'
-                : 'text-white/90 hover:text-white/80'
-            }`}
-          >
-            <Icon className="w-3 h-3" />
-            {label}
-            {counts[value] > 0 && (
-              <span className="text-[10px] text-white/90 ml-0.5">
-                ({counts[value]})
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="relative">
+        {(() => {
+          const selected = activeCategory === 'ALL'
+            ? null
+            : CATEGORIES.find((c) => c.value === activeCategory);
+          const SelectedIcon = selected?.Icon ?? BookOpen;
+          return (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <SelectedIcon className="w-3.5 h-3.5 text-[#FFC300]" />
+              </div>
+              <select
+                value={activeCategory}
+                onChange={(e) => setActiveCategory(e.target.value as WikiCategory | 'ALL')}
+                className="w-full appearance-none pl-8 pr-8 py-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-sm font-medium text-white focus:outline-none focus:border-[#FFC300]/40 cursor-pointer transition-colors"
+              >
+                <option value="ALL" className="bg-[#1e1e1e]">
+                  All Categories ({counts.ALL})
+                </option>
+                {CATEGORIES.map(({ value, label }) => (
+                  <option key={value} value={value} className="bg-[#1e1e1e]">
+                    {label}{counts[value] > 0 ? ` (${counts[value]})` : ''}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <svg className="w-3.5 h-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </>
+          );
+        })()}
       </div>
 
       {filtered.length === 0 ? (
@@ -508,7 +533,7 @@ export default function HiveWiki({
           (() => {
             const catConf = CATEGORIES.find(
               (c) => c.value === viewingEntry.category,
-            )!;
+            ) ?? CATEGORIES[CATEGORIES.length - 1];
             const CatIcon = catConf.Icon;
             return (
               <div className="space-y-4">

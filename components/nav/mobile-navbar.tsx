@@ -53,8 +53,6 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  
-    undefined;
   const avatarHref = `/u/${username ?? user?.id ?? ''}`;
   const avatarUrl = useCurrentUserImage();
 
@@ -236,7 +234,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
           <Link
             href="/feedback"
             onClick={closeDrawer}
-            className={`flex items-center gap-2 px-4 py-1 rounded-2xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-4 py-1 rounded-2xl text-xs font-semibold transition-all ${
               isActive('/feedback')
                 ? 'text-[#FFC300] bg-[#FFC300]/8'
                 : 'text-white/80 hover:text-white hover:bg-white/5'
