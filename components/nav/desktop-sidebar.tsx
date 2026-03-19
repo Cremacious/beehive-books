@@ -18,6 +18,7 @@ import {
   LogOut,
   Hexagon,
   ShieldCheck,
+  MessageSquarePlus,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
@@ -139,6 +140,26 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             )}
           </ul>
         </nav>
+
+        <div className="px-2 xl:px-3 pb-2 pt-1">
+          <Link
+            href="/feedback"
+            aria-label="Send Feedback"
+            aria-current={isActive('/feedback') ? 'page' : undefined}
+            className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+              isActive('/feedback')
+                ? 'text-[#FFC300]'
+                : 'text-white/90 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <MessageSquarePlus
+              aria-hidden="true"
+              className="w-5.5 h-5.5 shrink-0"
+              strokeWidth={isActive('/feedback') ? 2.5 : 1.75}
+            />
+            <span className="hidden lg:block" aria-hidden="true">Feedback</span>
+          </Link>
+        </div>
 
         <div className="px-2 xl:px-3 pb-4 pt-3 border-t border-[#2a2a2a]">
           {isPending ? (

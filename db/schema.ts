@@ -296,6 +296,22 @@ export const announcements = pgTable('announcements', {
 });
 
 // ---------------------------------------------------------------------------
+// Feedback
+// ---------------------------------------------------------------------------
+
+export const feedback = pgTable('feedback', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  type: text('type', {
+    enum: ['content_suggestion', 'general_feedback', 'technical_support'],
+  }).notNull(),
+  email: text('email'),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
 

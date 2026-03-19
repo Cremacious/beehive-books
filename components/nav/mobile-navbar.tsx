@@ -21,6 +21,7 @@ import {
   LogOut,
   Hexagon,
   ShieldCheck,
+  MessageSquarePlus,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import logoImage from '@/public/logo3.png';
@@ -230,6 +231,24 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
             )}
           </div>
         </nav>
+
+        <div className="px-3 pb-3 pt-3 border-t border-[#2a2a2a]">
+          <Link
+            href="/feedback"
+            onClick={closeDrawer}
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+              isActive('/feedback')
+                ? 'text-[#FFC300] bg-[#FFC300]/8'
+                : 'text-white/80 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <MessageSquarePlus
+              className="w-5 h-5 shrink-0"
+              strokeWidth={isActive('/feedback') ? 2.5 : 1.75}
+            />
+            Send Feedback
+          </Link>
+        </div>
 
         <div className="px-3 pb-8 pt-3 border-t border-[#2a2a2a]">
           <div className="flex gap-2">
