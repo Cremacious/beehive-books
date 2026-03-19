@@ -61,14 +61,14 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           />
         </div>
 
-        <div className="px-2 xl:px-3 py-3">
+        <div className="px-2 xl:px-3 py-1">
           <NotificationBell
             panelPosition="right"
             className="w-full flex items-center justify-center py-2 rounded-2xl bg-yellow-500/10 border-2 border-yellow-500/30 text-[#FFC300] hover:bg-yellow-500/15 transition-colors cursor-pointer"
           />
         </div>
 
-        <nav className="flex-1 px-2 xl:px-3 py-4 overflow-y-auto">
+        <nav className="flex-1 px-2 xl:px-3 py-1 overflow-y-auto">
           <ul className="space-y-0.5 flex flex-col md:items-center lg:items-stretch">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(href);
@@ -78,7 +78,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     href={href}
                     aria-label={label}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-2.5 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
                         ? 'text-[#FFC300]'
                         : 'text-white/90 hover:text-white hover:bg-white/5'
@@ -146,7 +146,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             href="/feedback"
             aria-label="Send Feedback"
             aria-current={isActive('/feedback') ? 'page' : undefined}
-            className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-3 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+            className={`flex items-center md:justify-center lg:justify-start gap-2 md:p-3 lg:px-4 lg:py-2 rounded-2xl text-xs font-semibold transition-all duration-150 ${
               isActive('/feedback')
                 ? 'text-[#FFC300]'
                 : 'text-white/90 hover:text-white hover:bg-white/5'
@@ -154,10 +154,10 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           >
             <MessageSquarePlus
               aria-hidden="true"
-              className="w-5.5 h-5.5 shrink-0"
+              className="w-3.5 h-3.5 shrink-0"
               strokeWidth={isActive('/feedback') ? 2.5 : 1.75}
             />
-            <span className="hidden lg:block" aria-hidden="true">Feedback</span>
+            <span className="hidden lg:block mb-0.5" aria-hidden="true">Send Feedback</span>
           </Link>
         </div>
 

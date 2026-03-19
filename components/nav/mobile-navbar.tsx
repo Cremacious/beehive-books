@@ -178,7 +178,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
                   href={href}
                   onClick={closeDrawer}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1.5 px-2 py-3 rounded-2xl text-xs font-semibold transition-all ${
                     active
                       ? 'text-[#FFC300] bg-[#FFC300]/8'
                       : 'text-white/80 hover:text-white hover:bg-white/5'
@@ -232,25 +232,25 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
           </div>
         </nav>
 
-        <div className="px-3 pb-3 pt-3 border-t border-[#2a2a2a]">
+        <div className="px-3 pb-1 pt-1">
           <Link
             href="/feedback"
             onClick={closeDrawer}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-1 rounded-2xl text-xs font-semibold transition-all ${
               isActive('/feedback')
                 ? 'text-[#FFC300] bg-[#FFC300]/8'
                 : 'text-white/80 hover:text-white hover:bg-white/5'
             }`}
           >
             <MessageSquarePlus
-              className="w-5 h-5 shrink-0"
+              className="w-3.5 h-3.55 shrink-0"
               strokeWidth={isActive('/feedback') ? 2.5 : 1.75}
             />
             Send Feedback
           </Link>
         </div>
 
-        <div className="px-3 pb-8 pt-3 border-t border-[#2a2a2a]">
+        <div className="px-3 pb-8 pt-1 border-t border-[#2a2a2a]">
           <div className="flex gap-2">
             <Link
               href="/settings"
