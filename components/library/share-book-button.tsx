@@ -140,32 +140,35 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
                   {exportError}
                 </p>
               )}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="secondary"
+                    onClick={handleDocxExport}
+                    disabled={exportingDocx || exportingPdf || exportingEpub}
+                  >
+                    {exportingDocx ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    {exportingDocx ? 'Exporting…' : 'DOCX'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handlePdfExport}
+                    disabled={exportingDocx || exportingPdf || exportingEpub}
+                  >
+                    {exportingPdf ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    {exportingPdf ? 'Exporting…' : 'PDF'}
+                  </Button>
+                </div>
                 <Button
-                  variant="secondary"
-                  onClick={handleDocxExport}
-                  disabled={exportingDocx || exportingPdf || exportingEpub}
-                >
-                  {exportingDocx ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileText className="w-4 h-4" />
-                  )}
-                  {exportingDocx ? 'Exporting…' : 'DOCX'}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={handlePdfExport}
-                  disabled={exportingDocx || exportingPdf || exportingEpub}
-                >
-                  {exportingPdf ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileText className="w-4 h-4" />
-                  )}
-                  {exportingPdf ? 'Exporting…' : 'PDF'}
-                </Button>
-                <Button
+                  className="w-full"
                   variant="secondary"
                   onClick={handleEpubExport}
                   disabled={exportingDocx || exportingPdf || exportingEpub}
@@ -175,7 +178,7 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
                   ) : (
                     <FileText className="w-4 h-4" />
                   )}
-                  {exportingEpub ? 'Exporting…' : 'EPUB'}
+                  {exportingEpub ? 'Exporting…' : 'EPUB (Experimental)'}
                 </Button>
               </div>
             </div>

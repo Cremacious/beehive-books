@@ -31,6 +31,7 @@ import {
   parseDocxAction,
   type ParsedChapter,
 } from '@/lib/actions/docx.actions';
+import { parseEpubAction } from '@/lib/actions/epub.actions';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { CATEGORIES, GENRES, PRIVACY_OPTIONS } from '@/lib/config/constants';
 import {
@@ -59,6 +60,10 @@ export function BookForm({
   const [bookDocxChapterCount, setBookDocxChapterCount] = useState<
     number | null
   >(null);
+  const [bookEpubOpen, setBookEpubOpen] = useState(false);
+  const [bookEpubFileName, setBookEpubFileName] = useState('');
+  const [bookEpubError, setBookEpubError] = useState('');
+  const [bookEpubChapterCount, setBookEpubChapterCount] = useState<number | null>(null);
   const [parsedChapters, setParsedChapters] = useState<ParsedChapter[] | null>(
     null,
   );
@@ -96,6 +101,33 @@ export function BookForm({
     ? descriptionValue.trim().split(/\s+/).filter(Boolean).length
     : 0;
 
+  async function handleBookEpubSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBookEpubError('');
+    setBookEpubChapterCount(null);
+    setParsedChapters(null);
+    setBookEpubFileName(file.name);
+    // Clear DOCX selection
+    setBookDocxFileName('');
+    setBookDocxChapterCount(null);
+    setBookDocxError('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    const result = await parseEpubAction(formData);
+
+    if (!result.success) {
+      setBookEpubError(result.message);
+      setBookEpubFileName('');
+      return;
+    }
+
+    setParsedChapters(result.chapters);
+    setBookEpubChapterCount(result.chapters.length);
+  }
+
   async function handleBookDocxSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -104,6 +136,10 @@ export function BookForm({
     setBookDocxChapterCount(null);
     setParsedChapters(null);
     setBookDocxFileName(file.name);
+    // Clear EPUB selection
+    setBookEpubFileName('');
+    setBookEpubChapterCount(null);
+    setBookEpubError('');
 
     const formData = new FormData();
     formData.append('file', file);
@@ -433,6 +469,7 @@ export function BookForm({
           </div>
 
           {!isEdit && (
+            <>
             <div className="rounded-xl border border-[#2a2a2a] overflow-hidden">
               <button
                 type="button"
@@ -546,6 +583,97 @@ export function BookForm({
                 </div>
               )}
             </div>
+
+            <div className="rounded-xl border border-[#2a2a2a] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setBookEpubOpen((o) => !o)}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-white/85 hover:text-white/80 hover:bg-white/3 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-yellow-500" />
+                  Upload full book from EPUB
+                  <span className="text-[11px] text-white/80">(optional)</span>
+                </span>
+                {bookEpubOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {bookEpubOpen && (
+                <div className="px-4 pb-4 space-y-4 border-t border-[#2a2a2a]">
+                  <div className="mt-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-3">
+                    <p className="text-xs font-semibold text-[#FFC300]/80 uppercase tracking-wide">
+                      How chapters are detected
+                    </p>
+                    <p className="text-xs text-white/80 leading-relaxed">
+                      Beehive reads each spine item in the EPUB and uses its{' '}
+                      <strong className="text-white">&lt;h1&gt;</strong> tag as the chapter
+                      title. Navigation and cover pages are skipped automatically.
+                    </p>
+                    <div className="space-y-1.5 text-[11px] text-white/80 pt-1 border-t border-[#2a2a2a]">
+                      <p className="font-semibold text-white/80 pt-1">Tips</p>
+                      <p>• Each EPUB chapter should have a single &lt;h1&gt; heading</p>
+                      <p>• Body text is imported as-is; rich formatting may be simplified</p>
+                      <p>• Max file size: 50 MB</p>
+                    </div>
+                  </div>
+
+                  <label className="relative overflow-hidden flex flex-col items-center justify-center gap-3 w-full h-28 rounded-xl border-2 border-dashed border-[#2a2a2a] bg-[#1e1e1e] cursor-pointer hover:border-[#FFC300]/40 transition-colors">
+                    {bookEpubFileName ? (
+                      <>
+                        <FileText className="w-5 h-5 text-[#FFC300]/70" />
+                        <span className="text-xs text-white/80">
+                          {bookEpubFileName}
+                        </span>
+                        {bookEpubChapterCount !== null && (
+                          <span className="text-[11px] text-[#FFC300]/60">
+                            {bookEpubChapterCount} chapter
+                            {bookEpubChapterCount !== 1 ? 's' : ''} found —
+                            click to replace
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-5 h-5 text-white/85" />
+                        <span className="text-sm text-white/85">
+                          Select a .epub file
+                        </span>
+                        <span className="text-xs text-white/80">
+                          Max 50 MB · one &lt;h1&gt; per chapter
+                        </span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept=".epub,application/epub+zip"
+                      className="sr-only"
+                      onChange={handleBookEpubSelect}
+                    />
+                  </label>
+
+                  {bookEpubError && (
+                    <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
+                      <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                      <p className="text-sm text-red-400">{bookEpubError}</p>
+                    </div>
+                  )}
+
+                  {bookEpubChapterCount !== null && bookEpubChapterCount > 0 && (
+                    <p className="text-xs text-white/80">
+                      When you click &quot;Create Book&quot;, the book will be
+                      saved first, then all {bookEpubChapterCount} chapter
+                      {bookEpubChapterCount !== 1 ? 's' : ''} will be imported
+                      automatically.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            </>
           )}
 
           {serverError && (
