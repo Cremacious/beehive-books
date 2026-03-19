@@ -266,7 +266,7 @@ function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
 function QuickLinksBar() {
   return (
     <div className="mb-8">
-      <p className="text-xs font-semibold text-white/80 uppercase tracking-[0.15em] mb-3">
+      <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em] mb-3">
         Quick Access
       </p>
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">

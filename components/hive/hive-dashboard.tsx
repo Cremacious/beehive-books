@@ -43,6 +43,7 @@ type LinkedBook = {
   author: string;
   coverUrl: string | null;
   privacy: string;
+  userId: string;
 } | null;
 
 interface HiveDashboardProps {
@@ -314,6 +315,7 @@ function ActivityFeedItem({ event }: { event: ActivityEvent }) {
 export default function HiveDashboard({
   hive,
   initialActivity,
+  currentUserId,
   linkedBook,
   joinRequestStatus,
   pendingRequests,
@@ -568,12 +570,16 @@ export default function HiveDashboard({
               <BookOpen className="w-4 h-4 text-[#FFC300]" />
               The Book
             </h2>
-            {linkedBook && linkedBook.privacy !== 'PRIVATE' && (
+            {linkedBook && (linkedBook.privacy !== 'PRIVATE' || linkedBook.userId === currentUserId) && (
               <Link
-                href={`/books/${hive.bookId}`}
+                href={
+                  linkedBook.userId === currentUserId
+                    ? `/library/${linkedBook.id}`
+                    : `/books/${linkedBook.id}`
+                }
                 className="text-sm text-[#FFC300] hover:underline"
               >
-                Open Book →
+                Read Book →
               </Link>
             )}
           </div>
