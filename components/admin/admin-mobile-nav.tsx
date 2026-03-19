@@ -11,6 +11,7 @@ import {
   Bell,
   Layers,
   Megaphone,
+  MessageSquarePlus,
 } from 'lucide-react';
 
 const links = [
@@ -22,6 +23,7 @@ const links = [
   { href: '/admin/discussions', label: 'Discussions', icon: MessageSquare },
   { href: '/admin/prompts', label: 'Prompts', icon: Lightbulb },
   { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+  { href: '/admin/feedback', label: 'Feedback', icon: MessageSquarePlus },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ];
 
