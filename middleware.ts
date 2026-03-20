@@ -12,7 +12,7 @@ import {
 const intlMiddleware = createMiddleware(routing);
 
 // Public paths WITHOUT locale prefix (next-intl strips it before matching)
-const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up'];
+const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password'];
 
 // Known malicious/scanner user-agent fragments
 const BLOCKED_UA_PATTERNS = [
@@ -124,6 +124,31 @@ export default async function middleware(request: NextRequest) {
 
   if (isAuthenticated && pathWithoutLocale === '/') {
     return NextResponse.redirect(new URL('/home', request.url));
+  }
+
+  // ── Email verification guard ───────────────────────────────────────────────
+  // Only check protected routes — skip public paths and sign-in itself to avoid loops
+  if (
+    isAuthenticated &&
+    !isPublic(pathname) &&
+    pathWithoutLocale !== '/sign-in' &&
+    process.env.REQUIRE_EMAIL_VERIFICATION === 'true'
+  ) {
+    try {
+      const baseUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+      const res = await fetch(`${baseUrl}/api/auth/get-session`, {
+        headers: { cookie: request.headers.get('cookie') ?? '' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user && data.user.emailVerified === false) {
+          return NextResponse.redirect(new URL('/sign-in', request.url));
+        }
+      }
+    } catch {
+      // If we can't reach the session API, fail open so a server error
+      // doesn't lock everyone out of the app.
+    }
   }
 
   // ── Delegate to next-intl for locale detection + cookie/header injection ──

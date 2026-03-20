@@ -30,6 +30,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [verificationEmail, setVerificationEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -74,8 +75,8 @@ export default function SignUpPage() {
       return;
     }
 
-    // Full page navigation so the session cookie is sent with the new request
-    window.location.href = '/onboarding';
+    setVerificationEmail(email);
+    setLoading(false);
   }
 
   return (
@@ -87,6 +88,21 @@ export default function SignUpPage() {
         </Link>
 
         <div className="w-full rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] shadow-2xl p-8">
+          {verificationEmail ? (
+            <>
+              <h1 className="text-xl font-bold text-white mb-1 mainFont">Check your inbox</h1>
+              <div className="mt-4 rounded-xl bg-[#FFC300]/10 border border-[#FFC300]/20 px-4 py-4 text-sm text-[#FFC300]">
+                We sent a verification email to <span className="font-semibold">{verificationEmail}</span>. Click the link to activate your account.
+              </div>
+              <p className="mt-5 text-center text-sm text-white/80">
+                Already have an account?{' '}
+                <Link href="/sign-in" className="text-[#FFC300] hover:text-[#FFD040] font-medium">
+                  Sign in
+                </Link>
+              </p>
+            </>
+          ) : (
+          <>
           <h1 className="text-xl font-bold text-white mb-1 mainFont">Create account</h1>
           <p className="text-sm text-white/80 mb-6">Join the Beehive Books community</p>
 
@@ -231,6 +247,8 @@ export default function SignUpPage() {
               Sign in
             </Link>
           </p>
+          </>
+          )}
         </div>
       </div>
     </div>
