@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Share2, Copy, Check, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
-import { exportBookToDocxAction } from '@/lib/actions/export.actions';
+import { exportBookToDocxAction, exportBookToEpubAction } from '@/lib/actions/export.actions';
 import { getBookForExportAction } from '@/lib/actions/book.actions';
 
 interface ShareBookButtonProps {
@@ -20,6 +20,7 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
   const [copied, setCopied] = useState(false);
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [exportingEpub, setExportingEpub] = useState(false);
   const [exportError, setExportError] = useState('');
 
   function getShareUrl() {
@@ -70,6 +71,28 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
     }
   }
 
+  async function handleEpubExport() {
+    setExportingEpub(true);
+    setExportError('');
+    try {
+      const result = await exportBookToEpubAction(bookId);
+      if (!result.success || !result.base64) {
+        setExportError(result.message ?? 'Export failed.');
+        return;
+      }
+      const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'application/epub+zip' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = result.filename ?? 'book.epub';
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExportingEpub(false);
+    }
+  }
+
   return (
     <>
       {variant === 'icon' ? (
@@ -117,30 +140,45 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
                   {exportError}
                 </p>
               )}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="secondary"
+                    onClick={handleDocxExport}
+                    disabled={exportingDocx || exportingPdf || exportingEpub}
+                  >
+                    {exportingDocx ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    {exportingDocx ? 'Exporting…' : 'DOCX'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handlePdfExport}
+                    disabled={exportingDocx || exportingPdf || exportingEpub}
+                  >
+                    {exportingPdf ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    {exportingPdf ? 'Exporting…' : 'PDF'}
+                  </Button>
+                </div>
                 <Button
+                  className="w-full"
                   variant="secondary"
-                  onClick={handleDocxExport}
-                  disabled={exportingDocx || exportingPdf}
+                  onClick={handleEpubExport}
+                  disabled={exportingDocx || exportingPdf || exportingEpub}
                 >
-                  {exportingDocx ? (
+                  {exportingEpub ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <FileText className="w-4 h-4" />
                   )}
-                  {exportingDocx ? 'Exporting…' : 'Download DOCX'}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={handlePdfExport}
-                  disabled={exportingDocx || exportingPdf}
-                >
-                  {exportingPdf ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileText className="w-4 h-4" />
-                  )}
-                  {exportingPdf ? 'Exporting…' : 'Download PDF'}
+                  {exportingEpub ? 'Exporting…' : 'EPUB (Experimental)'}
                 </Button>
               </div>
             </div>
