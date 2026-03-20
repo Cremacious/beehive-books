@@ -3,6 +3,7 @@ import { Hexagon } from 'lucide-react';
 import { searchExplorableHivesAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
+import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import HiveCard from '@/components/hive/hive-card';
 import { GENRES } from '@/lib/config/constants';
 
@@ -11,13 +12,13 @@ export const metadata: Metadata = { title: 'Explore Hives' };
 export default async function ExploreHivesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; genre?: string; tag?: string }>;
+  searchParams: Promise<{ q?: string; genre?: string; tag?: string; cursor?: string }>;
 }) {
-  const { q = '', genre = '', tag = '' } = await searchParams;
+  const { q = '', genre = '', tag = '', cursor } = await searchParams;
   const genres = genre ? genre.split(',').filter(Boolean) : [];
   const tags = tag ? tag.split(',').filter(Boolean) : [];
 
-  const hives = await searchExplorableHivesAction(q, genres, tags);
+  const { hives, nextCursor } = await searchExplorableHivesAction(q, genres, tags, cursor);
 
   const filterGroups = [{ param: 'genre', label: 'Genre', options: GENRES }];
 
@@ -31,7 +32,6 @@ export default async function ExploreHivesPage({
           <Hexagon className="w-6 h-6 text-[#FFC300]" />
           Writing Hives
         </h1>
-
       </div>
 
       <ExploreSearchBar placeholder="Search hives by name, genre, or tags..." />
@@ -51,11 +51,14 @@ export default async function ExploreHivesPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {hives.map((hive) => (
-                <HiveCard key={hive.id} hive={hive} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {hives.map((hive) => (
+                  <HiveCard key={hive.id} hive={hive} />
+                ))}
+              </div>
+              {nextCursor && <ExploreLoadMoreButton nextCursor={nextCursor} />}
+            </>
           )}
         </div>
       </div>

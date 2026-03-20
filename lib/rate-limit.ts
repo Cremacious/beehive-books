@@ -42,6 +42,14 @@ export const actionLimiter = new Ratelimit({
   prefix: 'rl:action',
 });
 
+// 60 search requests per minute per user (read-only, higher limit than mutations)
+export const searchLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
+  prefix: 'rl:search',
+  ephemeralCache: new Map(),
+});
+
 // 200 page requests per minute per IP (DDoS protection for page routes)
 export const pageLimiter = new Ratelimit({
   redis,

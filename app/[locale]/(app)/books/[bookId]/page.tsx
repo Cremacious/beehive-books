@@ -11,6 +11,8 @@ import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { Badge } from '@/components/ui/badge';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
+import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
+import { LikeButton } from '@/components/books/like-button';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -41,10 +43,12 @@ export default async function PublicBookPage({
 
   let book;
   let readChapterIds: string[] = [];
+  let likeStatus = { liked: false, likeCount: 0 };
   try {
-    [book, readChapterIds] = await Promise.all([
+    [book, readChapterIds, likeStatus] = await Promise.all([
       getBookForViewAction(bookId),
       getBookReadStatusAction(bookId).catch(() => [] as string[]),
+      getBookLikeStatusAction(bookId).catch(() => ({ liked: false, likeCount: 0 })),
     ]);
   } catch {
     notFound();
@@ -130,6 +134,12 @@ export default async function PublicBookPage({
                   <MessageSquare className="w-4 h-4 text-yellow-500" />
                   <span>{book.commentCount} comments</span>
                 </div>
+                <LikeButton
+                  bookId={book.id}
+                  initialLiked={likeStatus.liked}
+                  initialLikeCount={likeStatus.likeCount}
+                  isAuthenticated
+                />
               </div>
             </div>
           </div>
