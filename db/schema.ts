@@ -6,6 +6,7 @@ import {
   integer,
   primaryKey,
   uniqueIndex,
+  index,
   json,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
@@ -104,7 +105,11 @@ export const books = pgTable('books', {
   commentCount: integer('comment_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [
+  index('books_explorable_privacy_idx').on(t.explorable, t.privacy),
+  index('books_genre_idx').on(t.genre),
+  index('books_created_at_idx').on(t.createdAt),
+]);
 
 export const collections = pgTable('collections', {
   id: text('id')
@@ -200,7 +205,10 @@ export const readingLists = pgTable('reading_lists', {
   currentlyReadingAuthor: text('currently_reading_author'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [
+  index('reading_lists_explorable_privacy_idx').on(t.explorable, t.privacy),
+  index('reading_lists_updated_at_idx').on(t.updatedAt),
+]);
 
 export const friendships = pgTable(
   'friendships',
@@ -459,7 +467,10 @@ export const prompts = pgTable('prompts', {
   entryCount: integer('entry_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [
+  index('prompts_explorable_privacy_idx').on(t.explorable, t.privacy),
+  index('prompts_created_at_idx').on(t.createdAt),
+]);
 
 export const promptInvites = pgTable(
   'prompt_invites',
@@ -677,7 +688,11 @@ export const bookClubs = pgTable('book_clubs', {
   totalPages: integer('total_pages'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [
+  index('book_clubs_explorable_privacy_idx').on(t.explorable, t.privacy),
+  index('book_clubs_member_count_idx').on(t.memberCount),
+  index('book_clubs_created_at_idx').on(t.createdAt),
+]);
 
 export const clubMembers = pgTable(
   'club_members',
@@ -986,7 +1001,12 @@ export const hives = pgTable('hives', {
   chapterCount: integer('chapter_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [
+  index('hives_explorable_privacy_idx').on(t.explorable, t.privacy),
+  index('hives_genre_idx').on(t.genre),
+  index('hives_member_count_idx').on(t.memberCount),
+  index('hives_created_at_idx').on(t.createdAt),
+]);
 
 export const hiveMembers = pgTable(
   'hive_members',
