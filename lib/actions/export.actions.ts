@@ -47,13 +47,27 @@ function stripHtmlToText(html: string): string {
     .trim();
 }
 
+function htmlToXhtml(html: string): string {
+  return html
+    // Self-close void elements
+    .replace(/<br\s*>/gi, '<br/>')
+    .replace(/<img([^>]*?)(?<!\/)>/gi, '<img$1/>')
+    .replace(/<hr\s*>/gi, '<hr/>')
+    .replace(/<input([^>]*?)(?<!\/)>/gi, '<input$1/>')
+    // Replace named HTML entities that are invalid in XHTML with numeric equivalents
+    .replace(/&nbsp;/g, '&#160;')
+    .replace(/&mdash;/g, '&#8212;')
+    .replace(/&ndash;/g, '&#8211;')
+    .replace(/&ldquo;/g, '&#8220;')
+    .replace(/&rdquo;/g, '&#8221;')
+    .replace(/&lsquo;/g, '&#8216;')
+    .replace(/&rsquo;/g, '&#8217;')
+    .replace(/&hellip;/g, '&#8230;');
+}
+
 function buildChapterXhtml(title: string, content: string | null): string {
   const titleEscaped = escapeXml(title);
-  const paragraphs = (content ? stripHtmlToText(content) : '')
-    .split('\n')
-    .filter((line) => line.trim())
-    .map((line) => `    <p>${escapeXml(line.trim())}</p>`)
-    .join('\n');
+  const body = content ? htmlToXhtml(content) : '<p><em>No content.</em></p>';
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -64,7 +78,7 @@ function buildChapterXhtml(title: string, content: string | null): string {
     '</head>',
     '<body>',
     `  <h1>${titleEscaped}</h1>`,
-    paragraphs,
+    `  ${body}`,
     '</body>',
     '</html>',
   ].join('\n');
@@ -146,32 +160,38 @@ export async function exportBookToEpubAction(
 ): Promise<{ success: boolean; base64?: string; filename?: string; message?: string }> {
   try {
     const data = await getBookForExportAction(bookId);
-    const { Epub } = await import('@smoores/epub');
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
 
-    const epub = await Epub.create({
-      title: data.book.title,
-      language: new Intl.Locale('en'),
-      identifier: `beehive-books-${bookId}`,
-      creators: [{ name: data.book.author }],
-      date: new Date(),
-    });
+    const bookTitle = data.book.title;
+    const bookAuthor = data.book.author;
+    const uid = `beehive-books-${bookId}`;
 
-    // EPUB 3 required navigation document
-    const navXhtml = buildNavXhtml(data.book.title, data.chapters);
-    await epub.addManifestItem(
-      { id: 'nav', href: 'nav.xhtml', mediaType: 'application/xhtml+xml', properties: ['nav'] },
-      navXhtml,
-      'utf-8',
+    // ── 1. mimetype — MUST be first, MUST be uncompressed ─────────────────────
+    zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
+
+    // ── 2. META-INF/container.xml ─────────────────────────────────────────────
+    zip.file(
+      'META-INF/container.xml',
+      [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">',
+        '  <rootfiles>',
+        '    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>',
+        '  </rootfiles>',
+        '</container>',
+      ].join('\n'),
     );
 
-    // NCX for EPUB 2 reader compatibility
-    const ncx = buildNcx(data.book.title, bookId, data.chapters);
-    await epub.addManifestItem(
-      { id: 'ncx', href: 'toc.ncx', mediaType: 'application/x-dtbncx+xml' },
-      ncx,
-      'utf-8',
-    );
+    // ── 3. Build chapter files ────────────────────────────────────────────────
+    const chapterIds = data.chapters.map((_, i) => `chapter-${i + 1}`);
 
+    for (let i = 0; i < data.chapters.length; i++) {
+      const ch = data.chapters[i];
+      zip.file(`OEBPS/${chapterIds[i]}.xhtml`, buildChapterXhtml(ch.title, ch.content));
+    }
+
+    // ── 4. Title page ─────────────────────────────────────────────────────────
     const descriptionParagraph = data.book.description
       ? `  <p>${escapeXml(stripHtmlToText(data.book.description))}</p>`
       : '';
@@ -181,40 +201,62 @@ export async function exportBookToEpubAction(
       '<!DOCTYPE html>',
       '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">',
       '<head>',
-      `  <title>${escapeXml(data.book.title)}</title>`,
+      `  <title>${escapeXml(bookTitle)}</title>`,
       '</head>',
       '<body>',
-      `  <h1>${escapeXml(data.book.title)}</h1>`,
-      `  <p>by ${escapeXml(data.book.author)}</p>`,
+      `  <h1>${escapeXml(bookTitle)}</h1>`,
+      `  <p>by ${escapeXml(bookAuthor)}</p>`,
       descriptionParagraph,
       '</body>',
       '</html>',
     ].join('\n');
+    zip.file('OEBPS/title-page.xhtml', titlePageXhtml);
 
-    await epub.addManifestItem(
-      { id: 'title-page', href: 'title-page.xhtml', mediaType: 'application/xhtml+xml' },
-      titlePageXhtml,
-      'utf-8',
-    );
-    await epub.addSpineItem('title-page');
+    // ── 5. nav.xhtml (EPUB 3 navigation) ─────────────────────────────────────
+    zip.file('OEBPS/nav.xhtml', buildNavXhtml(bookTitle, data.chapters));
 
-    for (let i = 0; i < data.chapters.length; i++) {
-      const ch = data.chapters[i];
-      const id = `chapter-${i + 1}`;
-      const xhtml = buildChapterXhtml(ch.title, ch.content);
-      await epub.addManifestItem(
-        { id, href: `${id}.xhtml`, mediaType: 'application/xhtml+xml' },
-        xhtml,
-        'utf-8',
-      );
-      await epub.addSpineItem(id);
-    }
+    // ── 6. toc.ncx (EPUB 2 fallback) ─────────────────────────────────────────
+    zip.file('OEBPS/toc.ncx', buildNcx(bookTitle, bookId, data.chapters));
 
-    const uint8Array = await epub.writeToArray();
-    await epub.close();
+    // ── 7. content.opf (package document) ────────────────────────────────────
+    const manifestItems = [
+      '    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
+      '    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
+      '    <item id="title-page" href="title-page.xhtml" media-type="application/xhtml+xml"/>',
+      ...chapterIds.map(
+        (id) => `    <item id="${id}" href="${id}.xhtml" media-type="application/xhtml+xml"/>`,
+      ),
+    ].join('\n');
 
-    const base64 = Buffer.from(uint8Array).toString('base64');
-    const filename = `${data.book.title.replace(/[^a-z0-9]/gi, '_')}.epub`;
+    const spineItems = [
+      '    <itemref idref="title-page"/>',
+      ...chapterIds.map((id) => `    <itemref idref="${id}"/>`),
+    ].join('\n');
+
+    const contentOpf = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid">',
+      '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">',
+      `    <dc:identifier id="bookid">${escapeXml(uid)}</dc:identifier>`,
+      `    <dc:title>${escapeXml(bookTitle)}</dc:title>`,
+      `    <dc:creator>${escapeXml(bookAuthor)}</dc:creator>`,
+      '    <dc:language>en</dc:language>',
+      `    <meta property="dcterms:modified">${new Date().toISOString().replace(/\.\d+Z$/, 'Z')}</meta>`,
+      '  </metadata>',
+      '  <manifest>',
+      manifestItems,
+      '  </manifest>',
+      `  <spine toc="ncx">`,
+      spineItems,
+      '  </spine>',
+      '</package>',
+    ].join('\n');
+    zip.file('OEBPS/content.opf', contentOpf);
+
+    // ── Generate ZIP ──────────────────────────────────────────────────────────
+    const buffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+    const base64 = buffer.toString('base64');
+    const filename = `${bookTitle.replace(/[^a-z0-9]/gi, '_')}.epub`;
     return { success: true, base64, filename };
   } catch (e) {
     return { success: false, message: e instanceof Error ? e.message : 'EPUB export failed.' };
