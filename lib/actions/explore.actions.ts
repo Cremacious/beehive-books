@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { searchLimiter } from '@/lib/rate-limit';
 
 import { unstable_cache } from 'next/cache';
 import { and, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
@@ -68,6 +69,10 @@ export async function searchExplorableBooksAction(
   genres: string[] = [],
   categories: string[] = [],
 ): Promise<Book[]> {
+  const userId = await getOptionalUserId();
+  const { success } = await searchLimiter.limit(userId ?? 'anon');
+  if (!success) throw new Error('Too many requests. Please slow down.');
+
   const q = query.trim();
   const rows = await db.query.books.findMany({
     where: and(
@@ -90,6 +95,9 @@ export async function searchExplorableClubsAction(
   tags: string[] = [],
 ): Promise<ClubWithMembership[]> {
   const userId = await requireAuth();
+  const { success } = await searchLimiter.limit(userId ?? 'anon');
+  if (!success) throw new Error('Too many requests. Please slow down.');
+
   const q = query.trim();
 
   const tagFilter =
@@ -163,6 +171,9 @@ export async function searchExplorableHivesAction(
   tags: string[] = [],
 ): Promise<HiveWithMembership[]> {
   const userId = await requireAuth();
+  const { success } = await searchLimiter.limit(userId ?? 'anon');
+  if (!success) throw new Error('Too many requests. Please slow down.');
+
   const q = query.trim();
 
   const tagFilter =
@@ -232,6 +243,9 @@ export async function searchExplorableHivesAction(
 
 export async function searchExplorablePromptsAction(query: string): Promise<PromptCard[]> {
   const userId = await requireAuth();
+  const { success } = await searchLimiter.limit(userId ?? 'anon');
+  if (!success) throw new Error('Too many requests. Please slow down.');
+
   const q = query.trim();
 
   const rows = await db.query.prompts.findMany({
@@ -278,6 +292,10 @@ export async function searchExplorablePromptsAction(query: string): Promise<Prom
 
 
 export async function searchExplorableReadingListsAction(query: string): Promise<ReadingList[]> {
+  const userId = await getOptionalUserId();
+  const { success } = await searchLimiter.limit(userId ?? 'anon');
+  if (!success) throw new Error('Too many requests. Please slow down.');
+
   const q = query.trim();
   const rows = await db.query.readingLists.findMany({
     where: and(
