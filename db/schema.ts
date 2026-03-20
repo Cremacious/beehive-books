@@ -103,6 +103,7 @@ export const books = pgTable('books', {
   wordCount: integer('word_count').notNull().default(0),
   chapterCount: integer('chapter_count').notNull().default(0),
   commentCount: integer('comment_count').notNull().default(0),
+  likeCount: integer('like_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [
@@ -110,6 +111,20 @@ export const books = pgTable('books', {
   index('books_genre_idx').on(t.genre),
   index('books_created_at_idx').on(t.createdAt),
 ]);
+
+export const bookLikes = pgTable(
+  'book_likes',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    bookId: text('book_id')
+      .notNull()
+      .references(() => books.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.bookId] })],
+);
 
 export const collections = pgTable('collections', {
   id: text('id')
@@ -353,6 +368,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   clubDiscussionReplies: many(clubDiscussionReplies),
   hiveMemberships: many(hiveMembers),
   hiveInvitesReceived: many(hiveInvites, { relationName: 'receivedHiveInvites' }),
+  bookLikes: many(bookLikes),
 }));
 
 export const friendshipsRelations = relations(friendships, ({ one }) => ({
@@ -372,6 +388,12 @@ export const booksRelations = relations(books, ({ one, many }) => ({
   user: one(users, { fields: [books.userId], references: [users.id] }),
   chapters: many(chapters),
   collections: many(collections),
+  likes: many(bookLikes),
+}));
+
+export const bookLikesRelations = relations(bookLikes, ({ one }) => ({
+  user: one(users, { fields: [bookLikes.userId], references: [users.id] }),
+  book: one(books, { fields: [bookLikes.bookId], references: [books.id] }),
 }));
 
 export const collectionsRelations = relations(collections, ({ one, many }) => ({
