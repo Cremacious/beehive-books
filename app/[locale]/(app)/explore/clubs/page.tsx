@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Users } from 'lucide-react';
 import { searchExplorableClubsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
+import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import ClubCard from '@/components/clubs/club-card';
 
 export const metadata: Metadata = { title: 'Explore Clubs' };
@@ -9,12 +10,12 @@ export const metadata: Metadata = { title: 'Explore Clubs' };
 export default async function ExploreClubsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; tag?: string }>;
+  searchParams: Promise<{ q?: string; tag?: string; cursor?: string }>;
 }) {
-  const { q = '', tag = '' } = await searchParams;
+  const { q = '', tag = '', cursor } = await searchParams;
   const tags = tag ? tag.split(',').filter(Boolean) : [];
 
-  const clubs = await searchExplorableClubsAction(q, tags);
+  const { clubs, nextCursor } = await searchExplorableClubsAction(q, tags, cursor);
 
   return (
     <div className="space-y-6">
@@ -26,7 +27,6 @@ export default async function ExploreClubsPage({
           <Users className="w-6 h-6 text-orange-400" />
           Book Clubs
         </h1>
-
       </div>
 
       <ExploreSearchBar placeholder="Search clubs by name, description, or tag..." />
@@ -40,11 +40,14 @@ export default async function ExploreClubsPage({
           <p className="text-white/80 max-w-sm">Try different keywords.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {clubs.map((club) => (
-            <ClubCard key={club.id} club={club} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {clubs.map((club) => (
+              <ClubCard key={club.id} club={club} />
+            ))}
+          </div>
+          {nextCursor && <ExploreLoadMoreButton nextCursor={nextCursor} />}
+        </>
       )}
     </div>
   );

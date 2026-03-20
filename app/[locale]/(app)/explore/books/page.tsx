@@ -3,6 +3,7 @@ import { BookOpen } from 'lucide-react';
 import { searchExplorableBooksAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
+import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import BookCard from '@/components/library/book-card';
 import { GENRES, CATEGORIES } from '@/lib/config/constants';
 
@@ -11,13 +12,13 @@ export const metadata: Metadata = { title: 'Explore Books' };
 export default async function ExploreBooksPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; genre?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; genre?: string; category?: string; cursor?: string }>;
 }) {
-  const { q = '', genre = '', category = '' } = await searchParams;
+  const { q = '', genre = '', category = '', cursor } = await searchParams;
   const genres = genre ? genre.split(',').filter(Boolean) : [];
   const categories = category ? category.split(',').filter(Boolean) : [];
 
-  const books = await searchExplorableBooksAction(q, genres, categories);
+  const { books, nextCursor } = await searchExplorableBooksAction(q, genres, categories, cursor);
 
   const filterGroups = [
     { param: 'genre', label: 'Genre', options: GENRES },
@@ -34,7 +35,6 @@ export default async function ExploreBooksPage({
           <BookOpen className="w-6 h-6 text-[#FFC300]" />
           Books
         </h1>
-  
       </div>
 
       <ExploreSearchBar placeholder="Search by title or author..." />
@@ -54,11 +54,14 @@ export default async function ExploreBooksPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2  xl:grid-cols-3 gap-4">
-              {books.map((book) => (
-                <BookCard key={book.id} book={book} basePath="/books" />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                {books.map((book) => (
+                  <BookCard key={book.id} book={book} basePath="/books" />
+                ))}
+              </div>
+              {nextCursor && <ExploreLoadMoreButton nextCursor={nextCursor} />}
+            </>
           )}
         </div>
       </div>
