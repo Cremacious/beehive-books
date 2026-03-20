@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/db';
 import { users, session, account, verification } from '@/db/schema';
+import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/email';
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
@@ -13,7 +14,17 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false,
+    requireEmailVerification: process.env.REQUIRE_EMAIL_VERIFICATION === 'true',
+    sendResetPasswordEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
+      await sendPasswordResetEmail(user.email, url);
+    },
+  },
+
+  emailVerification: {
+    callbackURL: '/sign-in',
+    sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
+      await sendVerificationEmail(user.email, url);
+    },
   },
 
   socialProviders: {
