@@ -2,8 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import logoImage from '@/public/logo3.png';
