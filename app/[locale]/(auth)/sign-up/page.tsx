@@ -7,12 +7,35 @@ import { signIn, signUp } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 import logoImage from '@/public/logo3.png';
 
+function getStrength(password: string): 0 | 1 | 2 | 3 {
+  if (password.length === 0) return 0;
+  const hasMin = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  if (!hasMin) return 1;
+  if (hasMin && (hasUpper && hasNumber)) return 3;
+  return 2;
+}
+
+function validatePassword(password: string): string[] {
+  const issues: string[] = [];
+  if (password.length < 8) issues.push('at least 8 characters');
+  if (!/[A-Z]/.test(password)) issues.push('at least one uppercase letter (A–Z)');
+  if (!/[0-9]/.test(password)) issues.push('at least one number (0–9)');
+  return issues;
+}
+
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  const strength = getStrength(password);
+  const strengthColors = ['', 'bg-red-500', 'bg-orange-400', 'bg-green-500'];
+  const strengthColor = strengthColors[strength];
 
   async function handleGoogle() {
     setGoogleLoading(true);
@@ -22,6 +45,18 @@ export default function SignUpPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    const issues = validatePassword(password);
+    if (issues.length > 0) {
+      setError(`Password must include: ${issues.join(', ')}.`);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
 
     const result = await signUp.email({ name: email.split('@')[0], email, password });
@@ -108,7 +143,33 @@ export default function SignUpPage() {
                 required
                 autoComplete="new-password"
                 placeholder="At least 8 characters"
-                minLength={8}
+                className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+              />
+              {password.length > 0 && (
+                <div className="flex gap-1 mt-2">
+                  {[1, 2, 3].map((seg) => (
+                    <div
+                      key={seg}
+                      className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                        strength >= seg ? strengthColor : 'bg-[#2a2a2a]'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-yellow-500 mb-1.5 mainFont">
+                Confirm password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                placeholder="Re-enter your password"
                 className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
               />
             </div>
