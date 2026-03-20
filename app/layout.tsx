@@ -1,3 +1,4 @@
+import './globals.css';
 import { Comfortaa } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
 
