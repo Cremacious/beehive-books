@@ -1,13 +1,11 @@
 import Link from 'next/link';
-import { Compass } from 'lucide-react';
+// import { Compass } from 'lucide-react';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-[#141414] flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] shadow-2xl p-8 flex flex-col items-center text-center gap-5">
-        <div className="w-12 h-12 rounded-full bg-[#FFC300]/10 border border-[#FFC300]/20 flex items-center justify-center">
-          <Compass className="w-6 h-6 text-[#FFC300]" />
-        </div>
+    
 
         <div className="space-y-1.5">
           <p className="text-4xl font-bold text-[#FFC300] mainFont">404</p>
