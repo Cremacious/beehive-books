@@ -26,11 +26,15 @@ export function PremiumStatusCard({
     setLoading(true);
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' });
-      if (!res.ok) return;
+      if (!res.ok) {
+        window.location.href = '/premium';
+        return;
+      }
       const data = await res.json();
       if (data.url) window.location.href = data.url;
+      else window.location.href = '/premium';
     } catch {
-      // network error
+      window.location.href = '/premium';
     } finally {
       setLoading(false);
     }
