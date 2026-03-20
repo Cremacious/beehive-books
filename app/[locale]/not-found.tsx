@@ -1,5 +1,5 @@
 import { Compass } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -18,7 +18,7 @@ export default function NotFound() {
         </div>
 
         <Link
-          href="/home"
+          href="/"
           className="w-full rounded-full bg-[#FFC300] py-2.5 text-sm font-bold text-black hover:bg-[#FFD040] transition-colors text-center"
         >
           Back to home
