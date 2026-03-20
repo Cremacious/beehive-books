@@ -48,12 +48,21 @@ function stripHtmlToText(html: string): string {
 }
 
 function htmlToXhtml(html: string): string {
-  // Make HTML valid XHTML: self-close void elements
   return html
+    // Self-close void elements
     .replace(/<br\s*>/gi, '<br/>')
     .replace(/<img([^>]*?)(?<!\/)>/gi, '<img$1/>')
     .replace(/<hr\s*>/gi, '<hr/>')
-    .replace(/<input([^>]*?)(?<!\/)>/gi, '<input$1/>');
+    .replace(/<input([^>]*?)(?<!\/)>/gi, '<input$1/>')
+    // Replace named HTML entities that are invalid in XHTML with numeric equivalents
+    .replace(/&nbsp;/g, '&#160;')
+    .replace(/&mdash;/g, '&#8212;')
+    .replace(/&ndash;/g, '&#8211;')
+    .replace(/&ldquo;/g, '&#8220;')
+    .replace(/&rdquo;/g, '&#8221;')
+    .replace(/&lsquo;/g, '&#8216;')
+    .replace(/&rsquo;/g, '&#8217;')
+    .replace(/&hellip;/g, '&#8230;');
 }
 
 function buildChapterXhtml(title: string, content: string | null): string {
