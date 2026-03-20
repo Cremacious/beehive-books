@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Lightbulb } from 'lucide-react';
 import { searchExplorablePromptsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
+import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import { PromptCard } from '@/components/prompts/prompt-card';
 
 export const metadata: Metadata = { title: 'Explore Prompts' };
@@ -9,11 +10,11 @@ export const metadata: Metadata = { title: 'Explore Prompts' };
 export default async function ExplorePromptsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; cursor?: string }>;
 }) {
-  const { q = '' } = await searchParams;
+  const { q = '', cursor } = await searchParams;
 
-  const prompts = await searchExplorablePromptsAction(q);
+  const { prompts, nextCursor } = await searchExplorablePromptsAction(q, cursor);
 
   return (
     <div className="space-y-6">
@@ -25,7 +26,6 @@ export default async function ExplorePromptsPage({
           <Lightbulb className="w-6 h-6 text-purple-400" />
           Writing Prompts
         </h1>
-
       </div>
 
       <ExploreSearchBar placeholder="Search writing prompts..." />
@@ -39,11 +39,14 @@ export default async function ExplorePromptsPage({
           <p className="text-white/80 max-w-sm">Try different keywords.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {prompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {prompts.map((prompt) => (
+              <PromptCard key={prompt.id} prompt={prompt} />
+            ))}
+          </div>
+          {nextCursor && <ExploreLoadMoreButton nextCursor={nextCursor} />}
+        </>
       )}
     </div>
   );
