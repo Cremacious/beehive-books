@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signIn, signUp } from '@/lib/auth-client';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff, Loader2, XCircle } from 'lucide-react';
 import logoImage from '@/public/logo3.png';
 
 function getStrength(password: string): 0 | 1 | 2 | 3 {
@@ -32,6 +32,8 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const strength = getStrength(password);
   const strengthColors = ['', 'bg-red-500', 'bg-orange-400', 'bg-green-500'];
@@ -136,15 +138,25 @@ export default function SignUpPage() {
               <label className="block text-sm font-medium text-yellow-500 mb-1.5 mainFont">
                 Password
               </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                placeholder="At least 8 characters"
-                className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
+                  className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 pr-11 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {password.length > 0 && (
                 <div className="flex gap-1 mt-2">
                   {[1, 2, 3].map((seg) => (
@@ -163,15 +175,32 @@ export default function SignUpPage() {
               <label className="block text-sm font-medium text-yellow-500 mb-1.5 mainFont">
                 Confirm password
               </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                placeholder="Re-enter your password"
-                className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  placeholder="Re-enter your password"
+                  className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-3 pr-11 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {confirmPassword.length > 0 && (
+                    password === confirmPassword
+                      ? <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      : <XCircle className="h-4 w-4 text-red-500" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    className="text-white/40 hover:text-white/70 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {error && (
