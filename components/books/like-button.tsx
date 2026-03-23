@@ -37,18 +37,20 @@ export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthentic
     });
   }
 
+  const baseClass = `flex items-center gap-2 px-3 py-2 rounded-xl border transition-all text-sm font-medium disabled:cursor-default ${
+    liked
+      ? 'bg-[#FFC300]/10 border-[#FFC300]/30 text-[#FFC300]'
+      : 'bg-white/5 border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/30'
+  }`;
+
   return (
     <button
       onClick={handleClick}
       disabled={!isAuthenticated || isPending}
-      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all text-sm font-medium ${
-        liked
-          ? 'bg-[#FFC300]/10 border-[#FFC300]/30 text-[#FFC300]'
-          : 'bg-white/5 border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/30'
-      } disabled:cursor-default ${className ?? ''}`}
+      className={`${baseClass} ${className ?? ''}`}
     >
       <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-      {likeCount}
+      <span>{likeCount}</span>
     </button>
   );
 }

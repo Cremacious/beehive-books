@@ -155,7 +155,7 @@ export default async function PublicBookPage({
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
-                {/* Like button — desktop only inline with stats */}
+                {/* Like button — inline with stats on desktop only */}
                 <LikeButton
                   bookId={book.id}
                   initialLiked={likeStatus.liked}
@@ -168,7 +168,7 @@ export default async function PublicBookPage({
           </div>
 
           <div className="flex sm:hidden flex-col gap-2 mt-4">
-            {/* Like button — full width on mobile */}
+            {/* Like button — full width on mobile, single instance */}
             <LikeButton
               bookId={book.id}
               initialLiked={likeStatus.liked}
