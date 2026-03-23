@@ -80,33 +80,19 @@ export function PromptGrid({ prompts }: Props) {
 
   if (prompts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="grid grid-cols-3 gap-2 mb-8">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div
-              key={i}
-              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
-            >
-              <Lightbulb
-                className={`w-6 h-6 ${
-                  i % 3 === 1 ? 'text-[#FFC300]/30' : 'text-[#FFC300]/10'
-                }`}
-              />
-            </div>
-          ))}
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <Lightbulb className="w-7 h-7 text-white/20" />
         </div>
-        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          No prompts yet!
-        </h2>
-        <p className="text-white/80 mb-8 max-w-sm">
-          Create your first writing challenge and invite friends to compete.
+        <h2 className="text-lg font-bold text-white mainFont mb-2">No writing prompts yet</h2>
+        <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-6">
+          Writing prompts are timed creative challenges. Join a prompt to write a short story, compete with other writers, and get feedback from the community.
         </p>
         <Link
-          href="/prompts/create"
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors"
+          href="/explore/prompts"
+          className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
         >
-          <Plus className="w-5 h-5" />
-          Create a Prompt
+          Browse prompts
         </Link>
       </div>
     );

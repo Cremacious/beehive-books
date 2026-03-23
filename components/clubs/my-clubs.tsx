@@ -2,10 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, SlidersHorizontal, Plus, BookOpen } from 'lucide-react';
+import { Search, SlidersHorizontal, Plus, BookOpen, Users } from 'lucide-react';
 import ClubCard from './club-card';
 import Pagination from '@/components/shared/pagination';
-import { Button } from '@/components/ui/button';
 import type { ClubWithMembership, ClubRole } from '@/lib/types/club.types';
 
 type SortOption = 'recent' | 'name' | 'members';
@@ -84,37 +83,27 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
 
   if (clubs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="grid grid-cols-3 gap-2 mb-8">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div
-              key={i}
-              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
-            >
-              <BookOpen
-                className={`w-6 h-6 ${
-                  i % 3 === 1 ? 'text-[#FFC300]/30' : 'text-[#FFC300]/10'
-                }`}
-              />
-            </div>
-          ))}
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <Users className="w-7 h-7 text-white/20" />
         </div>
-
-        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          No clubs yet!
-        </h2>
-        <p className="text-white/80 mb-8 max-w-sm">
-          Create your own book club to read and discuss together, or find an
-          existing one to join.
+        <h2 className="text-lg font-bold text-white mainFont mb-2">No book clubs yet</h2>
+        <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-6">
+          Book clubs let you read and discuss books with a group. Create your own club to host discussions, or browse public clubs to find one that matches your reading taste.
         </p>
-
         <div className="flex items-center gap-3 flex-wrap justify-center">
-          <Button asChild size="lg">
-            <Link href="/clubs/create">
-              <Plus className="w-5 h-5" />
-              Create a Club
-            </Link>
-          </Button>
+          <Link
+            href="/clubs/create"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
+          >
+            Create a Club
+          </Link>
+          <Link
+            href="/explore/clubs"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
+          >
+            Explore Clubs
+          </Link>
         </div>
       </div>
     );
@@ -186,20 +175,10 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
       </div>
 
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/80 mb-3" />
-          <p className="text-sm text-white/80 mb-1">
-            {query ? (
-              <>No results for &ldquo;{query}&rdquo;</>
-            ) : (
-              'No clubs in this category'
-            )}
-          </p>
+        <div className="py-12 text-center">
+          <p className="text-sm text-white/50">No clubs match your filters.</p>
           <button
-            onClick={() => {
-              setQuery('');
-              setRoleFilter('ALL');
-            }}
+            onClick={() => { setQuery(''); setRoleFilter('ALL'); }}
             className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"
           >
             Clear filters
