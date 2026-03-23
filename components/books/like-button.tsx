@@ -9,9 +9,10 @@ interface Props {
   initialLiked: boolean;
   initialLikeCount: number;
   isAuthenticated: boolean;
+  className?: string;
 }
 
-export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthenticated }: Props) {
+export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthenticated, className }: Props) {
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isPending, startTransition] = useTransition();
@@ -44,7 +45,7 @@ export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthentic
         liked
           ? 'bg-[#FFC300]/10 border-[#FFC300]/30 text-[#FFC300]'
           : 'bg-white/5 border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/30'
-      } disabled:cursor-default`}
+      } disabled:cursor-default ${className ?? ''}`}
     >
       <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
       {likeCount}

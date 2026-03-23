@@ -155,31 +155,43 @@ export default async function PublicBookPage({
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
+                {/* Like button — desktop only inline with stats */}
                 <LikeButton
                   bookId={book.id}
                   initialLiked={likeStatus.liked}
                   initialLikeCount={likeStatus.likeCount}
                   isAuthenticated
+                  className="hidden sm:flex"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex sm:hidden gap-2 mt-4">
-            {isOwner && (
-              <Button asChild className="flex-1">
-                <Link href={`/library/${book.id}/edit`}>
-                  <Edit />
-                  Edit Book
-                </Link>
-              </Button>
-            )}
-            <ShareBookButton
+          <div className="flex sm:hidden flex-col gap-2 mt-4">
+            {/* Like button — full width on mobile */}
+            <LikeButton
               bookId={book.id}
-              isOwner={isOwner}
-              size="default"
-              className="flex-1"
+              initialLiked={likeStatus.liked}
+              initialLikeCount={likeStatus.likeCount}
+              isAuthenticated
+              className="w-full justify-center"
             />
+            <div className="flex gap-2">
+              {isOwner && (
+                <Button asChild className="flex-1">
+                  <Link href={`/library/${book.id}/edit`}>
+                    <Edit />
+                    Edit Book
+                  </Link>
+                </Button>
+              )}
+              <ShareBookButton
+                bookId={book.id}
+                isOwner={isOwner}
+                size="default"
+                className="flex-1"
+              />
+            </div>
           </div>
         </div>
 
