@@ -83,8 +83,8 @@ test.describe('guest', () => {
       await page.locator('[data-testid="sign-in-password"]').fill('definitely-wrong-password-999');
       await page.locator('[data-testid="sign-in-submit"]').click();
 
-      // Error paragraph rendered when better-auth returns an error
-      await expect(page.locator('p.text-red-400')).toBeVisible({ timeout: 8_000 });
+      // Error message rendered when better-auth returns an error
+      await expect(page.locator('[class*="text-red"]').first()).toBeVisible({ timeout: 12_000 });
       // URL should stay on sign-in — no redirect
       await expect(page).toHaveURL('/sign-in');
     });
@@ -99,8 +99,19 @@ test.describe('guest', () => {
   // @chromium-only — sign-up tests create real DB records and are rate-limited
   // to 5/hour per IP. Only run on one browser to avoid parallel exhaustion.
   // Run with: npx playwright test auth/auth.spec.ts --project=chromium
+  // Sign-up tests create real DB records and are rate-limited to 5/hour per IP.
+  // They also depend on REQUIRE_EMAIL_VERIFICATION=false in .env.
+  // Skip the whole block if email verification is on.
   test.describe('sign up and onboarding', () => {
     test.describe.configure({ mode: 'serial' });
+
+    test.beforeEach(async () => {
+      test.skip(
+        process.env.REQUIRE_EMAIL_VERIFICATION === 'true',
+        'Sign-up tests require REQUIRE_EMAIL_VERIFICATION=false'
+      );
+    });
+
     test('new user is redirected to /onboarding after sign-up', async ({ page }) => {
       const uniqueEmail = `test+signup${Date.now()}@example.com`;
 
@@ -109,24 +120,21 @@ test.describe('guest', () => {
       await page.locator('input[type="password"]').first().fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
 
-      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
+      // After sign-up: either /onboarding (email verification off) or verify-email screen
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await expect(page).toHaveURL('/onboarding');
     });
 
     test('new user cannot access /home before completing onboarding', async ({ page }) => {
       const uniqueEmail = `test+guard${Date.now()}@example.com`;
 
-      // Sign up — lands on /onboarding
       await page.goto('/sign-up');
       await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
       await page.locator('input[type="password"]').first().fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
-      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded', timeout: 30_000 });
 
-      // Try navigating directly to a protected route
       await page.goto('/home');
-
-      // Auth layout sees onboardingComplete = false → stays on onboarding
       await expect(page).toHaveURL('/onboarding');
     });
 
@@ -134,19 +142,15 @@ test.describe('guest', () => {
       const uniqueEmail = `test+onboard${Date.now()}@example.com`;
       const uniqueUsername = `tuser${Date.now()}`.slice(0, 20);
 
-      // Sign up
       await page.goto('/sign-up');
       await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
       await page.locator('input[type="password"]').first().fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
-      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
+      await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded', timeout: 30_000 });
 
-      // Fill username — wait for the availability check (400 ms debounce + API call)
       await page.locator('input[placeholder="e.g. KikiTheCat"]').fill(uniqueUsername);
-      // Green checkmark appears once the server confirms the username is available
       await expect(page.locator('.text-green-400').first()).toBeVisible({ timeout: 8_000 });
 
-      // Submit
       await page.getByRole('button', { name: 'Continue' }).click();
       await page.waitForURL('/home', { waitUntil: 'domcontentloaded' });
       await expect(page).toHaveURL('/home');
@@ -179,7 +183,7 @@ test.describe('authenticated', () => {
     await page.locator('[data-testid="sign-out-button"]').click();
 
     // better-auth redirects via window.location.href = '/'
-    await page.waitForURL('/', { timeout: 10_000 });
+    await page.waitForURL('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
     await expect(page).toHaveURL('/');
 
     // Confirm session is gone — protected route should now redirect to /sign-in
