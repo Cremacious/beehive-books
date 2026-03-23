@@ -144,15 +144,23 @@ export default function BookGrid({ books }: { books: Book[] }) {
           <BookOpen className="w-7 h-7 text-white/20" />
         </div>
         <p className="text-base font-semibold text-white/80 mb-1">No books yet</p>
-        <p className="text-sm text-white/40 mb-4 max-w-xs">
-          Start writing your first book and it will appear here.
+        <p className="text-sm text-white/70 mb-5 max-w-xs">
+          Write your own book or discover stories from other authors on the Explore page.
         </p>
-        <Link
-          href="/library/create"
-          className="px-4 py-2 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors mainFont"
-        >
-          Create your first book
-        </Link>
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Link
+            href="/library/create"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors mainFont"
+          >
+            Start writing
+          </Link>
+          <Link
+            href="/explore"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
+          >
+            Explore books
+          </Link>
+        </div>
       </div>
     );
   }
@@ -248,7 +256,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
           <p className="text-base font-semibold text-white/80 mb-1">
             {query ? `No results for "${query}"` : 'No books in this category'}
           </p>
-          <p className="text-sm text-white/40 mb-4 max-w-xs">
+          <p className="text-sm text-white/70 mb-4 max-w-xs">
             {query
               ? 'Try a different search term or clear your filters.'
               : 'Try a different filter.'}
