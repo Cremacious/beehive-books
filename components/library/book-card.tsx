@@ -1,8 +1,6 @@
-import { BookOpen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Book } from '@/lib/types/books.types';
-import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
 
 export default function BookCard({
   book,
@@ -14,9 +12,9 @@ export default function BookCard({
   return (
     <Link
       href={`${basePath}/${book.id}`}
-      className="group flex flex-col rounded-lg bg-[#181818] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/30 hover:bg-[#232323] transition-all duration-200"
+      className="group flex flex-col rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/25 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-200"
     >
-      <div className="relative w-full aspect-2/3 bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+      <div className="relative w-full aspect-2/3 overflow-hidden">
         {book.coverUrl ? (
           <Image
             src={book.coverUrl}
@@ -25,27 +23,24 @@ export default function BookCard({
             className="object-cover"
           />
         ) : (
-          <BookOpen className="w-5 h-5 text-white/80" />
+          <div className="w-full h-full bg-linear-to-br from-[#1e1e1e] to-[#141414] flex items-center justify-center">
+            <span className="text-4xl font-bold text-white/20 mainFont">
+              {book.title[0]?.toUpperCase()}
+            </span>
+          </div>
         )}
       </div>
 
-      <div className="flex flex-col flex-1 px-3 pt-3 pb-3 gap-1.5">
-        <div>
-          <h3 className="text-base font-semibold text-yellow-500 leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors duration-200 mainFont">
-            {book.title}
-          </h3>
-          <p className="text-sm text-white truncate mt-0.5">{book.author}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium truncate max-w-full">
+      <div className="flex flex-col flex-1 px-3 pt-2.5 pb-3">
+        <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-[#FFC300] transition-colors mainFont">
+          {book.title}
+        </h3>
+        <p className="text-xs text-white/60 truncate mt-0.5">{book.author}</p>
+        {book.genre && (
+          <span className="mt-1.5 self-start text-xs px-2 py-0.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium truncate max-w-full">
             {book.genre}
           </span>
-          <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium truncate max-w-full">
-            {book.category}
-          </span>
-  
-        </div>
+        )}
       </div>
     </Link>
   );
