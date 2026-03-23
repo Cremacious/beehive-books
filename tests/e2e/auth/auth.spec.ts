@@ -62,32 +62,26 @@ test.describe('guest', () => {
 
   // ── Sign in ────────────────────────────────────────────────────────────────
 
+  // Seeded account — always available after npm run db:seed
+  const SIGN_IN_EMAIL    = process.env.TEST_USER_EMAIL    ?? 'alice@beehive.dev';
+  const SIGN_IN_PASSWORD = process.env.TEST_USER_PASSWORD ?? 'B33h!ve#Dev2026$';
+
   test.describe('sign in', () => {
     test('valid credentials redirect to /home', async ({ page }) => {
-      test.skip(
-        !process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASSWORD,
-        'Set TEST_USER_EMAIL and TEST_USER_PASSWORD in .env'
-      );
-
       await page.goto('/sign-in');
-      await page.locator('input[type="email"]').fill(process.env.TEST_USER_EMAIL!);
-      await page.locator('input[type="password"]').fill(process.env.TEST_USER_PASSWORD!);
-      await page.getByRole('button', { name: 'Sign in' }).click();
+      await page.locator('[data-testid="sign-in-email"]').fill(SIGN_IN_EMAIL);
+      await page.locator('[data-testid="sign-in-password"]').fill(SIGN_IN_PASSWORD);
+      await page.locator('[data-testid="sign-in-submit"]').click();
 
       await page.waitForURL('/home', { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await expect(page).toHaveURL('/home');
     });
 
     test('wrong password shows an error message', async ({ page }) => {
-      test.skip(
-        !process.env.TEST_USER_EMAIL,
-        'Set TEST_USER_EMAIL in .env'
-      );
-
       await page.goto('/sign-in');
-      await page.locator('input[type="email"]').fill(process.env.TEST_USER_EMAIL!);
-      await page.locator('input[type="password"]').fill('definitely-wrong-password-999');
-      await page.getByRole('button', { name: 'Sign in' }).click();
+      await page.locator('[data-testid="sign-in-email"]').fill(SIGN_IN_EMAIL);
+      await page.locator('[data-testid="sign-in-password"]').fill('definitely-wrong-password-999');
+      await page.locator('[data-testid="sign-in-submit"]').click();
 
       // Error paragraph rendered when better-auth returns an error
       await expect(page.locator('p.text-red-400')).toBeVisible({ timeout: 8_000 });
@@ -111,9 +105,9 @@ test.describe('guest', () => {
       const uniqueEmail = `test+signup${Date.now()}@example.com`;
 
       await page.goto('/sign-up');
-      await page.locator('input[type="email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'Create account' }).click();
+      await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
+      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('[data-testid="sign-up-submit"]').click();
 
       await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
       await expect(page).toHaveURL('/onboarding');
@@ -124,9 +118,9 @@ test.describe('guest', () => {
 
       // Sign up — lands on /onboarding
       await page.goto('/sign-up');
-      await page.locator('input[type="email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'Create account' }).click();
+      await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
+      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('[data-testid="sign-up-submit"]').click();
       await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
 
       // Try navigating directly to a protected route
@@ -142,9 +136,9 @@ test.describe('guest', () => {
 
       // Sign up
       await page.goto('/sign-up');
-      await page.locator('input[type="email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'Create account' }).click();
+      await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
+      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('[data-testid="sign-up-submit"]').click();
       await page.waitForURL('/onboarding', { waitUntil: 'domcontentloaded' });
 
       // Fill username — wait for the availability check (400 ms debounce + API call)
@@ -182,8 +176,7 @@ test.describe('authenticated', () => {
 
     await page.goto('/home');
 
-    // Desktop sidebar renders a button with aria-label="Sign out"
-    await page.getByRole('button', { name: 'Sign out' }).click();
+    await page.locator('[data-testid="sign-out-button"]').click();
 
     // better-auth redirects via window.location.href = '/'
     await page.waitForURL('/', { timeout: 10_000 });

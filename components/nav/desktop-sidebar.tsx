@@ -198,6 +198,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                 </Link>
                 <button
                   type="button"
+                  data-testid="sign-out-button"
                   onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
                   aria-label={t('signOut')}
                   className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"

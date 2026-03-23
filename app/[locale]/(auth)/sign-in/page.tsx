@@ -89,6 +89,7 @@ function SignInForm() {
           </label>
           <input
             type="email"
+            data-testid="sign-in-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -110,6 +111,7 @@ function SignInForm() {
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
+              data-testid="sign-in-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -136,6 +138,7 @@ function SignInForm() {
 
         <button
           type="submit"
+          data-testid="sign-in-submit"
           disabled={loading}
           className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-bold text-black transition-colors hover:bg-[#FFD040] disabled:opacity-50 disabled:cursor-not-allowed"
         >
