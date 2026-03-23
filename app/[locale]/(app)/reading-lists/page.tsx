@@ -17,11 +17,6 @@ export default async function ReadingListsPage() {
         <h1 className="text-3xl font-bold text-white mainFont">
           My Reading Lists
         </h1>
-        <p className="mt-2 text-sm text-white/80 max-w-sm leading-relaxed">
-          Create lists to organize books you want to read, are currently
-          reading, or have finished. Track your progress and share your lists
-          with friends.
-        </p>
       </div>
 
       <ReadingListGrid lists={lists} />

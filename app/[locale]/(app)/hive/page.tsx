@@ -27,10 +27,6 @@ export default async function HivePage() {
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mainFont">My Hives</h1>
-        <p className="mt-2 text-sm text-white/80 max-w-sm leading-relaxed">
-          Join or create a Hive to work with other writers and beta readers on
-          building a book together.
-        </p>
       </div>
 
       {pendingInvites.length > 0 && (
