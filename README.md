@@ -1,207 +1,246 @@
-# Beehive Books
+# 🐝 Beehive Books
 
-**Beehive Books** is a full-stack social writing and reading platform where authors write, share, collaborate — and readers discover, follow, and engage with stories. Built for writers who want a community, not just a document editor.
+A social writing platform for authors and readers — write, collaborate, and discover stories.
 
-🌐 **Live:** [beehive-books.app](https://www.beehive-books.app)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css)
+![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)
+![License](https://img.shields.io/badge/License-All_Rights_Reserved-red)
+
+**Live:** [beehive-books.app](https://www.beehive-books.app) &nbsp;|&nbsp; **Version:** 1.0.0-beta.2
+
+> ⚠️ Currently in active development. Not yet open for public registration.
 
 ---
 
-## Features
+## What is Beehive Books?
 
-### Library & Writing
+Beehive Books is a community-driven writing platform built for writers who want more than just a document editor. It combines a rich writing experience with social discovery, collaborative tools, and community features.
 
-- **Rich text editor** powered by TipTap — write chapters with full formatting support
-- **Chapter collections** — organize chapters into named groups (acts, parts, arcs) with drag-and-drop reordering
-- **Draft status tracking** — mark books as First Draft through Completed
-- **Privacy controls** — set books to Public, Friends-only, or Private per book
-- **Explorable toggle** — opt individual books into the public Explore hub
-- **Cover image uploads** — upload custom book covers via Cloudinary with live preview
-- **Word count tracking** — auto-tracked per chapter and aggregated at the book level
-- **Author notes** — attach a note to any chapter visible to readers before the content
-- **Chapter navigation** — seamless prev/next reading with collection-aware labels
+**For writers:**
+- Write and publish books with a full-featured rich text editor (TipTap)
+- Organize chapters into collections with drag-and-drop reordering
+- Track word count per chapter and across your entire library
+- Export your work as EPUB, PDF, or DOCX
+- Control who sees your work with granular privacy settings
 
-### Hives — Collaborative Writing Spaces
+**For readers:**
+- Discover public books on the Explore page
+- Follow authors and track reading progress
+- Leave comments on books and chapters
+- Build and share curated reading lists
 
-Hives are the core collaborative feature. A Hive is a shared writing project where members co-author a book together.
+**For collaborators (Hives):**
+- Co-author books with a team inside a shared Hive workspace
+- Collaborative outline board, world-building wiki, and annotations
+- Word goals, activity feed (Buzz Board), and member management
 
-
-- **Buzz** — activity feed for hive updates
-- **Outline** — collaborative story outline board
-- **Wiki** — shared world-building wiki for lore, rules, and notes
-- **Timeline** — story timeline planner
-- **Word goals** — collaborative word count goals
-- **Prompts** — writing prompts scoped to the hive
-- **Activity log** — full history of hive events
-- **Member management** — roles, invites, join requests, and settings
-
-### Book Clubs
-
-- Create and manage book clubs with custom privacy settings
-- **Discussions** — threaded forum-style discussions with replies and likes
-- **Club reading list** — shared reading list for the club
-- **Member roles** — Owner, Moderator, and Member tiers
-- **Invite system** — invite users directly or open to join requests
-- **Tag-based discovery** — clubs are searchable by genre tags on the Explore page
-
-### Writing Prompts
-
-- Create timed prompts with a title, description, and end date
-- Privacy controls — Public, Friends-only, or Private prompts
-- **Prompt entries** — submit rich-text responses to any prompt
-- **Entry comments** — comment and reply on entries with likes
-- **Explore integration** — public prompts surface on the Explore hub
-
-### Reading Lists
-
-- Create curated reading lists with custom titles and descriptions
-- Add, remove, and reorder books in a list
-- Mark a "currently reading" book per list
-- Privacy controls and public explore support
-
-### Explore Hub
-
-- **Central discovery page** with sections for Books, Clubs, Hives, Prompts, and Reading Lists
-- Per-section search pages with filters (genre, category, tags)
-- Friends-only content surfaces automatically when signed in
-- Server-side cached results (5-minute TTL) — fast for all visitors
-
-### Friend Feed
-
-- Personalized activity feed showing what friends have published in the last 30 days
-- Feed events: new books, new chapters, new clubs, club discussions, new prompts, new reading lists, new hives
-- Sorted by recency with user attribution and direct links
-
-### Friends & Social
-
-- Send, accept, and decline friend requests
-- View friend profiles at `/u/[username]`
-- Friends-only privacy tier across all content types
-- Friend-gated Explore results (Friends content only visible to actual friends)
-
-### Notifications
-
-- In-app notification bell with unread badge count
-- Notifications for: new followers, friend requests, likes, comments, replies, club invites, hive invites, prompt invites, and more
-- Mark all as read in one click
-- Notification panel with direct links to the relevant content
-
-### Profiles & Settings
-
-- Public user profiles at `/u/[username]`
-- **Profile settings** — update display name and avatar (Cloudinary-backed)
-- **Privacy settings** — control profile and content visibility
-- **Notification settings** — granular control over notification types
-- **Account settings** — manage account details
-
-### Auth & Onboarding
-
-- Authentication via **Clerk** — sign up, sign in, session management
-- Guided onboarding flow — choose a username and upload a profile photo before accessing the app
-- Self-healing metadata sync — Clerk JWT is kept in sync with the database, making middleware auth essentially zero-cost after first login
-
-### Premium Tier
-
-- `premium` flag per user — unlockable for power users
-- **Free accounts**: 1 book, 1 club, 1 hive, 1 reading list, 1 prompt
-- **Premium accounts**: 8 of each resource type
-- Centralized limits config in `lib/config/premium.config.ts` — easy to adjust
+**For community:**
+- Book clubs with discussions and shared reading lists
+- Writing prompts with community entries and likes
+- Friends system with activity feed
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
+| Category | Technology |
+|----------|-----------|
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
-| Styling | Tailwind CSS v4 + shadcn/ui |
-| Database | Neon (PostgreSQL) via Drizzle ORM |
-| Auth | Clerk |
-| State | Zustand + React Query |
-| Editor | TipTap |
-| Drag & Drop | @dnd-kit |
-| Images | Cloudinary |
-| IDs | @paralleldrive/cuid2 |
+| Styling | Tailwind CSS v4 + shadcn/ui + Radix UI |
+| Database | Neon (serverless Postgres) |
+| ORM | Drizzle ORM |
+| Auth | better-auth |
+| Editor | TipTap v3 |
+| Server State | TanStack Query v5 |
+| Client State | Zustand |
+| Image Uploads | Cloudinary |
+| Payments | Stripe |
+| Rate Limiting | Upstash Redis |
+| Email | Resend |
+| i18n | next-intl (EN, ES, FR, DE, PT) |
+| Testing | Playwright |
 | Deployment | Vercel |
 
 ---
 
-## Project Structure
-
-```
-app/
-  (auth)/          # Sign-in, sign-up, onboarding
-  (app)/           # All authenticated routes
-    feed/          # Friend activity feed
-    explore/       # Public discovery hub
-    library/       # Personal book library + reader
-    write/         # Writing interface
-    hive/          # Collaborative hive spaces
-    clubs/         # Book clubs
-    prompts/       # Writing prompts
-    reading-lists/ # Curated reading lists
-    friends/       # Friend management
-    notifications/ # Notification center
-    settings/      # Profile, privacy, account
-    u/[username]/  # Public user profiles
-
-components/        # All UI components
-lib/
-  actions/         # Server actions (data layer)
-  stores/          # Zustand client stores
-  types/           # Shared TypeScript types
-  validations/     # Zod schemas
-  config/          # App configuration (premium limits, etc.)
-db/
-  schema.ts        # Full Drizzle ORM schema
-```
-
----
-
-## Local Development
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- A [Neon](https://neon.tech) PostgreSQL database
-- A [Clerk](https://clerk.com) application
-- A [Cloudinary](https://cloudinary.com) account
+- Node.js 20+
+- A [Neon](https://neon.tech) database (free tier works)
+- A [Cloudinary](https://cloudinary.com) account (free tier works)
+- A [better-auth](https://better-auth.com) compatible setup
+- Optional: [Stripe](https://stripe.com), [Resend](https://resend.com), [Upstash](https://upstash.com)
 
-### Setup
+### Installation
 
 ```bash
-git clone https://github.com/your-username/beehive-books-online.git
-cd beehive-books-online
+git clone https://github.com/Cremacious/beehive-books.git
+cd beehive-books
 npm install
 ```
 
-Create a `.env` file:
+### Environment Variables
 
-```env
-DATABASE_URL=your_neon_connection_string
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboarding
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-Push the database schema:
+Copy `.env.example` to `.env.local` and fill in your values:
 
 ```bash
+cp .env.example .env.local
+```
+
+See [Environment Variables](#environment-variables) section below for all required values.
+
+### Database Setup
+
+```bash
+# Push schema to your database
 npx drizzle-kit push
 ```
 
-Run the dev server:
+### Run Development Server
 
 ```bash
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+# Database (Neon)
+DATABASE_URL=
+
+# Auth (better-auth)
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+
+# Google OAuth (optional)
+GOOGLE_AUTH_CLIENT_ID=
+GOOGLE_AUTH_CLIENT_SECRET=
+
+# Cloudinary (image uploads)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+# Stripe (payments - optional for dev)
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Upstash Redis (rate limiting - optional for dev)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Resend (email - optional for dev)
+RESEND_API_KEY=
+
+# Email verification toggle
+REQUIRE_EMAIL_VERIFICATION=false
+```
+
+> **Note:** Rate limiting, payments, and email are disabled in development by default. You only need `DATABASE_URL`, `BETTER_AUTH_SECRET`, and Cloudinary credentials to run the app locally.
+
+---
+
+## Project Structure
+
+```
+beehive-books/
+├── app/
+│   └── [locale]/
+│       ├── (app)/          # Authenticated app routes
+│       │   ├── home/       # Dashboard/feed
+│       │   ├── library/    # User's books
+│       │   ├── explore/    # Public discovery
+│       │   ├── books/      # Book detail + reading
+│       │   ├── hive/       # Collaborative writing spaces
+│       │   ├── clubs/      # Book clubs
+│       │   └── settings/   # User settings
+│       └── (auth)/         # Auth pages (sign-in, sign-up, etc.)
+├── components/             # Reusable UI components
+├── db/
+│   ├── schema.ts           # Drizzle schema (all tables)
+│   └── index.ts            # DB client
+├── lib/
+│   ├── actions/            # Server actions
+│   ├── auth.ts             # better-auth configuration
+│   ├── rate-limit.ts       # Upstash rate limiters
+│   └── stripe.ts           # Stripe client
+├── messages/               # i18n translation files
+└── public/                 # Static assets
+```
+
+---
+
+## Key Architectural Decisions
+
+- **Server Actions** — all mutations go through Next.js server actions, not API routes (except Stripe webhooks and auth)
+- **Cursor-based pagination** — explore/search uses timestamp cursors, not offset pagination
+- **Rate limiting** — all write actions and search endpoints are rate-limited via Upstash Redis
+- **Privacy model** — books and content have three visibility levels: Private, Friends, Public. A separate `explorable` flag controls appearance on the public Explore page.
+- **Email verification** — toggled via `REQUIRE_EMAIL_VERIFICATION` env var. Disable for local dev.
+
+---
+
+## Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Production build
+npm run lint         # Run ESLint
+npx drizzle-kit push # Push schema changes to database
+npx drizzle-kit studio # Open Drizzle Studio (DB browser)
+npx playwright test  # Run E2E tests
+```
+
+---
+
+## Screenshots
+
+Screenshots and demo GIF coming soon. Visit [beehive-books.app](https://www.beehive-books.app) to see the live app.
+
+---
+
+## Roadmap
+
+Active development is tracked via [GitHub Issues](https://github.com/Cremacious/beehive-books/issues). Current focus areas:
+
+- UI/design system overhaul
+- Seed data + Playwright test suite
+- Public/guest access (no-auth explore)
+- Phase 3 features: favourites, read tracking, user bio
+
+---
+
+## Contributing
+
+This project is currently solo-developed. Contributions are not open at this time but may be in the future.
+
+If you find a bug or have a feature suggestion, please [open an issue](https://github.com/Cremacious/beehive-books/issues).
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.
+
+---
+
+## License
+
+© 2026 Chris Mackall. All rights reserved.
+
+---
+
+## Contact
+
+Built by **Chris Mackall** — a self-taught developer building tools for writers.
+
+- GitHub: [@Cremacious](https://github.com/Cremacious)
+- Live app: [beehive-books.app](https://www.beehive-books.app)
