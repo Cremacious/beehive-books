@@ -31,9 +31,9 @@ function BookListItem({ book }: { book: Book }) {
   return (
     <Link
       href={`/library/${book.id}`}
-      className="group flex gap-4 rounded-lg bg-[#202020] border border-[#2a2a2a] p-4 hover:border-[#FFC300]/25 hover:bg-[#232323] transition-all duration-200"
+      className="group flex gap-4 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 hover:border-[#FFC300]/25 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-200"
     >
-      <div className="relative w-16 shrink-0 aspect-2/3 rounded-md bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+      <div className="relative w-16 shrink-0 aspect-2/3 rounded-md overflow-hidden">
         {book.coverUrl ? (
           <Image
             src={book.coverUrl}
@@ -42,23 +42,29 @@ function BookListItem({ book }: { book: Book }) {
             className="object-cover"
           />
         ) : (
-          <BookOpen className="w-6 h-6 text-white/80" />
+          <div className="w-full h-full bg-linear-to-br from-[#1e1e1e] to-[#141414] flex items-center justify-center">
+            <span className="text-xl font-bold text-white/20 mainFont">
+              {book.title[0]?.toUpperCase()}
+            </span>
+          </div>
         )}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-between gap-1">
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-yellow-500 truncate group-hover:text-[#FFC300] transition-colors mainFont">
+          <h3 className="text-sm font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
             {book.title}
           </h3>
-          <p className="text-base text-white truncate">{book.author}</p>
+          <p className="text-xs text-white/60 truncate">{book.author}</p>
         </div>
 
-        <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
-          <span className="px-2 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] text-sm font-medium">
-            {book.genre}
-          </span>
-        </div>
+        {book.genre && (
+          <div className="flex items-center">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+              {book.genre}
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   );
