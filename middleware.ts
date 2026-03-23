@@ -12,7 +12,15 @@ import {
 const intlMiddleware = createMiddleware(routing);
 
 // Public paths WITHOUT locale prefix (next-intl strips it before matching)
-const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password'];
+const PUBLIC_PATHS = [
+  '/',
+  '/sign-in',
+  '/sign-up',
+  '/forgot-password',
+  '/reset-password',
+  '/explore',
+  '/books',
+];
 
 // Known malicious/scanner user-agent fragments
 const BLOCKED_UA_PATTERNS = [

@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
 import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
@@ -47,13 +49,18 @@ export default async function PublicBookPage({
 }) {
   const { bookId } = await params;
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isAuthenticated = !!session?.user?.id;
+
   let book;
   let readChapterIds: string[] = [];
   let likeStatus = { liked: false, likeCount: 0 };
   try {
     [book, readChapterIds, likeStatus] = await Promise.all([
       getBookForViewAction(bookId),
-      getBookReadStatusAction(bookId).catch(() => [] as string[]),
+      isAuthenticated
+        ? getBookReadStatusAction(bookId).catch(() => [] as string[])
+        : Promise.resolve([] as string[]),
       getBookLikeStatusAction(bookId).catch(() => ({
         liked: false,
         likeCount: 0,
@@ -162,7 +169,7 @@ export default async function PublicBookPage({
                   bookId={book.id}
                   initialLiked={likeStatus.liked}
                   initialLikeCount={likeStatus.likeCount}
-                  isAuthenticated
+                  isAuthenticated={isAuthenticated}
                 />
               </div>
 
@@ -191,7 +198,7 @@ export default async function PublicBookPage({
               bookId={book.id}
               initialLiked={likeStatus.liked}
               initialLikeCount={likeStatus.likeCount}
-              isAuthenticated
+              isAuthenticated={isAuthenticated}
               className="w-full justify-center"
             />
             <div className="flex gap-2">

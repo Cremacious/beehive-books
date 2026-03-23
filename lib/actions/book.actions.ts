@@ -85,7 +85,7 @@ export async function getBookWithChaptersAction(bookId: string) {
 
 
 export async function getBookForViewAction(bookId: string) {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
     with: {
