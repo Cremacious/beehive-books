@@ -79,12 +79,20 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
         <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
           Reading lists let you organize books you want to read, are currently reading, or have finished. Create a list to start curating your reading journey.
         </p>
-        <Link
-          href="/reading-lists/create"
-          className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
-        >
-          New List
-        </Link>
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Link
+            href="/reading-lists/create"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
+          >
+            New List
+          </Link>
+          <Link
+            href="/explore/reading-lists"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
+          >
+            Explore reading lists
+          </Link>
+        </div>
       </div>
     );
   }

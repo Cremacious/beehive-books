@@ -88,12 +88,14 @@ export function PromptGrid({ prompts }: Props) {
         <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
           Writing prompts are timed creative challenges. Join a prompt to write a short story, compete with other writers, and get feedback from the community.
         </p>
-        <Link
-          href="/explore/prompts"
-          className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
-        >
-          Browse prompts
-        </Link>
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Link
+            href="/explore/prompts"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
+          >
+            Browse prompts
+          </Link>
+        </div>
       </div>
     );
   }
