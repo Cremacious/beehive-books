@@ -1,6 +1,6 @@
 'use server';
 
-import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { getOptionalUserId } from '@/lib/require-auth';
 import { searchLimiter } from '@/lib/rate-limit';
 
 import { unstable_cache } from 'next/cache';
@@ -105,7 +105,7 @@ export async function searchExplorableClubsAction(
   tags: string[] = [],
   cursor?: string,
 ): Promise<{ clubs: ClubWithMembership[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
@@ -197,7 +197,7 @@ export async function searchExplorableHivesAction(
   tags: string[] = [],
   cursor?: string,
 ): Promise<{ hives: HiveWithMembership[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
@@ -287,7 +287,7 @@ export async function searchExplorablePromptsAction(
   query: string,
   cursor?: string,
 ): Promise<{ prompts: PromptCard[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
