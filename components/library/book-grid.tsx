@@ -68,7 +68,7 @@ function BookListItem({ book }: { book: Book }) {
   );
 }
 
-const PLACEHOLDER_COUNT = 8;
+const PLACEHOLDER_COUNT = 10;
 
 function Placeholder() {
   return (
