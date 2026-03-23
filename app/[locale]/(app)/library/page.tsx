@@ -20,9 +20,6 @@ export default async function LibraryPage() {
         <div>
       
           <h1 className="text-2xl font-bold text-white mainFont">My Library</h1>
-          <p className="text-sm text-white/50 mt-1">
-            {books.length} {books.length === 1 ? 'book' : 'books'}
-          </p>
         </div>
         <Link
           href="/library/create"

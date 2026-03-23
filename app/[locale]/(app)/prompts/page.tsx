@@ -22,10 +22,6 @@ export default async function PromptsPage() {
         <h1 className="text-3xl font-bold text-white mainFont">
           My Writing Prompts
         </h1>
-        <p className="mt-2 text-sm text-white/80 max-w-sm leading-relaxed">
-          Discover and join creative writing challenges. Submit entries and
-          compete with other writers.
-        </p>
       </div>
 
       {pendingInvites.length > 0 && (
