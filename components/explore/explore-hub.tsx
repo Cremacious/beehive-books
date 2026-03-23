@@ -38,17 +38,12 @@ function ScrollSection<T>({ title, icon, seeAllHref, items, renderItem }: Sectio
   return (
     <section className="mb-10">
       <SectionHeader title={title} icon={icon} seeAllHref={seeAllHref} linkClassName="flex items-center gap-1 text-sm font-medium text-[#FFC300]/70 hover:text-[#FFC300] transition-colors" />
-      <div className="relative">
-        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
-          {items.map((item, i) => (
-            <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
-              <div className="flex flex-col h-full">
-                {renderItem(item)}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-l from-[#141414] to-transparent pointer-events-none" />
+      <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+        {items.map((item, i) => (
+          <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
+            {renderItem(item)}
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -168,7 +163,7 @@ export function ExploreHub({ books, clubs, hives, prompts, readingLists }: Explo
       {sections.map((section, i) => (
         <div key={i}>
           {section}
-          {i < sections.length - 1 && <hr className="border-[#2a2a2a] mb-10" />}
+          {i < sections.length - 1 && <hr className="border-[#e60c0c] mb-10" />}
         </div>
       ))}
     </div>
