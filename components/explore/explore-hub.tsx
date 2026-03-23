@@ -19,17 +19,14 @@ interface SectionProps<T> {
   renderItem: (item: T) => React.ReactNode;
 }
 
-function SectionHeader({ title, icon, seeAllHref }: { title: string; icon: React.ReactNode; seeAllHref: string }) {
+function SectionHeader({ title, icon, seeAllHref, linkClassName = "flex items-center gap-1 text-sm text-white/40 hover:text-[#FFC300] transition-colors" }: { title: string; icon: React.ReactNode; seeAllHref: string; linkClassName?: string }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-base font-bold text-white mainFont flex items-center gap-2">
         {icon}
         {title}
       </h2>
-      <Link
-        href={seeAllHref}
-        className="flex items-center gap-1 text-sm text-white/40 hover:text-[#FFC300] transition-colors"
-      >
+      <Link href={seeAllHref} className={linkClassName}>
         See all
         <ArrowRight className="w-3.5 h-3.5" />
       </Link>
@@ -40,15 +37,18 @@ function SectionHeader({ title, icon, seeAllHref }: { title: string; icon: React
 function ScrollSection<T>({ title, icon, seeAllHref, items, renderItem }: SectionProps<T>) {
   return (
     <section className="mb-10">
-      <SectionHeader title={title} icon={icon} seeAllHref={seeAllHref} />
-      <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
-        {items.map((item, i) => (
-          <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
-            <div className="flex flex-col h-full">
-              {renderItem(item)}
+      <SectionHeader title={title} icon={icon} seeAllHref={seeAllHref} linkClassName="flex items-center gap-1 text-sm font-medium text-[#FFC300]/70 hover:text-[#FFC300] transition-colors" />
+      <div className="relative">
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+          {items.map((item, i) => (
+            <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
+              <div className="flex flex-col h-full">
+                {renderItem(item)}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-l from-[#141414] to-transparent pointer-events-none" />
       </div>
     </section>
   );
