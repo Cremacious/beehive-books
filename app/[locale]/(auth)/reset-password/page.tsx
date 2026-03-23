@@ -121,16 +121,18 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(255,195,0,0.07),transparent)]" />
-      <div className="relative w-full max-w-md flex flex-col items-center">
-        <Link href="/" className="mb-8">
-          <Image src={logoImage} alt="Beehive Books" width={220} height={74} priority />
-        </Link>
-
+    <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-[0.07]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
+        backgroundSize: '56px 100px',
+      }} />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(255,195,0,0.12),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_30%_at_80%_110%,rgba(255,195,0,0.06),transparent)]" />
+      <div className="relative w-full max-w-md">
         <div className="w-full rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] shadow-2xl p-8">
+          <Image src={logoImage} alt="Beehive Books" width={160} height={54} className="mx-auto mb-4" priority />
           <h1 className="text-xl font-bold text-white mb-1 mainFont">Set a new password</h1>
-          <p className="text-sm text-white/80 mb-6">
+          <p className="text-sm text-white/70 mb-6">
             Choose a strong password with at least 8 characters.
           </p>
 
