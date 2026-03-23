@@ -4,8 +4,6 @@ import { Plus } from 'lucide-react';
 import BookGrid from '@/components/library/book-grid';
 import { getUserBooksAction } from '@/lib/actions/book.actions';
 
-// TODO: Allow users to make a custom book order.
-// TODO: Add QR code functionality
 
 export const metadata: Metadata = {
   title: 'My Library',
@@ -20,9 +18,7 @@ export default async function LibraryPage() {
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold text-[#FFC300]/70 uppercase tracking-widest mb-1">
-            Writing Workspace
-          </p>
+      
           <h1 className="text-2xl font-bold text-white mainFont">My Library</h1>
           <p className="text-sm text-white/50 mt-1">
             {books.length} {books.length === 1 ? 'book' : 'books'}
