@@ -21,8 +21,15 @@ const PAGE_SIZE = 6;
 
 function ListPlaceholder() {
   return (
-    <div className="rounded-xl border-2 border-dashed border-[#FFC300]/15 bg-[#1a1a1a] h-44 flex items-center justify-center">
-      <BookMarked className="w-8 h-8 text-[#FFC300]/10" />
+    <div className="flex flex-col rounded-xl border border-dashed border-[#2a2a2a] bg-[#141414] overflow-hidden opacity-40 h-44">
+      <div className="flex-1 px-4 pt-4 pb-3 flex flex-col gap-2">
+        <div className="h-3 rounded bg-[#2a2a2a] w-2/3" />
+        <div className="h-2 rounded bg-[#2a2a2a] w-full" />
+        <div className="h-2 rounded bg-[#2a2a2a] w-4/5" />
+      </div>
+      <div className="px-4 pb-4">
+        <div className="h-2 rounded bg-[#2a2a2a] w-1/3" />
+      </div>
     </div>
   );
 }
