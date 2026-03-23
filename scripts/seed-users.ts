@@ -11,14 +11,11 @@
 
 import 'dotenv/config';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
-import { promisify } from 'util';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { createId } from '@paralleldrive/cuid2';
-
-const scrypt = promisify(_scrypt);
 
 // ---------------------------------------------------------------------------
 // Guards
@@ -55,12 +52,12 @@ const SCRYPT_PARAMS = { N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 };
 
 async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString('hex');
-  const key = (await scrypt(
-    password.normalize('NFKC'),
-    salt,
-    64,
-    SCRYPT_PARAMS,
-  )) as Buffer;
+  const key = await new Promise<Buffer>((resolve, reject) => {
+    _scrypt(password.normalize('NFKC'), salt, 64, SCRYPT_PARAMS, (err, derivedKey) => {
+      if (err) reject(err);
+      else resolve(derivedKey);
+    });
+  });
   return `${salt}:${key.toString('hex')}`;
 }
 
