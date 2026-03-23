@@ -71,11 +71,17 @@ interface SeedUser {
   email: string;
   username: string;
   name: string;
+  password?: string; // overrides the shared PASSWORD constant
   premium?: boolean;
   onboardingComplete?: boolean;
 }
 
+const TEST_USER_EMAIL    = process.env.TEST_USER_EMAIL    ?? 'test1@example.com';
+const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD ?? 'Test33Cat!';
+
 const SEED_USERS: SeedUser[] = [
+  // Primary Playwright test account — matches TEST_USER_EMAIL / TEST_USER_PASSWORD
+  { email: TEST_USER_EMAIL, username: 'test_user_1', name: 'Test User', password: TEST_USER_PASSWORD },
   { email: 'alice@beehive.dev',   username: 'alice_monroe',   name: 'Alice Monroe' },
   { email: 'bob@beehive.dev',     username: 'bob_carter',     name: 'Bob Carter',   premium: true },
   { email: 'charlie@beehive.dev', username: 'charlie_stone',  name: 'Charlie Stone' },
@@ -382,7 +388,10 @@ async function main() {
     console.log(`→ ${label} <${seedUser.email}>${tags ? ` [${tags}]` : ''}`);
 
     try {
-      userIds[seedUser.username] = await upsertUser(seedUser, hashedPassword);
+      const pw = seedUser.password
+        ? await hashPassword(seedUser.password)
+        : hashedPassword;
+      userIds[seedUser.username] = await upsertUser(seedUser, pw);
     } catch (err) {
       console.error(`  ✗  Failed for ${seedUser.email}:`, err);
     }
