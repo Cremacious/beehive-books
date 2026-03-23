@@ -150,7 +150,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link
             href="/library/create"
-            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors mainFont"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold transition-all duration-100 hover:bg-[#FFD040] active:scale-95 mainFont"
           >
             Start writing
           </Link>

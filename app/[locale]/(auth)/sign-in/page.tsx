@@ -141,7 +141,7 @@ function SignInForm() {
           type="submit"
           data-testid="sign-in-submit"
           disabled={loading}
-          className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-bold text-black transition-colors hover:bg-[#FFD040] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-bold text-black transition-all duration-100 hover:bg-[#FFD040] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">

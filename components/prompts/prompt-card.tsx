@@ -58,7 +58,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
   return (
     <Link
       href={`/prompts/${prompt.id}`}
-      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#a855f7]/30 hover:bg-[#1e1e1e] transition-all duration-200"
+      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#a855f7]/30 hover:bg-[#1e1e1e] hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className={`h-0.75 w-full ${isEnded ? 'bg-white/15' : 'bg-[#a855f7]'}`} />
 
