@@ -4,7 +4,9 @@ import { useState, useEffect, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Camera, Check, X, Loader2 } from 'lucide-react';
+import logoImage from '@/public/logo3.png';
 import {
   completeOnboarding,
   checkUsernameAvailableAction,
@@ -110,7 +112,7 @@ export default function OnboardingPage() {
 
   const indicatorColor: Record<Availability, string> = {
     idle: '',
-    checking: 'text-white/80',
+    checking: 'text-white/70',
     available: 'text-green-400',
     taken: 'text-red-400',
     invalid: 'text-red-400',
@@ -125,14 +127,17 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#1e1e1e] px-4">
-      <div className="w-full max-w-md rounded-2xl bg-[#252525] p-8 shadow-lg border border-[#2a2a2a]">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-white mainFont">
-            Beehive<span className="text-[#FFC300]">Books</span>
-          </h1>
-          <p className="mt-1 text-sm text-[#FFC300]">Set up your profile</p>
-        </div>
+    <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_-5%,rgba(255,195,0,0.08),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_80%_100%,rgba(255,195,0,0.04),transparent)]" />
+      <div className="relative w-full max-w-md flex flex-col items-center">
+        <Link href="/" className="mb-8">
+          <Image src={logoImage} alt="Beehive Books" width={220} height={74} priority />
+        </Link>
+
+      <div className="w-full rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] shadow-2xl p-8">
+        <h1 className="text-xl font-bold text-white mb-1 mainFont">Set up your profile</h1>
+        <p className="text-sm text-white/70 mb-6">Choose a username to get started</p>
 
         {!sessionLoading && (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -152,7 +157,7 @@ export default function OnboardingPage() {
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                      <Camera className="h-8 w-8 text-white/80 group-hover:text-white/80 transition-colors" />
+                      <Camera className="h-8 w-8 text-white/70 group-hover:text-white/70 transition-colors" />
                     </div>
                   )}
 
@@ -170,7 +175,7 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              <span className="text-xs text-white/80">
+              <span className="text-xs text-white/70">
                 {previewUrl
                   ? 'Tap to change photo'
                   : 'Add a profile photo (optional)'}
@@ -191,11 +196,11 @@ export default function OnboardingPage() {
                   spellCheck={false}
                   maxLength={20}
                   required
-                  className={`w-full rounded-xl bg-[#2a2a2a] border px-4 py-3 pr-10 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors ${borderColor[availability]}`}
+                  className={`w-full rounded-xl bg-[#252525] border px-4 py-3 pr-10 text-white placeholder-white/30 text-sm focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors ${borderColor[availability]}`}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   {availability === 'checking' && (
-                    <Loader2 className="h-4 w-4 animate-spin text-white/80" />
+                    <Loader2 className="h-4 w-4 animate-spin text-white/70" />
                   )}
                   {availability === 'available' && (
                     <Check className="h-4 w-4 text-green-400" />
@@ -212,7 +217,7 @@ export default function OnboardingPage() {
                 </p>
               )}
               {availability === 'idle' && (
-                <p className="text-xs text-white/80">
+                <p className="text-xs text-white/70">
                   3–20 characters. Letters, numbers, and underscores only.
                 </p>
               )}
@@ -227,7 +232,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-medium text-black transition-colors hover:bg-[#FFC300]/80 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-bold text-black transition-colors hover:bg-[#FFD040] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -245,6 +250,7 @@ export default function OnboardingPage() {
             </button>
           </form>
         )}
+      </div>
       </div>
     </div>
   );
