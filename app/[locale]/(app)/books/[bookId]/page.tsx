@@ -1,14 +1,20 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Edit, BookOpen, FileText, MessageSquare } from 'lucide-react';
+import {
+  Edit,
+  BookOpen,
+  FileText,
+  MessageSquare,
+  Globe,
+  Lock,
+} from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
 import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
-import { Badge } from '@/components/ui/badge';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
 import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
@@ -48,7 +54,10 @@ export default async function PublicBookPage({
     [book, readChapterIds, likeStatus] = await Promise.all([
       getBookForViewAction(bookId),
       getBookReadStatusAction(bookId).catch(() => [] as string[]),
-      getBookLikeStatusAction(bookId).catch(() => ({ liked: false, likeCount: 0 })),
+      getBookLikeStatusAction(bookId).catch(() => ({
+        liked: false,
+        likeCount: 0,
+      })),
     ]);
   } catch {
     notFound();
@@ -59,11 +68,10 @@ export default async function PublicBookPage({
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
-
-
-        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 md:p-8 mb-6">
+        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] border-t-2 border-t-[#FFC300]/20 shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
-            <div className="flex w-40 mx-auto sm:mx-0 sm:w-40 shrink-0 aspect-2/3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] items-center justify-center overflow-hidden relative">
+            {/* Cover */}
+            <div className="flex w-40 mx-auto sm:mx-0 shrink-0 aspect-2/3 rounded-xl border border-[#2a2a2a] overflow-hidden relative">
               {book.coverUrl ? (
                 <>
                   <Image
@@ -75,22 +83,27 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <BookOpen className="w-10 h-10 text-white/80" />
+                <div className="w-full h-full bg-linear-to-br from-[#222] to-[#141414] flex items-center justify-center">
+                  <span className="text-5xl font-bold text-white/15 mainFont">
+                    {book.title[0]?.toUpperCase()}
+                  </span>
+                </div>
               )}
             </div>
 
+            {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h1 className="text-2xl md:text-3xl font-bold text-yellow-500 leading-tight mainFont">
+                  <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight mainFont">
                     {book.title}
                   </h1>
-                  <p className="text-base text-white mt-1.5">
+                  <p className="text-sm text-white/70 mt-1.5">
                     by {book.author}
                     {book.user?.username && (
                       <Link
                         href={`/u/${book.user.username}`}
-                        className="ml-1 text-white/50 hover:text-[#FFC300] transition-colors"
+                        className="ml-1 text-white/40 hover:text-[#FFC300] transition-colors"
                       >
                         ({book.user.username})
                       </Link>
@@ -111,35 +124,47 @@ export default async function PublicBookPage({
                 </div>
               </div>
 
+              {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <Badge variant="secondary">{book.genre}</Badge>
-                <Badge variant="secondary">{book.category}</Badge>
-                <Badge className="capitalize" variant="secondary">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                  {book.genre}
+                </span>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                  {book.category}
+                </span>
+                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium capitalize">
+                  {book.privacy === 'PRIVATE' && <Lock className="w-3 h-3" />}
+                  {book.privacy === 'PUBLIC' && <Globe className="w-3 h-3" />}
                   {book.privacy.toLowerCase()}
-                </Badge>
+                </span>
               </div>
 
               <ExpandableDescription text={book.description} />
 
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5">
-                <div className="flex items-center gap-2 text-base text-white">
-                  <FileText className="w-4 h-4 text-yellow-500" />
+              {/* Stats row */}
+              <div className="flex flex-wrap items-center gap-1 mt-5">
+                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                  <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
-                <div className="flex items-center gap-2 text-base text-white">
-                  <BookOpen className="w-4 h-4 text-yellow-500" />
+                <span className="text-white/20 mx-1">·</span>
+                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                  <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
-                <div className="flex items-center gap-2 text-base text-white">
-                  <MessageSquare className="w-4 h-4 text-yellow-500" />
+                <span className="text-white/20 mx-1">·</span>
+                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                  <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
-                <LikeButton
-                  bookId={book.id}
-                  initialLiked={likeStatus.liked}
-                  initialLikeCount={likeStatus.likeCount}
-                  isAuthenticated
-                />
+                <div className="ml-2">
+                  <LikeButton
+                    bookId={book.id}
+                    initialLiked={likeStatus.liked}
+                    initialLikeCount={likeStatus.likeCount}
+                    isAuthenticated
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -153,7 +178,11 @@ export default async function PublicBookPage({
                 </Link>
               </Button>
             )}
-            <ShareBookButton bookId={book.id} variant="icon" isOwner={isOwner} />
+            <ShareBookButton
+              bookId={book.id}
+              variant="icon"
+              isOwner={isOwner}
+            />
           </div>
         </div>
 
