@@ -117,7 +117,8 @@ test.describe('guest', () => {
 
       await page.goto('/sign-up');
       await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(0).fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(1).fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
 
       // Wait for any navigation away from /sign-up (onboarding or verify-email)
@@ -137,7 +138,8 @@ test.describe('guest', () => {
 
       await page.goto('/sign-up');
       await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(0).fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(1).fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
 
       // Wait for navigation away from sign-up
@@ -161,7 +163,8 @@ test.describe('guest', () => {
 
       await page.goto('/sign-up');
       await page.locator('[data-testid="sign-up-email"]').fill(uniqueEmail);
-      await page.locator('input[type="password"]').first().fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(0).fill('TestPassword123!');
+      await page.locator('input[type="password"]').nth(1).fill('TestPassword123!');
       await page.locator('[data-testid="sign-up-submit"]').click();
 
       await page.waitForFunction(
