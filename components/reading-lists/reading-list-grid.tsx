@@ -71,12 +71,12 @@ export function ReadingListGrid({ lists }: { lists: ReadingList[] }) {
 
   if (lists.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-          <BookMarked className="w-7 h-7 text-white/20" />
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <BookMarked className="w-9 h-9 text-white/20" />
         </div>
-        <h2 className="text-lg font-bold text-white mainFont mb-2">No reading lists yet</h2>
-        <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-6">
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No reading lists yet</h2>
+        <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
           Reading lists let you organize books you want to read, are currently reading, or have finished. Create a list to start curating your reading journey.
         </p>
         <Link

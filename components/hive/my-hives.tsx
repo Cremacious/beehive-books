@@ -81,13 +81,13 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
 
   if (hives.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-          <Hexagon className="w-7 h-7 text-white/20" />
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <Hexagon className="w-9 h-9 text-white/20" />
         </div>
-        <h2 className="text-lg font-bold text-white mainFont mb-2">No hives yet</h2>
-        <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-6">
-          Hives are collaborative writing spaces. Create one to co-write a book with other authors, beta readers, and editors — or join an existing hive to contribute.
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No hives yet</h2>
+        <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
+          Hives are collaborative writing spaces. Create one to co-write a book with other authors, beta readers, and editors. Or join an existing hive to contribute.
         </p>
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link

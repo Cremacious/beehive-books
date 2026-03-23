@@ -139,12 +139,12 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-          <BookOpen className="w-7 h-7 text-white/20" />
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <BookOpen className="w-9 h-9 text-white/20" />
         </div>
-        <p className="text-base font-semibold text-white/80 mb-1">No books yet</p>
-        <p className="text-sm text-white/70 mb-5 max-w-xs">
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No books yet</h2>
+        <p className="text-sm text-white/80 mb-5 max-w-sm">
           Write your own book or discover stories from other authors on the Explore page.
         </p>
         <div className="flex items-center gap-3 flex-wrap justify-center">
@@ -249,14 +249,14 @@ export default function BookGrid({ books }: { books: Book[] }) {
       </div>
 
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-            <BookOpen className="w-7 h-7 text-white/20" />
+        <div className="flex flex-col items-center justify-center py-28 text-center">
+          <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+            <BookOpen className="w-9 h-9 text-white/20" />
           </div>
-          <p className="text-base font-semibold text-white/80 mb-1">
+          <h2 className="text-xl font-bold text-white mainFont mb-2">
             {query ? `No results for "${query}"` : 'No books in this category'}
-          </p>
-          <p className="text-sm text-white/70 mb-4 max-w-xs">
+          </h2>
+          <p className="text-sm text-white/80 mb-4 max-w-sm">
             {query
               ? 'Try a different search term or clear your filters.'
               : 'Try a different filter.'}

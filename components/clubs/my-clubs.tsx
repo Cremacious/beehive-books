@@ -83,12 +83,12 @@ export default function MyClubs({ clubs }: { clubs: ClubWithMembership[] }) {
 
   if (clubs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-          <Users className="w-7 h-7 text-white/20" />
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <Users className="w-9 h-9 text-white/20" />
         </div>
-        <h2 className="text-lg font-bold text-white mainFont mb-2">No book clubs yet</h2>
-        <p className="text-sm text-white/50 max-w-sm leading-relaxed mb-6">
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No book clubs yet</h2>
+        <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
           Book clubs let you read and discuss books with a group. Create your own club to host discussions, or browse public clubs to find one that matches your reading taste.
         </p>
         <div className="flex items-center gap-3 flex-wrap justify-center">
