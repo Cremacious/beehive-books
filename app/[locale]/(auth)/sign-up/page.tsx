@@ -141,6 +141,7 @@ export default function SignUpPage() {
               </label>
               <input
                 type="email"
+                data-testid="sign-up-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -227,6 +228,7 @@ export default function SignUpPage() {
 
             <button
               type="submit"
+              data-testid="sign-up-submit"
               disabled={loading}
               className="w-full rounded-full bg-[#FFC300] py-3 text-sm font-bold text-black transition-colors hover:bg-[#FFD040] disabled:opacity-50 disabled:cursor-not-allowed"
             >
