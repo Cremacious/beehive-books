@@ -7,13 +7,11 @@ import {
   Search,
   SlidersHorizontal,
   BookOpen,
-  Plus,
   LayoutGrid,
   List,
 } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import Pagination from '@/components/shared/pagination';
-import { Button } from '@/components/ui/button';
 import type { Book } from '@/lib/types/books.types';
 
 type SortOption = 'date-added' | 'title' | 'author';
@@ -74,12 +72,11 @@ const PLACEHOLDER_COUNT = 8;
 
 function Placeholder() {
   return (
-    <div className="flex flex-col rounded-lg border-2 border-dashed border-[#FFC300]/25 bg-[#1a1a1a] overflow-hidden">
-      <div className="relative w-full aspect-2/3 flex items-center justify-center">
-        <BookOpen className="w-8 h-8 text-[#FFC300]/15" />
-      </div>
-      <div className="px-3 pt-3 pb-3">
-
+    <div className="flex flex-col rounded-xl border border-dashed border-[#2a2a2a] bg-[#141414] overflow-hidden opacity-40">
+      <div className="relative w-full aspect-2/3" />
+      <div className="px-3 py-3">
+        <div className="h-3 rounded bg-[#2a2a2a] w-3/4 mb-2" />
+        <div className="h-2 rounded bg-[#2a2a2a] w-1/2" />
       </div>
     </div>
   );
@@ -142,37 +139,20 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="grid grid-cols-3 gap-2 mb-8">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div
-              key={i}
-              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
-            >
-              <BookOpen
-                className={`w-5 h-5 ${
-                  i % 3 === 1 ? 'text-[#FFC300]/25' : 'text-[#FFC300]/10'
-                }`}
-              />
-            </div>
-          ))}
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <BookOpen className="w-7 h-7 text-white/20" />
         </div>
-
-        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          Your library is empty!
-        </h2>
-
-        <p className=" text-white/80 mb-8 max-w-sm">
-          Upload your first book and watch your library bloom into a buzzing
-          archive of stories.
+        <p className="text-base font-semibold text-white/80 mb-1">No books yet</p>
+        <p className="text-sm text-white/40 mb-4 max-w-xs">
+          Start writing your first book and it will appear here.
         </p>
-
-        <Button asChild size="lg">
-          <Link href="/library/create">
-            <Plus className="w-5 h-5" />
-            Create your first book
-          </Link>
-        </Button>
+        <Link
+          href="/library/create"
+          className="px-4 py-2 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors mainFont"
+        >
+          Create your first book
+        </Link>
       </div>
     );
   }
@@ -190,15 +170,6 @@ export default function BookGrid({ books }: { books: Book[] }) {
             className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
-
-        {/* Mobile-only full-width New Book button — sits between search and controls */}
-        <Link
-          href="/library/create"
-          className="sm:hidden flex justify-center items-center gap-2 w-full px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors mainFont leading-none"
-        >
-          <Plus className="w-4 h-4" />
-          New Book
-        </Link>
 
         <div className="flex gap-3">
           <div className="relative flex-1 sm:flex-none">
@@ -239,14 +210,6 @@ export default function BookGrid({ books }: { books: Book[] }) {
             </button>
           </div>
 
-          {/* Desktop-only New Book button — inline with controls */}
-          <Link
-            href="/library/create"
-            className="hidden sm:flex mainFont leading-none items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            New Book
-          </Link>
         </div>
       </div>
 
@@ -278,21 +241,21 @@ export default function BookGrid({ books }: { books: Book[] }) {
       </div>
 
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/80 mb-3" />
-          <p className="text-sm text-white/80 mb-1">
-            {query ? (
-              <>No results for &ldquo;{query}&rdquo;</>
-            ) : (
-              'No books in this category'
-            )}
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+            <BookOpen className="w-7 h-7 text-white/20" />
+          </div>
+          <p className="text-base font-semibold text-white/80 mb-1">
+            {query ? `No results for "${query}"` : 'No books in this category'}
+          </p>
+          <p className="text-sm text-white/40 mb-4 max-w-xs">
+            {query
+              ? 'Try a different search term or clear your filters.'
+              : 'Try a different filter.'}
           </p>
           <button
-            onClick={() => {
-              setQuery('');
-              setPrivacyFilter('ALL');
-            }}
-            className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"
+            onClick={() => { setQuery(''); setPrivacyFilter('ALL'); }}
+            className="text-sm text-[#FFC300]/70 hover:text-[#FFC300] transition-colors"
           >
             Clear filters
           </button>
@@ -302,7 +265,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
       {displayed.length > 0 && (
         <>
           {view === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {displayed.map((book) => (
                 <BookCard key={book.id} book={book} />
               ))}
