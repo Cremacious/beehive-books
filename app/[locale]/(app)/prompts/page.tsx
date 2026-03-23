@@ -19,9 +19,6 @@ export default async function PromptsPage() {
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-[0.15em] mb-2">
-          Creative Workspace
-        </p>
         <h1 className="text-3xl font-bold text-white mainFont">
           My Writing Prompts
         </h1>
