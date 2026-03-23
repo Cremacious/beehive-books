@@ -90,8 +90,14 @@ export function PromptGrid({ prompts }: Props) {
         </p>
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link
-            href="/explore/prompts"
+            href="/prompts/create"
             className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
+          >
+            Create a prompt
+          </Link>
+          <Link
+            href="/explore/prompts"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
           >
             Browse prompts
           </Link>
