@@ -142,29 +142,25 @@ export default async function PublicBookPage({
               <ExpandableDescription text={book.description} />
 
               {/* Stats row */}
-              <div className="flex flex-wrap items-center gap-1 mt-5">
+              <div className="flex flex-wrap items-center gap-3 mt-5">
                 <div className="flex items-center gap-1.5 text-sm text-white/70">
                   <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
-                <span className="text-white/20 mx-1">·</span>
                 <div className="flex items-center gap-1.5 text-sm text-white/70">
                   <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
-                <span className="text-white/20 mx-1">·</span>
                 <div className="flex items-center gap-1.5 text-sm text-white/70">
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
-                <div className="ml-2">
-                  <LikeButton
-                    bookId={book.id}
-                    initialLiked={likeStatus.liked}
-                    initialLikeCount={likeStatus.likeCount}
-                    isAuthenticated
-                  />
-                </div>
+                <LikeButton
+                  bookId={book.id}
+                  initialLiked={likeStatus.liked}
+                  initialLikeCount={likeStatus.likeCount}
+                  isAuthenticated
+                />
               </div>
             </div>
           </div>
@@ -180,8 +176,9 @@ export default async function PublicBookPage({
             )}
             <ShareBookButton
               bookId={book.id}
-              variant="icon"
               isOwner={isOwner}
+              size="default"
+              className="flex-1"
             />
           </div>
         </div>
