@@ -15,9 +15,6 @@ export default async function ExplorePage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-[0.15em] mb-2">
-          Discovery
-        </p>
         <h1 className="text-3xl font-bold text-white mainFont flex items-center gap-3">
           <Compass className="w-7 h-7 text-[#FFC300]" />
           Explore

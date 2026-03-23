@@ -25,9 +25,6 @@ export default async function ExploreHivesPage({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-[0.15em] mb-2">
-          Explore
-        </p>
         <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
           <Hexagon className="w-6 h-6 text-[#FFC300]" />
           Writing Hives
