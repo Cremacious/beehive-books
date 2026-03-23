@@ -182,10 +182,27 @@ export async function getAllUserHivesAction(): Promise<HiveWithMembership[]> {
     orderBy: (m, { desc }) => [desc(m.joinedAt)],
   });
 
+  // Fetch word counts for hives that are linked to a book
+  const bookIds = memberships
+    .map((m) => m.hive.bookId)
+    .filter((id): id is string => !!id);
+
+  const bookWordCounts: Record<string, number> = {};
+  if (bookIds.length > 0) {
+    const bookRows = await db.query.books.findMany({
+      where: inArray(books.id, bookIds),
+      columns: { id: true, wordCount: true },
+    });
+    for (const b of bookRows) {
+      bookWordCounts[b.id] = b.wordCount;
+    }
+  }
+
   return memberships.map((m) => ({
     ...m.hive,
     myRole: m.role as HiveRole,
     isMember: true,
+    totalWordCount: m.hive.bookId ? (bookWordCounts[m.hive.bookId] ?? 0) : 0,
   }));
 }
 
