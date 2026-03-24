@@ -24,6 +24,7 @@ export const users = pgTable('users', {
   image: text('image_url'),
   // App-specific fields
   username: text('username').unique(),
+  bio: text('bio'),
   onboardingComplete: boolean('onboarding_complete').default(false).notNull(),
   premium: boolean('premium').default(false).notNull(),
   role: text('role', { enum: ['member', 'moderator', 'admin'] }).notNull().default('member'),
