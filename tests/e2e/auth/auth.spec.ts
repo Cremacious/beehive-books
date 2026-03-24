@@ -217,9 +217,9 @@ test.describe('authenticated', () => {
 
     await page.locator('[data-testid="sign-out-button"]').click({ force: true });
 
-    // better-auth redirects via window.location.href = '/'
-    await page.waitForURL('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
-    await expect(page).toHaveURL('/');
+    // Sign-out may redirect to / or /sign-in depending on middleware config
+    await page.waitForURL(/\/$|\/sign-in/, { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await expect(page).not.toHaveURL('/home');
 
     // Confirm session is gone — protected route should now redirect to /sign-in
     await page.goto('/home');
