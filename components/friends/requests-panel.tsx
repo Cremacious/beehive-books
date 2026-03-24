@@ -1,26 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookOpen, Feather, Search, Loader2 } from 'lucide-react';
+import { BookOpen, Feather, UserPlus } from 'lucide-react';
 import { FriendButton } from '@/components/friends/friend-button';
-import { searchUsersAction } from '@/lib/actions/friend.actions';
-import type { SuggestedUser, SearchResult, FriendUser } from '@/lib/actions/friend.actions';
+import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
 
-type ListUser = SuggestedUser | (SearchResult & { activity: { recentBooks: []; recentPrompts: [] }; bookCount: 0; latestBook: null; bio: null });
-
-function toFriendUser(u: SuggestedUser): FriendUser {
-  return {
-    id: u.id,
-    username: u.username,
-    image: u.image,
-    bio: u.bio,
-    bookCount: u.bookCount,
-    latestBook: u.latestBook,
-    activity: u.activity,
-  };
-}
+type Request = { friendshipId: string; user: FriendUser };
 
 function Avatar({ user, size, textSize = 'text-sm' }: { user: FriendUser; size: string; textSize?: string }) {
   const name = user.username || '?';
@@ -39,7 +26,7 @@ function Avatar({ user, size, textSize = 'text-sm' }: { user: FriendUser; size: 
   );
 }
 
-function UserDetail({ user }: { user: SuggestedUser }) {
+function UserDetail({ user, friendStatus }: { user: FriendUser; friendStatus: FriendStatus }) {
   const activity = user.activity ?? { recentBooks: [], recentPrompts: [] };
   const hasActivity = activity.recentBooks.length > 0 || activity.recentPrompts.length > 0;
 
@@ -47,7 +34,7 @@ function UserDetail({ user }: { user: SuggestedUser }) {
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[#2a2a2a]">
-        <Avatar user={toFriendUser(user)} size="w-14 h-14" textSize="text-xl" />
+        <Avatar user={user} size="w-14 h-14" textSize="text-xl" />
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-white mainFont truncate">
             {user.username || 'Unknown User'}
@@ -55,7 +42,7 @@ function UserDetail({ user }: { user: SuggestedUser }) {
           <div className="flex items-center gap-1.5 mt-0.5">
             <BookOpen className="w-3.5 h-3.5 text-yellow-500" />
             <span className="text-white/80 text-xs">
-              {user.bookCount} public {user.bookCount === 1 ? 'book' : 'books'}
+              {user.bookCount ?? 0} public {(user.bookCount ?? 0) === 1 ? 'book' : 'books'}
             </span>
           </div>
         </div>
@@ -160,132 +147,119 @@ function UserDetail({ user }: { user: SuggestedUser }) {
         </div>
       )}
 
-      {/* Footer */}
+      {/* Footer — action */}
       <div className="px-6 py-4 border-t border-[#2a2a2a] flex justify-end">
-        <FriendButton targetUserId={user.id} initialStatus={user.friendStatus} />
+        <FriendButton targetUserId={user.id} initialStatus={friendStatus} />
       </div>
     </div>
   );
 }
 
-export function SuggestedUsers({ suggested }: { suggested: SuggestedUser[] }) {
-  const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isPending, startTransition] = useTransition();
+type Label = 'INCOMING' | 'SENT';
 
-  // Convert search results to SuggestedUser shape for the list
-  const searchAsSuggested: SuggestedUser[] = searchResults.map((r) => ({
-    id: r.user.id,
-    username: r.user.username,
-    image: r.user.image,
-    bio: null,
-    bookCount: 0,
-    latestBook: null,
-    activity: { recentBooks: [], recentPrompts: [] },
-    friendStatus: r.friendStatus,
-  }));
+export function RequestsPanel({
+  receivedRequests,
+  sentRequests,
+}: {
+  receivedRequests: Request[];
+  sentRequests: Request[];
+}) {
+  const all: Array<Request & { label: Label }> = [
+    ...receivedRequests.map((r) => ({ ...r, label: 'INCOMING' as Label })),
+    ...sentRequests.map((r) => ({ ...r, label: 'SENT' as Label })),
+  ];
 
-  const listItems = isSearching ? searchAsSuggested : suggested;
-  const [selectedId, setSelectedId] = useState<string | null>(suggested[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(all[0]?.user.id ?? null);
+  const selected = all.find((r) => r.user.id === selectedId);
 
-  const handleSearch = (value: string) => {
-    setQuery(value);
-    if (value.trim().length < 2) {
-      setSearchResults([]);
-      setIsSearching(false);
-      setSelectedId(suggested[0]?.id ?? null);
-      return;
-    }
-    setIsSearching(true);
-    startTransition(async () => {
-      const data = await searchUsersAction(value);
-      setSearchResults(data);
-      setSelectedId(data[0]?.user.id ?? null);
-    });
-  };
-
-  const selected = listItems.find((u) => u.id === selectedId);
+  if (all.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <UserPlus className="w-9 h-9 text-white/80" />
+        </div>
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No pending requests</h2>
+        <p className="text-sm text-white/80 max-w-sm">
+          Friend requests you send or receive will appear here.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Search bar above the panel */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
-        {isPending && (
-          <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 animate-spin pointer-events-none" />
+    <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden" style={{ minHeight: '560px' }}>
+      {/* Left list */}
+      <div className="w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
+        {receivedRequests.length > 0 && (
+          <div className="px-4 pt-3 pb-1">
+            <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Incoming</p>
+          </div>
         )}
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search by username..."
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/20 transition-all"
-        />
+        {receivedRequests.map(({ friendshipId, user }) => {
+          const active = user.id === selectedId;
+          return (
+            <button
+              key={friendshipId}
+              onClick={() => setSelectedId(user.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-[#2a2a2a] ${
+                active ? 'bg-yellow-500/10 border-l-2 border-l-yellow-500' : 'hover:bg-white/5'
+              }`}
+            >
+              <Avatar user={user} size="w-9 h-9" textSize="text-xs" />
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-semibold truncate mainFont ${active ? 'text-yellow-500' : 'text-white'}`}>
+                  {user.username || 'Unknown'}
+                </p>
+                <p className="text-xs text-yellow-500 font-medium">Wants to connect</p>
+              </div>
+            </button>
+          );
+        })}
+
+        {sentRequests.length > 0 && (
+          <div className="px-4 pt-3 pb-1">
+            <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Sent</p>
+          </div>
+        )}
+        {sentRequests.map(({ friendshipId, user }) => {
+          const active = user.id === selectedId;
+          return (
+            <button
+              key={friendshipId}
+              onClick={() => setSelectedId(user.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-[#2a2a2a] last:border-b-0 ${
+                active ? 'bg-yellow-500/10 border-l-2 border-l-yellow-500' : 'hover:bg-white/5'
+              }`}
+            >
+              <Avatar user={user} size="w-9 h-9" textSize="text-xs" />
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-semibold truncate mainFont ${active ? 'text-yellow-500' : 'text-white'}`}>
+                  {user.username || 'Unknown'}
+                </p>
+                <p className="text-xs text-white/80">Pending</p>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {listItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-sm text-white/80">
-            {isSearching ? `No results for "${query}"` : 'No suggested writers right now.'}
-          </p>
-        </div>
-      ) : (
-        <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden" style={{ minHeight: '560px' }}>
-          {/* Left list */}
-          <div className="w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
-            {!isSearching && (
-              <div className="px-4 pt-3 pb-1">
-                <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Active Writers</p>
-              </div>
-            )}
-            {listItems.map((user) => {
-              const active = user.id === selectedId;
-              return (
-                <button
-                  key={user.id}
-                  onClick={() => setSelectedId(user.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors border-b border-[#2a2a2a] last:border-b-0 ${
-                    active ? 'bg-yellow-500/10 border-l-2 border-l-yellow-500' : 'hover:bg-white/5'
-                  }`}
-                >
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden bg-[#2a2000] shrink-0">
-                    {user.image ? (
-                      <Image src={user.image} alt={user.username || '?'} fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-xs font-bold text-yellow-500">
-                          {(user.username?.[0] || '?').toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate mainFont ${active ? 'text-yellow-500' : 'text-white'}`}>
-                      {user.username || 'Unknown'}
-                    </p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <BookOpen className="w-3 h-3 text-yellow-500" />
-                      <span className="text-xs text-white/80">{user.bookCount} books</span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+      {/* Right detail */}
+      <div className="flex-1 bg-[#181818] min-w-0">
+        {selected ? (
+          <UserDetail
+            user={selected.user}
+            friendStatus={
+              selected.label === 'INCOMING'
+                ? { status: 'PENDING_RECEIVED', friendshipId: selected.friendshipId }
+                : { status: 'PENDING_SENT', friendshipId: selected.friendshipId }
+            }
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-white/80 text-sm">
+            Select a request
           </div>
-
-          {/* Right detail */}
-          <div className="flex-1 bg-[#181818] min-w-0">
-            {selected ? (
-              <UserDetail user={selected} />
-            ) : (
-              <div className="flex items-center justify-center h-full text-white/80 text-sm">
-                Select a writer
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

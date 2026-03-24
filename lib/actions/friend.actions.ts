@@ -5,7 +5,7 @@ import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { and, count, desc, eq, ilike, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { books, friendships, users, notifications } from '@/db/schema';
+import { books, friendships, users, notifications, prompts, hives } from '@/db/schema';
 import { insertNotification } from '@/lib/notifications';
 
 type ActionResult = {
@@ -54,6 +54,17 @@ export type FriendLatestBook = {
   genre: string;
 };
 
+export type FriendRecentPrompt = {
+  id: string;
+  title: string;
+  status: 'ACTIVE' | 'ENDED';
+};
+
+export type FriendActivity = {
+  recentBooks: FriendLatestBook[];
+  recentPrompts: FriendRecentPrompt[];
+};
+
 export type FriendUser = {
   id: string;
   username: string | null;
@@ -61,6 +72,7 @@ export type FriendUser = {
   bio?: string | null;
   bookCount?: number;
   latestBook?: FriendLatestBook | null;
+  activity?: FriendActivity;
 };
 
 export async function getMyFriendsDataAction() {
@@ -99,6 +111,7 @@ export async function getMyFriendsDataAction() {
 
   const bookCountMap = new Map<string, number>();
   const latestBookMap = new Map<string, FriendLatestBook | null>();
+  const activityMap = new Map<string, FriendActivity>();
 
   if (friendIds.length > 0) {
     await Promise.all(
@@ -115,6 +128,22 @@ export async function getMyFriendsDataAction() {
           columns: { id: true, title: true, coverUrl: true, genre: true },
         });
         latestBookMap.set(id, latest ?? null);
+
+        const [recentBooks, recentPrompts] = await Promise.all([
+          db.query.books.findMany({
+            where: and(eq(books.userId, id), eq(books.privacy, 'PUBLIC')),
+            orderBy: (b, { desc }) => [desc(b.updatedAt)],
+            limit: 3,
+            columns: { id: true, title: true, coverUrl: true, genre: true },
+          }),
+          db.query.prompts.findMany({
+            where: and(eq(prompts.creatorId, id), eq(prompts.explorable, true)),
+            orderBy: (p, { desc }) => [desc(p.createdAt)],
+            limit: 2,
+            columns: { id: true, title: true, status: true },
+          }),
+        ]);
+        activityMap.set(id, { recentBooks, recentPrompts });
       }),
     );
   }
@@ -133,6 +162,7 @@ export async function getMyFriendsDataAction() {
           ...other,
           bookCount: bookCountMap.get(other.id) ?? 0,
           latestBook: latestBookMap.get(other.id) ?? null,
+          activity: activityMap.get(other.id) ?? { recentBooks: [], recentPrompts: [] },
         },
       });
     } else if (f.status === 'PENDING') {
@@ -366,6 +396,7 @@ export type SuggestedUser = {
   bio: string | null;
   bookCount: number;
   latestBook: FriendLatestBook | null;
+  activity: FriendActivity;
   friendStatus: FriendStatus;
 };
 
@@ -430,7 +461,23 @@ export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
             : { status: 'PENDING_RECEIVED', friendshipId: f.id }
         : { status: 'NONE' };
 
-      return { ...u, bookCount, latestBook: latestBook ?? null, friendStatus };
+      const [recentBooks, recentPrompts] = await Promise.all([
+        db.query.books.findMany({
+          where: and(eq(books.userId, u.id), eq(books.privacy, 'PUBLIC')),
+          orderBy: (b, { desc }) => [desc(b.updatedAt)],
+          limit: 3,
+          columns: { id: true, title: true, coverUrl: true, genre: true },
+        }),
+        db.query.prompts.findMany({
+          where: and(eq(prompts.creatorId, u.id), eq(prompts.explorable, true)),
+          orderBy: (p, { desc }) => [desc(p.createdAt)],
+          limit: 2,
+          columns: { id: true, title: true, status: true },
+        }),
+      ]);
+      const activity: FriendActivity = { recentBooks, recentPrompts };
+
+      return { ...u, bookCount, latestBook: latestBook ?? null, activity, friendStatus };
     }),
   );
 

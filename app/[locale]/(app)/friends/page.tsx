@@ -1,12 +1,10 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { Metadata } from 'next';
 import { Users2, UserPlus, Search } from 'lucide-react';
 import { getMyFriendsDataAction, getSuggestedUsersAction } from '@/lib/actions/friend.actions';
-import { FriendButton } from '@/components/friends/friend-button';
 import { FriendsPanel } from '@/components/friends/friends-panel';
+import { RequestsPanel } from '@/components/friends/requests-panel';
 import { SuggestedUsers } from '@/components/friends/suggested-users';
-import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
 
 export const metadata: Metadata = {
   title: 'Friends',
@@ -29,7 +27,7 @@ export default async function FriendsPage({ searchParams }: Props) {
     <div className="max-w-5xl mx-auto px-4 py-6 md:px-8">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">Friends</h1>
-        <p className="mt-1 text-sm text-white/70">
+        <p className="mt-1 text-sm text-white/80">
           Connect with other writers on Beehive
         </p>
       </div>
@@ -59,45 +57,10 @@ export default async function FriendsPage({ searchParams }: Props) {
       {tab === 'friends' && <FriendsPanel friends={friends} />}
 
       {tab === 'requests' && (
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
-              Incoming ({receivedRequests.length})
-            </h2>
-            {receivedRequests.length === 0 ? (
-              <Empty message="No incoming friend requests." />
-            ) : (
-              <ul className="space-y-2">
-                {receivedRequests.map(({ friendshipId, user }) => (
-                  <RequestRow
-                    key={friendshipId}
-                    user={user}
-                    friendStatus={{ status: 'PENDING_RECEIVED', friendshipId }}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
-              Sent ({sentRequests.length})
-            </h2>
-            {sentRequests.length === 0 ? (
-              <Empty message="No pending outgoing requests." />
-            ) : (
-              <ul className="space-y-2">
-                {sentRequests.map(({ friendshipId, user }) => (
-                  <RequestRow
-                    key={friendshipId}
-                    user={user}
-                    friendStatus={{ status: 'PENDING_SENT', friendshipId }}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+        <RequestsPanel
+          receivedRequests={receivedRequests}
+          sentRequests={sentRequests}
+        />
       )}
 
       {tab === 'find' && <SuggestedUsers suggested={suggested} />}
@@ -138,52 +101,4 @@ function TabLink({
   );
 }
 
-function Avatar({ user }: { user: FriendUser }) {
-  const name = user.username || '?';
-  return (
-    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-[#2a2000] shrink-0">
-      {user.image ? (
-        <Image src={user.image} alt={name} fill className="object-cover" />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="text-sm font-bold text-[#FFC300]">
-            {(name[0] || '?').toUpperCase()}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
 
-function RequestRow({ user, friendStatus }: { user: FriendUser; friendStatus: FriendStatus }) {
-  return (
-    <li className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
-      <Avatar user={user} />
-      <div className="flex-1 min-w-0">
-        <Link
-          href={`/u/${user.username ?? user.id}`}
-          className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block mainFont"
-        >
-          {user.username || 'Unknown User'}
-        </Link>
-        {user.bio && (
-          <p className="text-xs text-white/50 truncate mt-0.5">{user.bio}</p>
-        )}
-      </div>
-      <FriendButton targetUserId={user.id} initialStatus={friendStatus} />
-    </li>
-  );
-}
-
-function Empty({ message, cta }: { message: string; cta?: { href: string; label: string } }) {
-  return (
-    <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-12 text-center">
-      <p className="text-sm text-white/70 mb-3">{message}</p>
-      {cta && (
-        <Link href={cta.href} className="text-sm text-[#FFC300] hover:underline">
-          {cta.label} &rarr;
-        </Link>
-      )}
-    </div>
-  );
-}
