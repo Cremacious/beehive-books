@@ -215,7 +215,7 @@ test.describe('authenticated', () => {
       await page.waitForTimeout(300);
     }
 
-    await page.locator('[data-testid="sign-out-button"]').click();
+    await page.locator('[data-testid="sign-out-button"]').click({ force: true });
 
     // better-auth redirects via window.location.href = '/'
     await page.waitForURL('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
