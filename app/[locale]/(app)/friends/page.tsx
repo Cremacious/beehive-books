@@ -37,20 +37,21 @@ export default async function FriendsPage({ searchParams }: Props) {
           href="/friends?tab=friends"
           active={tab === 'friends'}
           icon={<Users2 className="w-4 h-4" />}
-          label={`Friends${friends.length > 0 ? ` (${friends.length})` : ''}`}
+          label="Friends"
+          badge={friends.length > 0 ? friends.length : undefined}
         />
         <TabLink
           href="/friends?tab=requests"
           active={tab === 'requests'}
           icon={<UserPlus className="w-4 h-4" />}
           label="Requests"
-          badge={pendingCount}
+          badge={pendingCount > 0 ? pendingCount : undefined}
         />
         <TabLink
           href="/friends?tab=find"
           active={tab === 'find'}
           icon={<Search className="w-4 h-4" />}
-          label="Find People"
+          label="Find"
         />
       </div>
 
@@ -84,17 +85,19 @@ function TabLink({
   return (
     <Link
       href={href}
-      className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
         active
           ? 'bg-[#FFC300] text-black'
           : 'text-white hover:text-white hover:bg-white/5'
       }`}
     >
       {icon}
-      <span>{label}</span>
-      {!!badge && badge > 0 && (
-        <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center ${active ? 'bg-black text-[#FFC300]' : 'bg-[#FFC300] text-black'}`}>
-          {badge > 9 ? '9+' : badge}
+      <span className="hidden sm:inline">{label}</span>
+      {badge !== undefined && (
+        <span className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold ${
+          active ? 'bg-black text-yellow-500' : 'bg-[#FFC300] text-black'
+        }`}>
+          {badge > 99 ? '99+' : badge}
         </span>
       )}
     </Link>
