@@ -32,7 +32,7 @@ export default async function FriendsPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-fit">
+      <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-full max-w-xs">
         <TabLink
           href="/friends?tab=friends"
           active={tab === 'friends'}
@@ -85,14 +85,14 @@ function TabLink({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 ${
         active
           ? 'bg-[#FFC300] text-black'
           : 'text-white hover:text-white hover:bg-white/5'
       }`}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span>{label}</span>
       {badge !== undefined && (
         <span className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold ${
           active ? 'bg-black text-yellow-500' : 'bg-[#FFC300] text-black'

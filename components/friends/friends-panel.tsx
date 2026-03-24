@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookOpen, Users2, Feather } from 'lucide-react';
+import { BookOpen, Users2, Feather, Search } from 'lucide-react';
 import { FriendButton } from '@/components/friends/friend-button';
 import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
 
@@ -171,11 +171,36 @@ function FriendDetail({ user, friendshipId }: { user: FriendUser; friendshipId: 
 
 export function FriendsPanel({ friends }: { friends: Friend[] }) {
   const router = useRouter();
+  const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(
     friends[0]?.user.id ?? null,
   );
 
-  const selected = friends.find((f) => f.user.id === selectedId);
+  const filtered = query.trim()
+    ? friends.filter(({ user }) => {
+        const q = query.toLowerCase();
+        return (
+          user.username?.toLowerCase().includes(q) ||
+          user.bio?.toLowerCase().includes(q)
+        );
+      })
+    : friends;
+
+  const selected = filtered.find((f) => f.user.id === selectedId)
+    ?? friends.find((f) => f.user.id === selectedId && !query.trim());
+
+  function handleQueryChange(value: string) {
+    setQuery(value);
+    const next = value.trim()
+      ? friends.filter(({ user }) => {
+          const q = value.toLowerCase();
+          return user.username?.toLowerCase().includes(q) || user.bio?.toLowerCase().includes(q);
+        })
+      : friends;
+    if (!next.find((f) => f.user.id === selectedId)) {
+      setSelectedId(next[0]?.user.id ?? null);
+    }
+  }
 
   if (friends.length === 0) {
     return (
@@ -200,8 +225,25 @@ export function FriendsPanel({ friends }: { friends: Friend[] }) {
   return (
     <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden" style={{ minHeight: '560px' }}>
       {/* Left — friend list */}
-      <div className="w-full sm:w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
-        {friends.map(({ friendshipId, user }) => {
+      <div className="w-full sm:w-60 shrink-0 border-r border-[#2a2a2a] flex flex-col">
+        {/* Search */}
+        <div className="px-3 py-2.5 border-b border-[#2a2a2a] shrink-0">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/80 pointer-events-none" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => handleQueryChange(e.target.value)}
+              placeholder="Search friends..."
+              className="w-full rounded-lg bg-[#141414] border border-[#2a2a2a] pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/40 focus:ring-1 focus:ring-yellow-500/15 transition-all"
+            />
+          </div>
+        </div>
+        {/* List */}
+        <div className="overflow-y-auto flex-1">
+        {filtered.length === 0 ? (
+          <p className="px-4 py-4 text-xs text-white/80">No results.</p>
+        ) : filtered.map(({ friendshipId, user }) => {
           const active = user.id === selectedId;
           return (
             <button
@@ -226,6 +268,7 @@ export function FriendsPanel({ friends }: { friends: Friend[] }) {
             </button>
           );
         })}
+        </div>
       </div>
 
       {/* Right — detail */}
