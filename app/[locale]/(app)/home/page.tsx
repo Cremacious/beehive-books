@@ -312,7 +312,6 @@ function NewUserWelcome() {
 
 function EventRow({ event }: { event: FeedEvent }) {
   const cfg = EVENT_CONFIG[event.type];
-  const Icon = cfg.icon;
   const name = event.user.username ?? 'Someone';
 
   return (
@@ -320,14 +319,7 @@ function EventRow({ event }: { event: FeedEvent }) {
       href={event.link}
       className="flex items-start gap-3 py-3 hover:bg-white/3 transition-colors -mx-4 px-4 rounded-lg group"
     >
-      <div className="relative shrink-0 mt-0.5">
-        <UserAvatar user={event.user} size={8} />
-        <div
-          className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center ${cfg.bg} ring-2 ring-[#1c1c1c]`}
-        >
-          <Icon className={`w-2.5 h-2.5 ${cfg.color}`} aria-hidden="true" />
-        </div>
-      </div>
+      <UserAvatar user={event.user} size={8} />
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white/90 leading-snug transition-colors">
           {cfg.describe(event.meta, name)}
