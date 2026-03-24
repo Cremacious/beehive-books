@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Plus, X, Loader2, BookMarked, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/ui/tag-input';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { readingListSchema } from '@/lib/validations/reading-list.schema';
@@ -36,6 +37,7 @@ export function ReadingListForm({
     null,
   );
   const [error, setError] = useState('');
+  const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
 
   const form = useForm<ReadingListFormData>({
     resolver: zodResolver(readingListSchema),
@@ -44,6 +46,7 @@ export function ReadingListForm({
       description: defaultValues?.description ?? '',
       privacy: defaultValues?.privacy ?? 'PRIVATE',
       explorable: defaultValues?.explorable ?? false,
+      tags: defaultValues?.tags ?? [],
     },
   });
 
@@ -131,6 +134,18 @@ export function ReadingListForm({
             {errors.description.message}
           </p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Tags <span className="text-white/80 font-normal">(up to 10)</span>
+        </label>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          emptyMessage="No tags yet — tags help others find your list."
+          error={errors.tags?.message}
+        />
       </div>
 
       <div>

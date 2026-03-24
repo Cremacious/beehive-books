@@ -19,6 +19,7 @@ export type PromptCard = {
   creator:        PromptUser;
   myInviteStatus: 'ACCEPTED' | 'PENDING' | null; // null = I am the creator
   myEntryId:      string | null;
+  tags:           string[];
 };
 
 export type PromptInvite = {

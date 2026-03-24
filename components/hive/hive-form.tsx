@@ -7,13 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import {
   Plus,
-  X,
   Loader2,
   BookOpen,
   Sparkles,
   Check,
   Compass,
 } from 'lucide-react';
+import { TagInput } from '@/components/ui/tag-input';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
@@ -61,7 +61,6 @@ export default function HiveForm({
   const router = useRouter();
   const store = useHiveStore();
 
-  const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -97,20 +96,6 @@ export default function HiveForm({
   const privacy = watch('privacy');
   const explorableValue = watch('explorable');
 
-  function addTag() {
-    const t = tagInput.trim();
-    if (!t || tags.includes(t) || tags.length >= 10) return;
-    const next = [...tags, t];
-    setTags(next);
-    setValue('tags', next);
-    setTagInput('');
-  }
-
-  function removeTag(tag: string) {
-    const next = tags.filter((t) => t !== tag);
-    setTags(next);
-    setValue('tags', next);
-  }
 
   const onSubmit = async (data: HiveSchemaData) => {
     setError('');
@@ -256,55 +241,12 @@ export default function HiveForm({
         <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Tags <span className="text-white/80 font-normal">(up to 10)</span>
         </label>
-        <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-              placeholder="e.g. fantasy, dark-fiction, co-write…"
-              className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              disabled={!tagInput.trim() || tags.length >= 10}
-              className="px-3 py-2 rounded-lg bg-[#FFC300]/15 text-[#FFC300] hover:bg-[#FFC300]/25 disabled:opacity-30 transition-colors shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-
-          {tags.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="text-white/80 hover:text-red-400 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-white/80 text-center py-1">
-              No tags yet — tags help others find your hive.
-            </p>
-          )}
-        </div>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          placeholder="e.g. fantasy, dark-fiction, co-write…"
+          emptyMessage="No tags yet — tags help others find your hive."
+        />
       </div>
 
       {mode === 'create' && (

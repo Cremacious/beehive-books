@@ -105,6 +105,7 @@ export const books = pgTable('books', {
   chapterCount: integer('chapter_count').notNull().default(0),
   commentCount: integer('comment_count').notNull().default(0),
   likeCount: integer('like_count').notNull().default(0),
+  tags: json('tags').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [
@@ -237,6 +238,7 @@ export const readingLists = pgTable('reading_lists', {
   currentlyReadingId: text('currently_reading_id'),
   currentlyReadingTitle: text('currently_reading_title'),
   currentlyReadingAuthor: text('currently_reading_author'),
+  tags: json('tags').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [
@@ -523,6 +525,7 @@ export const prompts = pgTable('prompts', {
     .notNull()
     .default('ACTIVE'),
   entryCount: integer('entry_count').notNull().default(0),
+  tags: json('tags').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [

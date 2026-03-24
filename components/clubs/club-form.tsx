@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Plus, X, Loader2, Compass } from 'lucide-react';
+import { Loader2, Compass } from 'lucide-react';
+import { TagInput } from '@/components/ui/tag-input';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
@@ -31,7 +32,6 @@ export default function ClubForm({
   const router = useRouter();
   const store = useClubStore();
 
-  const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -59,20 +59,6 @@ export default function ClubForm({
   const privacy = watch('privacy');
   const explorableValue = watch('explorable');
 
-  function addTag() {
-    const t = tagInput.trim();
-    if (!t || tags.includes(t) || tags.length >= 10) return;
-    const next = [...tags, t];
-    setTags(next);
-    setValue('tags', next);
-    setTagInput('');
-  }
-
-  function removeTag(tag: string) {
-    const next = tags.filter((t) => t !== tag);
-    setTags(next);
-    setValue('tags', next);
-  }
 
   const onSubmit = async (data: ClubSchemaData) => {
     setError('');
@@ -222,62 +208,12 @@ export default function ClubForm({
         <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
           Tags <span className="text-white/80 font-normal">(up to 10)</span>
         </label>
-        <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
-          <div className="flex gap-2">
-            <label htmlFor="tag-input" className="sr-only">Add a tag</label>
-            <input
-              id="tag-input"
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-              placeholder="e.g. fantasy, sci-fi, thriller…"
-              className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              disabled={!tagInput.trim() || tags.length >= 10}
-              aria-label="Add tag"
-              className="px-3 py-2 rounded-lg bg-[#FFC300]/15 text-[#FFC300] hover:bg-[#FFC300]/25 disabled:opacity-30 transition-colors shrink-0"
-            >
-              <Plus aria-hidden="true" className="w-4 h-4" />
-            </button>
-          </div>
-
-          {tags.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    aria-label={`Remove tag: ${tag}`}
-                    className="text-white/80 hover:text-red-400 transition-colors"
-                  >
-                    <X aria-hidden="true" className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-white/80 text-center py-1">
-              No tags yet — tags help others find your club.
-            </p>
-          )}
-        </div>
-        {errors.tags && (
-          <p className="text-xs text-red-400 mt-1">{errors.tags.message}</p>
-        )}
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          emptyMessage="No tags yet — tags help others find your club."
+          error={errors.tags?.message}
+        />
       </div>
 
       {(friends.length > 0 || pendingFriends.length > 0) && (

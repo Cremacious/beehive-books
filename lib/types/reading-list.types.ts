@@ -12,6 +12,7 @@ export type ReadingList = {
   currentlyReadingTitle: string | null;
   currentlyReadingAuthor: string | null;
   explorable: boolean;
+  tags: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -35,6 +36,7 @@ export type ReadingListFormData = {
   description: string;
   privacy: Privacy;
   explorable: boolean;
+  tags: string[];
 };
 
 export type BookEntryData = {

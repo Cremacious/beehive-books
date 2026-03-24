@@ -121,6 +121,7 @@ export async function getMyPromptsAction(): Promise<PromptCard[]> {
         ? null
         : (p as { inviteStatus: 'PENDING' | 'ACCEPTED' }).inviteStatus,
     myEntryId: myEntryMap.get(p.id) ?? null,
+    tags: (p.tags ?? []) as string[],
   }));
 }
 
@@ -178,6 +179,7 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
       ? null
       : ((myInvite?.status ?? null) as 'ACCEPTED' | 'PENDING' | null),
     myEntryId,
+    tags: (prompt.tags ?? []) as string[],
     invites: prompt.invites.map((i) => ({
       id: i.id,
       status: i.status,
@@ -330,6 +332,7 @@ export async function createPromptAction(
     endDate: string;
     privacy: 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
     explorable: boolean;
+    tags?: string[];
   },
   inviteUserIds: string[],
 ): Promise<ActionResult & { promptId?: string }> {
@@ -356,6 +359,7 @@ export async function createPromptAction(
       endDate: parsed.data.endDate,
       privacy: parsed.data.privacy,
       explorable: parsed.data.explorable,
+      tags: parsed.data.tags ?? [],
     });
 
     if (inviteUserIds.length > 0) {
@@ -396,6 +400,7 @@ export async function updatePromptAction(
     endDate: string;
     privacy: 'PUBLIC' | 'FRIENDS' | 'PRIVATE';
     explorable: boolean;
+    tags?: string[];
   },
   inviteUserIds: string[],
 ): Promise<ActionResult> {
@@ -423,6 +428,7 @@ export async function updatePromptAction(
         endDate: parsed.data.endDate,
         privacy: parsed.data.privacy,
         explorable: parsed.data.explorable,
+        tags: parsed.data.tags ?? [],
         updatedAt: new Date(),
       })
       .where(eq(prompts.id, promptId));

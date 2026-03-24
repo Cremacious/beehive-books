@@ -17,6 +17,7 @@ export const bookSchema = z.object({
   coverUrl:    z.string().url().optional().or(z.literal('')),
   explorable:  z.boolean(),
   draftStatus: z.enum(['FIRST_DRAFT', 'SECOND_DRAFT', 'THIRD_DRAFT', 'FOURTH_DRAFT', 'FIFTH_DRAFT', 'COMPLETED']),
+  tags: z.array(z.string().max(30)).max(10),
 });
 
 export type BookFormData = z.infer<typeof bookSchema>;

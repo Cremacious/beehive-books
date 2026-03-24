@@ -38,6 +38,20 @@ export default function BookCard({
             {book.genre}
           </span>
         )}
+        {book.tags && book.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            {book.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full bg-[#FFC300]/10 text-[#FFC300]/80 font-medium">
+                {tag}
+              </span>
+            ))}
+            {book.tags.length > 3 && (
+              <span className="text-xs px-1.5 py-0.5 rounded-full bg-[#2a2a2a] text-white/50 font-medium">
+                +{book.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );
