@@ -27,6 +27,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#141414] text-white">
       <section className="px-6 pt-24 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,195,0,0.08),transparent)]" />
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
+          backgroundSize: '56px 100px'
+        }} />
         <div className="mx-auto max-w-3xl relative">
           <Image
             src={logoImage}
@@ -36,17 +40,15 @@ export default function LandingPage() {
             height={200}
           />
           <h1 className="mb-6 text-4xl font-bold mainFont">
-            Get <span className="text-yellow-500">buzzed</span> about writing!
+            More than a <span className="text-yellow-500">text editor.</span>
           </h1>
           <p className="mb-10 text-lg text-white/80 leading-relaxed max-w-3xl mx-auto">
-            Beehive Books is your creative writing home! Post your writing, join
-            editing groups, read together in book clubs, and connect with
-            readers who love the same stories you do.
+            Write your story. Collaborate with other writers. Share it with the world. Beehive Books is where books get made.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <Button className="w-full md:w-auto" asChild size="lg">
               <Link href="/sign-up">
-                Sign Up
+                Create your account
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
@@ -56,7 +58,7 @@ export default function LandingPage() {
               variant="outline"
               size="lg"
             >
-              <Link href="/sign-in">Sign In</Link>
+              <Link href="/explore">Explore stories</Link>
             </Button>
           </div>
         </div>
@@ -120,28 +122,16 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Your <span className="text-[#FFC300]">personal</span> writing
-                library
+                Your book, the way you <span className="text-[#FFC300]">imagined it.</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Publish books chapter by chapter, organize chapters into
-                collections, write author notes, and share your work with the
-                world or keep it private until you&apos;re ready.
+                A real writing environment built for long-form work. Organize your story into chapters and collections, track your word count, and export finished work to EPUB and more. No distractions. No compromises.
               </p>
-              <ul className="space-y-3 text-white/80">
-                {[
-                  'Rich text editor for easy formatting',
-                  'Upload chapters directly from .docx files',
-                  'Organize chapters into named collections',
-                  'Public, friends-only, or private privacy settings',
-                  'Readers can comment and like individual chapters',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FFC300]" />
-                    {item}
-                  </li>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {['Rich text editor', 'Chapter collections', 'EPUB export', 'Privacy controls'].map(f => (
+                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
                 ))}
-              </ul>
+              </div>
             </div>
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
@@ -362,29 +352,16 @@ export default function LandingPage() {
 
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                <span className="text-[#FFC300]">Build</span> your next novel
-                with your crew
+                Writing is <span className="text-[#FFC300]">better together.</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                A Hive links your friends to one of your books so you can edit
-                it together. Like bees building a hive, every collaborator
-                contributes by leaving annotations, filling out the world wiki,
-                and keeping each other on track.
+                Invite co-authors, beta readers, and editors into your Hive. Claim chapters, leave feedback on specific passages, and watch the word count climb. Built for writers who want more than a shared document.
               </p>
-              <ul className="space-y-3 text-white/80">
-                {[
-                  'Link any book in your library to a hive',
-                  'Outline board to plan your story structure',
-                  'World wiki for characters, lore, and locations',
-                  'Annotations for precise peer feedback',
-                  'Word goals with daily, weekly, and even monthly progress',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-                    {item}
-                  </li>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {['Co-author tools', 'Annotations', 'World wiki', 'Word goals', 'Outline board'].map(f => (
+                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -395,29 +372,12 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Read and discuss{' '}
-                <span className="text-[#FFC300]">together</span>
+                Find stories worth{' '}
+                <span className="text-[#FFC300]">reading together.</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Create or join book clubs with friends. Pick what you&apos;re
-                reading next, hold discussions, and share your thoughts in a
-                space built for readers who want to connect over the books they
-                love.
+                Browse public books from writers across the community. Join book clubs to read the same book and talk about it with people who are just as into it as you are.
               </p>
-              <ul className="space-y-3 text-white/80">
-                {[
-                  'Create clubs with a shared reading list',
-                  'Threaded discussions per book or topic',
-                  'Like and reply to discussion posts',
-                  'Pinned announcements from club admins',
-                  'Manage members with moderator roles',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
@@ -494,7 +454,7 @@ export default function LandingPage() {
                         </span>
                         {pinned && (
                           <span className="text-[10px] text-[#FFC300] bg-[#FFC300]/10 rounded px-1.5 py-0.5">
-                            📌 Pinned
+                            Pinned
                           </span>
                         )}
                       </div>
@@ -534,7 +494,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">Reading Lists</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">Your shelves, your way.</h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Curate collections of books you love, want to read, or recommend
@@ -563,7 +523,7 @@ export default function LandingPage() {
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">Writing Prompts</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">A spark when you need one.</h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Browse community writing prompts, submit your own story entries,
@@ -612,19 +572,14 @@ export default function LandingPage() {
             Ready to find your hive?
           </h2>
           <p className="mb-10 text-lg text-white/80 leading-relaxed">
-            Join Beehive Books today! It&apos;s free! Write your first chapter,
-            discover a reading community, or explore thousands of stories from
-            writers just like you.
+            Join the writers already building on Beehive Books.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg">
               <Link href="/sign-up">
-                Create your free account
+                Get started
                 <ArrowRight className="w-4 h-4" />
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/sign-in">Already have an account? Sign in</Link>
             </Button>
           </div>
         </div>
