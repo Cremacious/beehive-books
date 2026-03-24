@@ -22,7 +22,8 @@ export type NotificationType =
   | 'HIVE_BETA_REVIEW'
   | 'HIVE_INVITE_PENDING'
   | 'HIVE_ACTIVITY'
-  | 'HIVE_JOIN_REQUEST';
+  | 'HIVE_JOIN_REQUEST'
+  | 'BOOK_LIKE';
 
 export type NotificationItem = {
   id: string;
