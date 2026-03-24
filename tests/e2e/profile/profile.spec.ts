@@ -57,8 +57,8 @@ test.describe('profile page — guest', () => {
       return;
     }
 
-    // The username is rendered in the <h1> inside the profile card
-    await expect(page.getByRole('heading', { name: SEED_USERNAME, exact: false })).toBeVisible();
+    // The username is rendered in <h1 data-testid="profile-username">
+    await expect(page.getByTestId('profile-username')).toContainText(SEED_USERNAME);
   });
 
   test('profile page shows a books section or empty state', async ({ page }) => {
@@ -98,7 +98,7 @@ test.describe('profile page — authenticated', () => {
       return;
     }
 
-    // Profile renders <a href="/settings">Edit Profile</a> for own profile
-    await expect(page.getByRole('link', { name: 'Edit Profile' })).toBeVisible();
+    // Profile renders <a href="/settings" data-testid="edit-profile-link">Edit Profile</a> for own profile
+    await expect(page.locator('[data-testid="edit-profile-link"]')).toBeVisible();
   });
 });
