@@ -30,7 +30,7 @@ export function AnnouncementsSection({ announcements }: { announcements: Announc
           </div>
           <button
             onClick={() => handleDismiss(a.id)}
-            className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-all shrink-0"
+            className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-all shrink-0"
             aria-label="Dismiss"
           >
             <X className="w-4 h-4" />

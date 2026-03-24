@@ -158,16 +158,16 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <h2 className="text-sm font-semibold text-white/70 flex items-center gap-1.5">
+      <h2 className="text-sm font-semibold text-yellow-500 flex items-center gap-1.5">
         {icon}
         {title}
       </h2>
       {href && (
         <Link
           href={href}
-          className="text-xs text-white/60 hover:text-[#FFC300] transition-colors flex items-center gap-1"
+          className="text-sm text-white hover:text-[#FFC300] transition-colors flex items-center gap-1"
         >
-          See all <ArrowRight className="w-3 h-3" />
+          See all <ArrowRight className="w-4 h-4" />
         </Link>
       )}
     </div>
@@ -270,7 +270,7 @@ function NewUserWelcome() {
                   <p className="text-sm font-semibold text-white mb-0.5">
                     {title}
                   </p>
-                  <p className="text-xs text-white/70 leading-relaxed">
+                  <p className="text-xs text-white leading-relaxed">
                     {description}
                   </p>
                   <span
@@ -294,7 +294,7 @@ function NewUserWelcome() {
           <p className="text-sm font-semibold text-white">
             Find your writing community
           </p>
-          <p className="text-xs text-white/70 mt-0.5">
+          <p className="text-xs text-white mt-0.5">
             Connect with friends to see their activity in this feed.
           </p>
         </div>
@@ -329,11 +329,11 @@ function EventRow({ event }: { event: FeedEvent }) {
         </div>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white/80 leading-snug group-hover:text-white/90 transition-colors">
+        <p className="text-sm text-white/90 leading-snug transition-colors">
           {cfg.describe(event.meta, name)}
         </p>
       </div>
-      <span className="text-xs text-white/60 shrink-0 mt-0.5 whitespace-nowrap">
+      <span className="text-xs text-white/80 shrink-0 mt-0.5 whitespace-nowrap">
         {timeAgo(event.timestamp)}
       </span>
     </Link>
@@ -343,7 +343,7 @@ function EventRow({ event }: { event: FeedEvent }) {
 function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">
+      <p className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">
         {label}
       </p>
       <div className="rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
@@ -361,7 +361,7 @@ function NoActivityEmpty() {
       <p className="text-lg text-white font-medium">
         No recent activity from your friends.
       </p>
-      <p className="text-sm text-white/70 max-w-xs mx-auto mt-1.5">
+      <p className="text-sm text-white/80 max-w-xs mx-auto mt-1.5">
         New books, chapters, clubs, hives, and prompts will appear here as your
         friends create them.
       </p>
@@ -370,15 +370,21 @@ function NoActivityEmpty() {
 }
 
 export default async function UserHomePage() {
-  const [events, { friends }, announcements, recentWriting, continueReading, currentUser] =
-    await Promise.all([
-      getFriendFeedAction(),
-      getMyFriendsDataAction(),
-      getAnnouncementsAction(),
-      getRecentWritingAction(),
-      getContinueReadingAction(),
-      getCurrentUserAction(),
-    ]);
+  const [
+    events,
+    { friends },
+    announcements,
+    recentWriting,
+    continueReading,
+    currentUser,
+  ] = await Promise.all([
+    getFriendFeedAction(),
+    getMyFriendsDataAction(),
+    getAnnouncementsAction(),
+    getRecentWritingAction(),
+    getContinueReadingAction(),
+    getCurrentUserAction(),
+  ]);
 
   const username = currentUser?.username ?? null;
   const hasFriends = friends.length > 0;
@@ -396,13 +402,15 @@ export default async function UserHomePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 md:px-8 space-y-8">
-
       {/* Greeting */}
       <div>
         <h1 className="text-2xl font-bold text-white mainFont">
-          {getGreeting()}{username ? `, ${username}` : ''}
+          {getGreeting()}
+          {username ? `, ${username}` : ''}
         </h1>
-        <p className="text-sm text-white/60 mt-0.5">Here&apos;s what&apos;s happening on Beehive.</p>
+        <p className="text-sm text-white/80 mt-0.5">
+          Here&apos;s what&apos;s happening on Beehive Books.
+        </p>
       </div>
 
       {/* Announcements */}
@@ -427,29 +435,31 @@ export default async function UserHomePage() {
               >
                 <div className="w-12 h-16 rounded-lg bg-linear-to-br from-[#222] to-[#141414] shrink-0 overflow-hidden relative">
                   {book.coverUrl ? (
-                    <img
+                    <Image
                       src={book.coverUrl}
                       alt={book.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-lg font-bold text-white/20 mainFont">
+                      <span className="text-lg font-bold text-white/80 mainFont">
                         {book.title[0]?.toUpperCase()}
                       </span>
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
+                  <p className="text-sm font-semibold text-[#FFC300] truncate transition-colors mainFont">
                     {book.title}
                   </p>
-                  <p className="text-xs text-white/60 mt-0.5">
-                    {book.wordCount.toLocaleString()} words · {book.chapterCount} chapters
+                  <p className="text-xs text-white/80 mt-0.5">
+                    {book.wordCount.toLocaleString()} words ·{' '}
+                    {book.chapterCount} chapters
                   </p>
                 </div>
                 <ArrowRight
-                  className="w-4 h-4 text-white/30 group-hover:text-[#FFC300]/60 transition-colors shrink-0"
+                  className="w-4 h-4 text-white/80 group-hover:text-[#FFC300]/60 transition-colors shrink-0"
                   aria-hidden="true"
                 />
               </Link>
@@ -475,14 +485,15 @@ export default async function UserHomePage() {
               >
                 <div className="w-full aspect-2/3 bg-linear-to-br from-[#222] to-[#141414] relative overflow-hidden">
                   {item.coverUrl ? (
-                    <img
+                    <Image
                       src={item.coverUrl}
                       alt={item.bookTitle}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-white/20 mainFont">
+                      <span className="text-2xl font-bold text-white/80 mainFont">
                         {item.bookTitle[0]?.toUpperCase()}
                       </span>
                     </div>
@@ -492,7 +503,9 @@ export default async function UserHomePage() {
                   <p className="text-xs font-semibold text-white line-clamp-2 group-hover:text-[#FFC300] transition-colors mainFont min-h-8">
                     {item.bookTitle}
                   </p>
-                  <p className="text-[10px] text-white/60 mt-1 truncate">{item.chapterTitle}</p>
+                  <p className="text-[10px] text-white/80 mt-1 truncate">
+                    {item.chapterTitle}
+                  </p>
                 </div>
               </Link>
             ))}
@@ -519,7 +532,11 @@ export default async function UserHomePage() {
           />
           <div className="space-y-4 mt-4">
             {groups.map((group) => (
-              <DayGroup key={group.label} label={group.label} events={group.events} />
+              <DayGroup
+                key={group.label}
+                label={group.label}
+                events={group.events}
+              />
             ))}
           </div>
         </section>
@@ -535,14 +552,18 @@ export default async function UserHomePage() {
               { href: '/hive', label: 'Hives', icon: Hexagon },
               { href: '/clubs', label: 'Clubs', icon: Users2 },
               { href: '/prompts', label: 'Prompts', icon: Lightbulb },
-              { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
+              {
+                href: '/reading-lists',
+                label: 'Reading Lists',
+                icon: BookMarked,
+              },
               { href: '/friends', label: 'Friends', icon: UserPlus },
             ] as const
           ).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c1c1c] border border-[#2a2a2a] text-sm text-white/60 hover:text-white hover:border-[#FFC300]/30 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c1c1c] border border-[#2a2a2a] text-sm text-white/80 hover:text-white hover:border-[#FFC300]/30 transition-all"
             >
               <Icon className="w-3.5 h-3.5" aria-hidden="true" />
               {label}
@@ -550,7 +571,6 @@ export default async function UserHomePage() {
           ))}
         </div>
       </section>
-
     </div>
   );
 }
