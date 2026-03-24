@@ -2,10 +2,10 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, eq, ilike, ne, or } from 'drizzle-orm';
+import { and, count, eq, ilike, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { friendships, users, notifications } from '@/db/schema';
+import { books, friendships, users, notifications } from '@/db/schema';
 import { insertNotification } from '@/lib/notifications';
 
 type ActionResult = {
@@ -51,6 +51,8 @@ export type FriendUser = {
   id: string;
   username: string | null;
   image: string | null;
+  bio?: string | null;
+  bookCount?: number;
 };
 
 export async function getMyFriendsDataAction() {
@@ -67,6 +69,7 @@ export async function getMyFriendsDataAction() {
           id: true,
           username: true,
           image: true,
+          bio: true,
         },
       },
       addressee: {
@@ -74,11 +77,31 @@ export async function getMyFriendsDataAction() {
           id: true,
           username: true,
           image: true,
+          bio: true,
         },
       },
     },
     orderBy: (f, { desc }) => [desc(f.updatedAt)],
   });
+
+  // Collect all friend user ids to batch-fetch book counts
+  const friendIds = all
+    .filter((f) => f.status === 'ACCEPTED')
+    .map((f) => (f.requesterId === userId ? f.addresseeId : f.requesterId));
+
+  const bookCountMap = new Map<string, number>();
+  if (friendIds.length > 0) {
+    const counts = await Promise.all(
+      friendIds.map(async (id) => {
+        const [row] = await db
+          .select({ count: count() })
+          .from(books)
+          .where(and(eq(books.userId, id), eq(books.privacy, 'PUBLIC')));
+        return { id, bookCount: row?.count ?? 0 };
+      }),
+    );
+    for (const { id, bookCount } of counts) bookCountMap.set(id, bookCount);
+  }
 
   const friends: Array<{ friendshipId: string; user: FriendUser }> = [];
   const receivedRequests: Array<{ friendshipId: string; user: FriendUser }> =
@@ -88,7 +111,10 @@ export async function getMyFriendsDataAction() {
   for (const f of all) {
     const other = f.requesterId === userId ? f.addressee : f.requester;
     if (f.status === 'ACCEPTED') {
-      friends.push({ friendshipId: f.id, user: other });
+      friends.push({
+        friendshipId: f.id,
+        user: { ...other, bookCount: bookCountMap.get(other.id) ?? 0 },
+      });
     } else if (f.status === 'PENDING') {
       if (f.addresseeId === userId)
         receivedRequests.push({ friendshipId: f.id, user: other });

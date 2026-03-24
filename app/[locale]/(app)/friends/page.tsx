@@ -1,13 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { Users2, UserPlus, Search } from 'lucide-react';
+import { Users2, UserPlus, Search, BookOpen } from 'lucide-react';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
 import { FriendButton } from '@/components/friends/friend-button';
 import { UserSearch } from '@/components/friends/user-search';
 import type { FriendUser, FriendStatus } from '@/lib/actions/friend.actions';
-
-//TODO: Make the user confirm before unfriending
 
 export const metadata: Metadata = {
   title: 'Friends',
@@ -18,8 +16,7 @@ type Props = { searchParams: Promise<{ tab?: string }> };
 
 export default async function FriendsPage({ searchParams }: Props) {
   const { tab = 'friends' } = await searchParams;
-  const { friends, receivedRequests, sentRequests } =
-    await getMyFriendsDataAction();
+  const { friends, receivedRequests, sentRequests } = await getMyFriendsDataAction();
   const pendingCount = receivedRequests.length;
 
   return (
@@ -183,17 +180,35 @@ function FriendCard({
   friendStatus: FriendStatus;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-white/30 text-center">
-      <Avatar user={user} size={16} />
-      <div className="min-w-0">
-        <p className="font-semibold text-white truncate">
-          {user.username || 'Unknown User'}
-        </p>
+    <div className="flex flex-col gap-3 p-5 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] hover:border-[#FFC300]/20 transition-colors">
+      {/* Top row — avatar + stats */}
+      <div className="flex items-start gap-3">
+        <Avatar user={user} size={14} />
+        <div className="flex-1 min-w-0 pt-0.5">
+          <p className="font-semibold text-white truncate mainFont">
+            {user.username || 'Unknown User'}
+          </p>
+          {typeof user.bookCount === 'number' && (
+            <div className="flex items-center gap-1 mt-1 text-white/50 text-xs">
+              <BookOpen className="w-3 h-3" />
+              <span>{user.bookCount} public {user.bookCount === 1 ? 'book' : 'books'}</span>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="flex items-center gap-2 mt-1">
+
+      {/* Bio */}
+      {user.bio ? (
+        <p className="text-xs text-white/60 line-clamp-2 leading-relaxed">{user.bio}</p>
+      ) : (
+        <p className="text-xs text-white/30 italic">No bio yet.</p>
+      )}
+
+      {/* Action */}
+      <div className="mt-auto pt-1">
         <Link
           href={`/u/${user.username ?? user.id}`}
-          className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all"
+          className="block w-full text-center text-xs px-3 py-2 rounded-lg border border-[#2a2a2a] text-white/70 hover:text-white hover:border-[#FFC300]/40 transition-all font-medium"
         >
           View Profile
         </Link>
@@ -215,10 +230,13 @@ function RequestRow({
       <div className="flex-1 min-w-0">
         <Link
           href={`/u/${user.username ?? user.id}`}
-          className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block"
+          className="text-sm font-semibold text-white hover:text-[#FFC300] transition-colors truncate block mainFont"
         >
           {user.username || 'Unknown User'}
         </Link>
+        {user.bio && (
+          <p className="text-xs text-white/50 truncate mt-0.5">{user.bio}</p>
+        )}
       </div>
       <FriendButton targetUserId={user.id} initialStatus={friendStatus} />
     </li>
@@ -240,7 +258,7 @@ function Empty({
           href={cta.href}
           className="text-sm text-[#FFC300] hover:underline"
         >
-          {cta.label} →
+          {cta.label} &rarr;
         </Link>
       )}
     </div>

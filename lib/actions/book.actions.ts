@@ -9,6 +9,7 @@ import { and, desc, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
+  bookLikes,
   chapters,
   collections,
   chapterComments,
@@ -68,6 +69,18 @@ export async function getUserBooksAction() {
     where: eq(books.userId, userId),
     orderBy: (b, { desc }) => [desc(b.createdAt)],
   });
+}
+
+export async function getLikedBooksAction() {
+  const userId = await requireAuth();
+  const rows = await db.query.bookLikes.findMany({
+    where: eq(bookLikes.userId, userId),
+    with: {
+      book: true,
+    },
+    orderBy: (bl, { desc }) => [desc(bl.createdAt)],
+  });
+  return rows.map((r) => r.book);
 }
 
 export async function getBookWithChaptersAction(bookId: string) {
