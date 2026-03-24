@@ -11,6 +11,7 @@ import {
   List,
 } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import Pagination from '@/components/shared/pagination';
 import type { Book } from '@/lib/types/books.types';
 
@@ -40,11 +41,7 @@ function BookListItem({ book }: { book: Book }) {
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-[#1e1e1e] to-[#141414] flex items-center justify-center">
-            <span className="text-xl font-bold text-white/20 mainFont">
-              {book.title[0]?.toUpperCase()}
-            </span>
-          </div>
+          <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
         )}
       </div>
 
