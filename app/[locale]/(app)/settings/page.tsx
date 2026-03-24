@@ -26,6 +26,7 @@ export default async function SettingsPage() {
           image: user.image,
           premium: user.premium,
           stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
+          bio: user.bio,
         }}
       />
     </div>

@@ -26,6 +26,16 @@ export async function updateUserAvatarAction(
   }
 }
 
+export async function updateUserBioAction(bio: string): Promise<{ success: boolean; message?: string }> {
+  try {
+    const userId = await requireAuth();
+    await db.update(users).set({ bio: bio.trim() || null }).where(eq(users.id, userId));
+    return { success: true };
+  } catch {
+    return { success: false, message: 'Failed to update bio.' };
+  }
+}
+
 export async function deleteUserAccountAction(): Promise<{ success: boolean; message: string }> {
   const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized' };

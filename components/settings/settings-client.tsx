@@ -12,6 +12,7 @@ import { PremiumStatusCard } from '@/components/settings/premium-status-card';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import {
   updateUserAvatarAction,
+  updateUserBioAction,
   deleteUserAccountAction,
 } from '@/lib/actions/user.actions';
 
@@ -23,6 +24,7 @@ interface SettingsClientProps {
     image: string | null;
     premium: boolean;
     stripeCurrentPeriodEnd: Date | null;
+    bio: string | null;
   };
 }
 
@@ -31,6 +33,10 @@ export function SettingsClient({ user }: SettingsClientProps) {
   const [imageUrl, setImageUrl] = useState(user.image);
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [bio, setBio] = useState(user.bio ?? '');
+  const [bioSaving, setBioSaving] = useState(false);
+  const [bioSuccess, setBioSuccess] = useState(false);
+  const [bioError, setBioError] = useState('');
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -54,6 +60,20 @@ export function SettingsClient({ user }: SettingsClientProps) {
     }
 
     e.target.value = '';
+  }
+
+  async function handleSaveBio() {
+    setBioSaving(true);
+    setBioError('');
+    setBioSuccess(false);
+    const result = await updateUserBioAction(bio);
+    if (!result.success) {
+      setBioError(result.message ?? 'Failed to save bio.');
+    } else {
+      setBioSuccess(true);
+      setTimeout(() => setBioSuccess(false), 3000);
+    }
+    setBioSaving(false);
   }
 
   const initial =
@@ -82,6 +102,31 @@ export function SettingsClient({ user }: SettingsClientProps) {
               <p className="text-sm text-white font-medium truncate">
                 {user.email}
               </p>
+            </div>
+          </div>
+          <div className="px-5 py-4 space-y-2">
+            <label className="block text-xs text-white/50 mb-1">Bio</label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={200}
+              rows={3}
+              placeholder="Tell the community a little about yourself..."
+              className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/30">{bio.length}/200</span>
+              <div className="flex items-center gap-2">
+                {bioSuccess && <span className="text-xs text-green-400">Saved</span>}
+                {bioError && <span className="text-xs text-red-400">{bioError}</span>}
+                <button
+                  onClick={handleSaveBio}
+                  disabled={bioSaving}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-[#FFC300] text-black font-semibold hover:bg-[#FFD040] disabled:opacity-50 transition-colors"
+                >
+                  {bioSaving ? 'Saving...' : 'Save'}
+                </button>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-3 px-5 py-4">
