@@ -44,7 +44,7 @@ test.describe('friends page', () => {
     await expect(page).toHaveURL('/friends');
 
     // Page heading
-    await expect(page.getByRole('heading', { name: 'Friends' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Friends', exact: true }).first()).toBeVisible();
 
     // The tabs bar should always be present
     await expect(page.getByRole('link', { name: 'Friends' }).first()).toBeVisible();
