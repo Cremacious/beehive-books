@@ -63,7 +63,11 @@ export function ProfileSectionGrid({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-white mainFont">{title}</h2>
-            {count > 0 && <span className="text-sm text-white/40">({count})</span>}
+            {count > 0 && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FFC300]/15 text-[#FFC300] border border-[#FFC300]/20">
+                {count}
+              </span>
+            )}
           </div>
           {count > limit && (
             <Button variant="outline" size="sm" onClick={() => setExpanded(true)}>
@@ -98,7 +102,9 @@ export function ProfileSectionGrid({
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-bold text-white mainFont">{title}</h2>
-          <span className="text-sm text-white/40">({count})</span>
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FFC300]/15 text-[#FFC300] border border-[#FFC300]/20">
+            {count}
+          </span>
         </div>
         <Button variant="outline" size="sm" onClick={collapse}>
           Show less
