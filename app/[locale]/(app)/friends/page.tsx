@@ -85,7 +85,7 @@ function TabLink({
   return (
     <Link
       href={href}
-      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 ${
+      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
         active
           ? 'bg-[#FFC300] text-black'
           : 'text-white hover:text-white hover:bg-white/5'
