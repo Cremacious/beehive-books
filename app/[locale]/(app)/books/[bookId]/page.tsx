@@ -226,7 +226,7 @@ export default async function PublicBookPage({
           collections={collections}
           isOwner={isOwner}
           basePath="/books"
-          readChapterIds={readChapterIds}
+          readChapterIds={isAuthenticated ? readChapterIds : undefined}
         />
       </div>
     </div>

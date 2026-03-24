@@ -216,7 +216,7 @@ export async function getPublicBookAction(bookId: string) {
 }
 
 export async function getChapterWithContextAction(chapterId: string) {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
 
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),
