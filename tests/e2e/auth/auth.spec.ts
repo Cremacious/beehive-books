@@ -208,6 +208,13 @@ test.describe('authenticated', () => {
 
     await page.goto('/home');
 
+    // Dismiss cookie banner if present — it sits fixed at bottom and intercepts clicks
+    const cookieBanner = page.locator('button:has-text("Got it")');
+    if (await cookieBanner.isVisible()) {
+      await cookieBanner.click();
+      await page.waitForTimeout(300);
+    }
+
     await page.locator('[data-testid="sign-out-button"]').click();
 
     // better-auth redirects via window.location.href = '/'

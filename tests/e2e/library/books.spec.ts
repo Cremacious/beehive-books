@@ -151,7 +151,8 @@ test.describe('book CRUD and features', () => {
 
     await page.goto(`/library/${bookId}/edit`);
 
-    await page.locator('select[name="draftStatus"]').selectOption({ value: 'COMPLETED' });
+    await page.locator('select[name="draftStatus"]').selectOption('COMPLETED');
+    await page.waitForTimeout(500); // ensure React state updates before submit
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     await page.waitForURL(`/library/${bookId}`, { waitUntil: 'domcontentloaded' });
