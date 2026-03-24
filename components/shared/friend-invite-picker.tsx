@@ -66,7 +66,7 @@ export function FriendInvitePicker({
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search friends…"
               aria-label="Search friends to invite"
-              className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none"
+              className="flex-1 bg-transparent text-sm text-white placeholder-white/30 focus:outline-none"
             />
           </div>
 

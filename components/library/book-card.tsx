@@ -12,7 +12,7 @@ export default function BookCard({
   return (
     <Link
       href={`${basePath}/${book.id}`}
-      className="group flex flex-col rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/25 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-200"
+      className="group flex flex-col rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/25 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className="relative w-full aspect-2/3 overflow-hidden">
         {book.coverUrl ? (

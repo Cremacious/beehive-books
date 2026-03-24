@@ -201,7 +201,7 @@ export default function DiscussionReply({
               onChange={(e) => setReplyContent(e.target.value)}
               rows={2}
               placeholder={`Replying to ${authorName}…`}
-              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
             />
             {replyError && <p role="alert" className="text-xs text-red-400">{replyError}</p>}
             <div className="flex items-center gap-2">

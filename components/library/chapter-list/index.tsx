@@ -459,7 +459,7 @@ export default function ChapterList({
               onKeyDown={(e) => { if (e.key === 'Enter') handleAddCollection(); }}
               placeholder="Collection name…"
               autoFocus
-              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#FFC300]/50 transition-all"
+              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 transition-all"
             />
             <Button size="sm" onClick={handleAddCollection} disabled={addingCol || !newColName.trim()}>
               {addingCol ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Add'}

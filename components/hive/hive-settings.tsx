@@ -268,13 +268,13 @@ export default function HiveSettings({
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="Book title"
-                  className="w-full rounded-lg bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                  className="w-full rounded-lg bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
                 />
                 <input
                   value={newAuthor}
                   onChange={(e) => setNewAuthor(e.target.value)}
                   placeholder="Author name"
-                  className="w-full rounded-lg bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                  className="w-full rounded-lg bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
                 />
               </div>
             )}

@@ -40,7 +40,7 @@ export function UserSearch() {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           placeholder="Search by username or email…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] pl-10 pr-10 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 

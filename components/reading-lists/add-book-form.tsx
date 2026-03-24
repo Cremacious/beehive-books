@@ -39,14 +39,14 @@ export function AddBookForm({ listId }: { listId: string }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Book title"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         <input
           type="text"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           placeholder="Author"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {error && <p className="text-xs text-red-400">{error}</p>}
         <Button type="submit" disabled={!title.trim() || !author.trim() || submitting} className="w-full">

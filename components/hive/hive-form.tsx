@@ -157,7 +157,7 @@ export default function HiveForm({
         <input
           {...register('name')}
           placeholder="e.g. The Midnight Chronicles Hive…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.name && (
           <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
@@ -173,7 +173,7 @@ export default function HiveForm({
           {...register('description')}
           rows={3}
           placeholder="What are you building? What's the story about?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.description && (
           <p className="text-xs text-red-400 mt-1">
@@ -189,7 +189,7 @@ export default function HiveForm({
         <input
           {...register('genre')}
           placeholder="e.g. Fantasy, Sci-Fi, Romance…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
@@ -269,7 +269,7 @@ export default function HiveForm({
                 }
               }}
               placeholder="e.g. fantasy, dark-fiction, co-write…"
-              className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
             <button
               type="button"
@@ -345,13 +345,13 @@ export default function HiveForm({
                 value={newBookTitle}
                 onChange={(e) => setNewBookTitle(e.target.value)}
                 placeholder="Book title"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <input
                 value={newBookAuthor}
                 onChange={(e) => setNewBookAuthor(e.target.value)}
                 placeholder="Author name (you or a pen name)"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
             </div>
           )}

@@ -117,7 +117,7 @@ export function ProfileSectionGrid({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`Search ${title.toLowerCase()}…`}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
 

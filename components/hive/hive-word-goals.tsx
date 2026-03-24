@@ -277,7 +277,7 @@ export default function HiveWordGoals({
               if (e.key === 'Enter') handleLog();
             }}
             placeholder="How many words did you write?"
-            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
           <Button
             size="sm"
@@ -334,7 +334,7 @@ export default function HiveWordGoals({
               value={targetInput}
               onChange={(e) => setTargetInput(e.target.value)}
               placeholder="Target words (e.g. 10000)"
-              className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
             {goalType === 'MONTHLY' ? (
               <div className="sm:w-1/2">

@@ -376,7 +376,7 @@ function AddCommentForm({
         onChange={(e) => setSelectedText(e.target.value)}
         placeholder="Text you're referencing (optional)…"
         maxLength={500}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
       <textarea
@@ -385,7 +385,7 @@ function AddCommentForm({
         placeholder="Your annotation…"
         maxLength={2000}
         rows={3}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
       />
 
       {error && <p className="text-xs text-red-400">{error}</p>}

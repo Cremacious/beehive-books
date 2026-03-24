@@ -19,7 +19,7 @@ interface SectionProps<T> {
   renderItem: (item: T) => React.ReactNode;
 }
 
-function SectionHeader({ title, icon, seeAllHref, linkClassName = "flex items-center gap-1 text-sm text-white/40 hover:text-[#FFC300] transition-colors" }: { title: string; icon: React.ReactNode; seeAllHref: string; linkClassName?: string }) {
+function SectionHeader({ title, icon, seeAllHref, linkClassName = "flex items-center gap-1 text-sm text-white/60 hover:text-[#FFC300] transition-colors" }: { title: string; icon: React.ReactNode; seeAllHref: string; linkClassName?: string }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-base font-bold text-white mainFont flex items-center gap-2">
@@ -83,7 +83,7 @@ export function ExploreHub({ books, clubs, hives, prompts, readingLists }: Explo
           <Compass className="w-9 h-9 text-white/10" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2 mainFont">Nothing to explore yet</h2>
-        <p className="text-sm text-white/40 max-w-sm leading-relaxed">
+        <p className="text-sm text-white/70 max-w-sm leading-relaxed">
           Content appears here when creators mark their books, clubs, and hives as explorable.
           Check back soon.
         </p>

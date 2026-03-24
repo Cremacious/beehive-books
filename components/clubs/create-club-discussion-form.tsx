@@ -35,7 +35,7 @@ export default function CreateClubDiscussionForm({ clubId }: { clubId: string })
         <input
           {...register('title')}
           placeholder="What do you want to discuss?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>}
       </div>
@@ -45,7 +45,7 @@ export default function CreateClubDiscussionForm({ clubId }: { clubId: string })
           {...register('content')}
           rows={8}
           placeholder="Share your thoughts..."
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.content && <p className="text-xs text-red-400 mt-1">{errors.content.message}</p>}
       </div>
