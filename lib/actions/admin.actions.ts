@@ -17,6 +17,7 @@ import {
   clubDiscussionReplies,
   notifications,
   announcements,
+  announcementDismissals,
 } from '@/db/schema';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
@@ -489,17 +490,53 @@ export type AnnouncementItem = {
 };
 
 export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
+  const userId = await getOptionalUserId();
+
   const rows = await db.query.announcements.findMany({
     orderBy: desc(announcements.createdAt),
     with: { createdBy: { columns: { username: true } } },
   });
-  return rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    content: r.content,
-    createdAt: r.createdAt,
-    createdBy: r.createdBy,
-  }));
+
+  if (!userId) {
+    return rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      content: r.content,
+      createdAt: r.createdAt,
+      createdBy: r.createdBy,
+    }));
+  }
+
+  const dismissals = await db.query.announcementDismissals.findMany({
+    where: eq(announcementDismissals.userId, userId),
+    columns: { announcementId: true },
+  });
+  const dismissedIds = new Set(dismissals.map((d) => d.announcementId));
+
+  return rows
+    .filter((r) => !dismissedIds.has(r.id))
+    .map((r) => ({
+      id: r.id,
+      title: r.title,
+      content: r.content,
+      createdAt: r.createdAt,
+      createdBy: r.createdBy,
+    }));
+}
+
+export async function dismissAnnouncementAction(
+  announcementId: string,
+): Promise<{ success: boolean }> {
+  try {
+    const userId = await requireAuth();
+    await db
+      .insert(announcementDismissals)
+      .values({ userId, announcementId })
+      .onConflictDoNothing();
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
 }
 
 export async function getAllAnnouncementsAdminAction(): Promise<AnnouncementItem[]> {
