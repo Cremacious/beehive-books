@@ -32,7 +32,7 @@ export default async function FriendsPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-full max-w-xs">
+      <div className="inline-flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
         <TabLink
           href="/friends?tab=friends"
           active={tab === 'friends'}
