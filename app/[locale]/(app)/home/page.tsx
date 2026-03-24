@@ -12,13 +12,17 @@ import {
   UserPlus,
   Compass,
   ArrowRight,
-  Sparkles,
-  BookText,
+  Clock,
+  Lightbulb,
+  Bell,
 } from 'lucide-react';
 import { getFriendFeedAction } from '@/lib/actions/feed.actions';
 import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
 import { getAnnouncementsAction } from '@/lib/actions/admin.actions';
-import AnnouncementCard from '@/components/announcements/announcement-card';
+import { getRecentWritingAction } from '@/lib/actions/book.actions';
+import { getContinueReadingAction } from '@/lib/actions/reading.actions';
+import { getCurrentUserAction } from '@/lib/actions/user.actions';
+import { AnnouncementsSection } from '@/components/announcements/announcements-section';
 import type {
   FeedEvent,
   FeedEventType,
@@ -30,6 +34,13 @@ export const metadata: Metadata = {
   description:
     'Your personalized feed — see what your friends and community are writing.',
 };
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 function timeAgo(date: Date): string {
   const diff = Date.now() - new Date(date).getTime();
@@ -60,133 +71,6 @@ function dayLabel(date: Date): string {
     day: 'numeric',
   });
 }
-
-const QUICK_LINKS = [
-  {
-    href: '/library',
-    icon: BookText,
-    label: 'Library',
-    color: 'text-[#FFC300]',
-    bg: 'bg-[#FFC300]/10',
-    border: 'border-[#FFC300]/20',
-    hoverBorder: 'hover:border-[#FFC300]/40',
-  },
-  {
-    href: '/clubs',
-    icon: Users2,
-    label: 'Clubs',
-    color: 'text-blue-400',
-    bg: 'bg-blue-400/10',
-    border: 'border-blue-400/20',
-    hoverBorder: 'hover:border-blue-400/40',
-  },
-  {
-    href: '/hive',
-    icon: Hexagon,
-    label: 'Hives',
-    color: 'text-teal-400',
-    bg: 'bg-teal-400/10',
-    border: 'border-teal-400/20',
-    hoverBorder: 'hover:border-teal-400/40',
-  },
-  {
-    href: '/prompts',
-    icon: PenLine,
-    label: 'Prompts',
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-400/10',
-    border: 'border-emerald-400/20',
-    hoverBorder: 'hover:border-emerald-400/40',
-  },
-  {
-    href: '/reading-lists',
-    icon: List,
-    label: 'Reading Lists',
-    color: 'text-sky-400',
-    bg: 'bg-sky-400/10',
-    border: 'border-sky-400/20',
-    hoverBorder: 'hover:border-sky-400/40',
-  },
-  {
-    href: '/explore',
-    icon: Compass,
-    label: 'Explore',
-    color: 'text-pink-400',
-    bg: 'bg-pink-400/10',
-    border: 'border-pink-400/20',
-    hoverBorder: 'hover:border-pink-400/40',
-  },
-  {
-    href: '/friends',
-    icon: UserPlus,
-    label: 'Friends',
-    color: 'text-purple-400',
-    bg: 'bg-purple-400/10',
-    border: 'border-purple-400/20',
-    hoverBorder: 'hover:border-purple-400/40',
-  },
-] as const;
-
-const FEATURE_CARDS = [
-  {
-    href: '/library',
-    icon: BookOpen,
-    color: 'text-[#FFC300]',
-    bg: 'bg-[#FFC300]/10',
-    title: 'Write & Share',
-    description:
-      'Start your own book, organize chapters, and share your work with friends.',
-    cta: 'Open Library',
-  },
-  {
-    href: '/clubs',
-    icon: Users2,
-    color: 'text-blue-400',
-    bg: 'bg-blue-400/10',
-    title: 'Book Clubs',
-    description: 'Join or create a club to read and discuss books together.',
-    cta: 'Browse Clubs',
-  },
-  {
-    href: '/hive',
-    icon: Hexagon,
-    color: 'text-teal-400',
-    bg: 'bg-teal-400/10',
-    title: 'Hives',
-    description:
-      'Collaborate on a book with other writers — claim chapters, track progress.',
-    cta: 'Explore Hives',
-  },
-  {
-    href: '/prompts',
-    icon: Sparkles,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-400/10',
-    title: 'Writing Prompts',
-    description:
-      'Challenge yourself with writing prompts and see what others create.',
-    cta: 'See Prompts',
-  },
-  {
-    href: '/reading-lists',
-    icon: List,
-    color: 'text-sky-400',
-    bg: 'bg-sky-400/10',
-    title: 'Reading Lists',
-    description: 'Build and share curated lists of books you want to read.',
-    cta: 'Your Lists',
-  },
-  {
-    href: '/explore',
-    icon: Compass,
-    color: 'text-pink-400',
-    bg: 'bg-pink-400/10',
-    title: 'Explore',
-    description:
-      'Discover books and writers from across the Beehive community.',
-    cta: 'Start Exploring',
-  },
-] as const;
 
 type EventConfig = {
   icon: React.ElementType;
@@ -263,37 +147,95 @@ function UserAvatar({ user, size = 7 }: { user: FeedUser; size?: number }) {
   );
 }
 
-function QuickLinksBar() {
+function SectionHeader({
+  title,
+  href,
+  icon,
+}: {
+  title: string;
+  href?: string;
+  icon?: React.ReactNode;
+}) {
   return (
-    <div className="mb-8">
-      <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em] mb-3">
-        Quick Access
-      </p>
-      <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-        {QUICK_LINKS.map(
-          ({ href, icon: Icon, label, color, bg, border, hoverBorder }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex flex-col items-center gap-1.5 p-3 rounded-xl bg-[#252525] border ${border} ${hoverBorder} transition-all hover:bg-[#2a2a2a] group`}
-            >
-              <div
-                className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center`}
-              >
-                <Icon className={`w-4 h-4 ${color}`} />
-              </div>
-              <span className="text-[11px] font-medium text-white group-hover:text-white/80 transition-colors text-center leading-tight">
-                {label}
-              </span>
-            </Link>
-          ),
-        )}
-      </div>
+    <div className="flex items-center justify-between">
+      <h2 className="text-sm font-semibold text-white/70 flex items-center gap-1.5">
+        {icon}
+        {title}
+      </h2>
+      {href && (
+        <Link
+          href={href}
+          className="text-xs text-white/60 hover:text-[#FFC300] transition-colors flex items-center gap-1"
+        >
+          See all <ArrowRight className="w-3 h-3" />
+        </Link>
+      )}
     </div>
   );
 }
 
 function NewUserWelcome() {
+  const FEATURE_CARDS = [
+    {
+      href: '/library',
+      icon: BookOpen,
+      color: 'text-[#FFC300]',
+      bg: 'bg-[#FFC300]/10',
+      title: 'Write & Share',
+      description:
+        'Start your own book, organize chapters, and share your work with friends.',
+      cta: 'Open Library',
+    },
+    {
+      href: '/clubs',
+      icon: Users2,
+      color: 'text-blue-400',
+      bg: 'bg-blue-400/10',
+      title: 'Book Clubs',
+      description: 'Join or create a club to read and discuss books together.',
+      cta: 'Browse Clubs',
+    },
+    {
+      href: '/hive',
+      icon: Hexagon,
+      color: 'text-teal-400',
+      bg: 'bg-teal-400/10',
+      title: 'Hives',
+      description:
+        'Collaborate on a book with other writers — claim chapters, track progress.',
+      cta: 'Explore Hives',
+    },
+    {
+      href: '/prompts',
+      icon: Lightbulb,
+      color: 'text-emerald-400',
+      bg: 'bg-emerald-400/10',
+      title: 'Writing Prompts',
+      description:
+        'Challenge yourself with writing prompts and see what others create.',
+      cta: 'See Prompts',
+    },
+    {
+      href: '/reading-lists',
+      icon: List,
+      color: 'text-sky-400',
+      bg: 'bg-sky-400/10',
+      title: 'Reading Lists',
+      description: 'Build and share curated lists of books you want to read.',
+      cta: 'Your Lists',
+    },
+    {
+      href: '/explore',
+      icon: Compass,
+      color: 'text-pink-400',
+      bg: 'bg-pink-400/10',
+      title: 'Explore',
+      description:
+        'Discover books and writers from across the Beehive community.',
+      cta: 'Start Exploring',
+    },
+  ] as const;
+
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-[#FFC300]/20 bg-[#FFC300]/5 p-6 text-center">
@@ -317,25 +259,25 @@ function NewUserWelcome() {
               <Link
                 key={href}
                 href={href}
-                className="flex items-start gap-4 p-4 rounded-xl bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/25 hover:bg-[#2a2a2a] transition-all group"
+                className="flex items-start gap-4 p-4 rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#FFC300]/25 hover:bg-[#252525] transition-all group"
               >
                 <div
                   className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center shrink-0 mt-0.5`}
                 >
-                  <Icon className={`w-5 h-5 ${color}`} />
+                  <Icon className={`w-5 h-5 ${color}`} aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white mb-0.5">
                     {title}
                   </p>
-                  <p className="text-xs text-white/80 leading-relaxed">
+                  <p className="text-xs text-white/70 leading-relaxed">
                     {description}
                   </p>
                   <span
                     className={`inline-flex items-center gap-1 text-xs font-medium mt-2 ${color} opacity-70 group-hover:opacity-100 transition-opacity`}
                   >
                     {cta}
-                    <ArrowRight className="w-3 h-3" />
+                    <ArrowRight className="w-3 h-3" aria-hidden="true" />
                   </span>
                 </div>
               </Link>
@@ -344,15 +286,15 @@ function NewUserWelcome() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#2a2a2a] bg-[#252525] p-5 flex flex-col sm:flex-row items-center gap-4">
+      <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-5 flex flex-col sm:flex-row items-center gap-4">
         <div className="w-10 h-10 rounded-xl bg-purple-400/10 flex items-center justify-center shrink-0">
-          <UserPlus className="w-5 h-5 text-purple-400" />
+          <UserPlus className="w-5 h-5 text-purple-400" aria-hidden="true" />
         </div>
         <div className="flex-1 text-center sm:text-left">
           <p className="text-sm font-semibold text-white">
             Find your writing community
           </p>
-          <p className="text-xs text-white/80 mt-0.5">
+          <p className="text-xs text-white/70 mt-0.5">
             Connect with friends to see their activity in this feed.
           </p>
         </div>
@@ -360,7 +302,7 @@ function NewUserWelcome() {
           href="/friends?tab=find"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors shrink-0"
         >
-          <UserPlus className="w-4 h-4" />
+          <UserPlus className="w-4 h-4" aria-hidden="true" />
           Find People
         </Link>
       </div>
@@ -381,9 +323,9 @@ function EventRow({ event }: { event: FeedEvent }) {
       <div className="relative shrink-0 mt-0.5">
         <UserAvatar user={event.user} size={8} />
         <div
-          className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center ${cfg.bg} ring-2 ring-[#252525]`}
+          className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center ${cfg.bg} ring-2 ring-[#1c1c1c]`}
         >
-          <Icon className={`w-2.5 h-2.5 ${cfg.color}`} />
+          <Icon className={`w-2.5 h-2.5 ${cfg.color}`} aria-hidden="true" />
         </div>
       </div>
       <div className="flex-1 min-w-0">
@@ -391,7 +333,7 @@ function EventRow({ event }: { event: FeedEvent }) {
           {cfg.describe(event.meta, name)}
         </p>
       </div>
-      <span className="text-xs text-white/80 shrink-0 mt-0.5 whitespace-nowrap">
+      <span className="text-xs text-white/60 shrink-0 mt-0.5 whitespace-nowrap">
         {timeAgo(event.timestamp)}
       </span>
     </Link>
@@ -404,7 +346,7 @@ function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
       <p className="text-xs font-semibold text-white uppercase tracking-wider mb-2">
         {label}
       </p>
-      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
+      <div className="rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] px-4 divide-y divide-[#2a2a2a]">
         {events.map((ev) => (
           <EventRow key={ev.id} event={ev} />
         ))}
@@ -415,11 +357,11 @@ function DayGroup({ label, events }: { label: string; events: FeedEvent[] }) {
 
 function NoActivityEmpty() {
   return (
-    <div className="rounded-2xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-14 text-center">
+    <div className="rounded-2xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-14 text-center mt-4">
       <p className="text-lg text-white font-medium">
         No recent activity from your friends.
       </p>
-      <p className="text-sm text-white/80 max-w-xs mx-auto mt-1.5">
+      <p className="text-sm text-white/70 max-w-xs mx-auto mt-1.5">
         New books, chapters, clubs, hives, and prompts will appear here as your
         friends create them.
       </p>
@@ -428,12 +370,17 @@ function NoActivityEmpty() {
 }
 
 export default async function UserHomePage() {
-  const [events, { friends }, announcements] = await Promise.all([
-    getFriendFeedAction(),
-    getMyFriendsDataAction(),
-    getAnnouncementsAction(),
-  ]);
+  const [events, { friends }, announcements, recentWriting, continueReading, currentUser] =
+    await Promise.all([
+      getFriendFeedAction(),
+      getMyFriendsDataAction(),
+      getAnnouncementsAction(),
+      getRecentWritingAction(),
+      getContinueReadingAction(),
+      getCurrentUserAction(),
+    ]);
 
+  const username = currentUser?.username ?? null;
   const hasFriends = friends.length > 0;
 
   const groups: { label: string; events: FeedEvent[] }[] = [];
@@ -448,64 +395,162 @@ export default async function UserHomePage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 md:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mainFont">
-          Home
+    <div className="max-w-4xl mx-auto px-4 py-6 md:px-8 space-y-8">
+
+      {/* Greeting */}
+      <div>
+        <h1 className="text-2xl font-bold text-white mainFont">
+          {getGreeting()}{username ? `, ${username}` : ''}
         </h1>
-        <p className="mt-1 text-sm text-white/80">
-          {hasFriends
-            ? 'The latest from your friends on Beehive Books.'
-            : 'Your home on Beehive Books! Get started below.'}
-        </p>
+        <p className="text-sm text-white/60 mt-0.5">Here&apos;s what&apos;s happening on Beehive.</p>
       </div>
 
-      <QuickLinksBar />
-
+      {/* Announcements */}
       {announcements.length > 0 && (
-        <div className="space-y-3 mb-8">
-          {announcements.map((a) => (
-            <AnnouncementCard
-              key={a.id}
-              title={a.title}
-              content={a.content}
-              createdAt={a.createdAt}
-            />
-          ))}
-        </div>
+        <AnnouncementsSection announcements={announcements} />
       )}
 
+      {/* Your Writing */}
+      {recentWriting.length > 0 && (
+        <section>
+          <SectionHeader
+            title="Your Writing"
+            href="/library"
+            icon={<PenLine className="w-4 h-4" aria-hidden="true" />}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            {recentWriting.map((book) => (
+              <Link
+                key={book.id}
+                href={`/library/${book.id}`}
+                className="group flex items-center gap-3 p-4 rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#FFC300]/25 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div className="w-12 h-16 rounded-lg bg-linear-to-br from-[#222] to-[#141414] shrink-0 overflow-hidden relative">
+                  {book.coverUrl ? (
+                    <img
+                      src={book.coverUrl}
+                      alt={book.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-lg font-bold text-white/20 mainFont">
+                        {book.title[0]?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate group-hover:text-[#FFC300] transition-colors mainFont">
+                    {book.title}
+                  </p>
+                  <p className="text-xs text-white/60 mt-0.5">
+                    {book.wordCount.toLocaleString()} words · {book.chapterCount} chapters
+                  </p>
+                </div>
+                <ArrowRight
+                  className="w-4 h-4 text-white/30 group-hover:text-[#FFC300]/60 transition-colors shrink-0"
+                  aria-hidden="true"
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Continue Reading */}
+      {continueReading.length > 0 && (
+        <section>
+          <SectionHeader
+            title="Continue Reading"
+            href="/explore/books"
+            icon={<Clock className="w-4 h-4" aria-hidden="true" />}
+          />
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mt-4 -mx-4 px-4 md:-mx-8 md:px-8">
+            {continueReading.map((item) => (
+              <Link
+                key={item.bookId}
+                href={`/books/${item.bookId}/${item.chapterId}`}
+                className="group shrink-0 w-36 flex flex-col rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#FFC300]/25 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div className="w-full aspect-2/3 bg-linear-to-br from-[#222] to-[#141414] relative overflow-hidden">
+                  {item.coverUrl ? (
+                    <img
+                      src={item.coverUrl}
+                      alt={item.bookTitle}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white/20 mainFont">
+                        {item.bookTitle[0]?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-2.5">
+                  <p className="text-xs font-semibold text-white line-clamp-2 group-hover:text-[#FFC300] transition-colors mainFont min-h-8">
+                    {item.bookTitle}
+                  </p>
+                  <p className="text-[10px] text-white/60 mt-1 truncate">{item.chapterTitle}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Friend Activity OR New User Welcome */}
       {!hasFriends ? (
         <NewUserWelcome />
       ) : events.length === 0 ? (
-        <>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em]">
-              Friend Activity
-            </p>
-          </div>
+        <section>
+          <SectionHeader
+            title="Friend Activity"
+            icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
+          />
           <NoActivityEmpty />
-        </>
+        </section>
       ) : (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-[0.15em]">
-              Friend Activity
-            </p>
-            <p className="text-sm text-white">
-              {events.length} update{events.length !== 1 ? 's' : ''} · last 30
-              days
-            </p>
+        <section>
+          <SectionHeader
+            title="Friend Activity"
+            icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
+          />
+          <div className="space-y-4 mt-4">
+            {groups.map((group) => (
+              <DayGroup key={group.label} label={group.label} events={group.events} />
+            ))}
           </div>
-          {groups.map((group) => (
-            <DayGroup
-              key={group.label}
-              label={group.label}
-              events={group.events}
-            />
+        </section>
+      )}
+
+      {/* Quick Links */}
+      <section>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { href: '/library', label: 'Library', icon: BookOpen },
+              { href: '/explore', label: 'Explore', icon: Compass },
+              { href: '/hive', label: 'Hives', icon: Hexagon },
+              { href: '/clubs', label: 'Clubs', icon: Users2 },
+              { href: '/prompts', label: 'Prompts', icon: Lightbulb },
+              { href: '/reading-lists', label: 'Reading Lists', icon: BookMarked },
+              { href: '/friends', label: 'Friends', icon: UserPlus },
+            ] as const
+          ).map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c1c1c] border border-[#2a2a2a] text-sm text-white/60 hover:text-white hover:border-[#FFC300]/30 transition-all"
+            >
+              <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+              {label}
+            </Link>
           ))}
         </div>
-      )}
+      </section>
+
     </div>
   );
 }
