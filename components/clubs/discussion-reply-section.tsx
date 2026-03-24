@@ -67,7 +67,7 @@ export default function DiscussionReplySection({
             onChange={(e) => setContent(e.target.value)}
             rows={3}
             placeholder="Share your thoughts…"
-            className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+            className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
           />
           {error && <p className="text-xs text-red-400 mt-1.5">{error}</p>}
           <div className="mt-3 flex items-center gap-3">

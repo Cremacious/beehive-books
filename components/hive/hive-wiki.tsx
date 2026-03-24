@@ -163,7 +163,7 @@ function EntryForm({
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Entry title…"
         maxLength={200}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -201,7 +201,7 @@ function EntryForm({
               }
             }}
             placeholder="Add tag (Enter to add)…"
-            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
           <button
             type="button"
@@ -440,7 +440,7 @@ export default function HiveWiki({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search entries…"
-          className="flex-1 min-w-45 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+          className="flex-1 min-w-45 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
         />
         <Button size="sm" onClick={() => setEditorMode({ mode: 'create' })}>
           <Plus className="w-3.5 h-3.5" />

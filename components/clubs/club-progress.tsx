@@ -116,7 +116,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               value={bookTitle}
               onChange={(e) => setBookTitle(e.target.value)}
               placeholder="e.g. The Name of the Wind"
-              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
           <div>
@@ -126,7 +126,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
               value={bookAuthor}
               onChange={(e) => setBookAuthor(e.target.value)}
               placeholder="e.g. Patrick Rothfuss"
-              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+              className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
             />
           </div>
           <p className="text-sm text-white/80">
@@ -175,7 +175,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 value={currentPage}
                 onChange={(e) => setCurrentPage(e.target.value)}
                 placeholder="e.g. 120"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
             </div>
             <div>
@@ -188,7 +188,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 value={totalPages}
                 onChange={(e) => setTotalPages(e.target.value)}
                 placeholder="e.g. 662"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
             </div>
           </div>

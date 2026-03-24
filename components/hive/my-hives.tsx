@@ -126,7 +126,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by name, genre, or tag…"
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
 

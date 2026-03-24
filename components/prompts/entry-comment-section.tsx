@@ -273,7 +273,7 @@ function CommentItem({
               if (e.key === 'Enter') handleReply();
             }}
             placeholder={`Reply to ${displayName(comment.user)}…`}
-            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#252525] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
           <Button
             size="sm"
@@ -337,7 +337,7 @@ export function EntryCommentSection({
               }}
               rows={2}
               placeholder="Leave a comment…"
-              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+              className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
             />
             <div className="flex justify-end">
               <Button
