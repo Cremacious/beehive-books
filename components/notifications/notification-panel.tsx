@@ -58,6 +58,7 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
     case 'HIVE_ACTIVITY':          return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
     case 'HIVE_JOIN_REQUEST':      return 'wants to join your hive';
+    case 'BOOK_LIKE':              return 'liked your book';
   }
 }
 
@@ -89,6 +90,7 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'HIVE_POLL':            return { Icon: VoteIcon,        bg: 'bg-purple-500/20', fg: 'text-purple-400' };
     case 'HIVE_BETA_REVIEW':     return { Icon: BookOpen,        bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'HIVE_JOIN_REQUEST':    return { Icon: UserPlus,        bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'BOOK_LIKE':            return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
   }
 }
 
