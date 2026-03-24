@@ -2,10 +2,10 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, eq, ilike, ne, or } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { friendships, users, notifications } from '@/db/schema';
+import { books, friendships, users, notifications, prompts, hives } from '@/db/schema';
 import { insertNotification } from '@/lib/notifications';
 
 type ActionResult = {
@@ -47,10 +47,32 @@ export async function getFriendshipStatusAction(
   return { status: 'NONE' };
 }
 
+export type FriendLatestBook = {
+  id: string;
+  title: string;
+  coverUrl: string | null;
+  genre: string;
+};
+
+export type FriendRecentPrompt = {
+  id: string;
+  title: string;
+  status: 'ACTIVE' | 'ENDED';
+};
+
+export type FriendActivity = {
+  recentBooks: FriendLatestBook[];
+  recentPrompts: FriendRecentPrompt[];
+};
+
 export type FriendUser = {
   id: string;
   username: string | null;
   image: string | null;
+  bio?: string | null;
+  bookCount?: number;
+  latestBook?: FriendLatestBook | null;
+  activity?: FriendActivity;
 };
 
 export async function getMyFriendsDataAction() {
@@ -67,6 +89,7 @@ export async function getMyFriendsDataAction() {
           id: true,
           username: true,
           image: true,
+          bio: true,
         },
       },
       addressee: {
@@ -74,11 +97,56 @@ export async function getMyFriendsDataAction() {
           id: true,
           username: true,
           image: true,
+          bio: true,
         },
       },
     },
     orderBy: (f, { desc }) => [desc(f.updatedAt)],
   });
+
+  // Collect all friend user ids to batch-fetch book counts
+  const friendIds = all
+    .filter((f) => f.status === 'ACCEPTED')
+    .map((f) => (f.requesterId === userId ? f.addresseeId : f.requesterId));
+
+  const bookCountMap = new Map<string, number>();
+  const latestBookMap = new Map<string, FriendLatestBook | null>();
+  const activityMap = new Map<string, FriendActivity>();
+
+  if (friendIds.length > 0) {
+    await Promise.all(
+      friendIds.map(async (id) => {
+        const [countRow] = await db
+          .select({ count: count() })
+          .from(books)
+          .where(and(eq(books.userId, id), eq(books.privacy, 'PUBLIC')));
+        bookCountMap.set(id, countRow?.count ?? 0);
+
+        const latest = await db.query.books.findFirst({
+          where: and(eq(books.userId, id), eq(books.privacy, 'PUBLIC')),
+          orderBy: (b, { desc }) => [desc(b.updatedAt)],
+          columns: { id: true, title: true, coverUrl: true, genre: true },
+        });
+        latestBookMap.set(id, latest ?? null);
+
+        const [recentBooks, recentPrompts] = await Promise.all([
+          db.query.books.findMany({
+            where: and(eq(books.userId, id), eq(books.privacy, 'PUBLIC')),
+            orderBy: (b, { desc }) => [desc(b.updatedAt)],
+            limit: 3,
+            columns: { id: true, title: true, coverUrl: true, genre: true },
+          }),
+          db.query.prompts.findMany({
+            where: and(eq(prompts.creatorId, id), eq(prompts.explorable, true)),
+            orderBy: (p, { desc }) => [desc(p.createdAt)],
+            limit: 2,
+            columns: { id: true, title: true, status: true },
+          }),
+        ]);
+        activityMap.set(id, { recentBooks, recentPrompts });
+      }),
+    );
+  }
 
   const friends: Array<{ friendshipId: string; user: FriendUser }> = [];
   const receivedRequests: Array<{ friendshipId: string; user: FriendUser }> =
@@ -88,7 +156,15 @@ export async function getMyFriendsDataAction() {
   for (const f of all) {
     const other = f.requesterId === userId ? f.addressee : f.requester;
     if (f.status === 'ACCEPTED') {
-      friends.push({ friendshipId: f.id, user: other });
+      friends.push({
+        friendshipId: f.id,
+        user: {
+          ...other,
+          bookCount: bookCountMap.get(other.id) ?? 0,
+          latestBook: latestBookMap.get(other.id) ?? null,
+          activity: activityMap.get(other.id) ?? { recentBooks: [], recentPrompts: [] },
+        },
+      });
     } else if (f.status === 'PENDING') {
       if (f.addresseeId === userId)
         receivedRequests.push({ friendshipId: f.id, user: other });
@@ -311,4 +387,99 @@ export async function removeFriendAction(
   } catch {
     return { success: false, message: 'Failed to remove friend.' };
   }
+}
+
+export type SuggestedUser = {
+  id: string;
+  username: string | null;
+  image: string | null;
+  bio: string | null;
+  bookCount: number;
+  latestBook: FriendLatestBook | null;
+  activity: FriendActivity;
+  friendStatus: FriendStatus;
+};
+
+export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
+  const userId = await requireAuth();
+
+  // Get existing friendship ids to exclude
+  const myFriendships = await db.query.friendships.findMany({
+    where: or(
+      eq(friendships.requesterId, userId),
+      eq(friendships.addresseeId, userId),
+    ),
+  });
+  const connectedIds = new Set<string>(
+    myFriendships.flatMap((f) => [f.requesterId, f.addresseeId]),
+  );
+  connectedIds.add(userId);
+
+  // Find users with public books, not already connected
+  const bookCounts = await db
+    .select({
+      userId: books.userId,
+      count: count(),
+    })
+    .from(books)
+    .where(eq(books.privacy, 'PUBLIC'))
+    .groupBy(books.userId)
+    .orderBy(desc(count()))
+    .limit(30);
+
+  const candidateIds = bookCounts
+    .map((r) => r.userId)
+    .filter((id) => !connectedIds.has(id))
+    .slice(0, 12);
+
+  if (candidateIds.length === 0) return [];
+
+  const userRows = await db.query.users.findMany({
+    where: (u, { inArray }) => inArray(u.id, candidateIds),
+    columns: { id: true, username: true, image: true, bio: true },
+  });
+
+  const results = await Promise.all(
+    userRows.map(async (u) => {
+      const bookCount = bookCounts.find((b) => b.userId === u.id)?.count ?? 0;
+      const latestBook = await db.query.books.findFirst({
+        where: and(eq(books.userId, u.id), eq(books.privacy, 'PUBLIC')),
+        orderBy: (b, { desc }) => [desc(b.updatedAt)],
+        columns: { id: true, title: true, coverUrl: true, genre: true },
+      });
+
+      const f = myFriendships.find(
+        (row) =>
+          (row.requesterId === userId && row.addresseeId === u.id) ||
+          (row.requesterId === u.id && row.addresseeId === userId),
+      );
+      const friendStatus: FriendStatus = f
+        ? f.status === 'ACCEPTED'
+          ? { status: 'FRIENDS', friendshipId: f.id }
+          : f.requesterId === userId
+            ? { status: 'PENDING_SENT', friendshipId: f.id }
+            : { status: 'PENDING_RECEIVED', friendshipId: f.id }
+        : { status: 'NONE' };
+
+      const [recentBooks, recentPrompts] = await Promise.all([
+        db.query.books.findMany({
+          where: and(eq(books.userId, u.id), eq(books.privacy, 'PUBLIC')),
+          orderBy: (b, { desc }) => [desc(b.updatedAt)],
+          limit: 3,
+          columns: { id: true, title: true, coverUrl: true, genre: true },
+        }),
+        db.query.prompts.findMany({
+          where: and(eq(prompts.creatorId, u.id), eq(prompts.explorable, true)),
+          orderBy: (p, { desc }) => [desc(p.createdAt)],
+          limit: 2,
+          columns: { id: true, title: true, status: true },
+        }),
+      ]);
+      const activity: FriendActivity = { recentBooks, recentPrompts };
+
+      return { ...u, bookCount, latestBook: latestBook ?? null, activity, friendStatus };
+    }),
+  );
+
+  return results;
 }
