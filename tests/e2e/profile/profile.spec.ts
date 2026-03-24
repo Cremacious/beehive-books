@@ -26,7 +26,7 @@ import fs from 'fs';
 const authFile = path.join(__dirname, '../../.auth/user.json');
 
 // Seed account — must exist in the database before these tests run.
-const SEED_USERNAME = process.env.TEST_SEED_USERNAME ?? 'alice';
+const SEED_USERNAME = process.env.TEST_SEED_USERNAME ?? process.env.TEST_USER_USERNAME ?? 'alice';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GUEST TESTS
