@@ -59,6 +59,7 @@ function mapBook(b: typeof books.$inferSelect): Book {
     commentCount: b.commentCount,
     chapterCount: b.chapterCount,
     coverUrl: b.coverUrl,
+    tags: (b.tags ?? []) as string[],
   };
 }
 
@@ -334,6 +335,7 @@ export async function searchExplorablePromptsAction(
       creator: p.creator as PromptUser,
       myInviteStatus: null,
       myEntryId: myEntryMap.get(p.id) ?? null,
+      tags: (p.tags ?? []) as string[],
     })),
     nextCursor: hasMore ? items[LIMIT - 1].createdAt.toISOString() : null,
   };
@@ -417,6 +419,7 @@ const getCachedHubData = unstable_cache(
         creator: p.creator as PromptUser,
         myInviteStatus: null,
         myEntryId: null,
+        tags: (p.tags ?? []) as string[],
       })),
       readingLists: readingListRows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] })),
     };

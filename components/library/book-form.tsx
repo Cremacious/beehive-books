@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { createId } from '@paralleldrive/cuid2';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/ui/tag-input';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { bookSchema, type BookFormData } from '@/lib/validations/book.schema';
 import {
@@ -49,6 +50,7 @@ export function BookForm({
   const router = useRouter();
 
   const [presetId] = useState(() => book?.id ?? createId());
+  const [tags, setTags] = useState<string[]>(book?.tags ?? []);
   const [coverUrl, setCoverUrl] = useState<string | null>(
     book?.coverUrl ?? null,
   );
@@ -89,6 +91,7 @@ export function BookForm({
       explorable: book?.explorable ?? false,
       draftStatus:
         (book?.draftStatus as BookFormData['draftStatus']) ?? 'FIRST_DRAFT',
+      tags: book?.tags ?? [],
     },
   });
 
@@ -387,6 +390,18 @@ export function BookForm({
                 </span>
               </p>
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-yellow-500 mainFont">
+              Tags <span className="text-white/80 font-normal">(up to 10)</span>
+            </label>
+            <TagInput
+              value={tags}
+              onChange={(next) => { setTags(next); setValue('tags', next); }}
+              emptyMessage="No tags yet — tags help readers find your book."
+              error={errors.tags?.message}
+            />
           </div>
 
           <div className="space-y-2">

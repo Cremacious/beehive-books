@@ -18,6 +18,7 @@ export const promptSchema = z.object({
     ),
   privacy: z.enum(['PUBLIC', 'FRIENDS', 'PRIVATE']),
   explorable: z.boolean(),
+  tags: z.array(z.string().max(30)).max(10),
 });
 
 export type PromptFormData = z.infer<typeof promptSchema>;

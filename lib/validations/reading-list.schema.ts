@@ -5,6 +5,7 @@ export const readingListSchema = z.object({
   description: z.string().max(500, 'Description too long'),
   privacy: z.enum(['PUBLIC', 'PRIVATE', 'FRIENDS']),
   explorable: z.boolean(),
+  tags: z.array(z.string().max(30)).max(10),
 });
 
 export const bookEntrySchema = z.object({

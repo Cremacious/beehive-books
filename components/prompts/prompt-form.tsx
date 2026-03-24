@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/ui/tag-input';
 import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
 import {
   promptSchema,
@@ -48,6 +49,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
   const pendingIds = new Set(pendingFriends.map((f) => f.id));
   const initialInvited = prompt?.invites.map((i) => i.user.id).filter((id) => !pendingIds.has(id)) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
+  const [tags, setTags] = useState<string[]>(prompt?.tags ?? []);
 
   const {
     register,
@@ -63,6 +65,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
       endDate: prompt ? toDateInputValue(prompt.endDate) : defaultEndDate(),
       privacy: prompt?.privacy ?? 'PRIVATE',
       explorable: prompt?.explorable ?? false,
+      tags: prompt?.tags ?? [],
     },
   });
 
@@ -73,14 +76,14 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
     setServerError('');
 
     if (mode === 'create') {
-      const result = await createPromptAction(data, invitedIds);
+      const result = await createPromptAction({ ...data, tags }, invitedIds);
       if (result.success && result.promptId) {
         router.push(`/prompts/${result.promptId}`);
       } else {
         setServerError(result.message);
       }
     } else {
-      const result = await updatePromptAction(prompt!.id, data, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
+      const result = await updatePromptAction(prompt!.id, { ...data, tags }, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
       if (result.success) {
         router.push(`/prompts/${prompt!.id}`);
       } else {
@@ -120,6 +123,18 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
             {errors.description.message}
           </p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          Tags <span className="text-white/80 font-normal">(up to 10)</span>
+        </label>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          emptyMessage="No tags yet — tags help others find your prompt."
+          error={errors.tags?.message}
+        />
       </div>
 
       <div>
