@@ -138,13 +138,14 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // ── Email verification guard ───────────────────────────────────────────────
-  // Only check protected routes — skip public paths and sign-in itself to avoid loops
+  // ── Session guards: onboarding + email verification ───────────────────────
+  // Fetch the session once and run both checks. Exempt /onboarding itself to
+  // avoid a redirect loop, and public paths / sign-in for the same reason.
   if (
     isAuthenticated &&
     !isPublic(pathname) &&
     pathWithoutLocale !== '/sign-in' &&
-    process.env.REQUIRE_EMAIL_VERIFICATION === 'true'
+    pathWithoutLocale !== '/onboarding'
   ) {
     try {
       const baseUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
@@ -153,8 +154,18 @@ export default async function middleware(request: NextRequest) {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data?.user && data.user.emailVerified === false) {
-          return NextResponse.redirect(new URL('/sign-in', request.url));
+        if (data?.user) {
+          // Redirect to onboarding if profile setup is incomplete
+          if (data.user.onboardingComplete === false) {
+            return NextResponse.redirect(new URL('/onboarding', request.url));
+          }
+          // Redirect unverified users back to sign-in (opt-in via env var)
+          if (
+            process.env.REQUIRE_EMAIL_VERIFICATION === 'true' &&
+            data.user.emailVerified === false
+          ) {
+            return NextResponse.redirect(new URL('/sign-in', request.url));
+          }
         }
       }
     } catch {
