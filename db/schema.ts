@@ -302,6 +302,7 @@ export const notifications = pgTable('notifications', {
       'HIVE_BETA_REVIEW',
       'HIVE_INVITE_PENDING',
       'HIVE_ACTIVITY',
+      'BOOK_LIKE',
     ] as const,
   }).notNull(),
   isRead: boolean('is_read').notNull().default(false),
