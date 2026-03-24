@@ -20,5 +20,5 @@ export default async function OnboardingPage() {
     columns: { username: true },
   });
 
-  return <OnboardingFlow existingUsername={user?.username ?? null} />;
+  return <OnboardingFlow existingUsername={user?.username ?? null} userId={session.user.id} />;
 }

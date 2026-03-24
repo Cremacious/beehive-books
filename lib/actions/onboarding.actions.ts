@@ -30,8 +30,8 @@ export async function checkUsernameAction(
 export async function completeOnboardingAction(data: {
   username?: string;
   bio?: string;
-  intents: string[];
-}): Promise<{ success: boolean; error?: string; redirectTo: string }> {
+  imageUrl?: string;
+}): Promise<{ success: boolean; error?: string }> {
   const userId = await requireAuth();
 
   if (data.username) {
@@ -39,7 +39,6 @@ export async function completeOnboardingAction(data: {
       return {
         success: false,
         error: 'Username must be 3–20 characters: letters, numbers, or underscores only.',
-        redirectTo: '',
       };
     }
     const existing = await db.query.users.findFirst({
@@ -47,7 +46,7 @@ export async function completeOnboardingAction(data: {
       columns: { id: true },
     });
     if (existing && existing.id !== userId) {
-      return { success: false, error: 'That username is already taken.', redirectTo: '' };
+      return { success: false, error: 'That username is already taken.' };
     }
   }
 
@@ -56,17 +55,11 @@ export async function completeOnboardingAction(data: {
     .set({
       ...(data.username ? { username: data.username } : {}),
       ...(data.bio !== undefined ? { bio: data.bio.trim() || null } : {}),
+      ...(data.imageUrl ? { image: data.imageUrl } : {}),
       onboardingComplete: true,
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId));
 
-  let redirectTo = '/home';
-  if (data.intents.length === 1) {
-    if (data.intents[0] === 'write') redirectTo = '/library/create';
-    else if (data.intents[0] === 'read') redirectTo = '/explore';
-    else if (data.intents[0] === 'collaborate') redirectTo = '/hive';
-  }
-
-  return { success: true, redirectTo };
+  return { success: true };
 }

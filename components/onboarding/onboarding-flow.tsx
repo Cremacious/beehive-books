@@ -2,35 +2,13 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { BookOpen, PenLine, Users2, Check, Loader2 } from 'lucide-react';
+import { Camera, Check, Loader2 } from 'lucide-react';
 import logoImage from '@/public/logo3.png';
+import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import {
   checkUsernameAction,
   completeOnboardingAction,
 } from '@/lib/actions/onboarding.actions';
-
-type Intent = 'write' | 'read' | 'collaborate';
-
-const INTENTS: { id: Intent; label: string; description: string; Icon: React.ElementType }[] = [
-  {
-    id: 'write',
-    label: 'Write my own stories',
-    description: 'Create books, write chapters, share your work with readers',
-    Icon: PenLine,
-  },
-  {
-    id: 'read',
-    label: 'Read and discover books',
-    description: 'Find stories, build your reading list, leave reviews',
-    Icon: BookOpen,
-  },
-  {
-    id: 'collaborate',
-    label: 'Collaborate with other writers',
-    description: 'Join hives, share prompts, discuss with writing clubs',
-    Icon: Users2,
-  },
-];
 
 function StepDots({ current, total }: { current: number; total: number }) {
   return (
@@ -56,7 +34,13 @@ function StepDots({ current, total }: { current: number; total: number }) {
   );
 }
 
-export function OnboardingFlow({ existingUsername }: { existingUsername: string | null }) {
+export function OnboardingFlow({
+  existingUsername,
+  userId,
+}: {
+  existingUsername: string | null;
+  userId: string;
+}) {
   const initialStep = existingUsername ? 2 : 1;
   const [step, setStep] = useState<1 | 2 | 3>(initialStep as 1 | 2 | 3);
 
@@ -70,8 +54,11 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
   // Step 2
   const [bio, setBio] = useState('');
 
-  // Step 3
-  const [intents, setIntents] = useState<Set<Intent>>(new Set());
+  // Step 3 — photo
+  const { upload, uploading } = useCloudinaryUpload('avatars', userId);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState('');
 
   // Submit
   const [submitting, setSubmitting] = useState(false);
@@ -84,12 +71,11 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
     clearTimeout(debounceRef.current);
 
     if (!value) return;
-
     if (!/^[a-zA-Z0-9_]{1,20}$/.test(value)) {
       setUsernameError('Letters, numbers, and underscores only.');
       return;
     }
-    if (value.length < 3) return; // wait until 3 chars to check
+    if (value.length < 3) return;
 
     setUsernameChecking(true);
     debounceRef.current = setTimeout(async () => {
@@ -105,23 +91,27 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
     }, 400);
   }
 
-  function toggleIntent(id: Intent) {
-    setIntents((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setUploadError('');
+    const url = await upload(file);
+    if (!url) {
+      setUploadError('Upload failed. Please try again.');
+    } else {
+      setUploadedUrl(url);
+    }
   }
 
-  async function handleFinish() {
+  async function handleFinish(skipPhoto = false) {
     setSubmitting(true);
     setSubmitError('');
 
     const result = await completeOnboardingAction({
       username: existingUsername ? undefined : username,
       bio,
-      intents: Array.from(intents),
+      imageUrl: skipPhoto ? undefined : (uploadedUrl ?? undefined),
     });
 
     if (!result.success) {
@@ -135,7 +125,7 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
       return;
     }
 
-    window.location.href = result.redirectTo;
+    window.location.href = '/home';
   }
 
   const step1Valid =
@@ -143,6 +133,8 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
     !usernameError &&
     !usernameChecking &&
     usernameAvailable === true;
+
+  const initial = (existingUsername ?? username)[0]?.toUpperCase() ?? '?';
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
@@ -164,7 +156,7 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
         <div className="w-full rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-2xl p-8">
           <StepDots current={step} total={3} />
 
-          {/* ── Step 1: Username ───────────────────────────────────────── */}
+          {/* ── Step 1: Username ─────────────────────────────────────────── */}
           {step === 1 && (
             <div>
               <h1 className="text-2xl font-bold text-white mainFont text-center mb-1">
@@ -220,7 +212,7 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
             </div>
           )}
 
-          {/* ── Step 2: Bio ─────────────────────────────────────────────── */}
+          {/* ── Step 2: Bio ──────────────────────────────────────────────── */}
           {step === 2 && (
             <div>
               <h1 className="text-2xl font-bold text-white mainFont text-center mb-1">
@@ -260,69 +252,88 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
             </div>
           )}
 
-          {/* ── Step 3: Intent ──────────────────────────────────────────── */}
+          {/* ── Step 3: Profile photo ─────────────────────────────────────── */}
           {step === 3 && (
             <div>
               <h1 className="text-2xl font-bold text-white mainFont text-center mb-1">
-                What brings you to Beehive?
+                Add a profile photo
               </h1>
               <p className="text-sm text-white/80 text-center mb-8">
-                Select all that apply. You can do everything — this just helps us point you in the right direction.
+                Help other writers recognize you.
               </p>
 
-              <div className="space-y-3">
-                {INTENTS.map(({ id, label, description, Icon }) => {
-                  const selected = intents.has(id);
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => toggleIntent(id)}
-                      className={`w-full flex items-start gap-4 rounded-xl border p-4 text-left transition-all duration-150 ${
-                        selected
-                          ? 'bg-[#FFC300]/10 border-[#FFC300]/40'
-                          : 'bg-[#1c1c1c] border-[#2a2a2a] hover:border-[#FFC300]/20'
-                      }`}
-                    >
-                      <div
-                        className={`mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                          selected ? 'bg-[#FFC300]/20' : 'bg-[#2a2a2a]'
-                        }`}
-                      >
-                        <Icon
-                          className={`w-4 h-4 ${selected ? 'text-[#FFC300]' : 'text-white/50'}`}
-                        />
+              {/* Avatar preview */}
+              <div className="flex flex-col items-center gap-4 mb-6">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="group relative w-24 h-24 rounded-full overflow-hidden bg-[#2a2000] border-2 border-[#FFC300]/20 hover:border-[#FFC300]/50 transition-colors focus:outline-none disabled:cursor-not-allowed"
+                >
+                  {uploading ? (
+                    <div className="w-full h-full flex items-center justify-center bg-[#2a2000]">
+                      <Loader2 className="w-6 h-6 text-[#FFC300] animate-spin" />
+                    </div>
+                  ) : uploadedUrl ? (
+                    <>
+                      <Image
+                        src={uploadedUrl}
+                        alt="Profile photo"
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-6 h-6 text-white" />
                       </div>
-                      <div className="min-w-0">
-                        <p
-                          className={`text-sm font-semibold mainFont ${
-                            selected ? 'text-white' : 'text-white/80'
-                          }`}
-                        >
-                          {label}
-                        </p>
-                        <p className="text-xs text-white/50 mt-0.5 leading-relaxed">
-                          {description}
-                        </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-2xl font-bold text-[#FFC300]">{initial}</span>
                       </div>
-                      {selected && (
-                        <Check className="w-4 h-4 text-[#FFC300] shrink-0 mt-0.5 ml-auto" />
-                      )}
-                    </button>
-                  );
-                })}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-6 h-6 text-white" />
+                      </div>
+                    </>
+                  )}
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="text-sm text-white/80 hover:text-white transition-colors disabled:opacity-50"
+                >
+                  {uploading
+                    ? 'Uploading...'
+                    : uploadedUrl
+                      ? 'Change photo'
+                      : 'Choose a photo'}
+                </button>
+
+                {uploadError && (
+                  <p className="text-xs text-red-400">{uploadError}</p>
+                )}
               </div>
 
               {submitError && (
-                <p className="mt-4 rounded-lg bg-red-900/20 border border-red-500/20 px-3 py-2 text-sm text-red-400">
+                <p className="mb-4 rounded-lg bg-red-900/20 border border-red-500/20 px-3 py-2 text-sm text-red-400">
                   {submitError}
                 </p>
               )}
 
               <button
-                onClick={handleFinish}
-                disabled={submitting}
-                className="mt-6 w-full py-3 rounded-xl bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-100"
+                onClick={() => handleFinish(false)}
+                disabled={submitting || uploading}
+                className="w-full py-3 rounded-xl bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-100"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">
@@ -330,18 +341,16 @@ export function OnboardingFlow({ existingUsername }: { existingUsername: string 
                     Setting up your account...
                   </span>
                 ) : (
-                  'Get started'
+                  'Finish'
                 )}
               </button>
-              {intents.size === 0 && (
-                <button
-                  onClick={handleFinish}
-                  disabled={submitting}
-                  className="mt-3 w-full py-2 text-sm text-white/80 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  Skip and go to home
-                </button>
-              )}
+              <button
+                onClick={() => handleFinish(true)}
+                disabled={submitting || uploading}
+                className="mt-3 w-full py-2 text-sm text-white/80 hover:text-white transition-colors disabled:opacity-50"
+              >
+                Skip for now
+              </button>
             </div>
           )}
         </div>
