@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { signOut } from '@/lib/auth-client';
-import { Camera, Loader2, Trash2, User, Mail, Lock } from 'lucide-react';
+import { signOut, authClient } from '@/lib/auth-client';
+import { Camera, Loader2, Trash2, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -26,9 +25,10 @@ interface SettingsClientProps {
     stripeCurrentPeriodEnd: Date | null;
     bio: string | null;
   };
+  hasPasswordAccount: boolean;
 }
 
-export function SettingsClient({ user }: SettingsClientProps) {
+export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps) {
   const { upload, uploading } = useCloudinaryUpload('avatars', user.id);
   const [imageUrl, setImageUrl] = useState(user.image);
   const [uploadError, setUploadError] = useState('');
@@ -37,6 +37,15 @@ export function SettingsClient({ user }: SettingsClientProps) {
   const [bioSaving, setBioSaving] = useState(false);
   const [bioSuccess, setBioSuccess] = useState(false);
   const [bioError, setBioError] = useState('');
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -74,6 +83,35 @@ export function SettingsClient({ user }: SettingsClientProps) {
       setTimeout(() => setBioSuccess(false), 3000);
     }
     setBioSaving(false);
+  }
+
+  async function handleChangePassword() {
+    setPasswordError('');
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters.');
+      return;
+    }
+    setPasswordSaving(true);
+    const result = await authClient.changePassword({
+      currentPassword,
+      newPassword,
+      revokeOtherSessions: false,
+    });
+    setPasswordSaving(false);
+    if (result.error) {
+      setPasswordError(result.error.message ?? 'Failed to change password.');
+    } else {
+      setPasswordSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowPasswordForm(false);
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    }
   }
 
   const initial =
@@ -129,19 +167,92 @@ export function SettingsClient({ user }: SettingsClientProps) {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 px-5 py-4">
-            <Lock className="w-4 h-4 text-white/40 shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-white/50 mb-0.5">Password</p>
-              <p className="text-sm text-white/50">••••••••</p>
+          {hasPasswordAccount ? (
+            <div className="px-5 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Lock className="w-4 h-4 text-white/40 shrink-0" />
+                  <div>
+                    <p className="text-xs text-white/50">Password</p>
+                    <p className="text-sm text-white/40">••••••••</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPasswordForm((v) => !v)}
+                  className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors"
+                >
+                  {showPasswordForm ? 'Cancel' : 'Change'}
+                </button>
+              </div>
+
+              {showPasswordForm && (
+                <div className="mt-4 space-y-3">
+                  <div className="relative">
+                    <input
+                      type={showCurrentPw ? 'text' : 'password'}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Current password"
+                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPw((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showNewPw ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="New password"
+                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPw((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                  />
+                  {passwordError && (
+                    <p className="text-xs text-red-400 bg-red-900/20 border border-red-500/20 rounded-lg px-3 py-2">{passwordError}</p>
+                  )}
+                  {passwordSuccess && (
+                    <p className="text-xs text-green-400 bg-green-900/20 border border-green-500/20 rounded-lg px-3 py-2">Password changed successfully.</p>
+                  )}
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={passwordSaving || !currentPassword || !newPassword || !confirmPassword}
+                    className="w-full py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {passwordSaving ? 'Saving...' : 'Update Password'}
+                  </button>
+                </div>
+              )}
             </div>
-            <Link
-              href="/forgot-password"
-              className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors shrink-0"
-            >
-              Change
-            </Link>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3 px-5 py-4">
+              <Lock className="w-4 h-4 text-white/40 shrink-0" />
+              <div>
+                <p className="text-xs text-white/50">Password</p>
+                <p className="text-xs text-white/30 mt-0.5">Signed in with Google</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
