@@ -170,6 +170,24 @@ export const userChapterReads = pgTable(
   (t) => [uniqueIndex('user_chapter_reads_user_chapter_idx').on(t.userId, t.chapterId)],
 );
 
+export const readingProgress = pgTable(
+  'reading_progress',
+  {
+    id: text('id').primaryKey().$defaultFn(() => createId()),
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    bookId: text('book_id').notNull().references(() => books.id, { onDelete: 'cascade' }),
+    chapterId: text('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('reading_progress_user_book_idx').on(t.userId, t.bookId)],
+);
+
+export const readingProgressRelations = relations(readingProgress, ({ one }) => ({
+  user: one(users, { fields: [readingProgress.userId], references: [users.id] }),
+  book: one(books, { fields: [readingProgress.bookId], references: [books.id] }),
+  chapter: one(chapters, { fields: [readingProgress.chapterId], references: [chapters.id] }),
+}));
+
 export const chapterComments = pgTable('chapter_comments', {
   id: text('id')
     .primaryKey()
@@ -330,6 +348,22 @@ export const announcements = pgTable('announcements', {
     .references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const announcementDismissals = pgTable(
+  'announcement_dismissals',
+  {
+    id: text('id').primaryKey().$defaultFn(() => createId()),
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    announcementId: text('announcement_id').notNull().references(() => announcements.id, { onDelete: 'cascade' }),
+    dismissedAt: timestamp('dismissed_at').defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('announcement_dismissals_user_ann_idx').on(t.userId, t.announcementId)],
+);
+
+export const announcementDismissalsRelations = relations(announcementDismissals, ({ one }) => ({
+  user: one(users, { fields: [announcementDismissals.userId], references: [users.id] }),
+  announcement: one(announcements, { fields: [announcementDismissals.announcementId], references: [announcements.id] }),
+}));
 
 // ---------------------------------------------------------------------------
 // Feedback
