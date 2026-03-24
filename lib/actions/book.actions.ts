@@ -5,7 +5,7 @@ import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
-import { and, eq, max, or, sql } from 'drizzle-orm';
+import { and, desc, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
@@ -797,4 +797,35 @@ export async function getBookForExportAction(bookId: string) {
     book: { title: book.title, author: book.author, description: book.description ?? '' },
     chapters: chapterRows,
   };
+}
+
+export async function getRecentWritingAction(): Promise<
+  {
+    id: string;
+    title: string;
+    coverUrl: string | null;
+    updatedAt: Date;
+    chapterCount: number;
+    wordCount: number;
+    privacy: string;
+  }[]
+> {
+  const userId = await requireAuth();
+
+  const rows = await db.query.books.findMany({
+    where: eq(books.userId, userId),
+    orderBy: desc(books.updatedAt),
+    limit: 3,
+    columns: {
+      id: true,
+      title: true,
+      coverUrl: true,
+      updatedAt: true,
+      chapterCount: true,
+      wordCount: true,
+      privacy: true,
+    },
+  });
+
+  return rows;
 }
