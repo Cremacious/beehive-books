@@ -589,6 +589,12 @@ export default function LandingPage() {
         <p className="text-sm text-white/80">
           © {new Date().getFullYear()} Beehive Books. All rights reserved.
         </p>
+        <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-2 mt-3">
+          <Link href="/terms" className="text-sm text-white/80 hover:text-white transition-colors">Terms</Link>
+          <Link href="/privacy" className="text-sm text-white/80 hover:text-white transition-colors">Privacy</Link>
+          <Link href="/dmca" className="text-sm text-white/80 hover:text-white transition-colors">DMCA</Link>
+          <Link href="/cookies" className="text-sm text-white/80 hover:text-white transition-colors">Cookies</Link>
+        </div>
       </footer>
     </div>
   );

@@ -20,6 +20,10 @@ const PUBLIC_PATHS = [
   '/reset-password',
   '/explore',
   '/books',
+  '/terms',
+  '/privacy',
+  '/dmca',
+  '/cookies',
 ];
 
 // Known malicious/scanner user-agent fragments

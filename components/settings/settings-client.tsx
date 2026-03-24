@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { signOut, authClient } from '@/lib/auth-client';
 import { Camera, Loader2, Trash2, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -352,7 +353,23 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
         </div>
       </div>
 
-      {/* Section 5 — Danger Zone */}
+      {/* Section 5 — Legal */}
+      <div>
+        <h2 className="text-sm font-semibold text-white/80 mainFont mb-3">Legal</h2>
+        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] px-6 py-4">
+          <p className="text-sm">
+            <Link href="/terms" className="text-yellow-500 hover:text-white transition-colors">Terms of Service</Link>
+            <span className="text-white/80"> · </span>
+            <Link href="/privacy" className="text-yellow-500 hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="text-white/80"> · </span>
+            <Link href="/cookies" className="text-yellow-500 hover:text-white transition-colors">Cookie Policy</Link>
+            <span className="text-white/80"> · </span>
+            <Link href="/dmca" className="text-yellow-500 hover:text-white transition-colors">DMCA</Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Section 6 — Danger Zone */}
       <div>
         <h2 className="text-sm font-semibold text-red-400 mainFont mb-3">Danger Zone</h2>
         <div className="rounded-2xl bg-[#252525] border border-red-900/25 p-6">
