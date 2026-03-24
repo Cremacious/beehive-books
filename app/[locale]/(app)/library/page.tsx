@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import BookGrid from '@/components/library/book-grid';
 import FavouritesGrid from '@/components/library/favourites-grid';
 import { getUserBooksAction, getLikedBooksAction } from '@/lib/actions/book.actions';
+import { BadgeCount } from '@/components/ui/badge-count';
 
 export const metadata: Metadata = {
   title: 'My Library',
@@ -36,18 +37,9 @@ export default async function LibraryPage({ searchParams }: Props) {
         </Link>
       </div>
 
-      {/* Tabs */}
       <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-fit">
-        <TabLink
-          href="/library?tab=my-books"
-          active={tab === 'my-books'}
-          label={`My Books${books.length > 0 ? ` (${books.length})` : ''}`}
-        />
-        <TabLink
-          href="/library?tab=favourites"
-          active={tab === 'favourites'}
-          label={`Favourites${likedBooks.length > 0 ? ` (${likedBooks.length})` : ''}`}
-        />
+        <TabLink href="/library?tab=my-books" active={tab === 'my-books'} label="My Books" count={books.length} />
+        <TabLink href="/library?tab=favourites" active={tab === 'favourites'} label="Favourites" count={likedBooks.length} />
       </div>
 
       {tab === 'my-books' && <BookGrid books={books} />}
@@ -56,25 +48,16 @@ export default async function LibraryPage({ searchParams }: Props) {
   );
 }
 
-function TabLink({
-  href,
-  active,
-  label,
-}: {
-  href: string;
-  active: boolean;
-  label: string;
-}) {
+function TabLink({ href, active, label, count }: { href: string; active: boolean; label: string; count?: number }) {
   return (
     <Link
       href={href}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-        active
-          ? 'bg-[#FFC300] text-black'
-          : 'text-white hover:text-white hover:bg-white/5'
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+        active ? 'bg-[#FFC300] text-black' : 'text-white hover:text-white hover:bg-white/5'
       }`}
     >
       {label}
+      {count !== undefined && <BadgeCount count={count} variant={active ? 'active' : 'default'} />}
     </Link>
   );
 }

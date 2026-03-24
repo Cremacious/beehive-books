@@ -275,7 +275,8 @@ export default async function PromptDetailPage({ params }: Props) {
         <div className="mt-8">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 mainFont">
           
-            Entries ({entries.length})
+            Entries
+            <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold bg-[#FFC300] text-black">{entries.length}</span>
           </h2>
           <EntryList
             entries={entries}

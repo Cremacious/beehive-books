@@ -236,11 +236,9 @@ export default function BookGrid({ books }: { books: Book[] }) {
               }`}
             >
               {label}
-              <span
-                className={`text-sm ${
-                  privacyFilter === value ? 'text-black/60' : 'text-yellow-500'
-                }`}
-              >
+              <span className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold ${
+                privacyFilter === value ? 'bg-black/20 text-black' : 'bg-[#FFC300] text-black'
+              }`}>
                 {count}
               </span>
             </button>

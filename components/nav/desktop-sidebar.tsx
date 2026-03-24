@@ -48,8 +48,8 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
     pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
-      <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
+    <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0 overflow-y-auto">
+      <div className="flex flex-col min-h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
         <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-3">
           <Image
             src={logoImage}
@@ -68,7 +68,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           />
         </div>
 
-        <nav className="flex-1 px-2 xl:px-3 py-1">
+        <nav className="flex-1 px-2 xl:px-3 py-1 min-h-0">
           <ul className="space-y-0.5 flex flex-col md:items-center lg:items-stretch">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(href);
@@ -78,7 +78,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     href={href}
                     aria-label={label}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-2 lg:px-4 lg:py-2 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-2 lg:px-4 lg:py-1.5 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
                         ? 'text-[#FFC300] bg-[#FFC300]/8'
                         : 'text-white/90 hover:text-white hover:bg-white/5'
