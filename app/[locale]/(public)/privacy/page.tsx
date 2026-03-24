@@ -20,14 +20,14 @@ export default function PrivacyPage() {
           <h1 className="text-3xl font-bold text-white mainFont mt-6 mb-2">
             Privacy Policy
           </h1>
-          <p className="text-sm text-white/80">Last updated: March 24, 2025</p>
+          <p className="text-sm text-white/80">Last updated: March 24, 2026</p>
         </div>
 
         <div className="bg-[#1e1e1e] rounded-2xl border border-[#2a2a2a] p-8 space-y-8">
           <section>
             <h2 className="text-lg font-semibold text-yellow-500 mb-3">1. Introduction</h2>
             <p className="text-sm text-white/80 leading-relaxed">
-              Beehive Books (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your personal data.
+              Beehive Books is committed to protecting your personal data.
               This Privacy Policy explains what information we collect, how we use it, with whom
               we share it, and your rights in relation to it. It applies to all users of
               beehive-books.app and related services.
