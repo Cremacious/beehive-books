@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen, Feather, Search, Loader2 } from 'lucide-react';
@@ -169,6 +170,7 @@ function UserDetail({ user }: { user: SuggestedUser }) {
 }
 
 export function SuggestedUsers({ suggested }: { suggested: SuggestedUser[] }) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -233,7 +235,7 @@ export function SuggestedUsers({ suggested }: { suggested: SuggestedUser[] }) {
       ) : (
         <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden" style={{ minHeight: '560px' }}>
           {/* Left list */}
-          <div className="w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
+          <div className="w-full sm:w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
             {!isSearching && (
               <div className="px-4 pt-3 pb-1">
                 <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Active Writers</p>
@@ -244,7 +246,10 @@ export function SuggestedUsers({ suggested }: { suggested: SuggestedUser[] }) {
               return (
                 <button
                   key={user.id}
-                  onClick={() => setSelectedId(user.id)}
+                  onClick={() => window.innerWidth < 640
+                    ? router.push(`/u/${user.username ?? user.id}`)
+                    : setSelectedId(user.id)
+                  }
                   className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors border-b border-[#2a2a2a] last:border-b-0 ${
                     active ? 'bg-yellow-500/10 border-l-2 border-l-yellow-500' : 'hover:bg-white/5'
                   }`}
@@ -275,7 +280,7 @@ export function SuggestedUsers({ suggested }: { suggested: SuggestedUser[] }) {
           </div>
 
           {/* Right detail */}
-          <div className="flex-1 bg-[#181818] min-w-0">
+          <div className="hidden sm:block sm:flex-1 bg-[#181818] min-w-0">
             {selected ? (
               <UserDetail user={selected} />
             ) : (

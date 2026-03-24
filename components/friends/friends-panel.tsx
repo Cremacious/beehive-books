@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen, Users2, Feather } from 'lucide-react';
@@ -169,6 +170,7 @@ function FriendDetail({ user, friendshipId }: { user: FriendUser; friendshipId: 
 }
 
 export function FriendsPanel({ friends }: { friends: Friend[] }) {
+  const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(
     friends[0]?.user.id ?? null,
   );
@@ -198,13 +200,16 @@ export function FriendsPanel({ friends }: { friends: Friend[] }) {
   return (
     <div className="flex rounded-xl border border-[#2a2a2a] overflow-hidden" style={{ minHeight: '560px' }}>
       {/* Left — friend list */}
-      <div className="w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
+      <div className="w-full sm:w-60 shrink-0 border-r border-[#2a2a2a] overflow-y-auto">
         {friends.map(({ friendshipId, user }) => {
           const active = user.id === selectedId;
           return (
             <button
               key={friendshipId}
-              onClick={() => setSelectedId(user.id)}
+              onClick={() => window.innerWidth < 640
+                ? router.push(`/u/${user.username ?? user.id}`)
+                : setSelectedId(user.id)
+              }
               className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors border-b border-[#2a2a2a] last:border-b-0 ${
                 active ? 'bg-yellow-500/10 border-l-2 border-l-yellow-500' : 'hover:bg-white/5'
               }`}
@@ -224,7 +229,7 @@ export function FriendsPanel({ friends }: { friends: Friend[] }) {
       </div>
 
       {/* Right — detail */}
-      <div className="flex-1 bg-[#181818] min-w-0">
+      <div className="hidden sm:block sm:flex-1 bg-[#181818] min-w-0">
         {selected ? (
           <FriendDetail user={selected.user} friendshipId={selected.friendshipId} />
         ) : (
