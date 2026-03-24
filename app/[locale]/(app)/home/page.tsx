@@ -23,6 +23,7 @@ import { getRecentWritingAction } from '@/lib/actions/book.actions';
 import { getContinueReadingAction } from '@/lib/actions/reading.actions';
 import { getCurrentUserAction } from '@/lib/actions/user.actions';
 import { AnnouncementsSection } from '@/components/announcements/announcements-section';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import type {
   FeedEvent,
   FeedEventType,
@@ -434,11 +435,7 @@ export default async function UserHomePage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-lg font-bold text-white/80 mainFont">
-                        {book.title[0]?.toUpperCase()}
-                      </span>
-                    </div>
+                    <GeneratedCover title={book.title} bookId={book.id} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

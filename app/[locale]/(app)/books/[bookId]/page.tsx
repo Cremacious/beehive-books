@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
@@ -95,11 +96,7 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <div className="w-full h-full bg-linear-to-br from-[#222] to-[#141414] flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white/15 mainFont">
-                    {book.title[0]?.toUpperCase()}
-                  </span>
-                </div>
+                <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
               )}
             </div>
 

@@ -7,6 +7,7 @@ import { ExpandableDescription } from '@/components/shared/expandable-descriptio
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
 import type { Metadata } from 'next';
@@ -66,11 +67,7 @@ export default async function BookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <div className="w-full h-full bg-linear-to-br from-[#222] to-[#141414] flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white/15 mainFont">
-                    {book.title[0]?.toUpperCase()}
-                  </span>
-                </div>
+                <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
               )}
             </div>
 
