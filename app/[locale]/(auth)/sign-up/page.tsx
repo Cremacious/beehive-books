@@ -228,6 +228,13 @@ export default function SignUpPage() {
               </p>
             )}
 
+            <p className="text-xs text-white/80 text-center">
+              By creating an account you agree to our{' '}
+              <Link href="/terms" className="text-yellow-500 hover:text-white transition-colors">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" className="text-yellow-500 hover:text-white transition-colors">Privacy Policy</Link>.
+            </p>
+
             <button
               type="submit"
               data-testid="sign-up-submit"

@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n/config';
 import { Providers } from '@/app/providers';
+import { CookieBanner } from '@/components/ui/cookie-banner';
 import '../globals.css';
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <Providers>{children}</Providers>
+      <CookieBanner />
     </NextIntlClientProvider>
   );
 }
