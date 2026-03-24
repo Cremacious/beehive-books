@@ -16,19 +16,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!session?.user?.id) {
     return (
       <div className="flex flex-col min-h-screen">
-        <header className="sticky top-0 z-40 h-14 bg-[#252525]/95 backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-6">
-          <Link href="/" className="flex items-center">
-            <Image src={logoImage} alt="Beehive Books" height={32} width={120} priority />
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/sign-in" className="text-sm text-white/70 hover:text-white transition-colors">
-              Sign in
+        <div className="relative">
+          <header className="sticky top-0 z-40 h-14 bg-[#1a1a1a] backdrop-blur-md border-b border-[#2a2a2a] flex items-center justify-between px-6">
+            <Link href="/" className="flex items-center">
+              <Image src={logoImage} alt="Beehive Books" height={32} width={120} priority />
             </Link>
-            <Link href="/sign-up" className="px-4 py-1.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors">
-              Sign up
-            </Link>
-          </div>
-        </header>
+            <div className="flex items-center gap-3">
+              <Link href="/sign-in" className="text-sm text-white/70 hover:text-white transition-colors">
+                Sign in
+              </Link>
+              <Link href="/sign-up" className="px-4 py-1.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors">
+                Sign up
+              </Link>
+            </div>
+          </header>
+          <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-[#2a2a2a] to-transparent" />
+        </div>
         <main className="flex-1">
           <div className="w-full min-h-full bg-[#1e1e1e]">
             {children}

@@ -75,6 +75,11 @@ export default async function PublicBookPage({
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
+        {isAuthenticated ? (
+          <BackButton href="/library" label="My Library" className="mb-6" />
+        ) : (
+          <BackButton href="/explore" label="Explore" className="mb-6" />
+        )}
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] border-t-2 border-t-[#FFC300]/20 shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
             {/* Cover */}
