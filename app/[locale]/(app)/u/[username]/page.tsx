@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import {
   BookOpen,
@@ -9,6 +10,7 @@ import {
   Hexagon,
   Lock,
   UserCheck,
+  Heart,
 } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import ReadingListCard from '@/components/reading-lists/reading-list-card';
@@ -17,6 +19,7 @@ import HiveCard from '@/components/hive/hive-card';
 import { PromptCard } from '@/components/prompts/prompt-card';
 import { ProfileSectionGrid } from '@/components/profile/profile-section-grid';
 import { FriendButton } from '@/components/friends/friend-button';
+import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
 import type { ReadingList } from '@/lib/types/reading-list.types';
@@ -59,6 +62,9 @@ export default async function UserProfilePage({ params }: Props) {
   const displayName = user.username ?? 'unknown';
   const memberSince = user.createdAt.getFullYear();
 
+  const totalBooks = books.filter((b) => b.privacy === 'PUBLIC').length;
+  const totalLikes = books.reduce((sum, b) => sum + (b.likeCount ?? 0), 0);
+
   const promptCards = prompts.map((p) => ({
     ...p,
     creator: {
@@ -86,18 +92,32 @@ export default async function UserProfilePage({ params }: Props) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 md:px-8">
       <div className="rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] mb-10 overflow-hidden">
-        <div className="h-28 bg-linear-to-br from-[#2d2200] via-[#1e1800] to-[#1a1a1a]" />
-        <div className="px-5 pb-5 md:px-7 md:pb-7">
-          <div className="flex items-end justify-between -mt-10 gap-4">
-            <div className="w-20 h-20 rounded-full ring-4 ring-[#1e1e1e] overflow-hidden bg-[#2a2000] shrink-0">
+        {/* Banner */}
+        <div className="h-36 relative overflow-hidden bg-gradient-to-br from-[#2d2200] via-[#1e1800] to-[#141414]">
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
+              backgroundSize: '56px 100px',
+            }}
+          />
+        </div>
+
+        <div className="px-5 pb-6 md:px-7 md:pb-7">
+          <div className="flex items-end justify-between -mt-12 gap-4">
+            {/* Avatar */}
+            <div className="w-24 h-24 rounded-full ring-4 ring-[#1e1e1e] overflow-hidden bg-[#2a2000] shrink-0">
               {user.image ? (
-                <Image
-                  src={user.image}
-                  alt={displayName}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
+                <div className="relative w-24 h-24 rounded-full overflow-hidden">
+                  <Image
+                    src={user.image}
+                    alt={displayName}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                  <CoverImageViewer src={user.image} alt={displayName} />
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-2xl font-bold text-[#FFC300]">
@@ -106,10 +126,23 @@ export default async function UserProfilePage({ params }: Props) {
                 </div>
               )}
             </div>
+
+            {/* Action buttons */}
             <div className="pb-1 flex items-center gap-2">
-              {isOwnProfile && (
-                <button className="text-xs px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/40 transition-all cursor-not-allowed">
+              {isOwnProfile ? (
+                <Link
+                  href="/settings"
+                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/70 hover:text-white hover:border-[#FFC300]/30 transition-all"
+                >
                   Edit Profile
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/50 cursor-not-allowed"
+                  title="Follow feature coming soon"
+                >
+                  Follow
                 </button>
               )}
               {friendStatus && (
@@ -120,15 +153,37 @@ export default async function UserProfilePage({ params }: Props) {
               )}
             </div>
           </div>
+
+          {/* Name + meta */}
           <div className="mt-3">
             <h1 className="text-xl md:text-2xl font-bold text-white mainFont">
               {displayName}
             </h1>
-            <p className="text-xs text-white/80 mt-0.5">
-              Member since {memberSince}
-            </p>
+            <p className="text-xs text-white/50 mt-0.5">Member since {memberSince}</p>
+
+            {/* Stats row */}
+            <div className="flex items-center gap-5 mt-3 flex-wrap">
+              <div className="flex items-center gap-1.5 text-sm text-white/60">
+                <BookOpen className="w-4 h-4 text-[#FFC300]/60" />
+                <span>{totalBooks} {totalBooks === 1 ? 'book' : 'books'}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-white/60">
+                <Heart className="w-4 h-4 text-rose-400/60" />
+                <span>{totalLikes} {totalLikes === 1 ? 'like' : 'likes'}</span>
+              </div>
+            </div>
+
+            {/* Bio */}
+            {user.bio ? (
+              <p className="text-sm text-white/80 mt-3 max-w-lg leading-relaxed">{user.bio}</p>
+            ) : isOwnProfile ? (
+              <p className="text-sm text-white/80 mt-3 italic">
+                No bio yet.{' '}
+                <Link href="/settings" className="text-[#FFC300]/60 hover:text-[#FFC300] transition-colors not-italic">Add one in settings</Link>
+              </p>
+            ) : null}
           </div>
-        </div>
+        </div>A
       </div>
 
       <ProfileSectionGrid
