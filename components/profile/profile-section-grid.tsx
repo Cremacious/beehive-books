@@ -12,12 +12,10 @@ interface Props {
   limit: number;
   gridClassName: string;
   placeholder?: ReactNode;
- 
   searchTexts: string[];
-
   statusValues?: string[];
-
   statusLabels?: Record<string, string>;
+  layout?: 'grid' | 'scroll';
   children: ReactNode;
 }
 
@@ -31,6 +29,7 @@ export function ProfileSectionGrid({
   searchTexts,
   statusValues,
   statusLabels,
+  layout = 'grid',
   children,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
@@ -39,7 +38,6 @@ export function ProfileSectionGrid({
 
   const all = React.Children.toArray(children);
 
-  
   const uniqueStatuses = statusValues
     ? ['ALL', ...Array.from(new Set(statusValues))]
     : [];
@@ -57,14 +55,23 @@ export function ProfileSectionGrid({
   }, [query, statusFilter, searchTexts, statusValues]);
 
   if (!expanded) {
-    const realSlice = all.slice(0, limit);
-    const visible: ReactNode[] = [...realSlice];
-    if (placeholder) {
-      const needed = Math.max(0, limit - realSlice.length);
-      for (let i = 0; i < needed; i++) {
-        visible.push(
-          <React.Fragment key={`__ph_${i}`}>{placeholder}</React.Fragment>,
-        );
+    // In collapsed view, if there's an active query show filtered results, otherwise first `limit`
+    const q = query.toLowerCase().trim();
+    const hasQuery = q.length > 0;
+    let visible: ReactNode[];
+
+    if (hasQuery) {
+      visible = filteredItems;
+    } else {
+      const realSlice = all.slice(0, limit);
+      visible = [...realSlice];
+      if (placeholder) {
+        const needed = Math.max(0, limit - realSlice.length);
+        for (let i = 0; i < needed; i++) {
+          visible.push(
+            <React.Fragment key={`__ph_${i}`}>{placeholder}</React.Fragment>,
+          );
+        }
       }
     }
 
@@ -74,7 +81,7 @@ export function ProfileSectionGrid({
           <div className="flex items-center gap-2">
             {icon}
             <h2 className="text-base font-semibold text-white">{title}</h2>
-            {count > 0 && <span className="text-sm text-white/80">({count})</span>}
+            {count > 0 && <span className="text-sm text-white/50">({count})</span>}
           </div>
           {count > limit && (
             <Button variant="outline" size="sm" onClick={() => setExpanded(true)}>
@@ -82,12 +89,35 @@ export function ProfileSectionGrid({
             </Button>
           )}
         </div>
-        <div className={gridClassName}>{visible}</div>
+
+        {count > limit && (
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Search ${title.toLowerCase()}…`}
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            />
+          </div>
+        )}
+
+        {layout === 'scroll' ? (
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:-mx-8 md:px-8">
+            {visible.map((item, i) => (
+              <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
+                {item}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={gridClassName}>{visible}</div>
+        )}
       </section>
     );
   }
 
- 
   const collapse = () => {
     setExpanded(false);
     setQuery('');
@@ -96,22 +126,20 @@ export function ProfileSectionGrid({
 
   return (
     <section className="mb-10">
-    
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           {icon}
           <h2 className="text-base font-semibold text-white">{title}</h2>
-          <span className="text-sm text-white/80">({count})</span>
+          <span className="text-sm text-white/50">({count})</span>
         </div>
         <Button variant="outline" size="sm" onClick={collapse}>
           Show less
         </Button>
       </div>
 
-
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/80 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
           <input
             type="text"
             value={query}
@@ -142,7 +170,7 @@ export function ProfileSectionGrid({
 
       {filteredItems.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#1a1a1a]/40 py-10 text-center">
-          <p className="text-sm text-white/80">No results</p>
+          <p className="text-sm text-white/50">No results</p>
         </div>
       ) : (
         <div className={gridClassName}>{filteredItems}</div>

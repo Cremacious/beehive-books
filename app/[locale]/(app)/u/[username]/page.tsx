@@ -183,7 +183,7 @@ export default async function UserProfilePage({ params }: Props) {
               </p>
             ) : null}
           </div>
-        </div>A
+        </div>
       </div>
 
       <ProfileSectionGrid
@@ -191,8 +191,9 @@ export default async function UserProfilePage({ params }: Props) {
         title="Library"
         count={books.length}
         limit={BOOK_GRID_LIMIT}
-        gridClassName="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4"
+        gridClassName="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"
         placeholder={bookPlaceholder}
+        layout="scroll"
         searchTexts={books.map((b) => `${b.title} ${b.author} ${b.genre}`)}
       >
         {books.map((book) => (
@@ -258,6 +259,7 @@ export default async function UserProfilePage({ params }: Props) {
         limit={GRID_LIMIT}
         gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         placeholder={cardPlaceholder}
+        layout="scroll"
         searchTexts={hives.map((h) => `${h.name} ${h.description}`)}
         statusValues={hives.map((h) => h.status)}
         statusLabels={{ ACTIVE: 'Active', COMPLETED: 'Completed' }}
