@@ -49,7 +49,7 @@ export function OnboardingFlow({
   const [usernameError, setUsernameError] = useState('');
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Step 2
   const [bio, setBio] = useState('');
@@ -68,7 +68,7 @@ export function OnboardingFlow({
     setUsername(value);
     setUsernameAvailable(null);
     setUsernameError('');
-    clearTimeout(debounceRef.current);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!value) return;
     if (!/^[a-zA-Z0-9_]{1,20}$/.test(value)) {
