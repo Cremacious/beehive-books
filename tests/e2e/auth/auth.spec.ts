@@ -215,11 +215,12 @@ test.describe('authenticated', () => {
       await page.waitForTimeout(300);
     }
 
-    await page.locator('[data-testid="sign-out-button"]').click({ force: true });
-
-    // Sign-out may redirect to / or /sign-in depending on middleware config
-    await page.waitForURL(/\/$|\/sign-in/, { waitUntil: 'domcontentloaded', timeout: 15_000 });
-    await expect(page).not.toHaveURL('/home');
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 }),
+      page.locator('[data-testid="sign-out-button"]').click({ force: true }),
+    ]);
+    // Session cleared — should no longer be on /home
+    await expect(page).not.toHaveURL(/\/home/);
 
     // Confirm session is gone — protected route should now redirect to /sign-in
     await page.goto('/home');
