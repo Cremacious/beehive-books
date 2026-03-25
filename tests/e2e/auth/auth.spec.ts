@@ -216,5 +216,11 @@ test.describe('authenticated', () => {
     // Now /home should redirect to /sign-in since session is gone
     await page.goto('/home');
     await expect(page).toHaveURL(/sign-in/, { timeout: 10_000 });
+
+    // Restore session for subsequent tests — clearCookies() affects the shared context
+    if (fs.existsSync(authFile)) {
+      const { cookies } = JSON.parse(fs.readFileSync(authFile, 'utf-8'));
+      await page.context().addCookies(cookies);
+    }
   });
 });
