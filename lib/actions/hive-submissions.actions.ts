@@ -120,7 +120,7 @@ export async function createSubmissionAction(
     const title = data.title.trim();
     if (!title) return { success: false, message: 'Title is required.' };
     if (title.length > 120) return { success: false, message: 'Title too long (max 120 chars).' };
-    if (!data.content.trim()) return { success: false, message: 'Content is required.' };
+    if (!data.content || !data.content.trim()) return { success: false, message: 'Content is required.' };
 
     const [inserted] = await db
       .insert(hiveChapterSubmissions)
@@ -132,6 +132,21 @@ export async function createSubmissionAction(
         targetChapterOrder: data.targetChapterOrder ?? null,
       })
       .returning({ id: hiveChapterSubmissions.id });
+
+    // Notify hive owner of new pending submission
+    const hive = await db.query.hives.findFirst({
+      where: eq(hives.id, hiveId),
+      columns: { ownerId: true },
+    });
+    if (hive && hive.ownerId !== userId) {
+      await insertNotification({
+        recipientId: hive.ownerId,
+        actorId: userId,
+        type: 'HIVE_COMMENT',
+        link: `/hive/${hiveId}/submissions`,
+        metadata: { hiveId, submissionTitle: title },
+      });
+    }
 
     revalidatePath(`/hive/${hiveId}/submissions`);
     return { success: true, message: 'Submission created.', submissionId: inserted.id };
@@ -150,22 +165,30 @@ export async function approveSubmissionAction(submissionId: string): Promise<Act
 
     const { userId } = await requireHiveMod(submission.hiveId);
 
+    let chapterLink = `/hive/${submission.hiveId}/submissions`;
+
     // Create chapter on the hive's linked book if it has one
     if (submission.hive.bookId) {
       const maxOrderResult = await db
         .select({ maxOrder: max(chapters.order) })
         .from(chapters)
         .where(eq(chapters.bookId, submission.hive.bookId));
-      const nextOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
+      const maxOrder = maxOrderResult[0]?.maxOrder ?? 0;
+
+      // Use submitter's preferred position, or append after last chapter
+      const chapterOrder = submission.targetChapterOrder ?? maxOrder + 1;
       const wordCount = countWords(submission.content);
 
-      await db.insert(chapters).values({
-        bookId: submission.hive.bookId,
-        title: submission.title,
-        content: submission.content,
-        wordCount,
-        order: nextOrder,
-      });
+      const [inserted] = await db
+        .insert(chapters)
+        .values({
+          bookId: submission.hive.bookId,
+          title: submission.title,
+          content: submission.content,
+          wordCount,
+          order: chapterOrder,
+        })
+        .returning({ id: chapters.id });
 
       await db
         .update(books)
@@ -180,6 +203,8 @@ export async function approveSubmissionAction(submissionId: string): Promise<Act
         .update(hives)
         .set({ chapterCount: sql`${hives.chapterCount} + 1` })
         .where(eq(hives.id, submission.hiveId));
+
+      chapterLink = `/write/${submission.hive.bookId}/chapter/${inserted.id}`;
     }
 
     await db
@@ -191,7 +216,7 @@ export async function approveSubmissionAction(submissionId: string): Promise<Act
       recipientId: submission.userId,
       actorId: userId,
       type: 'SUBMISSION_APPROVED',
-      link: `/hive/${submission.hiveId}/submissions`,
+      link: chapterLink,
       metadata: { hiveId: submission.hiveId, submissionTitle: submission.title },
     });
 
@@ -213,13 +238,14 @@ export async function rejectSubmissionAction(
     if (!submission) return { success: false, message: 'Submission not found.' };
 
     const { userId } = await requireHiveMod(submission.hiveId);
+    const trimmedNote = reviewNote?.trim() ?? null;
 
     await db
       .update(hiveChapterSubmissions)
       .set({
         status: 'REJECTED',
         reviewedById: userId,
-        reviewNote: reviewNote?.trim() ?? null,
+        reviewNote: trimmedNote,
         reviewedAt: new Date(),
         updatedAt: new Date(),
       })
@@ -230,7 +256,11 @@ export async function rejectSubmissionAction(
       actorId: userId,
       type: 'SUBMISSION_REJECTED',
       link: `/hive/${submission.hiveId}/submissions`,
-      metadata: { hiveId: submission.hiveId, submissionTitle: submission.title },
+      metadata: {
+        hiveId: submission.hiveId,
+        submissionTitle: submission.title,
+        ...(trimmedNote ? { reviewNote: trimmedNote } : {}),
+      },
     });
 
     revalidatePath(`/hive/${submission.hiveId}/submissions`);

@@ -59,8 +59,8 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
     case 'HIVE_ACTIVITY':          return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
     case 'HIVE_JOIN_REQUEST':      return 'wants to join your hive';
-    case 'SUBMISSION_APPROVED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was approved`;
-    case 'SUBMISSION_REJECTED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was rejected`;
+    case 'SUBMISSION_APPROVED':    return `approved your chapter submission${metadata?.submissionTitle ? ` — "${metadata.submissionTitle}"` : ''}`;
+    case 'SUBMISSION_REJECTED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was not accepted`;
     case 'BOOK_LIKE':              return 'liked your book';
     case 'BOOK_COMMENT':           return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
     case 'BOOK_COMMENT_REPLY':     return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;

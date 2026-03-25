@@ -7,6 +7,7 @@ import {
   createSubmissionAction,
   approveSubmissionAction,
   rejectSubmissionAction,
+  getHiveSubmissionsAction,
 } from '@/lib/actions/hive-submissions.actions';
 import type { HiveSubmissionWithAuthor, HiveRole } from '@/lib/types/hive.types';
 import { ChevronDown, ChevronUp, Upload } from 'lucide-react';
@@ -42,7 +43,7 @@ function timeAgo(date: Date): string {
 function StatusBadge({ status }: { status: HiveSubmissionWithAuthor['status'] }) {
   if (status === 'PENDING') {
     return (
-      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-yellow-500/10 border-yellow-500/20 text-yellow-500">
+      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-[#FFC300]/10 border-[#FFC300]/30 text-yellow-500">
         Pending
       </span>
     );
@@ -78,22 +79,21 @@ function AuthorAvatar({ author }: { author: HiveSubmissionWithAuthor['author'] }
 function SubmissionCard({
   submission,
   isMod,
-  currentUserId,
   onApprove,
   onReject,
 }: {
   submission: HiveSubmissionWithAuthor;
   isMod: boolean;
-  currentUserId: string;
-  onApprove: (id: string) => void;
-  onReject: (id: string, note: string) => void;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string, note: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectNote, setRejectNote] = useState('');
 
-  const preview = stripHtml(submission.content).slice(0, 120);
-  const hasMore = stripHtml(submission.content).length > 120;
+  const plainText = stripHtml(submission.content);
+  const preview = plainText.slice(0, 150);
+  const hasMore = plainText.length > 150;
 
   return (
     <div className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-2xl p-5">
@@ -106,13 +106,13 @@ function SubmissionCard({
               {submission.author.username ?? 'Unknown'}
             </span>
             <span className="text-xs text-white/80">{timeAgo(submission.createdAt)}</span>
-            {submission.targetChapterOrder != null && (
-              <span className="text-xs text-white/80">
-                Chapter {submission.targetChapterOrder}
-              </span>
-            )}
           </div>
-          <h3 className="text-sm font-medium text-white mt-0.5">{submission.title}</h3>
+          <h3 className="text-sm font-semibold text-white mt-0.5">{submission.title}</h3>
+          <p className="text-xs text-white/80 mt-0.5">
+            {submission.targetChapterOrder != null
+              ? `For chapter ${submission.targetChapterOrder}`
+              : 'No position specified'}
+          </p>
         </div>
         <StatusBadge status={submission.status} />
       </div>
@@ -120,12 +120,10 @@ function SubmissionCard({
       {/* Content preview / full */}
       <div className="mb-3">
         {expanded ? (
-          <div className="text-sm text-white/80 leading-relaxed">
-            <RichTextEditor content={submission.content} editable={false} />
-          </div>
+          <RichTextEditor content={submission.content} editable={false} />
         ) : (
           <p className="text-sm text-white/80 leading-relaxed">
-            {preview}{hasMore && !expanded ? '…' : ''}
+            {preview}{hasMore ? '…' : ''}
           </p>
         )}
         {hasMore && (
@@ -135,12 +133,12 @@ function SubmissionCard({
             className="mt-1.5 flex items-center gap-1 text-xs text-yellow-500 hover:text-yellow-400 transition-colors"
           >
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? 'Show less' : 'Read more'}
+            {expanded ? 'Show less' : 'View Full'}
           </button>
         )}
       </div>
 
-      {/* Rejection note */}
+      {/* Rejection note shown to submitter */}
       {submission.status === 'REJECTED' && submission.reviewNote && (
         <div className="mb-3 text-xs text-white/80 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
           Note: {submission.reviewNote}
@@ -154,15 +152,15 @@ function SubmissionCard({
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => onApprove(submission.id)}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-500/10 border border-green-500/20 text-white hover:bg-green-500/20 transition-colors"
+                onClick={() => onApprove?.(submission.id)}
+                className="px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#FFC300]/90 transition-colors"
               >
                 Approve
               </button>
               <button
                 type="button"
                 onClick={() => setShowRejectForm(true)}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 border border-red-500/20 text-white hover:bg-red-500/20 transition-colors"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1a1a1a] border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#333] transition-colors"
               >
                 Reject
               </button>
@@ -179,15 +177,15 @@ function SubmissionCard({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => onReject(submission.id, rejectNote)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 border border-red-500/20 text-white hover:bg-red-500/20 transition-colors"
+                  onClick={() => { onReject?.(submission.id, rejectNote); setShowRejectForm(false); setRejectNote(''); }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500/10 border border-red-500/20 text-white hover:bg-red-500/20 transition-colors"
                 >
                   Confirm Reject
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowRejectForm(false); setRejectNote(''); }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#252525] border border-[#2a2a2a] text-white/80 hover:text-white transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1a1a1a] border border-[#2a2a2a] text-white/80 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
@@ -200,7 +198,43 @@ function SubmissionCard({
   );
 }
 
-export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData }: Props) {
+function CollapsibleSection({
+  title,
+  count,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  count: number;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 mb-3 group"
+      >
+        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        {count > 0 && (
+          <span className="text-xs font-bold bg-[#252525] border border-[#2a2a2a] text-white/80 rounded-full px-1.5 py-0.5 leading-none">
+            {count}
+          </span>
+        )}
+        {open ? (
+          <ChevronUp className="w-3.5 h-3.5 text-white/80" />
+        ) : (
+          <ChevronDown className="w-3.5 h-3.5 text-white/80" />
+        )}
+      </button>
+      {open && children}
+    </section>
+  );
+}
+
+export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
   const [data, setData] = useState(initialData);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
@@ -210,6 +244,11 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
   const [isPending, startTransition] = useTransition();
 
   const isMod = data.myRole === 'OWNER' || data.myRole === 'MODERATOR';
+
+  async function refreshData() {
+    const fresh = await getHiveSubmissionsAction(hiveId);
+    setData(fresh);
+  }
 
   function resetForm() {
     setTitle('');
@@ -226,48 +265,30 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
       setFormError('Chapter position must be a positive number.');
       return;
     }
-
     startTransition(async () => {
-      const result = await createSubmissionAction(hiveId, {
-        title,
-        content,
-        targetChapterOrder: order,
-      });
+      const result = await createSubmissionAction(hiveId, { title, content, targetChapterOrder: order });
       if (!result.success) {
         setFormError(result.message);
         return;
       }
       resetForm();
-      const fresh = await import('@/lib/actions/hive-submissions.actions').then((m) =>
-        m.getHiveSubmissionsAction(hiveId),
-      );
-      setData(fresh);
+      await refreshData();
     });
   }
 
   function handleApprove(submissionId: string) {
     startTransition(async () => {
       await approveSubmissionAction(submissionId);
-      const fresh = await import('@/lib/actions/hive-submissions.actions').then((m) =>
-        m.getHiveSubmissionsAction(hiveId),
-      );
-      setData(fresh);
+      await refreshData();
     });
   }
 
   function handleReject(submissionId: string, note: string) {
     startTransition(async () => {
       await rejectSubmissionAction(submissionId, note);
-      const fresh = await import('@/lib/actions/hive-submissions.actions').then((m) =>
-        m.getHiveSubmissionsAction(hiveId),
-      );
-      setData(fresh);
+      await refreshData();
     });
   }
-
-  const allResolved = [...data.approved, ...data.rejected].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
 
   return (
     <div className="max-w-3xl">
@@ -285,7 +306,7 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-500/15 border border-yellow-500/20 text-yellow-500 text-sm font-medium hover:bg-yellow-500/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFC300]/10 border border-[#FFC300]/20 text-yellow-500 text-sm font-medium hover:bg-[#FFC300]/15 transition-colors"
           >
             <Upload className="w-4 h-4" />
             Submit Chapter
@@ -297,7 +318,6 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
       {!isMod && showForm && (
         <div className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-2xl p-5 mb-6">
           <h2 className="text-sm font-semibold text-white mb-4">New Submission</h2>
-
           <div className="flex flex-col gap-4">
             <div>
               <label className="block text-xs font-medium text-white/80 mb-1.5">Title</label>
@@ -307,22 +327,21 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Chapter title..."
                 maxLength={120}
-                className="w-full px-3 py-2 rounded-lg bg-[#252525] border border-[#333] text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/40"
+                className="w-full px-3 py-2 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/40"
               />
             </div>
 
             <div>
               <label className="block text-xs font-medium text-white/80 mb-1.5">
-                Chapter Position{' '}
-                <span className="text-white/80 font-normal">(optional)</span>
+                Chapter Position
               </label>
               <input
                 type="number"
                 value={targetChapterOrder}
                 onChange={(e) => setTargetChapterOrder(e.target.value)}
-                placeholder="e.g. 3"
+                placeholder="Leave blank for no preference"
                 min={1}
-                className="w-32 px-3 py-2 rounded-lg bg-[#252525] border border-[#333] text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/40"
+                className="w-full px-3 py-2 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-yellow-500/40"
               />
             </div>
 
@@ -331,16 +350,14 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
               <RichTextEditor content={content} onChange={setContent} />
             </div>
 
-            {formError && (
-              <p className="text-xs text-red-400">{formError}</p>
-            )}
+            {formError && <p className="text-xs text-white/80">{formError}</p>}
 
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isPending || !title.trim() || !content.trim()}
-                className="px-4 py-2 rounded-xl bg-yellow-500/15 border border-yellow-500/20 text-yellow-500 text-sm font-medium hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFC300]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isPending ? 'Submitting…' : 'Submit'}
               </button>
@@ -348,7 +365,7 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
                 type="button"
                 onClick={resetForm}
                 disabled={isPending}
-                className="px-4 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-white/80 text-sm font-medium hover:text-white transition-colors"
+                className="px-4 py-2 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] text-white/80 text-sm font-medium hover:text-white transition-colors"
               >
                 Cancel
               </button>
@@ -357,10 +374,11 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
         </div>
       )}
 
-      {/* Mod view: pending queue */}
+      {/* Mod view */}
       {isMod && (
-        <>
-          <section className="mb-8">
+        <div className="flex flex-col gap-8">
+          {/* Pending — always open */}
+          <section>
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-sm font-semibold text-white">Pending</h2>
               {data.pending.length > 0 && (
@@ -378,7 +396,6 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
                     key={sub.id}
                     submission={sub}
                     isMod={true}
-                    currentUserId={data.currentUserId}
                     onApprove={handleApprove}
                     onReject={handleReject}
                   />
@@ -387,24 +404,28 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
             )}
           </section>
 
-          {allResolved.length > 0 && (
-            <section>
-              <h2 className="text-sm font-semibold text-white mb-3">Reviewed</h2>
+          {/* Approved — collapsed by default */}
+          {data.approved.length > 0 && (
+            <CollapsibleSection title="Approved" count={data.approved.length}>
               <div className="flex flex-col gap-3">
-                {allResolved.map((sub) => (
-                  <SubmissionCard
-                    key={sub.id}
-                    submission={sub}
-                    isMod={true}
-                    currentUserId={data.currentUserId}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                  />
+                {data.approved.map((sub) => (
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} />
                 ))}
               </div>
-            </section>
+            </CollapsibleSection>
           )}
-        </>
+
+          {/* Rejected — collapsed by default */}
+          {data.rejected.length > 0 && (
+            <CollapsibleSection title="Rejected" count={data.rejected.length}>
+              <div className="flex flex-col gap-3">
+                {data.rejected.map((sub) => (
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} />
+                ))}
+              </div>
+            </CollapsibleSection>
+          )}
+        </div>
       )}
 
       {/* Member view: their own submissions */}
@@ -416,21 +437,12 @@ export default function HiveSubmissions({ hiveId, hiveBookId, data: initialData 
                 <Upload className="w-5 h-5 text-white/80" />
               </div>
               <p className="text-sm font-medium text-white/80">No submissions yet</p>
-              <p className="text-xs text-white/80 mt-1">
-                Submit a chapter for review by the hive owner.
-              </p>
+              <p className="text-xs text-white/80 mt-1">Submit a chapter for review by the hive owner.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
               {[...data.pending, ...data.approved, ...data.rejected].map((sub) => (
-                <SubmissionCard
-                  key={sub.id}
-                  submission={sub}
-                  isMod={false}
-                  currentUserId={data.currentUserId}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                />
+                <SubmissionCard key={sub.id} submission={sub} isMod={false} />
               ))}
             </div>
           )}
