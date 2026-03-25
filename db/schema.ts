@@ -1051,6 +1051,17 @@ export const clubReadingListBooksRelations = relations(
   }),
 );
 
+export const clubBookSuggestionsRelations = relations(clubBookSuggestions, ({ one }) => ({
+  club: one(bookClubs, {
+    fields: [clubBookSuggestions.clubId],
+    references: [bookClubs.id],
+  }),
+  user: one(users, {
+    fields: [clubBookSuggestions.userId],
+    references: [users.id],
+  }),
+}));
+
 // ---------------------------------------------------------------------------
 // Hives
 // ---------------------------------------------------------------------------

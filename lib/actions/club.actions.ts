@@ -1487,3 +1487,14 @@ export async function dismissClubBookSuggestionAction(
     return { success: false, message: 'Failed to dismiss suggestion.' };
   }
 }
+
+export async function resolveClubBookSuggestionAction(
+  suggestionId: string,
+  clubId: string,
+  action: 'APPROVE' | 'REJECT',
+): Promise<ActionResult> {
+  if (action === 'APPROVE') {
+    return approveClubBookSuggestionAction(suggestionId, clubId);
+  }
+  return dismissClubBookSuggestionAction(suggestionId, clubId);
+}

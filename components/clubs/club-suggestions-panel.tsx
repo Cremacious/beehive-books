@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import {
-  approveClubBookSuggestionAction,
-  dismissClubBookSuggestionAction,
-} from '@/lib/actions/club.actions';
+import { resolveClubBookSuggestionAction } from '@/lib/actions/club.actions';
 
 type Suggestion = {
   id: string;
@@ -28,36 +25,31 @@ export function ClubSuggestionsPanel({
 
   if (suggestions.length === 0) return null;
 
-  const handleApprove = async (id: string) => {
+  const handleResolve = async (id: string, action: 'APPROVE' | 'REJECT') => {
     setLoading(id);
-    await approveClubBookSuggestionAction(id, clubId);
-    setLoading(null);
-    router.refresh();
-  };
-
-  const handleDismiss = async (id: string) => {
-    setLoading(id);
-    await dismissClubBookSuggestionAction(id, clubId);
+    await resolveClubBookSuggestionAction(id, clubId, action);
     setLoading(null);
     router.refresh();
   };
 
   return (
     <div className="max-w-xl mb-4">
-      <p className="text-xs font-medium text-white/80 mb-2">Suggestions</p>
+      <p className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">
+        Suggestions
+      </p>
       <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] px-4">
-        {suggestions.map((s, i) => (
+        {suggestions.map((s) => (
           <div
             key={s.id}
-            className={`flex items-center gap-3 py-3.5 ${
-              i < suggestions.length - 1 ? 'border-b border-[#2a2a2a]' : ''
-            }`}
+            className="flex items-center gap-3 py-2.5 border-b border-[#2a2a2a] last:border-b-0"
           >
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{s.title}</p>
-              <p className="text-xs text-white/80 truncate">
-                {s.author}
-                {s.suggestedBy ? ` · ${s.suggestedBy}` : ''}
+              <p className="text-sm text-white truncate">
+                <span className="font-medium">{s.title}</span>
+                <span className="text-white/80"> by {s.author}</span>
+                {s.suggestedBy && (
+                  <span className="text-white/80"> — {s.suggestedBy}</span>
+                )}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -66,14 +58,14 @@ export function ClubSuggestionsPanel({
               ) : (
                 <>
                   <button
-                    onClick={() => handleApprove(s.id)}
-                    className="text-xs px-2.5 py-1 rounded-lg bg-[#FFC300]/15 text-yellow-500 hover:bg-[#FFC300]/25 transition-colors font-medium"
+                    onClick={() => handleResolve(s.id, 'APPROVE')}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-[#FFC300] text-black font-medium hover:bg-[#FFD040] transition-colors"
                   >
                     Approve
                   </button>
                   <button
-                    onClick={() => handleDismiss(s.id)}
-                    className="text-xs px-2.5 py-1 rounded-lg bg-[#2a2a2a] text-white/80 hover:bg-[#333] transition-colors"
+                    onClick={() => handleResolve(s.id, 'REJECT')}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-[#2a2a2a] text-white/80 hover:bg-[#333] transition-colors"
                   >
                     Dismiss
                   </button>
