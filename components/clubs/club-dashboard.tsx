@@ -55,11 +55,10 @@ export default function ClubDashboard({
         </Link>
       )}
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold text-white mainFont">{club.name}</h1>
-
+            <h1 className="text-2xl font-bold text-white mainFont">{club.name}</h1>
+            <div className="flex items-center gap-2 flex-wrap mt-1.5">
               {club.privacy === 'PUBLIC' ? (
                 <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Globe className="w-3 h-3" />
@@ -97,9 +96,6 @@ export default function ClubDashboard({
               )}
             </div>
 
-            <p className="text-sm text-white/80 mt-1">
-              {club.memberCount} {club.memberCount !== 1 ? 'members' : 'member'}
-            </p>
 
             {club.description && (
               <p className="text-sm text-white/80 mt-3 leading-relaxed max-w-2xl">
@@ -121,9 +117,9 @@ export default function ClubDashboard({
             )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:shrink-0">
             {isOwner && (
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                 <Link href={`/clubs/${club.id}/settings`}>
                   <Settings className="w-4 h-4 mr-1.5" />
                   Settings
@@ -135,6 +131,7 @@ export default function ClubDashboard({
               isMember={isMember}
               isOwner={isOwner}
               memberCount={club.memberCount}
+              className="w-full sm:w-auto"
             />
           </div>
         </div>

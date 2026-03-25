@@ -42,17 +42,7 @@ export default async function ReadingListPage({
 
         <ReadingListHeader list={list} isOwner={isOwner} />
 
-        {list.currentlyReadingTitle && (
-          <div className="flex items-baseline gap-2 mb-5">
-            <span className="text-xs font-semibold text-yellow-500 uppercase tracking-wider shrink-0">Now Reading</span>
-            <span className="text-base font-semibold text-white">{list.currentlyReadingTitle}</span>
-            {list.currentlyReadingAuthor && (
-              <span className="text-sm text-white/80">by {list.currentlyReadingAuthor}</span>
-            )}
-          </div>
-        )}
-
-        {list.bookCount > 0 && (
+{list.bookCount > 0 && (
           <ListStats bookCount={list.bookCount} readCount={list.readCount} />
         )}
 

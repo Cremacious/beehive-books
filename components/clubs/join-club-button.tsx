@@ -11,12 +11,14 @@ interface JoinClubButtonProps {
   isMember: boolean;
   isOwner: boolean;
   memberCount: number;
+  className?: string;
 }
 
 export default function JoinClubButton({
   clubId,
   isMember,
   isOwner,
+  className,
 }: JoinClubButtonProps) {
   const router = useRouter();
   const store = useClubStore();
@@ -25,7 +27,7 @@ export default function JoinClubButton({
 
   if (isOwner) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm text-[#FFC300] bg-[#FFC300]/10 border border-[#FFC300]/20">
+      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm text-[#FFC300] bg-[#FFC300]/10 border border-[#FFC300]/20 ${className ?? ''}`}>
         <Crown className="w-4 h-4" />
         You own this club
       </span>
@@ -58,14 +60,14 @@ export default function JoinClubButton({
   };
 
   return (
-    <div className="flex flex-col items-start gap-1">
+    <div className={`flex flex-col items-start gap-1 ${className ?? ''}`}>
       {isMember ? (
         <Button
           variant="outline"
           size="sm"
           onClick={handleLeave}
           disabled={loading}
-          className="border-red-400/30 text-red-400 hover:border-red-400/60 hover:text-red-300 hover:bg-red-400/10"
+          className="w-full border-red-400/30 text-red-400 hover:border-red-400/60 hover:text-red-300 hover:bg-red-400/10"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -75,7 +77,7 @@ export default function JoinClubButton({
           Leave Club
         </Button>
       ) : (
-        <Button size="sm" onClick={handleJoin} disabled={loading}>
+        <Button size="sm" onClick={handleJoin} disabled={loading} className="w-full">
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (

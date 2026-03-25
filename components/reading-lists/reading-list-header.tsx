@@ -37,6 +37,15 @@ export function ReadingListHeader({ list, isOwner }: ReadingListHeaderProps) {
               {list.description}
             </p>
           )}
+          {list.currentlyReadingTitle && (
+            <div className="flex items-baseline gap-2 mt-3">
+              <span className="text-xs font-semibold text-yellow-500 uppercase tracking-wider shrink-0">Now Reading</span>
+              <span className="text-sm font-semibold text-white">{list.currentlyReadingTitle}</span>
+              {list.currentlyReadingAuthor && (
+                <span className="text-sm text-white/80">by {list.currentlyReadingAuthor}</span>
+              )}
+            </div>
+          )}
         </div>
 
         {isOwner && (

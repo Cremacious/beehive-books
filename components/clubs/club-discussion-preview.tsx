@@ -80,7 +80,7 @@ export default function ClubDiscussionPreview({
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-yellow-500">Discussions</h3>
+        <h3 className="font-semibold text-white mainFont">Discussions</h3>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/clubs/${clubId}/discussions`}>View all</Link>
         </Button>

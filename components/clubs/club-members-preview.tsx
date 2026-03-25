@@ -60,8 +60,11 @@ export default function ClubMembersPreview({
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-yellow-500">
-          Members <span className="font-normal text-white/80">({total})</span>
+        <h3 className="text-base font-semibold mainFont text-white flex items-center gap-1.5">
+          Members
+          <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-bold bg-[#FFC300] text-black ml-1">
+            {total}
+          </span>
         </h3>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/clubs/${clubId}/members`}>View all</Link>

@@ -87,7 +87,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
       <div className="flex items-center justify-between mb-8">
-        <h3 className=" font-semibold text-yellow-500">Current Club Book</h3>
+        <h3 className=" font-semibold text-white mainFont">Current Club Book</h3>
         {isMod && !editingBook && !editingProgress && (
           <Button
             onClick={() => setEditingBook(true)}
