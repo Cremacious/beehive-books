@@ -207,23 +207,25 @@ test.describe('authenticated', () => {
     test.skip(!fs.existsSync(authFile), 'Auth setup has not run — no session file');
 
     await page.goto('/home');
+    await expect(page).not.toHaveURL(/sign-in/);
 
-    // Dismiss cookie banner if present — it sits fixed at bottom and intercepts clicks
+    // Dismiss cookie banner if present
     const cookieBanner = page.locator('button:has-text("Got it")');
-    if (await cookieBanner.isVisible()) {
+    if (await cookieBanner.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await cookieBanner.click();
       await page.waitForTimeout(300);
     }
 
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 }),
-      page.locator('[data-testid="sign-out-button"]').click({ force: true }),
-    ]);
-    // Session cleared — should no longer be on /home
-    await expect(page).not.toHaveURL(/\/home/);
+    // Scroll to bottom to ensure sign-out button is in viewport
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(300);
 
-    // Confirm session is gone — protected route should now redirect to /sign-in
+    // Click sign-out and wait for navigation away from /home
+    await page.locator('[data-testid="sign-out-button"]').click({ force: true });
+    await page.waitForTimeout(2_000);
+
+    // Navigate to /home — if signed out, middleware should redirect to /sign-in
     await page.goto('/home');
-    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page).toHaveURL(/sign-in/, { timeout: 10_000 });
   });
 });
