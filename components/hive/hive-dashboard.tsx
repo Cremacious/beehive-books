@@ -27,6 +27,8 @@ import {
   Activity,
   Zap,
   GitBranch,
+  Upload,
+  CheckCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
@@ -137,6 +139,16 @@ const EVENT_CONFIG: Record<
     icon: <UserPlus className="w-4 h-4" />,
     color: 'text-teal-400',
     bg: 'bg-teal-400/10',
+  },
+  CHAPTER_SUBMITTED: {
+    icon: <Upload className="w-3 h-3" />,
+    color: 'text-amber-400',
+    bg: 'bg-amber-400/10',
+  },
+  CHAPTER_SUBMISSION_APPROVED: {
+    icon: <CheckCheck className="w-3 h-3" />,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
   },
 };
 
