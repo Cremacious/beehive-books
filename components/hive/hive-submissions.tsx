@@ -302,7 +302,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
               : 'Submit a chapter for review.'}
           </p>
         </div>
-        {!isMod && !showForm && (
+        {!showForm && (
           <button
             type="button"
             onClick={() => setShowForm(true)}
@@ -315,7 +315,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
       </div>
 
       {/* Submission form (members only) */}
-      {!isMod && showForm && (
+      {showForm && (
         <div className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-2xl p-5 mb-6">
           <h2 className="text-sm font-semibold text-white mb-4">New Submission</h2>
           <div className="flex flex-col gap-4">
