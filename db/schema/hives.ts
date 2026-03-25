@@ -659,7 +659,7 @@ export const hiveBuzzLikesRelations = relations(hiveBuzzLikes, ({ one }) => ({
 
 export const hiveChapterSubmissionsRelations = relations(hiveChapterSubmissions, ({ one }) => ({
   hive: one(hives, { fields: [hiveChapterSubmissions.hiveId], references: [hives.id] }),
-  author: one(users, { fields: [hiveChapterSubmissions.userId], references: [users.id] }),
+  user: one(users, { fields: [hiveChapterSubmissions.userId], references: [users.id] }),
   reviewedBy: one(users, {
     fields: [hiveChapterSubmissions.reviewedById],
     references: [users.id],

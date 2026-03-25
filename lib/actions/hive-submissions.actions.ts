@@ -79,7 +79,7 @@ export async function getHiveSubmissionsAction(hiveId: string): Promise<{
           eq(hiveChapterSubmissions.hiveId, hiveId),
           eq(hiveChapterSubmissions.userId, userId),
         ),
-    with: { author: true },
+    with: { user: true },
     orderBy: [desc(hiveChapterSubmissions.createdAt)],
   });
 
@@ -96,7 +96,7 @@ export async function getHiveSubmissionsAction(hiveId: string): Promise<{
     reviewedAt: r.reviewedAt,
     createdAt: r.createdAt,
     updatedAt: r.updatedAt,
-    author: { id: r.author.id, username: r.author.username, image: r.author.image },
+    author: { id: r.user.id, username: r.user.username, image: r.user.image },
   });
 
   return {
@@ -288,7 +288,7 @@ export async function getSubmissionAction(submissionId: string): Promise<{
 
   const submission = await db.query.hiveChapterSubmissions.findFirst({
     where: eq(hiveChapterSubmissions.id, submissionId),
-    with: { author: true },
+    with: { user: true },
   });
   if (!submission) throw new Error('Submission not found.');
 
@@ -305,6 +305,6 @@ export async function getSubmissionAction(submissionId: string): Promise<{
     targetChapterOrder: submission.targetChapterOrder,
     createdAt: submission.createdAt,
     reviewNote: submission.reviewNote,
-    author: { username: submission.author.username, image: submission.author.image },
+    author: { username: submission.user.username, image: submission.user.image },
   };
 }

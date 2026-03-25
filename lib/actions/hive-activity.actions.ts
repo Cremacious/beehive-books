@@ -125,7 +125,7 @@ export async function getHiveActivityAction(
         eq(hiveChapterSubmissions.hiveId, hiveId),
         gte(hiveChapterSubmissions.createdAt, cutoff),
       ),
-      with: { author: { columns: { id: true, username: true, image: true } } },
+      with: { user: { columns: { id: true, username: true, image: true } } },
       orderBy: [desc(hiveChapterSubmissions.createdAt)],
       limit: 10,
     }),
@@ -135,7 +135,7 @@ export async function getHiveActivityAction(
         eq(hiveChapterSubmissions.status, 'APPROVED'),
         gte(hiveChapterSubmissions.reviewedAt, cutoff),
       ),
-      with: { author: { columns: { id: true, username: true, image: true } } },
+      with: { user: { columns: { id: true, username: true, image: true } } },
       orderBy: [desc(hiveChapterSubmissions.reviewedAt)],
       limit: 10,
     }),
@@ -266,7 +266,7 @@ export async function getHiveActivityAction(
       type: 'CHAPTER_SUBMITTED',
       userId: s.userId,
       timestamp: s.createdAt,
-      user: s.author as HiveUser,
+      user: s.user as HiveUser,
       meta: { title: s.title },
     });
   }
@@ -277,7 +277,7 @@ export async function getHiveActivityAction(
       type: 'CHAPTER_SUBMISSION_APPROVED',
       userId: s.userId,
       timestamp: s.reviewedAt!,
-      user: s.author as HiveUser,
+      user: s.user as HiveUser,
       meta: { title: s.title },
     });
   }
