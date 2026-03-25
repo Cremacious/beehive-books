@@ -29,7 +29,7 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
           {/* Desktop sidebar */}
           {isMember && (
             <aside className="hidden lg:flex flex-col w-52 xl:w-60 shrink-0 pt-6">
-              <BackButton href="/hive" label="Hives" className="mb-6" />
+              {/* <BackButton href="/hive" label="Hives" className="mb-6" /> */}
               <div className="sticky top-6">
                 <HiveSidebar
                   hiveId={hiveId}
