@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, Heart, MessageCircle } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ClubDiscussionWithAuthor } from '@/lib/types/club.types';
 
@@ -34,7 +34,7 @@ function AuthorChip({
     />
   ) : (
     <div className="w-6 h-6 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-      <span className="text-xs font-semibold text-[#FFC300]">{initials}</span>
+      <span className="text-xs font-semibold text-yellow-500">{initials}</span>
     </div>
   );
 
@@ -49,11 +49,17 @@ function AuthorChip({
 
   return (
     <button
-      onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/u/${author.username!}`); }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        router.push(`/u/${author.username!}`);
+      }}
       className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
     >
       {avatar}
-      <span className="text-xs text-white/80 hover:text-white transition-colors">{name}</span>
+      <span className="text-xs text-white/80 hover:text-white transition-colors">
+        {name}
+      </span>
     </button>
   );
 }
@@ -74,24 +80,18 @@ export default function ClubDiscussionPreview({
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-base font-semibold text-white">Discussions</h3>
-        </div>
+        <h3 className="font-semibold text-yellow-500">Discussions</h3>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/clubs/${clubId}/discussions`}>View all</Link>
         </Button>
       </div>
 
       {preview.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
-            <MessageCircle className="w-8 h-8 text-[#FFC300]/20" />
-          </div>
-          <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-            No discussions yet!
-          </h2>
-          <p className="text-white/80 mb-8 max-w-sm">
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <p className="text-sm font-semibold text-white mb-1">
+            No discussions yet
+          </p>
+          <p className="text-sm text-white/80 mb-4 max-w-sm">
             Start conversations about books, share your thoughts, and connect
             with fellow readers.
           </p>
@@ -113,7 +113,7 @@ export default function ClubDiscussionPreview({
             >
               <p className="text-sm font-medium text-white truncate mb-2">
                 {discussion.isPinned && (
-                  <span className="text-[#FFC300] text-xs mr-1.5">📌</span>
+                  <span className="text-yellow-500 text-xs mr-1.5">📌</span>
                 )}
                 {discussion.title}
               </p>
@@ -126,10 +126,7 @@ export default function ClubDiscussionPreview({
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-white/80">
-                  <span className="flex items-center gap-1">
-                    <MessageSquare className="w-3 h-3" />
-                    {discussion.replyCount}
-                  </span>
+                  <span>{discussion.replyCount} replies</span>
                   <span className="flex items-center gap-1">
                     <Heart className="w-3 h-3" />
                     {discussion.likeCount}

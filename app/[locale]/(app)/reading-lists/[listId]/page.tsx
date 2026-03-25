@@ -43,17 +43,11 @@ export default async function ReadingListPage({
         <ReadingListHeader list={list} isOwner={isOwner} />
 
         {list.currentlyReadingTitle && (
-          <div className="rounded-2xl bg-[#FFC300]/8 border border-[#FFC300]/20 p-5 mb-6">
-            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-3">
-              Now Reading
-            </p>
-            <p className="text-xl font-bold text-white leading-snug">
-              {list.currentlyReadingTitle}
-            </p>
+          <div className="flex items-baseline gap-2 mb-5">
+            <span className="text-xs font-semibold text-yellow-500 uppercase tracking-wider shrink-0">Now Reading</span>
+            <span className="text-base font-semibold text-white">{list.currentlyReadingTitle}</span>
             {list.currentlyReadingAuthor && (
-              <p className="text-sm text-white/80 mt-1">
-                by {list.currentlyReadingAuthor}
-              </p>
+              <span className="text-sm text-white/80">by {list.currentlyReadingAuthor}</span>
             )}
           </div>
         )}
@@ -62,7 +56,11 @@ export default async function ReadingListPage({
           <ListStats bookCount={list.bookCount} readCount={list.readCount} />
         )}
 
-        {isOwner && <AddBookForm listId={listId} />}
+        {isOwner && (
+          <div className="mb-6">
+            <AddBookForm listId={listId} />
+          </div>
+        )}
 
         <BookListView
           books={books}

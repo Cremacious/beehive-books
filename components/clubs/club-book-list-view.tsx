@@ -2,12 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Loader2, Edit } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
 import type { ClubReadingListBook, BookStatus } from '@/lib/types/club.types';
 
 const STATUS_OPTIONS: { value: BookStatus; label: string }[] = [
-  { value: 'NOT_STARTED', label: 'Not started' },
   { value: 'IN_PROGRESS', label: 'Currently reading' },
   { value: 'COMPLETED', label: 'Completed' },
 ];
@@ -98,9 +97,8 @@ function BookRow({
           ) : (
             <button
               onClick={() => setShowMenu((v) => !v)}
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="px-2 py-1 rounded-md text-xs text-yellow-500 hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
-              <Edit className="w-5 h-5" />
               Edit
             </button>
           )}
@@ -122,9 +120,8 @@ function BookRow({
               <div className="my-1 border-t border-[#2a2a2a]" />
               <button
                 onClick={handleRemove}
-                className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
               >
-                <Trash2 className="w-3.5 h-3.5 shrink-0" />
                 Remove from list
               </button>
             </div>

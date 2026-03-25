@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Edit2, Loader2, X, Check, BookMarked } from 'lucide-react';
+import { Edit2, Loader2, X, Check } from 'lucide-react';
 import { useClubStore } from '@/lib/stores/club-store';
 import type { ClubWithMembership } from '@/lib/types/club.types';
 import { Button } from '../ui/button';
@@ -86,20 +86,14 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
 
   return (
     <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-sm font-semibold text-white">
-            Current Club Book
-          </h3>
-        </div>
+      <div className="flex items-center justify-between mb-8">
+        <h3 className=" font-semibold text-yellow-500">Current Club Book</h3>
         {isMod && !editingBook && !editingProgress && (
           <Button
             onClick={() => setEditingBook(true)}
             variant="outline"
             size="sm"
           >
-            <BookMarked className="w-4 h-4 text-[#FFC300]" />
             Change Book
           </Button>
         )}
@@ -197,7 +191,7 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-white/80">Preview</span>
-                <span className="text-xs font-semibold text-[#FFC300]">
+                <span className="text-xs font-semibold text-yellow-500">
                   {computedPercent}%
                 </span>
               </div>
@@ -258,9 +252,9 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 {isMember && !editingProgress && (
                   <button
                     onClick={() => setEditingProgress(true)}
-                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm  hover:text-[#FFC300] hover:bg-[#FFC300]/10 border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-all font-semibold text-white"
+                    className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm hover:text-yellow-500 hover:bg-yellow-500/10 border border-[#2a2a2a] hover:border-yellow-500/30 transition-all font-semibold text-white"
                   >
-                    <Edit2 className="w-4 h-4 text-[#FFC300]" />
+                    <Edit2 className="w-4 h-4 text-yellow-500" />
                     Update Progress
                   </button>
                 )}
@@ -280,26 +274,20 @@ export default function ClubProgress({ club }: { club: ClubWithMembership }) {
                 ) : (
                   <span />
                 )}
-                <span className="font-semibold text-[#FFC300]">
+                <span className="font-semibold text-yellow-500">
                   {club.progressPercent ?? 0}%
                 </span>
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
-                <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-                No book selected!
-              </h2>
-              <p className="text-white/80 mb-8 max-w-sm">
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <p className="text-sm font-semibold text-white mb-1">No book selected</p>
+              <p className="text-sm text-white/80 mb-4 max-w-sm">
                 Choose a book for the club to read together and track everyone&apos;s
                 progress.
               </p>
               {isMod && (
-                <Button size="lg" onClick={() => setEditingBook(true)}>
-                  <Edit2 className="w-5 h-5" />
+                <Button size="sm" onClick={() => setEditingBook(true)}>
                   Set Current Book
                 </Button>
               )}
