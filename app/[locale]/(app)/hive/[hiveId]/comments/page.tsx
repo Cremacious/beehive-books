@@ -30,7 +30,10 @@ export default async function HiveCommentsPage({
     ? await db.query.chapters.findMany({
         where: eq(chapters.bookId, hive.bookId),
         orderBy: [asc(chapters.order)],
-        columns: { id: true, title: true, order: true },
+        columns: { id: true, title: true, order: true, collectionId: true },
+        with: {
+          collection: { columns: { name: true } },
+        },
       })
     : [];
 
