@@ -572,7 +572,7 @@ export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
   // Return in contextMap priority order
   const orderedResults = candidateIds
     .map((id) => results.find((r) => r.id === id))
-    .filter((r): r is SuggestedUser => r !== undefined);
+    .filter(Boolean) as SuggestedUser[];
 
   return orderedResults;
 }

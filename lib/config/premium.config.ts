@@ -1,4 +1,9 @@
-export type PremiumResource = 'books' | 'clubs' | 'hives' | 'readingLists' | 'prompts';
+export type PremiumResource =
+  | 'books'
+  | 'clubs'
+  | 'hives'
+  | 'readingLists'
+  | 'prompts';
 
 export const PREMIUM_CONFIG = {
   limits: {
@@ -10,11 +15,11 @@ export const PREMIUM_CONFIG = {
       prompts: 1,
     },
     premium: {
-      books: 8,
-      clubs: 8,
-      hives: 8,
-      readingLists: 8,
-      prompts: 8,
+      books: Infinity,
+      clubs: Infinity,
+      hives: Infinity,
+      readingLists: Infinity,
+      prompts: Infinity,
     },
   },
 } as const satisfies {
