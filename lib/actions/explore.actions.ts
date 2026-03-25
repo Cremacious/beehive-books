@@ -60,6 +60,8 @@ function mapBook(b: typeof books.$inferSelect): Book {
     chapterCount: b.chapterCount,
     coverUrl: b.coverUrl,
     tags: (b.tags ?? []) as string[],
+    commentsEnabled: b.commentsEnabled,
+    chapterCommentsEnabled: b.chapterCommentsEnabled,
   };
 }
 

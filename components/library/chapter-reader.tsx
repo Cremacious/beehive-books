@@ -111,11 +111,13 @@ export function ChapterReader({
           )}
         </div>
 
-        <CommentSection
-          chapterId={chapter.id}
-          comments={comments}
-          currentUserId={currentUserId ?? null}
-        />
+        {book.chapterCommentsEnabled && (
+          <CommentSection
+            chapterId={chapter.id}
+            comments={comments}
+            currentUserId={currentUserId ?? null}
+          />
+        )}
       </div>
     </div>
   );

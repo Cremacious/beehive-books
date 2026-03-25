@@ -92,12 +92,16 @@ export function BookForm({
       draftStatus:
         (book?.draftStatus as BookFormData['draftStatus']) ?? 'FIRST_DRAFT',
       tags: book?.tags ?? [],
+      commentsEnabled: book?.commentsEnabled ?? true,
+      chapterCommentsEnabled: book?.chapterCommentsEnabled ?? true,
     },
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const privacy = watch('privacy');
   const explorable = watch('explorable');
+  const commentsEnabled = watch('commentsEnabled');
+  const chapterCommentsEnabled = watch('chapterCommentsEnabled');
   const descriptionValue = watch('description') ?? '';
   const descChars = descriptionValue.length;
   const descWords = descriptionValue.trim()
@@ -483,6 +487,52 @@ export function BookForm({
                 }`}
               />
             </button>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-white uppercase tracking-wider">Comments</p>
+            <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-yellow-500 mainFont">Book Comments</p>
+                <p className="text-sm text-white/80 mt-0.5">
+                  Allow readers to leave comments on this book.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setValue('commentsEnabled', !commentsEnabled)}
+                className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+                  commentsEnabled ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                    commentsEnabled ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-yellow-500 mainFont">Chapter Comments</p>
+                <p className="text-sm text-white/80 mt-0.5">
+                  Allow readers to leave comments on individual chapters.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setValue('chapterCommentsEnabled', !chapterCommentsEnabled)}
+                className={`relative inline-flex shrink-0 w-11 h-6 rounded-full transition-colors duration-200 ${
+                  chapterCommentsEnabled ? 'bg-[#FFC300]' : 'bg-[#3a3a3a]'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                    chapterCommentsEnabled ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
 
           {!isEdit && (

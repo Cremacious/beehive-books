@@ -26,6 +26,8 @@ export type Book = {
   chapterCount: number;
   coverUrl: string | null;
   tags: string[];
+  commentsEnabled: boolean;
+  chapterCommentsEnabled: boolean;
 };
 
 export type Collection = {
@@ -58,6 +60,8 @@ export type ExistingBook = {
   draftStatus: DraftStatus;
   coverUrl?: string | null;
   tags: string[];
+  commentsEnabled?: boolean;
+  chapterCommentsEnabled?: boolean;
 };
 
 export type BookFormProps = {

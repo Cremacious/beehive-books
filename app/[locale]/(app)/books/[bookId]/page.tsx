@@ -22,6 +22,8 @@ import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
 import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
 import { LikeButton } from '@/components/books/like-button';
+import BookComments from '@/components/books/book-comments';
+import { getBookCommentsAction } from '@/lib/actions/book-comments.actions';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -71,6 +73,10 @@ export default async function PublicBookPage({
     notFound();
   }
 
+  const bookCommentsList = book!.commentsEnabled
+    ? await getBookCommentsAction(bookId).catch(() => [])
+    : [];
+
   const { chapters, collections, isOwner } = book;
 
   return (
@@ -96,7 +102,11 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
+                <GeneratedCover
+                  title={book.title}
+                  author={book.author}
+                  bookId={book.id}
+                />
               )}
             </div>
 
@@ -230,6 +240,17 @@ export default async function PublicBookPage({
           basePath="/books"
           readChapterIds={isAuthenticated ? readChapterIds : undefined}
         />
+
+        {book!.commentsEnabled && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <BookComments
+              bookId={bookId}
+              initialComments={bookCommentsList}
+              currentUserId={session?.user?.id ?? null}
+              isAuthenticated={isAuthenticated}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

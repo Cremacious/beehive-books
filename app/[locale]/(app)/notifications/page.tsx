@@ -76,6 +76,9 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_ACTIVITY':       return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
     case 'HIVE_JOIN_REQUEST':   return 'wants to join your hive';
     case 'BOOK_LIKE':           return 'liked your book';
+    case 'BOOK_COMMENT':        return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
+    case 'BOOK_COMMENT_REPLY':  return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
+    case 'BOOK_COMMENT_LIKE':   return `liked your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
   }
 }
 
@@ -108,6 +111,9 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'HIVE_BETA_REVIEW':    return { Icon: BookOpen,        bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'HIVE_JOIN_REQUEST':   return { Icon: UserPlus,        bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
     case 'BOOK_LIKE':           return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
+    case 'BOOK_COMMENT':        return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
+    case 'BOOK_COMMENT_REPLY':  return { Icon: CornerDownRight, bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
+    case 'BOOK_COMMENT_LIKE':   return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
   }
 }
 
