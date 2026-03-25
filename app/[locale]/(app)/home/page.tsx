@@ -17,8 +17,9 @@ import {
   Bell,
 } from 'lucide-react';
 import { getFriendFeedAction } from '@/lib/actions/feed.actions';
-import { getMyFriendsDataAction } from '@/lib/actions/friend.actions';
+import { getMyFriendsDataAction, getSuggestedUsersAction } from '@/lib/actions/friend.actions';
 import { getAnnouncementsAction } from '@/lib/actions/admin.actions';
+import WritersYouMightKnow from '@/components/home/writers-you-might-know';
 import { getRecentWritingAction } from '@/lib/actions/book.actions';
 import { getContinueReadingAction } from '@/lib/actions/reading.actions';
 import { getCurrentUserAction } from '@/lib/actions/user.actions';
@@ -382,6 +383,8 @@ export default async function UserHomePage() {
   const username = currentUser?.username ?? null;
   const hasFriends = friends.length > 0;
 
+  const suggestions = hasFriends ? [] : await getSuggestedUsersAction();
+
   const groups: { label: string; events: FeedEvent[] }[] = [];
   for (const ev of events) {
     const label = dayLabel(ev.timestamp);
@@ -504,7 +507,10 @@ export default async function UserHomePage() {
 
       {/* Friend Activity OR New User Welcome */}
       {!hasFriends ? (
-        <NewUserWelcome />
+        <>
+          <WritersYouMightKnow suggestions={suggestions} />
+          <NewUserWelcome />
+        </>
       ) : events.length === 0 ? (
         <section>
           <SectionHeader

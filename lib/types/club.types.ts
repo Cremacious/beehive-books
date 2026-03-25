@@ -41,6 +41,7 @@ export type ClubMemberWithUser = ClubMember & {
 export type ClubWithMembership = BookClub & {
   myRole: ClubRole | null;
   isMember: boolean;
+  friendCount?: number;
 };
 
 export type ClubDiscussion = {

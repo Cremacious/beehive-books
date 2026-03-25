@@ -2,10 +2,10 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, count, desc, eq, ilike, ne, or } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, inArray, ne, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { books, friendships, users, notifications, prompts, hives } from '@/db/schema';
+import { bookClubs, books, clubMembers, friendships, hiveMembers, hives, notifications, prompts, users } from '@/db/schema';
 import { insertNotification } from '@/lib/notifications';
 
 type ActionResult = {
@@ -398,12 +398,12 @@ export type SuggestedUser = {
   latestBook: FriendLatestBook | null;
   activity: FriendActivity;
   friendStatus: FriendStatus;
+  mutualContext?: string;
 };
 
 export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
   const userId = await requireAuth();
 
-  // Get existing friendship ids to exclude
   const myFriendships = await db.query.friendships.findMany({
     where: or(
       eq(friendships.requesterId, userId),
@@ -415,33 +415,118 @@ export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
   );
   connectedIds.add(userId);
 
-  // Find users with public books, not already connected
-  const bookCounts = await db
-    .select({
-      userId: books.userId,
-      count: count(),
-    })
-    .from(books)
-    .where(eq(books.privacy, 'PUBLIC'))
-    .groupBy(books.userId)
-    .orderBy(desc(count()))
-    .limit(30);
+  // contextMap preserves insertion order: club/hive matches first, then genre, then fallback
+  const contextMap = new Map<string, string>();
 
-  const candidateIds = bookCounts
-    .map((r) => r.userId)
-    .filter((id) => !connectedIds.has(id))
-    .slice(0, 12);
+  // Priority 1 — shared club members
+  const myClubRows = await db
+    .select({ clubId: clubMembers.clubId })
+    .from(clubMembers)
+    .where(eq(clubMembers.userId, userId));
+  const myClubIds = myClubRows.map((r) => r.clubId);
 
+  if (myClubIds.length > 0) {
+    const sharedClubRows = await db
+      .select({ userId: clubMembers.userId, clubName: bookClubs.name })
+      .from(clubMembers)
+      .innerJoin(bookClubs, eq(clubMembers.clubId, bookClubs.id))
+      .where(
+        and(inArray(clubMembers.clubId, myClubIds), ne(clubMembers.userId, userId)),
+      );
+    for (const row of sharedClubRows) {
+      if (!connectedIds.has(row.userId) && !contextMap.has(row.userId)) {
+        contextMap.set(row.userId, `Both in ${row.clubName}`);
+      }
+    }
+  }
+
+  // Priority 2 — shared hive members
+  const myHiveRows = await db
+    .select({ hiveId: hiveMembers.hiveId })
+    .from(hiveMembers)
+    .where(eq(hiveMembers.userId, userId));
+  const myHiveIds = myHiveRows.map((r) => r.hiveId);
+
+  if (myHiveIds.length > 0) {
+    const sharedHiveRows = await db
+      .select({ userId: hiveMembers.userId, hiveName: hives.name })
+      .from(hiveMembers)
+      .innerJoin(hives, eq(hiveMembers.hiveId, hives.id))
+      .where(
+        and(inArray(hiveMembers.hiveId, myHiveIds), ne(hiveMembers.userId, userId)),
+      );
+    for (const row of sharedHiveRows) {
+      if (!connectedIds.has(row.userId) && !contextMap.has(row.userId)) {
+        contextMap.set(row.userId, `Both in ${row.hiveName}`);
+      }
+    }
+  }
+
+  // Priority 3 — same genres
+  if (contextMap.size < 20) {
+    const myGenreRows = await db
+      .select({ genre: books.genre })
+      .from(books)
+      .where(and(eq(books.userId, userId), ne(books.genre, '')))
+      .groupBy(books.genre);
+    const myGenres = myGenreRows.map((r) => r.genre).filter(Boolean);
+
+    if (myGenres.length > 0) {
+      const genreRows = await db
+        .select({ userId: books.userId, genre: books.genre })
+        .from(books)
+        .where(
+          and(
+            eq(books.privacy, 'PUBLIC'),
+            ne(books.userId, userId),
+            inArray(books.genre, myGenres),
+          ),
+        )
+        .groupBy(books.userId, books.genre)
+        .limit(40);
+      for (const row of genreRows) {
+        if (!connectedIds.has(row.userId) && !contextMap.has(row.userId)) {
+          contextMap.set(row.userId, `Writes ${row.genre}`);
+        }
+      }
+    }
+  }
+
+  // Priority 4 — fallback: any users with public books
+  if (contextMap.size < 12) {
+    const bookCountRows = await db
+      .select({ userId: books.userId, bookCount: count() })
+      .from(books)
+      .where(eq(books.privacy, 'PUBLIC'))
+      .groupBy(books.userId)
+      .orderBy(desc(count()))
+      .limit(40);
+    for (const row of bookCountRows) {
+      if (!connectedIds.has(row.userId) && !contextMap.has(row.userId)) {
+        contextMap.set(row.userId, '');
+        if (contextMap.size >= 30) break;
+      }
+    }
+  }
+
+  const candidateIds = Array.from(contextMap.keys()).slice(0, 12);
   if (candidateIds.length === 0) return [];
 
   const userRows = await db.query.users.findMany({
-    where: (u, { inArray }) => inArray(u.id, candidateIds),
+    where: (u, { inArray: inArr }) => inArr(u.id, candidateIds),
     columns: { id: true, username: true, image: true, bio: true },
   });
 
+  const bookCountData = await db
+    .select({ userId: books.userId, cnt: count() })
+    .from(books)
+    .where(and(eq(books.privacy, 'PUBLIC'), inArray(books.userId, candidateIds)))
+    .groupBy(books.userId);
+  const bookCountMap = new Map(bookCountData.map((r) => [r.userId, r.cnt]));
+
   const results = await Promise.all(
     userRows.map(async (u) => {
-      const bookCount = bookCounts.find((b) => b.userId === u.id)?.count ?? 0;
+      const bookCount = bookCountMap.get(u.id) ?? 0;
       const latestBook = await db.query.books.findFirst({
         where: and(eq(books.userId, u.id), eq(books.privacy, 'PUBLIC')),
         orderBy: (b, { desc }) => [desc(b.updatedAt)],
@@ -477,9 +562,17 @@ export async function getSuggestedUsersAction(): Promise<SuggestedUser[]> {
       ]);
       const activity: FriendActivity = { recentBooks, recentPrompts };
 
-      return { ...u, bookCount, latestBook: latestBook ?? null, activity, friendStatus };
+      const rawContext = contextMap.get(u.id);
+      const mutualContext = rawContext ? rawContext : undefined;
+
+      return { ...u, bookCount, latestBook: latestBook ?? null, activity, friendStatus, mutualContext };
     }),
   );
 
-  return results;
+  // Return in contextMap priority order
+  const orderedResults = candidateIds
+    .map((id) => results.find((r) => r.id === id))
+    .filter((r): r is SuggestedUser => r !== undefined);
+
+  return orderedResults;
 }
