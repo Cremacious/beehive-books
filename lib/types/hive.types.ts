@@ -140,6 +140,46 @@ export type ChatMessageWithAuthor = {
   author: HiveUser;
 };
 
+export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type HiveSubmissionWithAuthor = {
+  id: string;
+  hiveId: string;
+  userId: string;
+  title: string;
+  content: string;
+  targetChapterOrder: number | null;
+  status: SubmissionStatus;
+  reviewedById: string | null;
+  reviewNote: string | null;
+  reviewedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  author: HiveUser;
+};
+
+export type ForumThreadWithAuthor = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  content: string;
+  parentId: null;
+  createdAt: Date;
+  author: HiveUser;
+  replyCount: number;
+  lastActivity: Date;
+};
+
+export type ForumReplyWithAuthor = {
+  id: string;
+  hiveId: string;
+  authorId: string;
+  content: string;
+  parentId: string;
+  createdAt: Date;
+  author: HiveUser;
+};
+
 
 export type PollWithResults = {
   id: string;

@@ -10,6 +10,7 @@ interface HiveMobileMenuButtonProps {
   isOwner: boolean;
   hive: HiveWithMembership;
   topMembers: HiveUser[];
+  pendingSubmissionCount?: number;
 }
 
 export default function HiveMobileMenuButton({
@@ -17,6 +18,7 @@ export default function HiveMobileMenuButton({
   isOwner,
   hive,
   topMembers,
+  pendingSubmissionCount = 0,
 }: HiveMobileMenuButtonProps) {
   const [open, setOpen] = useState(false);
 
@@ -61,6 +63,7 @@ export default function HiveMobileMenuButton({
                 hive={hive}
                 topMembers={topMembers}
                 onNavClick={() => setOpen(false)}
+                pendingSubmissionCount={pendingSubmissionCount}
               />
             </div>
           </div>

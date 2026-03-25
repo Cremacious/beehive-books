@@ -18,6 +18,7 @@ import {
   Trophy,
   Timer,
   VoteIcon,
+  Upload,
 } from 'lucide-react';
 import { markAllReadAction } from '@/lib/actions/notification.actions';
 import type { NotificationItem, NotificationType } from '@/lib/types/notification.types';
@@ -58,6 +59,8 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
     case 'HIVE_ACTIVITY':          return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
     case 'HIVE_JOIN_REQUEST':      return 'wants to join your hive';
+    case 'SUBMISSION_APPROVED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was approved`;
+    case 'SUBMISSION_REJECTED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was rejected`;
     case 'BOOK_LIKE':              return 'liked your book';
     case 'BOOK_COMMENT':           return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
     case 'BOOK_COMMENT_REPLY':     return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
@@ -93,6 +96,8 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'HIVE_POLL':            return { Icon: VoteIcon,        bg: 'bg-purple-500/20', fg: 'text-purple-400' };
     case 'HIVE_BETA_REVIEW':     return { Icon: BookOpen,        bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'HIVE_JOIN_REQUEST':    return { Icon: UserPlus,        bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'SUBMISSION_APPROVED':  return { Icon: Upload,          bg: 'bg-green-500/20',  fg: 'text-green-400'  };
+    case 'SUBMISSION_REJECTED':  return { Icon: Upload,          bg: 'bg-red-500/20',    fg: 'text-red-400'    };
     case 'BOOK_LIKE':            return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'BOOK_COMMENT':         return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'BOOK_COMMENT_REPLY':   return { Icon: CornerDownRight, bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
