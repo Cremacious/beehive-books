@@ -858,6 +858,24 @@ export const clubReadingListBooks = pgTable('club_reading_list_books', {
   addedAt: timestamp('added_at').defaultNow().notNull(),
 });
 
+export const clubBookSuggestions = pgTable('club_book_suggestions', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  clubId: text('club_id')
+    .notNull()
+    .references(() => bookClubs.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  author: text('author').notNull(),
+  status: text('status', { enum: ['PENDING', 'APPROVED', 'REJECTED'] })
+    .notNull()
+    .default('PENDING'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const clubInvites = pgTable(
   'club_invites',
   {

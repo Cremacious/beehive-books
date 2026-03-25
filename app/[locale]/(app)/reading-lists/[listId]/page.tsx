@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { BookOpen } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ReadingListHeader } from '@/components/reading-lists/reading-list-header';
 import { ListStats } from '@/components/reading-lists/list-stats';
@@ -45,12 +44,9 @@ export default async function ReadingListPage({
 
         {list.currentlyReadingTitle && (
           <div className="rounded-2xl bg-[#FFC300]/8 border border-[#FFC300]/20 p-5 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-4 h-4 text-[#FFC300]" />
-              <p className="text-xs font-semibold text-[#FFC300] uppercase tracking-wider">
-                Now Reading
-              </p>
-            </div>
+            <p className="text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-3">
+              Now Reading
+            </p>
             <p className="text-xl font-bold text-white leading-snug">
               {list.currentlyReadingTitle}
             </p>
@@ -66,14 +62,14 @@ export default async function ReadingListPage({
           <ListStats bookCount={list.bookCount} readCount={list.readCount} />
         )}
 
+        {isOwner && <AddBookForm listId={listId} />}
+
         <BookListView
           books={books}
           listId={listId}
           isOwner={isOwner}
           currentlyReadingId={list.currentlyReadingId}
         />
-
-        {isOwner && <AddBookForm listId={listId} />}
       </div>
     </div>
   );

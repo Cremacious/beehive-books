@@ -15,6 +15,7 @@ import {
   clubDiscussionReplies,
   clubDiscussionReplyLikes,
   clubReadingListBooks,
+  clubBookSuggestions,
   clubInvites,
   clubJoinRequests,
   friendships,
@@ -1377,4 +1378,112 @@ export async function checkClubJoinRequestStatusAction(
   });
 
   return request ? 'pending' : 'none';
+}
+
+export async function suggestClubBookAction(
+  clubId: string,
+  title: string,
+  author: string,
+): Promise<ActionResult> {
+  const { userId } = await requireClubMember(clubId);
+  if (!title.trim() || !author.trim())
+    return { success: false, message: 'Title and author required.' };
+  try {
+    await db.insert(clubBookSuggestions).values({
+      clubId,
+      userId,
+      title: title.trim(),
+      author: author.trim(),
+    });
+    return { success: true, message: 'Suggestion submitted.' };
+  } catch {
+    return { success: false, message: 'Failed to submit suggestion.' };
+  }
+}
+
+export async function getClubBookSuggestionsAction(
+  clubId: string,
+): Promise<{ id: string; title: string; author: string; createdAt: Date; suggestedBy: string | null }[]> {
+  await requireClubMod(clubId);
+  const rows = await db
+    .select({
+      id: clubBookSuggestions.id,
+      title: clubBookSuggestions.title,
+      author: clubBookSuggestions.author,
+      createdAt: clubBookSuggestions.createdAt,
+      suggestedBy: users.username,
+    })
+    .from(clubBookSuggestions)
+    .leftJoin(users, eq(clubBookSuggestions.userId, users.id))
+    .where(
+      and(
+        eq(clubBookSuggestions.clubId, clubId),
+        eq(clubBookSuggestions.status, 'PENDING'),
+      ),
+    )
+    .orderBy(clubBookSuggestions.createdAt);
+  return rows;
+}
+
+export async function approveClubBookSuggestionAction(
+  suggestionId: string,
+  clubId: string,
+): Promise<ActionResult> {
+  await requireClubMod(clubId);
+  try {
+    const [suggestion] = await db
+      .select()
+      .from(clubBookSuggestions)
+      .where(
+        and(
+          eq(clubBookSuggestions.id, suggestionId),
+          eq(clubBookSuggestions.clubId, clubId),
+        ),
+      );
+    if (!suggestion) return { success: false, message: 'Suggestion not found.' };
+
+    const maxOrderResult = await db
+      .select({ maxOrder: max(clubReadingListBooks.order) })
+      .from(clubReadingListBooks)
+      .where(eq(clubReadingListBooks.clubId, clubId));
+    const nextOrder = (maxOrderResult[0]?.maxOrder ?? 0) + 1;
+
+    await db.insert(clubReadingListBooks).values({
+      clubId,
+      title: suggestion.title,
+      author: suggestion.author,
+      order: nextOrder,
+    });
+    await db
+      .update(clubBookSuggestions)
+      .set({ status: 'APPROVED' })
+      .where(eq(clubBookSuggestions.id, suggestionId));
+
+    revalidatePath(`/clubs/${clubId}/reading-list`);
+    return { success: true, message: 'Book added to reading list.' };
+  } catch {
+    return { success: false, message: 'Failed to approve suggestion.' };
+  }
+}
+
+export async function dismissClubBookSuggestionAction(
+  suggestionId: string,
+  clubId: string,
+): Promise<ActionResult> {
+  await requireClubMod(clubId);
+  try {
+    await db
+      .update(clubBookSuggestions)
+      .set({ status: 'REJECTED' })
+      .where(
+        and(
+          eq(clubBookSuggestions.id, suggestionId),
+          eq(clubBookSuggestions.clubId, clubId),
+        ),
+      );
+    revalidatePath(`/clubs/${clubId}/reading-list`);
+    return { success: true, message: 'Suggestion dismissed.' };
+  } catch {
+    return { success: false, message: 'Failed to dismiss suggestion.' };
+  }
 }
