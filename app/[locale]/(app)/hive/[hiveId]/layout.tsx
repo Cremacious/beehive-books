@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
-import { getHiveAction } from '@/lib/actions/hive.actions';
-import HiveNav from '@/components/hive/hive-nav';
+import { getHiveAction, getHiveMembersAction } from '@/lib/actions/hive.actions';
+import HiveSidebar from '@/components/hive/hive-sidebar';
+import HiveMobileMenuButton from '@/components/hive/hive-mobile-menu-button';
 import BackButton from '@/components/shared/back-button';
 
 interface HiveLayoutProps {
@@ -11,20 +12,55 @@ interface HiveLayoutProps {
 export default async function HiveLayout({ children, params }: HiveLayoutProps) {
   const { hiveId } = await params;
 
-
-  const hive = await getHiveAction(hiveId);
+  const [hive, members] = await Promise.all([
+    getHiveAction(hiveId),
+    getHiveMembersAction(hiveId),
+  ]);
   if (!hive) notFound();
 
   const isOwner = hive.myRole === 'OWNER';
   const isMember = hive.isMember;
-
-
+  const topMembers = members.slice(0, 5).map((m) => m.user);
 
   return (
-    <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
-      <BackButton href="/hive" label="Hives" className="mb-4" />
-      {isMember && <HiveNav hiveId={hiveId} isOwner={isOwner} />}
-      {children}
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="flex gap-8">
+          {/* Desktop sidebar */}
+          {isMember && (
+            <aside className="hidden lg:flex flex-col w-52 xl:w-60 shrink-0 pt-6">
+              <BackButton href="/hive" label="Hives" className="mb-6" />
+              <div className="sticky top-6">
+                <HiveSidebar
+                  hiveId={hiveId}
+                  isOwner={isOwner}
+                  hive={hive}
+                  topMembers={topMembers}
+                />
+              </div>
+            </aside>
+          )}
+
+          {/* Main content */}
+          <main className={`flex-1 min-w-0 py-6 ${!isMember ? 'max-w-4xl mx-auto w-full' : ''}`}>
+            {!isMember && (
+              <BackButton href="/hive" label="Hives" className="mb-4" />
+            )}
+            {isMember && (
+              <div className="lg:hidden flex items-center justify-between mb-5">
+                <HiveMobileMenuButton
+                  hiveId={hiveId}
+                  isOwner={isOwner}
+                  hive={hive}
+                  topMembers={topMembers}
+                />
+                <span className="text-xs text-white/80 truncate max-w-[60%] text-right">{hive.name}</span>
+              </div>
+            )}
+            {children}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
