@@ -206,9 +206,13 @@ test.describe('book CRUD and features', () => {
     await page.getByRole('button', { name: /Anyone can read/i }).click();
 
     // Toggle the "Explorable" switch on
-    const explorableToggle = page.locator('input[type="checkbox"]').last();
-    if (!(await explorableToggle.isChecked())) {
+    const explorableToggle = page.locator('[data-testid="explorable-toggle"]');
+    await expect(explorableToggle).toBeVisible({ timeout: 10_000 });
+    const isChecked = await explorableToggle.getAttribute('aria-checked') === 'true'
+      || await explorableToggle.getAttribute('data-state') === 'checked';
+    if (!isChecked) {
       await explorableToggle.click();
+      await page.waitForTimeout(300);
     }
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await page.waitForURL(`/library/${bookId}`, {});

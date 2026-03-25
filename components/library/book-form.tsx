@@ -466,6 +466,8 @@ export function BookForm({
             </div>
             <button
               type="button"
+              data-testid="explorable-toggle"
+              data-state={explorable ? 'checked' : 'unchecked'}
               onClick={() => {
                 const next = !explorable;
                 setValue('explorable', next);
