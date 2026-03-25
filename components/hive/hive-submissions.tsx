@@ -23,7 +23,7 @@ interface SubmissionsData {
 
 interface Props {
   hiveId: string;
-  hiveBookId: string | null;
+  bookId: string | null;
   data: SubmissionsData;
 }
 
@@ -81,12 +81,14 @@ function SubmissionCard({
   submission,
   isMod,
   hiveId,
+  bookId,
   onApprove,
   onReject,
 }: {
   submission: HiveSubmissionWithAuthor;
   isMod: boolean;
   hiveId: string;
+  bookId: string | null;
   onApprove?: (id: string) => void;
   onReject?: (id: string, note: string) => void;
 }) {
@@ -149,7 +151,8 @@ function SubmissionCard({
               <button
                 type="button"
                 onClick={() => onApprove?.(submission.id)}
-                className="px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#FFC300]/90 transition-colors"
+                disabled={!bookId}
+                className="px-3 py-1.5 rounded-lg bg-[#FFC300] text-black text-xs font-semibold hover:bg-[#FFC300]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Approve
               </button>
@@ -230,7 +233,7 @@ function CollapsibleSection({
   );
 }
 
-export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
+export default function HiveSubmissions({ hiveId, bookId, data: initialData }: Props) {
   const [data, setData] = useState(initialData);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
@@ -288,6 +291,17 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
 
   return (
     <div className="max-w-3xl">
+      {!bookId && (
+        <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">
+          <p className="text-sm text-white/80">
+            This hive has no linked book. Submissions can be collected but chapters cannot be approved until a book is linked in{' '}
+            <a href={`/hive/${hiveId}/settings`} className="text-yellow-500 hover:text-white transition-colors">
+              hive settings
+            </a>.
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -393,6 +407,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
                     submission={sub}
                     isMod={true}
                     hiveId={hiveId}
+                    bookId={bookId}
                     onApprove={handleApprove}
                     onReject={handleReject}
                   />
@@ -406,7 +421,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
             <CollapsibleSection title="Approved" count={data.approved.length}>
               <div className="flex flex-col gap-3">
                 {data.approved.map((sub) => (
-                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} />
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} bookId={bookId} />
                 ))}
               </div>
             </CollapsibleSection>
@@ -417,7 +432,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
             <CollapsibleSection title="Rejected" count={data.rejected.length}>
               <div className="flex flex-col gap-3">
                 {data.rejected.map((sub) => (
-                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} />
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} bookId={bookId} />
                 ))}
               </div>
             </CollapsibleSection>
@@ -439,7 +454,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
           ) : (
             <div className="flex flex-col gap-3">
               {[...data.pending, ...data.approved, ...data.rejected].map((sub) => (
-                <SubmissionCard key={sub.id} submission={sub} isMod={false} hiveId={hiveId} />
+                <SubmissionCard key={sub.id} submission={sub} isMod={false} hiveId={hiveId} bookId={bookId} />
               ))}
             </div>
           )}

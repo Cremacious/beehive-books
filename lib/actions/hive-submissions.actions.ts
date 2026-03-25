@@ -165,9 +165,13 @@ export async function approveSubmissionAction(submissionId: string): Promise<Act
 
     const { userId } = await requireHiveMod(submission.hiveId);
 
+    if (!submission.hive.bookId) {
+      throw new Error('This hive has no linked book. Link a book before approving submissions.');
+    }
+
     let chapterLink = `/hive/${submission.hiveId}/submissions`;
 
-    // Create chapter on the hive's linked book if it has one
+    // Create chapter on the hive's linked book
     if (submission.hive.bookId) {
       const maxOrderResult = await db
         .select({ maxOrder: max(chapters.order) })

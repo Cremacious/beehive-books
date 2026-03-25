@@ -25,7 +25,7 @@ export default async function HiveSubmissionsPage({
   return (
     <HiveSubmissions
       hiveId={hiveId}
-      hiveBookId={hive.bookId}
+      bookId={hive.bookId}
       data={data}
     />
   );
