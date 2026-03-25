@@ -164,7 +164,7 @@ test.describe('chapter CRUD and features', () => {
 
     // Move to new line and apply H2 heading via toolbar button
     await page.keyboard.press('Enter');
-    await page.getByRole('button', { name: /H2/i }).click();
+    await page.locator('[data-testid="toolbar-h2"]').click();
     await page.keyboard.type('A Heading');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
