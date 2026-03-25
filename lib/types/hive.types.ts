@@ -401,7 +401,9 @@ export type ActivityEventType =
   | 'OUTLINE_ITEM'
   | 'WORD_GOAL'
   | 'BUZZ_ITEM'
-  | 'MEMBER_JOINED';
+  | 'MEMBER_JOINED'
+  | 'CHAPTER_SUBMITTED'
+  | 'CHAPTER_SUBMISSION_APPROVED';
 
 export type ActivityEvent = {
   id: string;

@@ -15,6 +15,7 @@ import {
   hiveOutlineItems,
   hiveWordGoals,
   hiveBuzzItems,
+  hiveChapterSubmissions,
 } from '@/db/schema';
 import {
   MILESTONE_INFO,
@@ -50,6 +51,8 @@ export async function getHiveActivityAction(
     wordGoals,
     buzzItems,
     newMembers,
+    newSubmissions,
+    approvedSubmissions,
   ] = await Promise.all([
     db.query.hiveWordLogs.findMany({
       where: and(eq(hiveWordLogs.hiveId, hiveId), gte(hiveWordLogs.loggedAt, cutoff)),
@@ -115,6 +118,25 @@ export async function getHiveActivityAction(
       where: and(eq(hiveMembers.hiveId, hiveId), gte(hiveMembers.joinedAt, cutoff)),
       with: { user: true },
       orderBy: [desc(hiveMembers.joinedAt)],
+      limit: 10,
+    }),
+    db.query.hiveChapterSubmissions.findMany({
+      where: and(
+        eq(hiveChapterSubmissions.hiveId, hiveId),
+        gte(hiveChapterSubmissions.createdAt, cutoff),
+      ),
+      with: { author: { columns: { id: true, username: true, image: true } } },
+      orderBy: [desc(hiveChapterSubmissions.createdAt)],
+      limit: 10,
+    }),
+    db.query.hiveChapterSubmissions.findMany({
+      where: and(
+        eq(hiveChapterSubmissions.hiveId, hiveId),
+        eq(hiveChapterSubmissions.status, 'APPROVED'),
+        gte(hiveChapterSubmissions.reviewedAt, cutoff),
+      ),
+      with: { author: { columns: { id: true, username: true, image: true } } },
+      orderBy: [desc(hiveChapterSubmissions.reviewedAt)],
       limit: 10,
     }),
   ]);
@@ -235,6 +257,28 @@ export async function getHiveActivityAction(
       timestamp: mem.joinedAt,
       user: mem.user as HiveUser,
       meta: { role: mem.role },
+    });
+  }
+
+  for (const s of newSubmissions) {
+    events.push({
+      id: `submission-${s.id}`,
+      type: 'CHAPTER_SUBMITTED',
+      userId: s.userId,
+      timestamp: s.createdAt,
+      user: s.author as HiveUser,
+      meta: { title: s.title },
+    });
+  }
+
+  for (const s of approvedSubmissions) {
+    events.push({
+      id: `submission-approved-${s.id}`,
+      type: 'CHAPTER_SUBMISSION_APPROVED',
+      userId: s.userId,
+      timestamp: s.reviewedAt!,
+      user: s.author as HiveUser,
+      meta: { title: s.title },
     });
   }
 

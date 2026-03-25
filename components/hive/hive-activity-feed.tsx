@@ -17,6 +17,7 @@ import {
   Target,
   Sparkles,
   UserPlus,
+  Upload,
 } from 'lucide-react';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import type { ActivityEvent, ActivityEventType } from '@/lib/types/hive.types';
@@ -147,6 +148,18 @@ const EVENT_CONFIG: Record<
     bg: 'bg-teal-400/10',
     describe: (meta, name) =>
       `${name} joined the hive as a ${String(meta.role).charAt(0) + String(meta.role).slice(1).toLowerCase()}`,
+  },
+  CHAPTER_SUBMITTED: {
+    icon: Upload,
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-500/10',
+    describe: (meta, name) => `${name} submitted a chapter — ${meta.title}`,
+  },
+  CHAPTER_SUBMISSION_APPROVED: {
+    icon: Check,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
+    describe: (meta, name) => `${name}'s chapter submission was approved — ${meta.title}`,
   },
 };
 
