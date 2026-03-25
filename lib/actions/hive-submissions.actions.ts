@@ -269,3 +269,38 @@ export async function rejectSubmissionAction(
     return { success: false, message: 'Failed to reject submission.' };
   }
 }
+
+export async function getSubmissionAction(submissionId: string): Promise<{
+  id: string;
+  title: string;
+  content: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  targetChapterOrder: number | null;
+  createdAt: Date;
+  reviewNote: string | null;
+  author: { username: string | null; image: string | null };
+}> {
+  const userId = await requireAuth();
+
+  const submission = await db.query.hiveChapterSubmissions.findFirst({
+    where: eq(hiveChapterSubmissions.id, submissionId),
+    with: { author: true },
+  });
+  if (!submission) throw new Error('Submission not found.');
+
+  const membership = await db.query.hiveMembers.findFirst({
+    where: and(eq(hiveMembers.hiveId, submission.hiveId), eq(hiveMembers.userId, userId)),
+  });
+  if (!membership) throw new Error('Not a member of this hive.');
+
+  return {
+    id: submission.id,
+    title: submission.title,
+    content: submission.content,
+    status: submission.status as 'PENDING' | 'APPROVED' | 'REJECTED',
+    targetChapterOrder: submission.targetChapterOrder,
+    createdAt: submission.createdAt,
+    reviewNote: submission.reviewNote,
+    author: { username: submission.author.username, image: submission.author.image },
+  };
+}

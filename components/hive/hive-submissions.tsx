@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
   createSubmissionAction,
@@ -79,15 +80,16 @@ function AuthorAvatar({ author }: { author: HiveSubmissionWithAuthor['author'] }
 function SubmissionCard({
   submission,
   isMod,
+  hiveId,
   onApprove,
   onReject,
 }: {
   submission: HiveSubmissionWithAuthor;
   isMod: boolean;
+  hiveId: string;
   onApprove?: (id: string) => void;
   onReject?: (id: string, note: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectNote, setRejectNote] = useState('');
 
@@ -117,24 +119,18 @@ function SubmissionCard({
         <StatusBadge status={submission.status} />
       </div>
 
-      {/* Content preview / full */}
+      {/* Content preview */}
       <div className="mb-3">
-        {expanded ? (
-          <RichTextEditor content={submission.content} editable={false} />
-        ) : (
-          <p className="text-sm text-white/80 leading-relaxed">
-            {preview}{hasMore ? '…' : ''}
-          </p>
-        )}
+        <p className="text-sm text-white/80 leading-relaxed">
+          {preview}{hasMore ? '…' : ''}
+        </p>
         {hasMore && (
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="mt-1.5 flex items-center gap-1 text-xs text-yellow-500 hover:text-yellow-400 transition-colors"
+          <Link
+            href={`/hive/${hiveId}/submissions/${submission.id}`}
+            className="mt-1.5 inline-block text-xs text-yellow-500 hover:text-white transition-colors"
           >
-            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? 'Show less' : 'View Full'}
-          </button>
+            View Full
+          </Link>
         )}
       </div>
 
@@ -396,6 +392,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
                     key={sub.id}
                     submission={sub}
                     isMod={true}
+                    hiveId={hiveId}
                     onApprove={handleApprove}
                     onReject={handleReject}
                   />
@@ -409,7 +406,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
             <CollapsibleSection title="Approved" count={data.approved.length}>
               <div className="flex flex-col gap-3">
                 {data.approved.map((sub) => (
-                  <SubmissionCard key={sub.id} submission={sub} isMod={true} />
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} />
                 ))}
               </div>
             </CollapsibleSection>
@@ -420,7 +417,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
             <CollapsibleSection title="Rejected" count={data.rejected.length}>
               <div className="flex flex-col gap-3">
                 {data.rejected.map((sub) => (
-                  <SubmissionCard key={sub.id} submission={sub} isMod={true} />
+                  <SubmissionCard key={sub.id} submission={sub} isMod={true} hiveId={hiveId} />
                 ))}
               </div>
             </CollapsibleSection>
@@ -442,7 +439,7 @@ export default function HiveSubmissions({ hiveId, data: initialData }: Props) {
           ) : (
             <div className="flex flex-col gap-3">
               {[...data.pending, ...data.approved, ...data.rejected].map((sub) => (
-                <SubmissionCard key={sub.id} submission={sub} isMod={false} />
+                <SubmissionCard key={sub.id} submission={sub} isMod={false} hiveId={hiveId} />
               ))}
             </div>
           )}
