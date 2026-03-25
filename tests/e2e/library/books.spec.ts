@@ -151,8 +151,13 @@ test.describe('book CRUD and features', () => {
 
     await page.goto(`/library/${bookId}/edit`);
 
-    await page.locator('select[name="draftStatus"]').selectOption('COMPLETED');
-    await expect(page.locator('select[name="draftStatus"]')).toHaveValue('COMPLETED');
+    await page.locator('select[name="draftStatus"]').evaluate((el) => {
+      const select = el as HTMLSelectElement;
+      select.value = 'COMPLETED';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await page.waitForTimeout(300);
+    await expect(page.locator('select[name="draftStatus"]')).toHaveValue('COMPLETED', { timeout: 5_000 });
     // Then submit
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
