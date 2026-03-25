@@ -2,14 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  BookOpen,
-  CheckCircle2,
-  Circle,
-  Trash2,
-  Loader2,
-  Edit,
-} from 'lucide-react';
+import { CheckCircle2, Circle, Trash2, Loader2, Edit } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import type {
   BookListViewProps,
@@ -60,26 +53,28 @@ function BookRow({
     <div className="flex items-center gap-3 py-3.5 border-b border-[#2a2a2a] last:border-0 group">
       <div className="shrink-0">
         {optimisticRead ? (
-          <CheckCircle2 className="w-4 h-4 text-[#FFC300]" />
+          <CheckCircle2 className="w-4 h-4 text-yellow-500" />
         ) : (
           <Circle className="w-4 h-4 text-white/80" />
         )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          {isCurrentlyReading && (
-            <BookOpen className="w-3.5 h-3.5 text-[#FFC300] shrink-0" />
-          )}
+        <div className="flex items-center gap-2 flex-wrap">
           <p
-            className={`text-sm font-medium leading-snug transition-colors ${
+            className={`text-sm font-medium leading-snug ${
               optimisticRead
-                ? 'text-white/80 line-through decoration-white'
+                ? 'text-white/80 line-through decoration-white/50'
                 : 'text-white'
             }`}
           >
             {book.title}
           </p>
+          {isCurrentlyReading && (
+            <span className="bg-[#2a2a2a] text-white/80 text-xs px-2 py-0.5 rounded-full">
+              Reading
+            </span>
+          )}
         </div>
         <p className="text-sm text-white/80 truncate mt-0.5">{book.author}</p>
       </div>
@@ -97,7 +92,7 @@ function BookRow({
           ) : (
             <button
               onClick={() => setShowMenu((v) => !v)}
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:text-[#e0ac01] hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
               <Edit className="w-5 h-5" />
               Edit
@@ -111,13 +106,8 @@ function BookRow({
                   onSetCurrentlyReading();
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors"
               >
-                <BookOpen
-                  className={`w-4 h-4 shrink-0 ${
-                    isCurrentlyReading ? 'text-[#FFC300]' : 'text-white/80'
-                  }`}
-                />
                 {isCurrentlyReading
                   ? 'Remove from currently reading'
                   : 'Set as currently reading'}
@@ -128,13 +118,8 @@ function BookRow({
                   onToggleRead();
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors"
               >
-                {optimisticRead ? (
-                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/80" />
-                ) : (
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-white/80" />
-                )}
                 Mark as {optimisticRead ? 'unread' : 'read'}
               </button>
 
@@ -188,16 +173,11 @@ export function BookListView({
 
   if (books.length === 0) {
     return (
-      <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-8 flex flex-col items-center text-center mb-4">
-        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center mb-8">
-          <BookOpen className="w-8 h-8 text-[#FFC300]/20" />
-        </div>
-        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          No books in this list yet!
-        </h2>
-        <p className="text-white/80 mb-8 max-w-sm">
+      <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] p-8 flex flex-col items-center text-center mb-4">
+        <p className="text-sm font-semibold text-white mb-1">No books yet</p>
+        <p className="text-sm text-white/80 max-w-sm">
           {isOwner
-            ? 'Add books using the form below to start building your reading list.'
+            ? 'Add books using the form above to start building your reading list.'
             : 'This reading list is empty.'}
         </p>
       </div>
@@ -205,7 +185,7 @@ export function BookListView({
   }
 
   return (
-    <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 mb-4">
+    <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] px-4 mb-4">
       {books.map((book) => {
         const optimisticRead =
           store.optimisticReadStatus[book.id] ?? book.isRead;

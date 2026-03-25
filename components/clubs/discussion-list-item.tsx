@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { MessageSquare, Heart, Pin } from 'lucide-react';
 import type { ClubDiscussionWithAuthor } from '@/lib/types/club.types';
 
 function timeAgo(date: Date): string {
@@ -25,98 +24,49 @@ export default function DiscussionListItem({
   const author = discussion.author;
   const authorName = author.username ?? 'Unknown';
   const initials = authorName.charAt(0).toUpperCase();
+  const lastActivity = timeAgo(discussion.updatedAt ?? discussion.createdAt);
 
   return (
-    <div className="rounded-xl bg-[#202020] border border-[#2a2a2a] p-4 hover:border-[#FFC300]/20 transition-all">
-  
-      {discussion.isPinned && (
-        <div className="flex items-center gap-1.5 mb-2.5">
-          <Pin className="w-3.5 h-3.5 text-[#FFC300]" />
-          <span className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-wider">
-            Pinned
-          </span>
-        </div>
-      )}
-
-
-      <div className="flex items-center gap-2 mb-2.5">
-        {author.username ? (
-          <Link href={`/u/${author.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            {author.image ? (
-              <Image
-                src={author.image}
-                alt={authorName}
-                width={28}
-                height={28}
-                className="w-7 h-7 rounded-full object-cover shrink-0"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-semibold text-[#FFC300]">
-                  {initials}
-                </span>
-              </div>
-            )}
-            <span className="text-xs font-medium text-white/80 hover:text-white transition-colors">{authorName}</span>
-          </Link>
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] last:border-b-0 hover:bg-white/5 transition-colors">
+      <div className="shrink-0">
+        {author.image ? (
+          <Image
+            src={author.image}
+            alt={authorName}
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full object-cover"
+          />
         ) : (
-          <>
-            {author.image ? (
-              <Image
-                src={author.image}
-                alt={authorName}
-                width={28}
-                height={28}
-                className="w-7 h-7 rounded-full object-cover shrink-0"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-                <span className="text-[11px] font-semibold text-[#FFC300]">
-                  {initials}
-                </span>
-              </div>
-            )}
-            <span className="text-xs font-medium text-white/80">{authorName}</span>
-          </>
+          <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+            <span className="text-xs font-semibold text-yellow-500">{initials}</span>
+          </div>
         )}
-        <span className="text-xs text-white/80">·</span>
-        <span className="text-xs text-white/80">
-          {timeAgo(discussion.createdAt)}
-        </span>
       </div>
 
-   
-      <Link href={`/clubs/${clubId}/discussions/${discussion.id}`}>
-        <h3 className="text-base font-semibold text-white hover:text-[#FFC300] transition-colors mb-2 leading-snug mainFont">
-          {discussion.title}
-        </h3>
-      </Link>
-
- 
-      {discussion.content && (
-        <p className="text-sm text-white/80 line-clamp-3 leading-relaxed mb-3">
-          {discussion.content}
-        </p>
-      )}
-
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-xs text-white/80">
-          <span className="flex items-center gap-1.5">
-            <MessageSquare className="w-3.5 h-3.5" />
-            {discussion.replyCount} repl{discussion.replyCount !== 1 ? 'ies' : 'y'}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Heart className="w-3.5 h-3.5" />
-            {discussion.likeCount}
-          </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {discussion.isPinned && (
+            <span className="bg-yellow-500/15 text-yellow-500 text-[10px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide shrink-0">
+              Pinned
+            </span>
+          )}
+          <Link
+            href={`/clubs/${clubId}/discussions/${discussion.id}`}
+            className="text-sm font-semibold text-white hover:text-yellow-500 transition-colors"
+          >
+            {discussion.title}
+          </Link>
         </div>
-        <Link
-          href={`/clubs/${clubId}/discussions/${discussion.id}`}
-          className=" text-[#FFC300]/80 hover:text-[#FFC300] transition-colors"
-        >
-          Read more →
-        </Link>
+        <p className="text-xs text-white/80 mt-0.5">
+          {authorName} · {timeAgo(discussion.createdAt)}
+        </p>
+      </div>
+
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-medium text-white">{discussion.replyCount}</p>
+        <p className="text-xs text-white/80">replies</p>
+        <p className="text-xs text-white/80 mt-0.5">{lastActivity}</p>
       </div>
     </div>
   );

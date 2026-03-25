@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { BookOpen } from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ReadingListHeader } from '@/components/reading-lists/reading-list-header';
 import { ListStats } from '@/components/reading-lists/list-stats';
@@ -43,27 +42,14 @@ export default async function ReadingListPage({
 
         <ReadingListHeader list={list} isOwner={isOwner} />
 
-        {list.currentlyReadingTitle && (
-          <div className="rounded-2xl bg-[#FFC300]/8 border border-[#FFC300]/20 p-5 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-4 h-4 text-[#FFC300]" />
-              <p className="text-xs font-semibold text-[#FFC300] uppercase tracking-wider">
-                Now Reading
-              </p>
-            </div>
-            <p className="text-xl font-bold text-white leading-snug">
-              {list.currentlyReadingTitle}
-            </p>
-            {list.currentlyReadingAuthor && (
-              <p className="text-sm text-white/80 mt-1">
-                by {list.currentlyReadingAuthor}
-              </p>
-            )}
-          </div>
+{list.bookCount > 0 && (
+          <ListStats bookCount={list.bookCount} readCount={list.readCount} />
         )}
 
-        {list.bookCount > 0 && (
-          <ListStats bookCount={list.bookCount} readCount={list.readCount} />
+        {isOwner && (
+          <div className="mb-6">
+            <AddBookForm listId={listId} />
+          </div>
         )}
 
         <BookListView
@@ -72,8 +58,6 @@ export default async function ReadingListPage({
           isOwner={isOwner}
           currentlyReadingId={list.currentlyReadingId}
         />
-
-        {isOwner && <AddBookForm listId={listId} />}
       </div>
     </div>
   );
