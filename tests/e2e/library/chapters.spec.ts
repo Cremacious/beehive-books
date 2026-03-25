@@ -170,10 +170,10 @@ test.describe('chapter CRUD and features', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await page.waitForURL(`/library/${bookId}/${chapter1Id}`, { timeout: 10_000 });
 
-    // Verify bold text persists in the reader
-    await expect(page.locator('strong')).toContainText(CHAPTER_CONTENT.trim());
+    // Verify bold text persists — use first() to target the right element
+    await expect(page.locator('strong').filter({ hasText: CHAPTER_CONTENT.trim() })).toBeVisible();
     // Verify italic text persists
-    await expect(page.locator('em')).toContainText('Italic line.');
+    await expect(page.locator('em').filter({ hasText: 'Italic line.' })).toBeVisible();
     // Verify heading persists
     await expect(page.getByRole('heading', { name: 'A Heading' })).toBeVisible();
   });
