@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { MessageSquare } from 'lucide-react';
 import type { ClubDiscussionWithAuthor } from '@/lib/types/club.types';
 
 function timeAgo(date: Date): string {
@@ -25,6 +24,7 @@ export default function DiscussionListItem({
   const author = discussion.author;
   const authorName = author.username ?? 'Unknown';
   const initials = authorName.charAt(0).toUpperCase();
+  const lastActivity = timeAgo(discussion.updatedAt ?? discussion.createdAt);
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] last:border-b-0 hover:bg-white/5 transition-colors">
@@ -45,27 +45,28 @@ export default function DiscussionListItem({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {discussion.isPinned && (
+            <span className="bg-yellow-500/15 text-yellow-500 text-[10px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide shrink-0">
+              Pinned
+            </span>
+          )}
           <Link
             href={`/clubs/${clubId}/discussions/${discussion.id}`}
             className="text-sm font-semibold text-white hover:text-yellow-500 transition-colors"
           >
             {discussion.title}
           </Link>
-          {discussion.isPinned && (
-            <span className="bg-yellow-500/15 text-yellow-500 text-[10px] px-1.5 py-0.5 rounded">
-              Pinned
-            </span>
-          )}
         </div>
         <p className="text-xs text-white/80 mt-0.5">
           {authorName} · {timeAgo(discussion.createdAt)}
         </p>
       </div>
 
-      <div className="shrink-0 flex items-center gap-1 text-xs text-white/80">
-        <MessageSquare className="w-3.5 h-3.5" />
-        {discussion.replyCount}
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-medium text-white">{discussion.replyCount}</p>
+        <p className="text-xs text-white/80">replies</p>
+        <p className="text-xs text-white/80 mt-0.5">{lastActivity}</p>
       </div>
     </div>
   );
