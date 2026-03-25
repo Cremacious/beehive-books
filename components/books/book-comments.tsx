@@ -68,6 +68,8 @@ function CommentItem({
   bookId,
   currentUserId,
   isAuthenticated,
+  currentUserUsername,
+  currentUserImage,
   onDelete,
   onLikeToggle,
   onReplyAdded,
@@ -77,6 +79,8 @@ function CommentItem({
   bookId: string;
   currentUserId: string | null;
   isAuthenticated: boolean;
+  currentUserUsername?: string | null;
+  currentUserImage?: string | null;
   onDelete: (id: string, parentId: string | null) => void;
   onLikeToggle: (id: string, liked: boolean, delta: number) => void;
   onReplyAdded: (parentId: string, newReply: BookComment) => void;
@@ -220,6 +224,8 @@ function CommentItem({
                 bookId={bookId}
                 currentUserId={currentUserId}
                 isAuthenticated={isAuthenticated}
+                currentUserUsername={currentUserUsername}
+                currentUserImage={currentUserImage}
                 onDelete={onDelete}
                 onLikeToggle={onLikeToggle}
                 onReplyAdded={onReplyAdded}
@@ -360,6 +366,8 @@ export default function BookComments({
               bookId={bookId}
               currentUserId={currentUserId}
               isAuthenticated={isAuthenticated}
+              currentUserUsername={currentUserUsername}
+              currentUserImage={currentUserImage}
               onDelete={handleDelete}
               onLikeToggle={handleLikeToggle}
               onReplyAdded={handleReplyAdded}
