@@ -24,11 +24,11 @@ export default function HiveMobileMenuButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-colors border border-[#414040]"
+        className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors"
         aria-label="Open navigation"
       >
         <Menu className="w-4 h-4 text-yellow-500" />
-        <span className="text-sm font-medium text-white">Hive Menu</span>
+        <span className="text-sm font-medium text-white">Menu</span>
       </button>
 
       {open && (

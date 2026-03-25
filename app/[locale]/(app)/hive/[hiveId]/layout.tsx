@@ -24,19 +24,6 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
 
   return (
     <div className="min-h-screen">
-      {/* Mobile sticky header */}
-      {isMember && (
-        <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-[#1a1a1a] border-b border-[#2a2a2a]">
-          <HiveMobileMenuButton
-            hiveId={hiveId}
-            isOwner={isOwner}
-            hive={hive}
-            topMembers={topMembers}
-          />
-    
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex gap-8">
           {/* Desktop sidebar */}
@@ -58,6 +45,17 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
           <main className={`flex-1 min-w-0 py-6 ${!isMember ? 'max-w-4xl mx-auto w-full' : ''}`}>
             {!isMember && (
               <BackButton href="/hive" label="Hives" className="mb-4" />
+            )}
+            {isMember && (
+              <div className="lg:hidden flex items-center justify-between mb-5">
+                <HiveMobileMenuButton
+                  hiveId={hiveId}
+                  isOwner={isOwner}
+                  hive={hive}
+                  topMembers={topMembers}
+                />
+                <span className="text-xs text-white/80 truncate max-w-[60%] text-right">{hive.name}</span>
+              </div>
             )}
             {children}
           </main>
