@@ -690,7 +690,7 @@ export default function HiveInlineComments({
           />
         )}
 
-        <div className="lg:hidden space-y-3">
+        <div className="xl:hidden space-y-3">
           <LayerFilterDropdown
             activeLayer={activeLayer}
             setActiveLayer={setActiveLayer}
@@ -722,8 +722,8 @@ export default function HiveInlineComments({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+          <div className="xl:col-span-3">
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
               {chapterContent ? (
                 <>
@@ -749,7 +749,8 @@ export default function HiveInlineComments({
             </div>
           </div>
 
-          <div className="hidden lg:block lg:col-span-2 space-y-3">
+          <div className="xl:hidden border-t border-[#2a2a2a] my-2" />
+          <div className="hidden xl:block xl:col-span-2 space-y-3">
             <LayerFilterDropdown
               activeLayer={activeLayer}
               setActiveLayer={setActiveLayer}
