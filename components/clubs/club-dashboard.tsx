@@ -42,11 +42,11 @@ export default function ClubDashboard({
           href={`/clubs/${club.id}/members`}
           className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FFC300]/8 border border-[#FFC300]/20 hover:bg-[#FFC300]/12 transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
-            <UserPlus className="w-4 h-4 text-[#FFC300]" />
+          <div className="w-8 h-8 rounded-full bg-yellow-500/15 flex items-center justify-center shrink-0">
+            <UserPlus className="w-4 h-4 text-yellow-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[#FFC300]">
+            <p className="text-sm font-medium text-yellow-500">
               {pendingRequestCount} pending join {pendingRequestCount === 1 ? 'request' : 'requests'}
             </p>
             <p className="text-sm text-white">Tap to review in Members</p>
@@ -61,12 +61,12 @@ export default function ClubDashboard({
               <h1 className="text-2xl font-bold text-white mainFont">{club.name}</h1>
 
               {club.privacy === 'PUBLIC' ? (
-                <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Globe className="w-3 h-3" />
                   Public
                 </span>
               ) : club.privacy === 'FRIENDS' ? (
-                <span className="inline-flex items-center gap-1 text-xs text-blue-400 bg-blue-400/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Users className="w-3 h-3" />
                   Friends
                 </span>
@@ -78,19 +78,19 @@ export default function ClubDashboard({
               )}
 
               {isOwner && (
-                <span className="inline-flex items-center gap-1 text-xs text-[#FFC300] bg-[#FFC300]/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-yellow-500 bg-yellow-500/10 rounded-full px-2.5 py-1">
                   <Crown className="w-3 h-3" />
                   Owner
                 </span>
               )}
               {club.myRole === 'MODERATOR' && (
-                <span className="inline-flex items-center gap-1 text-xs text-blue-400 bg-blue-400/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Shield className="w-3 h-3" />
                   Moderator
                 </span>
               )}
               {club.myRole === 'MEMBER' && (
-                <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 rounded-full px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 text-xs text-white/80 bg-white/10 rounded-full px-2.5 py-1">
                   <Check className="w-3 h-3" />
                   Member
                 </span>

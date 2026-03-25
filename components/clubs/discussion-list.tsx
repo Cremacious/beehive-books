@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MessageSquare, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DiscussionListItem from './discussion-list-item';
 import type { ClubDiscussionWithAuthor, ClubRole } from '@/lib/types/club.types';
@@ -29,7 +29,6 @@ export default function DiscussionList({
 
   return (
     <div>
-      
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-semibold text-white mainFont">Discussions</h2>
@@ -47,15 +46,9 @@ export default function DiscussionList({
         )}
       </div>
 
-    
-      {discussions.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl bg-[#252525] border border-[#2a2a2a]">
-          <div className="w-16 h-16 rounded-2xl bg-[#1e1e1e] flex items-center justify-center mb-4">
-            <MessageSquare className="w-7 h-7 text-white/80" />
-          </div>
-          <h3 className="text-base font-semibold text-white/80 mb-1">
-            No discussions yet
-          </h3>
+      {discussions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
+          <h3 className="text-base font-semibold text-white mb-1">No discussions yet</h3>
           <p className="text-sm text-white/80 mb-4 max-w-xs">
             {isMember
               ? 'Start a conversation — ask a question, share your thoughts, or kick off a debate!'
@@ -70,11 +63,8 @@ export default function DiscussionList({
             </Button>
           )}
         </div>
-      )}
-
-
-      {discussions.length > 0 && (
-        <div className="space-y-3">
+      ) : (
+        <div className="rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] overflow-hidden mb-4">
           {discussions.map((discussion) => (
             <DiscussionListItem
               key={discussion.id}
@@ -87,13 +77,12 @@ export default function DiscussionList({
         </div>
       )}
 
- 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-3 mt-6">
           {page > 1 ? (
             <Link
               href={`/clubs/${clubId}/discussions?page=${page - 1}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white hover:border-[#2a2a2a] transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -112,7 +101,7 @@ export default function DiscussionList({
           {page < totalPages ? (
             <Link
               href={`/clubs/${clubId}/discussions?page=${page + 1}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white hover:border-[#2a2a2a] transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2a2a2a] text-sm text-white/80 hover:text-white transition-all"
             >
               Next
               <ChevronRight className="w-4 h-4" />
