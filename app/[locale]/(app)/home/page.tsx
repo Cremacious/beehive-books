@@ -18,8 +18,9 @@ import {
 } from 'lucide-react';
 import { getFriendFeedAction } from '@/lib/actions/feed.actions';
 import { getMyFriendsDataAction, getSuggestedUsersAction } from '@/lib/actions/friend.actions';
+import type { SuggestedUser } from '@/lib/actions/friend.actions';
 import { getAnnouncementsAction } from '@/lib/actions/admin.actions';
-import WritersYouMightKnow from '@/components/home/writers-you-might-know';
+import { FriendButton } from '@/components/friends/friend-button';
 import { getRecentWritingAction } from '@/lib/actions/book.actions';
 import { getContinueReadingAction } from '@/lib/actions/reading.actions';
 import { getCurrentUserAction } from '@/lib/actions/user.actions';
@@ -176,7 +177,7 @@ function SectionHeader({
   );
 }
 
-function NewUserWelcome() {
+function NewUserWelcome({ suggestedWriters }: { suggestedWriters: SuggestedUser[] }) {
   const FEATURE_CARDS = [
     {
       href: '/library',
@@ -250,6 +251,43 @@ function NewUserWelcome() {
           now, explore everything Beehive Books has to offer.
         </p>
       </div>
+
+      {suggestedWriters.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-3">
+            Writers you may know
+          </p>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+            {suggestedWriters.map((user) => (
+              <div
+                key={user.id}
+                className="shrink-0 w-44 bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl p-3 flex flex-col items-center gap-2 text-center"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#2a2000] overflow-hidden shrink-0">
+                  {user.image ? (
+                    <Image src={user.image} alt={user.username ?? ''} width={40} height={40} className="object-cover w-full h-full" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-yellow-500">
+                        {(user.username?.[0] ?? '?').toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 w-full">
+                  <Link href={`/u/${user.username}`} className="text-sm font-semibold text-white hover:text-yellow-500 transition-colors truncate block">
+                    {user.username}
+                  </Link>
+                  {user.mutualContext && (
+                    <p className="text-xs text-white/80 mt-0.5 line-clamp-1">{user.mutualContext}</p>
+                  )}
+                </div>
+                <FriendButton targetUserId={user.id} initialStatus={user.friendStatus} compact />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <p className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-3">
@@ -507,10 +545,7 @@ export default async function UserHomePage() {
 
       {/* Friend Activity OR New User Welcome */}
       {!hasFriends ? (
-        <>
-          <WritersYouMightKnow suggestions={suggestions} />
-          <NewUserWelcome />
-        </>
+        <NewUserWelcome suggestedWriters={suggestions} />
       ) : events.length === 0 ? (
         <section>
           <SectionHeader
