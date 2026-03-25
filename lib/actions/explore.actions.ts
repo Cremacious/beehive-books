@@ -172,13 +172,23 @@ export async function searchExplorableClubsAction(
 
   if (allClubs.length === 0) return { clubs: [], nextCursor: null };
 
-  const myMemberships = await db.query.clubMembers.findMany({
-    where: and(
-      eq(clubMembers.userId, userId),
-      inArray(clubMembers.clubId, allClubs.map((c) => c.id)),
-    ),
-  });
+  const clubIds = allClubs.map((c) => c.id);
+  const [myMemberships, friendMemberships] = await Promise.all([
+    db.query.clubMembers.findMany({
+      where: and(eq(clubMembers.userId, userId), inArray(clubMembers.clubId, clubIds)),
+    }),
+    friendIds.length > 0
+      ? db.query.clubMembers.findMany({
+          where: and(inArray(clubMembers.userId, friendIds), inArray(clubMembers.clubId, clubIds)),
+          columns: { clubId: true },
+        })
+      : Promise.resolve([]),
+  ]);
   const memberMap = new Map(myMemberships.map((m) => [m.clubId, m.role as ClubRole]));
+  const friendCountMap = new Map<string, number>();
+  for (const m of friendMemberships) {
+    friendCountMap.set(m.clubId, (friendCountMap.get(m.clubId) ?? 0) + 1);
+  }
 
   return {
     clubs: allClubs.map((c) => ({
@@ -186,6 +196,7 @@ export async function searchExplorableClubsAction(
       tags: c.tags as string[],
       myRole: memberMap.get(c.id) ?? null,
       isMember: memberMap.has(c.id),
+      friendCount: friendCountMap.get(c.id) ?? 0,
     })),
     nextCursor: hasMore ? allClubs[LIMIT - 1].createdAt.toISOString() : null,
   };
@@ -435,5 +446,49 @@ export async function getExplorableHubDataAction(): Promise<{
   prompts: PromptCard[];
   readingLists: ReadingList[];
 }> {
-  return getCachedHubData();
+  const [data, userId] = await Promise.all([getCachedHubData(), getOptionalUserId()]);
+
+  if (!userId || data.clubs.length === 0) return data;
+
+  const friendIds = await getFriendIds(userId);
+  if (friendIds.length === 0) return data;
+
+  const clubIds = data.clubs.map((c) => c.id);
+  const friendMemberships = await db.query.clubMembers.findMany({
+    where: and(
+      inArray(clubMembers.userId, friendIds),
+      inArray(clubMembers.clubId, clubIds),
+    ),
+    columns: { clubId: true },
+  });
+
+  const friendCountMap = new Map<string, number>();
+  for (const m of friendMemberships) {
+    friendCountMap.set(m.clubId, (friendCountMap.get(m.clubId) ?? 0) + 1);
+  }
+
+  return {
+    ...data,
+    clubs: data.clubs.map((c) => ({ ...c, friendCount: friendCountMap.get(c.id) ?? 0 })),
+  };
+}
+
+export async function getFriendsReadingAction(): Promise<Book[]> {
+  const userId = await getOptionalUserId();
+  if (!userId) return [];
+
+  const friendIds = await getFriendIds(userId);
+  if (friendIds.length === 0) return [];
+
+  const rows = await db.query.books.findMany({
+    where: and(
+      inArray(books.userId, friendIds),
+      eq(books.privacy, 'PUBLIC'),
+      eq(books.explorable, true),
+    ),
+    orderBy: [desc(books.updatedAt)],
+    limit: 8,
+  });
+
+  return rows.map(mapBook);
 }
