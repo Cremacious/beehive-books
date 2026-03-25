@@ -101,6 +101,7 @@ export default async function UserProfilePage({ params }: Props) {
               {isOwnProfile ? (
                 <Link
                   href="/settings"
+                  data-testid="edit-profile-link"
                   className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/70 hover:text-white hover:border-[#FFC300]/30 transition-all"
                 >
                   Edit Profile
@@ -125,7 +126,7 @@ export default async function UserProfilePage({ params }: Props) {
 
           {/* Name + meta */}
           <div className="mt-3">
-            <h1 className="text-xl md:text-2xl font-bold text-white mainFont">
+            <h1 data-testid="profile-username" className="text-xl md:text-2xl font-bold text-white mainFont">
               {displayName}
             </h1>
             <p className="text-xs text-white/50 mt-0.5">Member since {memberSince}</p>

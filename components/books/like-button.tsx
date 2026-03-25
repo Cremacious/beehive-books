@@ -12,7 +12,13 @@ interface Props {
   className?: string;
 }
 
-export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthenticated, className }: Props) {
+export function LikeButton({
+  bookId,
+  initialLiked,
+  initialLikeCount,
+  isAuthenticated,
+  className,
+}: Props) {
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isPending, startTransition] = useTransition();
@@ -45,11 +51,14 @@ export function LikeButton({ bookId, initialLiked, initialLikeCount, isAuthentic
 
   return (
     <button
+      data-testid="like-button"
       onClick={handleClick}
       disabled={!isAuthenticated || isPending}
       className={`${baseClass} ${className ?? ''}`}
     >
-      <Heart className={`w-4 h-4 transition-all duration-200 ${liked ? 'fill-current scale-110' : 'scale-100'}`} />
+      <Heart
+        className={`w-4 h-4 transition-all duration-200 ${liked ? 'fill-current scale-110' : 'scale-100'}`}
+      />
       <span>{likeCount}</span>
     </button>
   );

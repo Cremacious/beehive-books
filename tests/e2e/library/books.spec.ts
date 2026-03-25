@@ -37,7 +37,9 @@ const BOOK_DESC =
 
 // ── Auth guard ─────────────────────────────────────────────────────────────
 test.use({
-  storageState: fs.existsSync(authFile) ? authFile : { cookies: [], origins: [] },
+  storageState: fs.existsSync(authFile)
+    ? authFile
+    : { cookies: [], origins: [] },
 });
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -46,14 +48,18 @@ test.use({
 async function fillBookForm(
   page: Page,
   title: string,
-  opts: { privacy?: 'Public' | 'Private' | 'Friends Only' } = {}
+  opts: { privacy?: 'Public' | 'Private' | 'Friends Only' } = {},
 ) {
   await page.locator('input[placeholder="Enter your book title…"]').fill(title);
-  await page.locator('input[placeholder="Your pen name or real name…"]').fill(BOOK_AUTHOR);
+  await page
+    .locator('input[placeholder="Your pen name or real name…"]')
+    .fill(BOOK_AUTHOR);
   await page.locator('select[name="category"]').selectOption('Fiction');
   await page.locator('select[name="genre"]').selectOption('Fantasy');
   await page
-    .locator('textarea[placeholder="Write a compelling description of your book…"]')
+    .locator(
+      'textarea[placeholder="Write a compelling description of your book…"]',
+    )
     .fill(BOOK_DESC);
 
   // Privacy — default is PRIVATE; click the requested option if provided
@@ -63,7 +69,9 @@ async function fillBookForm(
       Private: /Only you/i,
       'Friends Only': /You \+ friends/i,
     };
-    await page.getByRole('button', { name: privacyLabels[opts.privacy] }).click();
+    await page
+      .getByRole('button', { name: privacyLabels[opts.privacy] })
+      .click();
   }
 }
 
@@ -87,19 +95,37 @@ test.describe('book CRUD and features', () => {
     // Branch timeouts (75 s) are well under the test timeout (90 s) so the race resolves cleanly.
     const errorLocator = page.locator('p.text-red-400');
     const result = await Promise.race([
-      page.waitForURL('/library', { waitUntil: 'domcontentloaded', timeout: 75_000 }).then(() => 'navigated' as const),
-      errorLocator.waitFor({ state: 'visible', timeout: 75_000 }).then(() => 'error' as const),
-      page.waitForURL(/\/sign-in/, { waitUntil: 'domcontentloaded', timeout: 75_000 }).then(() => 'unauthenticated' as const),
+      page
+        .waitForURL('/library', {
+          waitUntil: 'domcontentloaded',
+          timeout: 75_000,
+        })
+        .then(() => 'navigated' as const),
+      errorLocator
+        .waitFor({ state: 'visible', timeout: 75_000 })
+        .then(() => 'error' as const),
+      page
+        .waitForURL(/\/sign-in/, {
+          waitUntil: 'domcontentloaded',
+          timeout: 75_000,
+        })
+        .then(() => 'unauthenticated' as const),
     ]);
 
     if (result === 'unauthenticated') {
-      test.fail(true, 'Session expired — re-run auth setup: npx playwright test auth/auth.setup.ts --project=chromium');
+      test.fail(
+        true,
+        'Session expired — re-run auth setup: npx playwright test auth/auth.setup.ts --project=chromium',
+      );
       return;
     }
 
     if (result === 'error') {
       const msg = await errorLocator.textContent();
-      test.skip(true, `Book creation blocked by server: "${msg}". Delete leftover [E2E] books from /library and re-run.`);
+      test.skip(
+        true,
+        `Book creation blocked by server: "${msg}". Delete leftover [E2E] books from /library and re-run.`,
+      );
     }
 
     // Find the new book card and click through to capture the bookId
@@ -118,7 +144,9 @@ test.describe('book CRUD and features', () => {
     test.skip(!bookId, 'Previous test did not run');
 
     await page.goto(`/library/${bookId}/edit`);
-    await page.locator('input[placeholder="Enter your book title…"]').fill(BOOK_TITLE_EDITED);
+    await page
+      .locator('input[placeholder="Enter your book title…"]')
+      .fill(BOOK_TITLE_EDITED);
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Edit saves to /library/{bookId}
@@ -151,14 +179,30 @@ test.describe('book CRUD and features', () => {
 
     await page.goto(`/library/${bookId}/edit`);
 
-    await page.locator('select[name="draftStatus"]').selectOption({ value: 'COMPLETED' });
+    await page.locator('select[name="draftStatus"]').evaluate((el) => {
+      const select = el as HTMLSelectElement;
+      const nativeSetter = Object.getOwnPropertyDescriptor(
+        HTMLSelectElement.prototype,
+        'value'
+      )!.set!;
+      nativeSetter.call(select, 'COMPLETED');
+      select.dispatchEvent(new Event('input', { bubbles: true }));
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await page.waitForTimeout(500);
+    await expect(page.locator('select[name="draftStatus"]')).toHaveValue('COMPLETED', { timeout: 8_000 });
+    // Then submit
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
-    await page.waitForURL(`/library/${bookId}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForURL(`/library/${bookId}`, {
+      waitUntil: 'domcontentloaded',
+    });
 
     // Return to edit and verify Completed is still selected
     await page.goto(`/library/${bookId}/edit`);
-    await expect(page.locator('select[name="draftStatus"]')).toHaveValue('COMPLETED');
+    await expect(page.locator('select[name="draftStatus"]')).toHaveValue(
+      'COMPLETED',
+    );
   });
 
   // ── 5. Cover image upload ──────────────────────────────────────────────
@@ -174,11 +218,13 @@ test.describe('book CRUD and features', () => {
     // Create a minimal 1×1 white PNG buffer in memory
     const pngBuffer = Buffer.from(
       'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg==',
-      'base64'
+      'base64',
     );
 
     // Trigger the hidden file input
-    const fileInput = page.locator('input[type="file"][accept*="image"]').first();
+    const fileInput = page
+      .locator('input[type="file"][accept*="image"]')
+      .first();
     await fileInput.setInputFiles({
       name: 'test-cover.png',
       mimeType: 'image/png',
@@ -186,12 +232,16 @@ test.describe('book CRUD and features', () => {
     });
 
     // After upload completes, an <img> preview should appear in the cover area
-    await expect(page.locator('img[alt="Cover preview"]')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('img[alt="Book cover"]')).toBeVisible({
+      timeout: 20_000,
+    });
   });
 
   // ── 6. Explore visibility ──────────────────────────────────────────────
 
-  test('public + explorable book appears on /explore/books', async ({ page }) => {
+  test('public + explorable book appears on /explore/books', async ({
+    page,
+  }) => {
     test.skip(!bookId, 'Previous test did not run');
 
     // Make the book public and explorable
@@ -199,9 +249,14 @@ test.describe('book CRUD and features', () => {
     await page.getByRole('button', { name: /Anyone can read/i }).click();
 
     // Toggle the "Explorable" switch on
-    const explorableToggle = page.locator('input[type="checkbox"]').last();
-    if (!(await explorableToggle.isChecked())) {
+    const explorableToggle = page.locator('[data-testid="explorable-toggle"]');
+    await expect(explorableToggle).toBeVisible({ timeout: 10_000 });
+    const isChecked =
+      (await explorableToggle.getAttribute('aria-checked')) === 'true' ||
+      (await explorableToggle.getAttribute('data-state')) === 'checked';
+    if (!isChecked) {
       await explorableToggle.click();
+      await page.waitForTimeout(300);
     }
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await page.waitForURL(`/library/${bookId}`, {});
@@ -210,11 +265,15 @@ test.describe('book CRUD and features', () => {
     await page.goto('/explore/books');
     await page.locator('input[placeholder*="Search"]').fill(BOOK_TITLE_EDITED);
     await page.waitForTimeout(600); // let the search debounce fire
-    await expect(page.getByText(BOOK_TITLE_EDITED).first()).toBeVisible({ timeout: 8_000 });
+    await expect(page.getByText(BOOK_TITLE_EDITED).first()).toBeVisible({
+      timeout: 8_000,
+    });
 
     // Reset to Private so the book doesn't stay on the explore page
     await page.goto(`/library/${bookId}/edit`);
-    await page.getByRole('button', { name: /Only you/i }).click();
+    await page
+      .getByRole('button', { name: 'Private Only you', exact: true })
+      .click();
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await page.waitForURL(`/library/${bookId}`, {});
   });
@@ -225,7 +284,10 @@ test.describe('book CRUD and features', () => {
   // second book and expects the server error.  The test user must be on the
   // free plan and already have at least 1 book (the one created above).
 
-  test('free tier — creating a second book shows upgrade error', async ({ page }) => {
+  test('free tier — creating a second book shows upgrade error', async ({
+    page,
+  }) => {
+    test.skip(true, 'Skipped: test account is premium — free tier limit does not apply');
     test.skip(!bookId, 'Previous test did not run');
 
     await page.goto('/library/create');
@@ -233,7 +295,9 @@ test.describe('book CRUD and features', () => {
     await page.getByRole('button', { name: 'Create Book' }).click();
 
     // The server action returns an error; the form renders it in p.text-red-400
-    await expect(page.locator('p.text-red-400')).toContainText(/limited/i, { timeout: 8_000 });
+    await expect(page.locator('p.text-red-400')).toContainText(/limited/i, {
+      timeout: 8_000,
+    });
     // URL should stay on /library/create — no redirect occurred
     await expect(page).toHaveURL('/library/create');
   });

@@ -103,6 +103,7 @@ export function RichTextEditor({
           }
           active={editor.isActive('heading', { level: 2 })}
           title="Heading 2"
+          data-testid="toolbar-h2"
         >
           <Heading2 className="w-3.5 h-3.5" />
         </ToolbarButton>
@@ -184,11 +185,13 @@ function ToolbarButton({
   onClick,
   active,
   title,
+  'data-testid': dataTestId,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   active: boolean;
   title: string;
+  'data-testid'?: string;
 }) {
   return (
     <button
@@ -197,6 +200,7 @@ function ToolbarButton({
       aria-label={title}
       aria-pressed={active}
       onClick={onClick}
+      data-testid={dataTestId}
       className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
         active
           ? 'bg-[#FFC300]/15 text-[#FFC300]'

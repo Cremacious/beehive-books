@@ -20,6 +20,7 @@ const PUBLIC_PATHS = [
   '/reset-password',
   '/explore',
   '/books',
+  '/u',
   '/terms',
   '/privacy',
   '/dmca',
