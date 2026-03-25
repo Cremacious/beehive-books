@@ -193,7 +193,7 @@ test.describe('book CRUD and features', () => {
     });
 
     // After upload completes, an <img> preview should appear in the cover area
-    await expect(page.locator('img[alt="Cover preview"]')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('img[alt="Book cover"]')).toBeVisible({ timeout: 20_000 });
   });
 
   // ── 6. Explore visibility ──────────────────────────────────────────────
