@@ -159,7 +159,7 @@ export async function approveSubmissionAction(submissionId: string): Promise<Act
   try {
     const submission = await db.query.hiveChapterSubmissions.findFirst({
       where: eq(hiveChapterSubmissions.id, submissionId),
-      with: { hive: true, author: true },
+      with: { hive: true, user: true },
     });
     if (!submission) return { success: false, message: 'Submission not found.' };
 

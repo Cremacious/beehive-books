@@ -270,6 +270,20 @@ function eventDescription(event: ActivityEvent): React.ReactNode {
           </span>
         </>
       );
+    case 'CHAPTER_SUBMITTED':
+      return (
+        <>
+          {name} submitted a chapter —{' '}
+          <span className="font-semibold text-amber-400">{String(m.title)}</span>
+        </>
+      );
+    case 'CHAPTER_SUBMISSION_APPROVED':
+      return (
+        <>
+          {name}&apos;s submission was approved —{' '}
+          <span className="font-semibold text-green-400">{String(m.title)}</span>
+        </>
+      );
     default:
       return <>{name} did something</>;
   }
