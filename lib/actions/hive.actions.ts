@@ -9,6 +9,8 @@ import { db } from '@/db';
 import { hives, hiveMembers, hiveInvites, hiveJoinRequests, books, users, friendships } from '@/db/schema';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import { insertNotification } from '@/lib/notifications';
+import { MILESTONES } from '@/lib/milestones';
+import type { MilestoneKey } from '@/lib/milestones';
 import type {
   HiveFormData,
   HiveRole,
@@ -949,4 +951,50 @@ export async function completeHiveAction(hiveId: string): Promise<ActionResult> 
   } catch {
     return { success: false, message: 'Failed to complete hive.' };
   }
+}
+
+export type HiveMilestoneEntry = {
+  key: MilestoneKey;
+  label: string;
+  description: string;
+  achievedAt: string;
+  member: { username: string | null; image: string | null };
+};
+
+export async function getHiveMilestonesAction(hiveId: string): Promise<HiveMilestoneEntry[]> {
+  await requireHiveMember(hiveId);
+
+  const hive = await db.query.hives.findFirst({
+    where: eq(hives.id, hiveId),
+    columns: { bookId: true },
+  });
+  if (!hive?.bookId) return [];
+
+  const book = await db.query.books.findFirst({
+    where: eq(books.id, hive.bookId),
+    columns: { milestones: true, userId: true },
+  });
+  if (!book) return [];
+
+  const owner = await db.query.users.findFirst({
+    where: eq(users.id, book.userId),
+    columns: { username: true, image: true },
+  });
+
+  const raw = (book.milestones ?? []) as { key: string; achievedAt: string }[];
+  const milestoneMap = new Map(MILESTONES.map((m) => [m.key, m]));
+
+  return raw
+    .filter((r) => milestoneMap.has(r.key as MilestoneKey))
+    .map((r) => {
+      const meta = milestoneMap.get(r.key as MilestoneKey)!;
+      return {
+        key: r.key as MilestoneKey,
+        label: meta.label,
+        description: meta.description,
+        achievedAt: r.achievedAt,
+        member: { username: owner?.username ?? null, image: owner?.image ?? null },
+      };
+    })
+    .sort((a, b) => new Date(a.achievedAt).getTime() - new Date(b.achievedAt).getTime());
 }

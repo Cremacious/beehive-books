@@ -12,6 +12,7 @@ import {
   Settings,
   MessageCircle,
   Target,
+  Trophy,
   ChevronLeft,
 } from 'lucide-react';
 import type { HiveWithMembership, HiveUser } from '@/lib/types/hive.types';
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: '/comments', label: 'Annotations', icon: MessageCircle },
   { href: '/word-goals', label: 'Word Goals', icon: Target },
   { href: '/buzz', label: 'Buzz Board', icon: Sparkles },
+  { href: '/milestones', label: 'Milestones', icon: Trophy },
   { href: '/members', label: 'Members', icon: Users },
 ] as const;
 

@@ -40,6 +40,7 @@ export const books = pgTable('books', {
   tags: json('tags').$type<string[]>().notNull().default([]),
   commentsEnabled: boolean('comments_enabled').notNull().default(true),
   chapterCommentsEnabled: boolean('chapter_comments_enabled').notNull().default(true),
+  milestones: json('milestones').$type<{ key: string; achievedAt: string }[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [
