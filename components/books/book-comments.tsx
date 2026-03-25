@@ -16,6 +16,8 @@ interface BookCommentsProps {
   initialComments: BookComment[];
   currentUserId: string | null;
   isAuthenticated: boolean;
+  currentUserUsername?: string | null;
+  currentUserImage?: string | null;
 }
 
 function timeAgo(date: Date | string): string {
@@ -114,7 +116,7 @@ function CommentItem({
           createdAt: new Date(),
           likeCount: 0,
           parentId: comment.id,
-          author: { id: currentUserId!, username: null, image: null },
+          author: { id: currentUserId!, username: currentUserUsername ?? null, image: currentUserImage ?? null },
           isLiked: false,
           canDelete: true,
           replies: [],
@@ -236,6 +238,8 @@ export default function BookComments({
   initialComments,
   currentUserId,
   isAuthenticated,
+  currentUserUsername,
+  currentUserImage,
 }: BookCommentsProps) {
   const [comments, setComments] = useState<BookComment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
@@ -252,7 +256,7 @@ export default function BookComments({
           createdAt: new Date(),
           likeCount: 0,
           parentId: null,
-          author: { id: currentUserId!, username: null, image: null },
+          author: { id: currentUserId!, username: currentUserUsername ?? null, image: currentUserImage ?? null },
           isLiked: false,
           canDelete: true,
           replies: [],

@@ -248,6 +248,8 @@ export default async function PublicBookPage({
               initialComments={bookCommentsList}
               currentUserId={session?.user?.id ?? null}
               isAuthenticated={isAuthenticated}
+              currentUserUsername={session?.user?.name ?? null}
+              currentUserImage={session?.user?.image ?? null}
             />
           </div>
         )}
