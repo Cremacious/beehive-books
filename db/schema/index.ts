@@ -13,7 +13,7 @@ export * from './system';
 
 import { relations } from 'drizzle-orm';
 import { users } from './auth';
-import { books, chapterComments, commentLikes, bookLikes } from './books';
+import { books, chapterComments, commentLikes, bookLikes, bookComments, bookCommentLikes } from './books';
 import { readingLists } from './reading-lists';
 import { friendships, notifications } from './social';
 import {
@@ -51,4 +51,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   hiveMemberships: many(hiveMembers),
   hiveInvitesReceived: many(hiveInvites, { relationName: 'receivedHiveInvites' }),
   bookLikes: many(bookLikes),
+  bookComments: many(bookComments),
+  bookCommentLikes: many(bookCommentLikes),
 }));

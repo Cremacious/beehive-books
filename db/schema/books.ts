@@ -38,6 +38,8 @@ export const books = pgTable('books', {
   commentCount: integer('comment_count').notNull().default(0),
   likeCount: integer('like_count').notNull().default(0),
   tags: json('tags').$type<string[]>().notNull().default([]),
+  commentsEnabled: boolean('comments_enabled').notNull().default(true),
+  chapterCommentsEnabled: boolean('chapter_comments_enabled').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => [
@@ -146,6 +148,27 @@ export const commentLikes = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.commentId] })],
 );
 
+export const bookComments = pgTable('book_comments', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  bookId: text('book_id').notNull().references(() => books.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  parentId: text('parent_id'),
+  content: text('content').notNull(),
+  likeCount: integer('like_count').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const bookCommentLikes = pgTable(
+  'book_comment_likes',
+  {
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    commentId: text('comment_id').notNull().references(() => bookComments.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.commentId] })],
+);
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
@@ -155,6 +178,7 @@ export const booksRelations = relations(books, ({ one, many }) => ({
   chapters: many(chapters),
   collections: many(collections),
   likes: many(bookLikes),
+  bookComments: many(bookComments),
 }));
 
 export const bookLikesRelations = relations(bookLikes, ({ one }) => ({
@@ -218,4 +242,21 @@ export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
     fields: [commentLikes.commentId],
     references: [chapterComments.id],
   }),
+}));
+
+export const bookCommentsRelations = relations(bookComments, ({ one, many }) => ({
+  book: one(books, { fields: [bookComments.bookId], references: [books.id] }),
+  user: one(users, { fields: [bookComments.userId], references: [users.id] }),
+  parent: one(bookComments, {
+    fields: [bookComments.parentId],
+    references: [bookComments.id],
+    relationName: 'bookReplies',
+  }),
+  replies: many(bookComments, { relationName: 'bookReplies' }),
+  likes: many(bookCommentLikes),
+}));
+
+export const bookCommentLikesRelations = relations(bookCommentLikes, ({ one }) => ({
+  user: one(users, { fields: [bookCommentLikes.userId], references: [users.id] }),
+  comment: one(bookComments, { fields: [bookCommentLikes.commentId], references: [bookComments.id] }),
 }));
