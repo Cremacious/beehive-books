@@ -102,7 +102,11 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
+                <GeneratedCover
+                  title={book.title}
+                  author={book.author}
+                  bookId={book.id}
+                />
               )}
             </div>
 
@@ -238,7 +242,7 @@ export default async function PublicBookPage({
         />
 
         {book!.commentsEnabled && (
-          <div className="mt-8">
+          <div className="mt-8 max-w-2xl mx-auto">
             <BookComments
               bookId={bookId}
               initialComments={bookCommentsList}

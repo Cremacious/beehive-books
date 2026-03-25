@@ -5,6 +5,7 @@ import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 import { and, eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { books, bookComments, bookCommentLikes } from '@/db/schema';
+import { insertNotification } from '@/lib/notifications';
 
 export type BookComment = {
   id: string;
@@ -93,7 +94,7 @@ export async function addBookCommentAction(
 
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
-    columns: { id: true, commentsEnabled: true },
+    columns: { id: true, userId: true, title: true, commentsEnabled: true },
   });
   if (!book) return { success: false, message: 'Book not found.' };
   if (!book.commentsEnabled) return { success: false, message: 'Comments are disabled for this book.' };
@@ -113,6 +114,28 @@ export async function addBookCommentAction(
         .update(books)
         .set({ commentCount: sql`${books.commentCount} + 1` })
         .where(eq(books.id, bookId));
+
+      void insertNotification({
+        recipientId: book.userId,
+        actorId: userId,
+        type: 'BOOK_COMMENT',
+        link: `/books/${bookId}`,
+        metadata: { bookTitle: book.title },
+      });
+    } else {
+      const parent = await db.query.bookComments.findFirst({
+        where: eq(bookComments.id, parentId),
+        columns: { userId: true },
+      });
+      if (parent) {
+        void insertNotification({
+          recipientId: parent.userId,
+          actorId: userId,
+          type: 'BOOK_COMMENT_REPLY',
+          link: `/books/${bookId}`,
+          metadata: { bookTitle: book.title },
+        });
+      }
     }
 
     return { success: true, message: 'Comment added.', commentId: inserted.id };
@@ -161,6 +184,12 @@ export async function likeBookCommentAction(
     ),
   });
 
+  const comment = await db.query.bookComments.findFirst({
+    where: eq(bookComments.id, commentId),
+    columns: { userId: true, bookId: true },
+    with: { book: { columns: { title: true } } },
+  });
+
   try {
     if (existing) {
       await db
@@ -182,6 +211,15 @@ export async function likeBookCommentAction(
         .update(bookComments)
         .set({ likeCount: sql`${bookComments.likeCount} + 1` })
         .where(eq(bookComments.id, commentId));
+      if (comment) {
+        void insertNotification({
+          recipientId: comment.userId,
+          actorId: userId,
+          type: 'BOOK_COMMENT_LIKE',
+          link: `/books/${comment.bookId}`,
+          metadata: { bookTitle: comment.book.title },
+        });
+      }
       return { success: true, liked: true };
     }
   } catch {

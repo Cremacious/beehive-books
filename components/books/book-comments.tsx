@@ -343,7 +343,10 @@ export default function BookComments({
       )}
 
       {comments.length === 0 ? (
-        <p className="text-sm text-white/80">No comments yet. Be the first.</p>
+        <div className="py-8 text-center">
+        <p className="text-sm font-medium text-white mb-1">No comments yet</p>
+        <p className="text-xs text-white/80">Start the conversation — leave the first comment.</p>
+      </div>
       ) : (
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] divide-y divide-[#2a2a2a] px-5">
           {comments.map((comment) => (
