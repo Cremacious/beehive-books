@@ -33,7 +33,7 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
             hive={hive}
             topMembers={topMembers}
           />
-          <span className="text-white font-medium text-sm truncate">{hive.name}</span>
+    
         </div>
       )}
 

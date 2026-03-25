@@ -12,6 +12,7 @@ import {
   Settings,
   MessageCircle,
   Target,
+  ChevronLeft,
 } from 'lucide-react';
 import type { HiveWithMembership, HiveUser } from '@/lib/types/hive.types';
 
@@ -51,6 +52,16 @@ export default function HiveSidebar({
 
   return (
     <div className="flex flex-col h-full">
+      {/* Back to Hives */}
+      <Link
+        href="/hive"
+        onClick={onNavClick}
+        className="flex items-center gap-1.5 px-3 py-2 mb-2 text-sm text-white/80 hover:text-white transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        Back to Hives
+      </Link>
+
       {/* Hive name + genre */}
       <div className="mb-6">
         <h2 className="text-white font-semibold text-base leading-snug mb-2">{hive.name}</h2>
