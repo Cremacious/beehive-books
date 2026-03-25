@@ -9,6 +9,7 @@ import {
   Timer,
   BookMarked,
   Check,
+  CheckCheck,
   BookOpen,
   MessageCircle,
   Zap,
@@ -151,15 +152,15 @@ const EVENT_CONFIG: Record<
   },
   CHAPTER_SUBMITTED: {
     icon: Upload,
-    color: 'text-yellow-500',
-    bg: 'bg-yellow-500/10',
-    describe: (meta, name) => `${name} submitted a chapter — ${meta.title}`,
+    color: 'text-amber-400',
+    bg: 'bg-amber-400/10',
+    describe: (meta, name) => `${name} submitted a chapter — "${meta.title}"`,
   },
   CHAPTER_SUBMISSION_APPROVED: {
-    icon: Check,
+    icon: CheckCheck,
     color: 'text-green-400',
     bg: 'bg-green-400/10',
-    describe: (meta, name) => `${name}'s chapter submission was approved — ${meta.title}`,
+    describe: (meta, name) => `${name}'s chapter submission was approved — "${meta.title}"`,
   },
 };
 
