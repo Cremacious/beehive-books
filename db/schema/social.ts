@@ -76,6 +76,8 @@ export const notifications = pgTable('notifications', {
       'BOOK_COMMENT',
       'BOOK_COMMENT_REPLY',
       'BOOK_COMMENT_LIKE',
+      'SUBMISSION_APPROVED',
+      'SUBMISSION_REJECTED',
     ] as const,
   }).notNull(),
   isRead: boolean('is_read').notNull().default(false),

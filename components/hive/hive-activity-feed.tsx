@@ -9,6 +9,7 @@ import {
   Timer,
   BookMarked,
   Check,
+  CheckCheck,
   BookOpen,
   MessageCircle,
   Zap,
@@ -17,6 +18,7 @@ import {
   Target,
   Sparkles,
   UserPlus,
+  Upload,
 } from 'lucide-react';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import type { ActivityEvent, ActivityEventType } from '@/lib/types/hive.types';
@@ -147,6 +149,18 @@ const EVENT_CONFIG: Record<
     bg: 'bg-teal-400/10',
     describe: (meta, name) =>
       `${name} joined the hive as a ${String(meta.role).charAt(0) + String(meta.role).slice(1).toLowerCase()}`,
+  },
+  CHAPTER_SUBMITTED: {
+    icon: Upload,
+    color: 'text-amber-400',
+    bg: 'bg-amber-400/10',
+    describe: (meta, name) => `${name} submitted a chapter — "${meta.title}"`,
+  },
+  CHAPTER_SUBMISSION_APPROVED: {
+    icon: CheckCheck,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
+    describe: (meta, name) => `${name}'s chapter submission was approved — "${meta.title}"`,
   },
 };
 
