@@ -28,6 +28,7 @@ import {
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
 import { insertNotification } from '@/lib/notifications';
+import { awardMilestoneIfNew } from '@/lib/milestones';
 
 export type ActionResult = { success: boolean; message: string };
 
@@ -141,13 +142,14 @@ export async function createBookAction(
 
   try {
     const values = parsed.data;
-    await db.insert(books).values({
+    const [inserted] = await db.insert(books).values({
       ...(presetId ? { id: presetId } : {}),
       userId,
       ...values,
       privacy: values.explorable ? 'PUBLIC' : values.privacy,
       coverUrl: coverUrl || null,
-    });
+    }).returning({ id: books.id });
+    void awardMilestoneIfNew(inserted.id, 'FIRST_WORD');
     revalidatePath('/library');
     return { success: true, message: 'Book created.' };
   } catch {
@@ -171,15 +173,30 @@ export async function updateBookAction(
 
   try {
     const values = parsed.data;
+    const effectivePrivacy = values.explorable ? 'PUBLIC' : values.privacy;
     await db
       .update(books)
       .set({
         ...values,
-        privacy: values.explorable ? 'PUBLIC' : values.privacy,
+        privacy: effectivePrivacy,
         coverUrl: coverUrl ?? book.coverUrl,
         updatedAt: new Date(),
       })
       .where(eq(books.id, bookId));
+
+    if (effectivePrivacy !== 'PRIVATE' && book.privacy === 'PRIVATE') {
+      void awardMilestoneIfNew(bookId, 'FRESH_EYES');
+    }
+    if (values.draftStatus === 'FIRST_DRAFT') {
+      void awardMilestoneIfNew(bookId, 'FIRST_DRAFT_DONE');
+    }
+    if (values.draftStatus === 'SECOND_DRAFT') {
+      void awardMilestoneIfNew(bookId, 'SECOND_DRAFT');
+    }
+    if (values.draftStatus === 'COMPLETED') {
+      void awardMilestoneIfNew(bookId, 'FINISHED');
+    }
+
     revalidatePath(`/library/${bookId}`);
     revalidatePath('/library');
     return { success: true, message: 'Book updated.' };
@@ -371,14 +388,20 @@ export async function createChapterAction(
         order: nextOrder,
       })
       .returning({ id: chapters.id });
-    await db
+    const [updatedBook] = await db
       .update(books)
       .set({
         chapterCount: sql`${books.chapterCount} + 1`,
         wordCount: sql`${books.wordCount} + ${wordCount}`,
         updatedAt: new Date(),
       })
-      .where(eq(books.id, bookId));
+      .where(eq(books.id, bookId))
+      .returning({ chapterCount: books.chapterCount });
+
+    const newChapterCount = updatedBook?.chapterCount ?? 1;
+    if (newChapterCount === 1) void awardMilestoneIfNew(bookId, 'FIRST_CHAPTER');
+    if (newChapterCount === 3) void awardMilestoneIfNew(bookId, 'IN_THE_GROOVE');
+
     revalidatePath(`/library/${bookId}`);
 
     // Fire-and-forget: auto-log word count to any hive linked to this book
@@ -448,6 +471,9 @@ export async function updateChapterAction(
     : 0;
   const wordCountDiff = newWordCount - existing.wordCount;
 
+  const hadNoContent = !existing.content || existing.content.trim() === '';
+  const hasNewContent = !!parsed.data.content && parsed.data.content.trim() !== '';
+
   try {
     await db
       .update(chapters)
@@ -461,6 +487,9 @@ export async function updateChapterAction(
           updatedAt: new Date(),
         })
         .where(eq(books.id, bookId));
+    }
+    if (hadNoContent && hasNewContent) {
+      void awardMilestoneIfNew(bookId, 'GETTING_STARTED');
     }
     revalidatePath(`/library/${bookId}/${chapterId}`);
     revalidatePath(`/library/${bookId}`);

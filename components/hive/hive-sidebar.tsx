@@ -12,6 +12,7 @@ import {
   Settings,
   MessageCircle,
   Target,
+  Trophy,
   ChevronLeft,
 } from 'lucide-react';
 import type { HiveWithMembership, HiveUser } from '@/lib/types/hive.types';
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: '/comments', label: 'Annotations', icon: MessageCircle },
   { href: '/word-goals', label: 'Word Goals', icon: Target },
   { href: '/buzz', label: 'Buzz Board', icon: Sparkles },
+  { href: '/milestones', label: 'Milestones', icon: Trophy },
   { href: '/members', label: 'Members', icon: Users },
 ] as const;
 
@@ -56,7 +58,7 @@ export default function HiveSidebar({
       <Link
         href="/hive"
         onClick={onNavClick}
-        className="flex items-center gap-1.5 px-3 py-2 mb-2 text-sm text-white/80 hover:text-white transition-colors"
+        className="flex items-center gap-1.5 px-3 py-2 mb-2 text-sm text-white hover:text-white transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
         Back to Hives
@@ -115,7 +117,7 @@ export default function HiveSidebar({
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? 'bg-yellow-500/15 text-yellow-500'
-                  : 'text-white/80 hover:text-white hover:bg-white/5'
+                  : 'text-white hover:text-white/80 hover:bg-white/5'
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />

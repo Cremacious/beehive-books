@@ -37,7 +37,7 @@ import type {
 
 interface HiveInlineCommentsProps {
   hiveId: string;
-  chapters: { id: string; title: string; order: number }[];
+  chapters: { id: string; title: string; order: number; collection: { name: string } | null }[];
   initialChapterId: string | null;
   initialComments: InlineComment[];
   initialContent: { title: string; content: string } | null;
@@ -667,9 +667,9 @@ export default function HiveInlineComments({
             onChange={(e) => e.target.value && loadChapter(e.target.value)}
             className="flex-1 min-w-50 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC300]/40 transition-all"
           >
-            {chapters.map((ch) => (
+            {chapters.map((ch, index) => (
               <option key={ch.id} value={ch.id}>
-                {String(ch.order + 1).padStart(2, '0')}. {ch.title}
+                {String(index + 1).padStart(2, '0')}. {ch.title}{ch.collection ? ` (${ch.collection.name})` : ''}
               </option>
             ))}
           </select>
