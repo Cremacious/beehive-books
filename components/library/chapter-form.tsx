@@ -110,7 +110,7 @@ export function ChapterForm({
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
-  const errorClass = 'text-xs text-red-400 mt-1';
+  const errorClass = 'text-xs text-white/80';
 
   return (
     <div className="px-4 py-8">
@@ -129,51 +129,52 @@ export function ChapterForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
-                Chapter Title <span className="text-red-400">*</span>
+              <label className="text-sm font-medium text-white">
+                Chapter Title <span className="text-white/80 text-xs font-normal">(required)</span>
               </label>
+              <p className="text-xs text-white/80">The chapter name shown in the table of contents.</p>
               <input
                 {...register('title')}
                 type="text"
                 placeholder="Enter your chapter title…"
                 className={inputClass}
               />
+              <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
               {errors.title && (
                 <p className={errorClass}>{errors.title.message}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
+              <label className="text-sm font-medium text-white">
                 Author&apos;s Notes
                 <span className="ml-2 text-xs text-white/80 font-normal">
                   (optional)
                 </span>
               </label>
+              <p className="text-xs text-white/80">Private notes for yourself — readers won&apos;t see these.</p>
               <textarea
                 {...register('authorNotes')}
                 rows={isEdit ? 4 : 3}
                 placeholder="Share thoughts, context, or a message to your readers…"
                 className={inputClass + ' resize-y'}
               />
+              <p className="text-xs text-white/80 text-right">{watch('authorNotes')?.length ?? 0} / 500</p>
               {errors.authorNotes && (
                 <p className={errorClass}>{errors.authorNotes.message}</p>
               )}
-              <p className="text-xs text-white">
-                Shown to readers in a highlighted box before the chapter
-                content.
-              </p>
             </div>
 
             {collections.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-yellow-500 mainFont flex items-center gap-1.5">
+                <label className="text-sm font-medium text-white flex items-center gap-1.5">
                   <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />
                   Collection
                   <span className="ml-1 text-xs text-white/80 font-normal">
                     (optional)
                   </span>
                 </label>
+                <p className="text-xs text-white/80">Group chapters into parts, acts, or volumes.</p>
                 <select
                   {...register('collectionId')}
                   className={inputClass + ' appearance-none'}
@@ -253,28 +254,32 @@ export function ChapterForm({
               </label>
 
               {docxError && (
-                <p className="text-xs text-red-400">{docxError}</p>
+                <p className="text-xs text-white/80">{docxError}</p>
               )}
             </div>
           )}
 
           {(isEdit || contentMode === 'write') && (
-            <Controller
-              name="content"
-              control={control}
-              render={({ field }) => (
-                <RichTextEditor
-                  content={field.value ?? ''}
-                  onChange={field.onChange}
-                />
-              )}
-            />
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-white">Content</label>
+              <p className="text-xs text-white/80">Write your chapter here. Auto-saves as you go.</p>
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <RichTextEditor
+                    content={field.value ?? ''}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
           )}
 
           {(serverError || errors.content) && (
-            <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
-              <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-red-400">
+            <div className="flex items-start gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+              <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+              <p className="text-sm text-white/80">
                 {serverError || errors.content?.message}
               </p>
             </div>
@@ -306,7 +311,7 @@ export function ChapterForm({
                     {isEdit ? 'Saving…' : 'Creating…'}
                   </>
                 ) : isEdit ? (
-                  'Save Changes'
+                  'Save Chapter'
                 ) : (
                   'Create Chapter'
                 )}

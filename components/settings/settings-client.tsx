@@ -143,8 +143,11 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
               </p>
             </div>
           </div>
-          <div className="px-5 py-4 space-y-2">
-            <label className="block text-xs text-white/50 mb-1">Bio</label>
+          <div className="px-5 py-4 space-y-1.5">
+            <label className="block text-sm font-medium text-white">
+              Bio <span className="text-white/80 text-xs font-normal">(optional)</span>
+            </label>
+            <p className="text-xs text-white/80">A short intro — who you are, what you write.</p>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
@@ -154,16 +157,16 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
               className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
             />
             <div className="flex items-center justify-between">
-              <span className="text-xs text-white/30">{bio.length}/200</span>
+              <span className="text-xs text-white/80">{bio.length} / 200</span>
               <div className="flex items-center gap-2">
-                {bioSuccess && <span className="text-xs text-green-400">Saved</span>}
-                {bioError && <span className="text-xs text-red-400">{bioError}</span>}
+                {bioSuccess && <span className="text-xs text-white/80">Saved</span>}
+                {bioError && <span className="text-xs text-white/80">{bioError}</span>}
                 <button
                   onClick={handleSaveBio}
                   disabled={bioSaving}
                   className="text-xs px-3 py-1.5 rounded-lg bg-[#FFC300] text-black font-semibold hover:bg-[#FFD040] disabled:opacity-50 transition-colors"
                 >
-                  {bioSaving ? 'Saving...' : 'Save'}
+                  {bioSaving ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </div>
@@ -230,7 +233,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
                     className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
                   />
                   {passwordError && (
-                    <p className="text-xs text-red-400 bg-red-900/20 border border-red-500/20 rounded-lg px-3 py-2">{passwordError}</p>
+                    <p className="text-xs text-white/80 bg-white/5 border border-white/10 rounded-lg px-3 py-2">{passwordError}</p>
                   )}
                   {passwordSuccess && (
                     <p className="text-xs text-green-400 bg-green-900/20 border border-green-500/20 rounded-lg px-3 py-2">Password changed successfully.</p>
@@ -286,7 +289,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
               </p>
 
               {uploadError && (
-                <p className="text-xs text-red-400 mb-3 bg-red-950/30 border border-red-800/30 rounded-lg px-3 py-2">
+                <p className="text-xs text-white/80 mb-3 bg-white/5 border border-white/10 rounded-lg px-3 py-2">
                   {uploadError}
                 </p>
               )}
