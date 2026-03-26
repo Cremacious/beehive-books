@@ -12,7 +12,7 @@ export function VoteButton({ entryId, promptId, voteCount, hasVoted, isDisabled 
   return (
     <button
       disabled={isDisabled || isPending}
-      onClick={() => !hasVoted && startTransition(() => voteForEntryAction(entryId, promptId))}
+      onClick={() => { if (!hasVoted) startTransition(async () => { await voteForEntryAction(entryId, promptId); }); }}
       className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-medium transition-all ${
         hasVoted
           ? 'bg-[#FFC300]/10 border-[#FFC300]/30 text-yellow-500'
