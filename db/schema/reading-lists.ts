@@ -11,6 +11,7 @@ import {
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { users } from './auth';
+import { books } from './books';
 
 export const readingLists = pgTable('reading_lists', {
   id: text('id')
@@ -52,6 +53,7 @@ export const readingListBooks = pgTable('reading_list_books', {
   author: text('author').notNull(),
   isRead: boolean('is_read').notNull().default(false),
   order: integer('order').notNull().default(0),
+  bookId: text('book_id').references(() => books.id, { onDelete: 'set null' }),
   rank: integer('rank'),
   commentary: text('commentary').default(''),
   addedAt: timestamp('added_at').defaultNow().notNull(),
@@ -100,6 +102,10 @@ export const readingListBooksRelations = relations(
     readingList: one(readingLists, {
       fields: [readingListBooks.readingListId],
       references: [readingLists.id],
+    }),
+    book: one(books, {
+      fields: [readingListBooks.bookId],
+      references: [books.id],
     }),
   }),
 );

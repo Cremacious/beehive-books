@@ -15,4 +15,5 @@ export const bookEntrySchema = z.object({
     .string()
     .min(1, 'Author is required')
     .max(100, 'Author name too long'),
+  bookId: z.string().optional(),
 });

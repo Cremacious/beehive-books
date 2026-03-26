@@ -23,6 +23,7 @@ export type ReadingList = {
 export type ReadingListBook = {
   id: string;
   readingListId: string;
+  bookId?: string | null;
   title: string;
   author: string;
   isRead: boolean;
@@ -48,6 +49,7 @@ export type ReadingListFormData = {
 export type BookEntryData = {
   title: string;
   author: string;
+  bookId?: string;
 };
 
 export type ReadingListFormMode = 'create' | 'edit';

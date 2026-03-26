@@ -4,10 +4,10 @@ import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
-import { and, eq, max, sql } from 'drizzle-orm';
+import { and, eq, ilike, max, or, sql } from 'drizzle-orm';
 import { insertNotification } from '@/lib/notifications';
 import { db } from '@/db';
-import { readingLists, readingListBooks, readingListFollows, readingListLikes } from '@/db/schema';
+import { readingLists, readingListBooks, readingListFollows, readingListLikes, books } from '@/db/schema';
 import {
   readingListSchema,
   bookEntrySchema,
@@ -328,7 +328,9 @@ export async function addBookToListAction(
 
     await db.insert(readingListBooks).values({
       readingListId: listId,
-      ...parsed.data,
+      title: parsed.data.title,
+      author: parsed.data.author,
+      bookId: parsed.data.bookId ?? null,
       order: nextOrder,
     });
     await db
@@ -485,4 +487,59 @@ export async function setCurrentlyReadingAction(
   } catch {
     return { success: false, message: 'Failed to update currently reading.' };
   }
+}
+
+export async function searchBooksForListAction(query: string): Promise<{
+  id: string;
+  title: string;
+  author: string;
+  authorUsername: string | null;
+  coverUrl: string | null;
+  wordCount: number;
+}[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const rows = await db.query.books.findMany({
+    where: and(
+      or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
+      or(ilike(books.title, `%${q}%`), ilike(books.author, `%${q}%`)),
+    ),
+    columns: { id: true, title: true, author: true, coverUrl: true, wordCount: true },
+    with: { user: { columns: { username: true } } },
+    limit: 8,
+  });
+  return rows.map((b) => ({
+    id: b.id,
+    title: b.title,
+    author: b.author,
+    authorUsername: b.user?.username ?? null,
+    coverUrl: b.coverUrl ?? null,
+    wordCount: b.wordCount,
+  }));
+}
+
+export async function getListsFeaturingBookAction(bookId: string): Promise<{
+  id: string;
+  title: string;
+  curatorUsername: string | null;
+  curatorImage: string | null;
+  bookCount: number;
+}[]> {
+  const rows = await db.query.readingListBooks.findMany({
+    where: eq(readingListBooks.bookId, bookId),
+    with: {
+      readingList: {
+        with: { user: { columns: { username: true, image: true } } },
+      },
+    },
+  });
+  return rows
+    .filter((r) => r.readingList.privacy === 'PUBLIC')
+    .map((r) => ({
+      id: r.readingList.id,
+      title: r.readingList.title,
+      curatorUsername: r.readingList.user?.username ?? null,
+      curatorImage: r.readingList.user?.image ?? null,
+      bookCount: r.readingList.bookCount,
+    }));
 }
