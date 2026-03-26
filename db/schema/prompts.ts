@@ -31,8 +31,8 @@ export const prompts = pgTable('prompts', {
     .notNull()
     .default('ACTIVE'),
   votingEndsAt: timestamp('voting_ends_at'),
-  communityWinnerId: text('community_winner_id').references(() => promptEntries.id, { onDelete: 'set null' }),
-  authorChoiceId: text('author_choice_id').references(() => promptEntries.id, { onDelete: 'set null' }),
+  communityWinnerId: text('community_winner_id'),
+  authorChoiceId: text('author_choice_id'),
   entryCount: integer('entry_count').notNull().default(0),
   tags: json('tags').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),

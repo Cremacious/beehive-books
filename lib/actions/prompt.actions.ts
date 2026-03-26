@@ -264,7 +264,7 @@ export async function getEntryAction(
     ),
     with: {
       user: { columns: USER_COLUMNS },
-      prompt: { columns: { creatorId: true, status: true, endDate: true } },
+      prompt: { columns: { creatorId: true, status: true, endDate: true, communityWinnerId: true, authorChoiceId: true } },
       comments: {
         where: (c, { isNull }) => isNull(c.parentId),
         with: {
@@ -336,10 +336,13 @@ export async function getEntryAction(
 
   return {
     id: entry.id,
+    title: entry.title ?? '',
     content: entry.content,
     wordCount: entry.wordCount,
     likeCount: entry.likeCount,
     likedByMe: likedEntry,
+    isCommunityWin: entry.prompt.communityWinnerId === entry.id,
+    isAuthorChoice: entry.prompt.authorChoiceId === entry.id,
     createdAt: entry.createdAt,
     user: entry.user as PromptUser,
     comments,
