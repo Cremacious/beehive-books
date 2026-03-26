@@ -3,7 +3,7 @@
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
-import { and, eq, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { db } from '@/db';
@@ -42,9 +42,10 @@ const USER_COLUMNS = {
 
 async function maybeEndPrompt(promptId: string, endDate: Date) {
   if (endDate < new Date()) {
+    const votingEndsAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
     await db
       .update(prompts)
-      .set({ status: 'ENDED', updatedAt: new Date() })
+      .set({ status: 'VOTING', votingEndsAt, updatedAt: new Date() })
       .where(and(eq(prompts.id, promptId), eq(prompts.status, 'ACTIVE')));
   }
 }
@@ -112,7 +113,7 @@ export async function getMyPromptsAction(): Promise<PromptCard[]> {
     endDate: p.endDate,
     privacy: p.privacy,
     explorable: p.explorable,
-    status: (p.endDate < new Date() ? 'ENDED' : p.status) as 'ACTIVE' | 'ENDED',
+    status: (p.endDate < new Date() && p.status === 'ACTIVE' ? 'VOTING' : p.status) as 'ACTIVE' | 'VOTING' | 'ENDED',
     entryCount: p.entryCount,
     createdAt: p.createdAt,
     creator: p.creator as PromptUser,
@@ -143,13 +144,17 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
 
   const isCreator = userId === prompt.creatorId;
   const isInvited = prompt.invites.some((i) => i.userId === userId);
-  const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED';
+  const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED' || prompt.status === 'VOTING';
 
   if (prompt.privacy === 'PRIVATE' && !isCreator && !isInvited) {
     throw new Error('You do not have access to this prompt');
   }
 
-  await maybeEndPrompt(promptId, prompt.endDate);
+  if (prompt.status === 'ACTIVE') {
+    await maybeEndPrompt(promptId, prompt.endDate);
+  } else if (prompt.status === 'VOTING' && prompt.votingEndsAt && prompt.votingEndsAt < new Date()) {
+    await transitionToEndedAction(promptId);
+  }
 
   const myInvite = prompt.invites.find((i) => i.userId === userId);
   let myEntryId: string | null = null;
@@ -164,6 +169,12 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
     myEntryId = entry?.id ?? null;
   }
 
+  // Re-fetch after possible status transition
+  const freshPrompt = await db.query.prompts.findFirst({
+    where: eq(prompts.id, promptId),
+    columns: { status: true, votingEndsAt: true, communityWinnerId: true, authorChoiceId: true },
+  });
+
   return {
     id: prompt.id,
     title: prompt.title,
@@ -171,7 +182,10 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
     endDate: prompt.endDate,
     privacy: prompt.privacy,
     explorable: prompt.explorable,
-    status: (isEnded ? 'ENDED' : prompt.status) as 'ACTIVE' | 'ENDED',
+    status: (freshPrompt?.status ?? prompt.status) as 'ACTIVE' | 'VOTING' | 'ENDED',
+    votingEndsAt: freshPrompt?.votingEndsAt ?? null,
+    communityWinnerId: freshPrompt?.communityWinnerId ?? null,
+    authorChoiceId: freshPrompt?.authorChoiceId ?? null,
     entryCount: prompt.entryCount,
     createdAt: prompt.createdAt,
     creator: prompt.creator as PromptUser,
@@ -190,24 +204,24 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
 
 export async function getPromptEntriesAction(
   promptId: string,
-): Promise<PromptEntry[]> {
+): Promise<{ entries: PromptEntry[]; votedEntryId: string | null }> {
   const userId = await requireAuth();
 
   const prompt = await db.query.prompts.findFirst({
     where: eq(prompts.id, promptId),
-    columns: { creatorId: true, status: true, endDate: true, privacy: true },
+    columns: { creatorId: true, status: true, endDate: true, privacy: true, communityWinnerId: true, authorChoiceId: true, votingEndsAt: true },
   });
   if (!prompt) throw new Error('Prompt not found');
 
   const isCreator = userId === prompt.creatorId;
-  const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED';
+  const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED' || prompt.status === 'VOTING';
 
-  if (!isEnded && !isCreator) return [];
+  if (!isEnded && !isCreator) return { entries: [], votedEntryId: null };
 
   const entries = await db.query.promptEntries.findMany({
     where: eq(promptEntries.promptId, promptId),
     with: { user: { columns: USER_COLUMNS } },
-    orderBy: (e, { desc }) => [desc(e.likeCount), desc(e.createdAt)],
+    orderBy: [desc(promptEntries.likeCount), desc(promptEntries.createdAt)],
   });
 
   let likedIds: string[] = [];
@@ -219,15 +233,22 @@ export async function getPromptEntriesAction(
     likedIds = likes.map((l) => l.entryId);
   }
 
-  return entries.map((e) => ({
+  const mappedEntries = entries.map((e) => ({
     id: e.id,
+    title: e.title ?? '',
     content: e.content,
     wordCount: e.wordCount,
     likeCount: e.likeCount,
     likedByMe: likedIds.includes(e.id),
+    isCommunityWin: e.id === prompt.communityWinnerId,
+    isAuthorChoice: e.id === prompt.authorChoiceId,
     createdAt: e.createdAt,
     user: e.user as PromptUser,
   }));
+
+  const votedEntryId = entries.find((e) => likedIds.includes(e.id))?.id ?? null;
+
+  return { entries: mappedEntries, votedEntryId };
 }
 
 export async function getEntryAction(
@@ -243,7 +264,7 @@ export async function getEntryAction(
     ),
     with: {
       user: { columns: USER_COLUMNS },
-      prompt: { columns: { creatorId: true, status: true, endDate: true } },
+      prompt: { columns: { creatorId: true, status: true, endDate: true, communityWinnerId: true, authorChoiceId: true } },
       comments: {
         where: (c, { isNull }) => isNull(c.parentId),
         with: {
@@ -315,10 +336,13 @@ export async function getEntryAction(
 
   return {
     id: entry.id,
+    title: entry.title ?? '',
     content: entry.content,
     wordCount: entry.wordCount,
     likeCount: entry.likeCount,
     likedByMe: likedEntry,
+    isCommunityWin: entry.prompt.communityWinnerId === entry.id,
+    isAuthorChoice: entry.prompt.authorChoiceId === entry.id,
     createdAt: entry.createdAt,
     user: entry.user as PromptUser,
     comments,
@@ -495,13 +519,14 @@ export async function endPromptEarlyAction(
   });
   if (!prompt)
     return { success: false, message: 'Prompt not found or unauthorized.' };
-  if (prompt.status === 'ENDED')
+  if (prompt.status === 'VOTING' || prompt.status === 'ENDED')
     return { success: false, message: 'Prompt has already ended.' };
 
   try {
+    const votingEndsAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
     await db
       .update(prompts)
-      .set({ status: 'ENDED', endDate: new Date(), updatedAt: new Date() })
+      .set({ status: 'VOTING', votingEndsAt, endDate: new Date(), updatedAt: new Date() })
       .where(eq(prompts.id, promptId));
 
     const acceptedInvites = await db.query.promptInvites.findMany({
@@ -523,9 +548,120 @@ export async function endPromptEarlyAction(
 
     revalidatePath('/prompts');
     revalidatePath(`/prompts/${promptId}`);
-    return { success: true, message: 'Prompt ended.' };
+    return { success: true, message: 'Voting period started.' };
   } catch {
     return { success: false, message: 'Failed to end prompt.' };
+  }
+}
+
+export async function transitionToEndedAction(promptId: string): Promise<void> {
+  const prompt = await db.query.prompts.findFirst({
+    where: and(eq(prompts.id, promptId), eq(prompts.status, 'VOTING')),
+    columns: { id: true, title: true, creatorId: true },
+  });
+  if (!prompt) return;
+
+  // Find entry with highest likeCount
+  const topEntry = await db.query.promptEntries.findFirst({
+    where: eq(promptEntries.promptId, promptId),
+    orderBy: [desc(promptEntries.likeCount), desc(promptEntries.createdAt)],
+    columns: { id: true, userId: true, likeCount: true },
+  });
+
+  await db
+    .update(prompts)
+    .set({
+      status: 'ENDED',
+      communityWinnerId: topEntry?.id ?? null,
+      updatedAt: new Date(),
+    })
+    .where(eq(prompts.id, promptId));
+
+  if (topEntry && topEntry.userId !== prompt.creatorId) {
+    void insertNotification({
+      recipientId: topEntry.userId,
+      actorId: prompt.creatorId,
+      type: 'PROMPT_COMMUNITY_WIN',
+      link: `/prompts/${promptId}`,
+      metadata: { promptTitle: prompt.title },
+    });
+  }
+
+  revalidatePath(`/prompts/${promptId}`);
+}
+
+export async function voteForEntryAction(
+  entryId: string,
+  promptId: string,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({ where: eq(prompts.id, promptId) });
+  if (!prompt || prompt.status !== 'VOTING') return { success: false, message: 'Voting is not open.' };
+
+  const existingVote = await db.query.promptEntryLikes.findFirst({
+    where: and(
+      eq(promptEntryLikes.userId, userId),
+      inArray(
+        promptEntryLikes.entryId,
+        db.select({ id: promptEntries.id }).from(promptEntries).where(eq(promptEntries.promptId, promptId)),
+      ),
+    ),
+  });
+  if (existingVote) return { success: false, message: 'You have already voted.' };
+
+  const entry = await db.query.promptEntries.findFirst({ where: eq(promptEntries.id, entryId) });
+  if (entry?.userId === userId) return { success: false, message: 'You cannot vote for your own entry.' };
+
+  await db.insert(promptEntryLikes).values({ userId, entryId });
+  await db
+    .update(promptEntries)
+    .set({ likeCount: sql`${promptEntries.likeCount} + 1` })
+    .where(eq(promptEntries.id, entryId));
+
+  revalidatePath(`/prompts/${promptId}`);
+  return { success: true, message: 'Vote recorded.' };
+}
+
+export async function setAuthorChoiceAction(
+  promptId: string,
+  entryId: string,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({
+    where: and(eq(prompts.id, promptId), eq(prompts.creatorId, userId)),
+    columns: { id: true, title: true, status: true },
+  });
+  if (!prompt) return { success: false, message: 'Prompt not found or unauthorized.' };
+  if (prompt.status === 'ACTIVE') return { success: false, message: 'Cannot set author choice while prompt is active.' };
+
+  const entry = await db.query.promptEntries.findFirst({
+    where: and(eq(promptEntries.id, entryId), eq(promptEntries.promptId, promptId)),
+    columns: { id: true, userId: true },
+  });
+  if (!entry) return { success: false, message: 'Entry not found.' };
+
+  try {
+    await db
+      .update(prompts)
+      .set({ authorChoiceId: entryId, updatedAt: new Date() })
+      .where(eq(prompts.id, promptId));
+
+    if (entry.userId !== userId) {
+      void insertNotification({
+        recipientId: entry.userId,
+        actorId: userId,
+        type: 'PROMPT_AUTHOR_CHOICE',
+        link: `/prompts/${promptId}`,
+        metadata: { promptTitle: prompt.title },
+      });
+    }
+
+    revalidatePath(`/prompts/${promptId}`);
+    return { success: true, message: 'Author choice set.' };
+  } catch {
+    return { success: false, message: 'Failed to set author choice.' };
   }
 }
 

@@ -72,7 +72,7 @@ export type BookFormProps = {
 
 export type ChapterNav = Pick<Chapter, 'id' | 'title' | 'order'>;
 
-type ExistingChapter = {
+export type ExistingChapter = {
   id: string;
   title: string;
   authorNotes: string | null;

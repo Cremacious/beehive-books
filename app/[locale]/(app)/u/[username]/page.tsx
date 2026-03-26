@@ -2,12 +2,15 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { BookOpen, Heart } from 'lucide-react';
+import { BookOpen, Heart, Trophy } from 'lucide-react';
 import { ProfileContent } from '@/components/profile/profile-content';
 import { FriendButton } from '@/components/friends/friend-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
+import type { ClubWithMembership } from '@/lib/types/club.types';
+import type { HiveWithMembership } from '@/lib/types/hive.types';
+import type { PromptCard as PromptCardType } from '@/lib/types/prompt.types';
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -32,6 +35,7 @@ export default async function UserProfilePage({ params }: Props) {
     clubs,
     hives,
     prompts,
+    promptWins,
     isOwnProfile,
     currentUserId,
   } = profile;
@@ -156,12 +160,46 @@ export default async function UserProfilePage({ params }: Props) {
         </div>
       </div>
 
+      {promptWins.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-white/80 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-yellow-500" />
+            Prompt Wins
+          </h2>
+          <div className="flex flex-col gap-2">
+            {promptWins.map((win) => (
+              <Link
+                key={win.id}
+                href={`/prompts/${win.id}`}
+                className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors group"
+              >
+                <p className="text-sm text-white font-medium truncate group-hover:text-yellow-500 transition-colors">
+                  {win.title}
+                </p>
+                <div className="flex gap-1.5 shrink-0">
+                  {win.isCommunityWin && (
+                    <span className="bg-[#FFC300] text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      Community Pick
+                    </span>
+                  )}
+                  {win.isAuthorChoice && (
+                    <span className="bg-white/10 border border-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      Author&apos;s Pick
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <ProfileContent
         books={books}
         readingLists={readingLists}
-        clubs={clubs}
-        hives={hives}
-        promptCards={promptCards}
+        clubs={clubs as unknown as ClubWithMembership[]}
+        hives={hives as unknown as HiveWithMembership[]}
+        promptCards={promptCards as unknown as PromptCardType[]}
         isOwnProfile={isOwnProfile}
       />
     </div>

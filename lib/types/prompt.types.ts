@@ -4,7 +4,7 @@ export type PromptUser = {
   image:  string | null;
 };
 
-export type PromptStatus = 'ACTIVE' | 'ENDED';
+export type PromptStatus = 'ACTIVE' | 'VOTING' | 'ENDED';
 
 export type PromptCard = {
   id:             string;
@@ -30,16 +30,22 @@ export type PromptInvite = {
 
 export type PromptDetail = PromptCard & {
   invites: PromptInvite[];
+  votingEndsAt: Date | null;
+  communityWinnerId: string | null;
+  authorChoiceId: string | null;
 };
 
 export type PromptEntry = {
-  id:         string;
-  content:    string;
-  wordCount:  number;
-  likeCount:  number;
-  likedByMe:  boolean;
-  createdAt:  Date;
-  user:       PromptUser;
+  id:              string;
+  title:           string;
+  content:         string;
+  wordCount:       number;
+  likeCount:       number;
+  likedByMe:       boolean;
+  isCommunityWin:  boolean;
+  isAuthorChoice:  boolean;
+  createdAt:       Date;
+  user:            PromptUser;
 };
 
 export type EntryReply = {

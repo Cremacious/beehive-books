@@ -57,7 +57,7 @@ export type FriendLatestBook = {
 export type FriendRecentPrompt = {
   id: string;
   title: string;
-  status: 'ACTIVE' | 'ENDED';
+  status: 'ACTIVE' | 'VOTING' | 'ENDED';
 };
 
 export type FriendActivity = {

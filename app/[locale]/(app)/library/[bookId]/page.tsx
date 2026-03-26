@@ -9,7 +9,7 @@ import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { GeneratedCover } from '@/components/library/generated-cover';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
-import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
+import { DRAFT_STATUS_LABELS, type DraftStatus } from '@/lib/types/books.types';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -121,7 +121,7 @@ export default async function BookPage({
                 </span>
                 {book.draftStatus !== 'COMPLETED' && (
                   <span className="text-xs px-2.5 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] font-medium border border-[#FFC300]/20">
-                    {DRAFT_STATUS_LABELS[book.draftStatus]}
+                    {DRAFT_STATUS_LABELS[book.draftStatus as DraftStatus]}
                   </span>
                 )}
               </div>

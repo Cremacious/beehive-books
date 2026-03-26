@@ -27,9 +27,12 @@ export const prompts = pgTable('prompts', {
     .notNull()
     .default('PRIVATE'),
   explorable: boolean('explorable').notNull().default(false),
-  status: text('status', { enum: ['ACTIVE', 'ENDED'] })
+  status: text('status', { enum: ['ACTIVE', 'VOTING', 'ENDED'] })
     .notNull()
     .default('ACTIVE'),
+  votingEndsAt: timestamp('voting_ends_at'),
+  communityWinnerId: text('community_winner_id'),
+  authorChoiceId: text('author_choice_id'),
   entryCount: integer('entry_count').notNull().default(0),
   tags: json('tags').$type<string[]>().notNull().default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -73,6 +76,7 @@ export const promptEntries = pgTable(
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
+    title: text('title').default(''),
     content: text('content').notNull(),
     wordCount: integer('word_count').notNull().default(0),
     likeCount: integer('like_count').notNull().default(0),
@@ -140,6 +144,16 @@ export const promptsRelations = relations(prompts, ({ one, many }) => ({
   }),
   invites: many(promptInvites),
   entries: many(promptEntries),
+  communityWinner: one(promptEntries, {
+    fields: [prompts.communityWinnerId],
+    references: [promptEntries.id],
+    relationName: 'communityWinner',
+  }),
+  authorChoice: one(promptEntries, {
+    fields: [prompts.authorChoiceId],
+    references: [promptEntries.id],
+    relationName: 'authorChoice',
+  }),
 }));
 
 export const promptInvitesRelations = relations(promptInvites, ({ one }) => ({
@@ -166,6 +180,8 @@ export const promptEntriesRelations = relations(
     }),
     comments: many(promptEntryComments),
     likes: many(promptEntryLikes),
+    communityWinnerOf: many(prompts, { relationName: 'communityWinner' }),
+    authorChoiceOf: many(prompts, { relationName: 'authorChoice' }),
   }),
 );
 

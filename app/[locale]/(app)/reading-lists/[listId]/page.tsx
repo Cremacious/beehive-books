@@ -5,6 +5,7 @@ import { ListStats } from '@/components/reading-lists/list-stats';
 import { BookListView } from '@/components/reading-lists/book-list-view';
 import { AddBookForm } from '@/components/reading-lists/add-book-form';
 import { getReadingListAction } from '@/lib/actions/reading-list.actions';
+import type { ReadingListBook } from '@/lib/types/reading-list.types';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -60,7 +61,7 @@ export default async function ReadingListPage({
         )}
 
         <BookListView
-          books={books}
+          books={books as unknown as ReadingListBook[]}
           listId={listId}
           isOwner={isOwner}
           currentlyReadingId={list.currentlyReadingId}

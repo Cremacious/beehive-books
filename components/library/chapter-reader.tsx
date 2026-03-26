@@ -4,6 +4,7 @@ import BackButton from '@/components/shared/back-button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { CommentSection } from '@/components/comments/comment-section';
 import type { getChapterWithContextAction } from '@/lib/actions/book.actions';
+import type { Comment } from '@/lib/types/comment.types';
 
 type ChapterData = Awaited<ReturnType<typeof getChapterWithContextAction>>;
 
@@ -114,7 +115,7 @@ export function ChapterReader({
         {book.chapterCommentsEnabled && (
           <CommentSection
             chapterId={chapter.id}
-            comments={comments}
+            comments={comments as unknown as Comment[]}
             currentUserId={currentUserId ?? null}
           />
         )}

@@ -47,7 +47,7 @@ export default async function HiveCommentsPage({
   return (
     <HiveInlineComments
       hiveId={hiveId}
-      chapters={bookChapters}
+      chapters={bookChapters as unknown as { id: string; title: string; order: number; collection: { name: string } | null }[]}
       initialChapterId={firstChapterId}
       initialComments={initialComments}
       initialContent={initialContent}

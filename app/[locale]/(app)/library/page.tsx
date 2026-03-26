@@ -5,6 +5,7 @@ import BookGrid from '@/components/library/book-grid';
 import FavouritesGrid from '@/components/library/favourites-grid';
 import { getUserBooksAction, getLikedBooksAction } from '@/lib/actions/book.actions';
 import { BadgeCount } from '@/components/ui/badge-count';
+import type { Book } from '@/lib/types/books.types';
 
 export const metadata: Metadata = {
   title: 'My Library',
@@ -43,7 +44,7 @@ export default async function LibraryPage({ searchParams }: Props) {
       </div>
 
       {tab === 'my-books' && <BookGrid books={books} />}
-      {tab === 'favourites' && <FavouritesGrid books={likedBooks} />}
+      {tab === 'favourites' && <FavouritesGrid books={likedBooks as unknown as Book[]} />}
     </div>
   );
 }
