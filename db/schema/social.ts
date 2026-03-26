@@ -76,6 +76,7 @@ export const notifications = pgTable('notifications', {
       'BOOK_COMMENT',
       'BOOK_COMMENT_REPLY',
       'BOOK_COMMENT_LIKE',
+      'READING_LIST_NEW_BOOK',
       'SUBMISSION_APPROVED',
       'SUBMISSION_REJECTED',
     ] as const,

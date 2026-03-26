@@ -5,9 +5,12 @@ export type ReadingList = {
   userId: string;
   title: string;
   description: string;
+  curatorNote?: string | null;
   privacy: Privacy;
   bookCount: number;
   readCount: number;
+  followerCount: number;
+  likeCount: number;
   currentlyReadingId: string | null;
   currentlyReadingTitle: string | null;
   currentlyReadingAuthor: string | null;
@@ -20,11 +23,14 @@ export type ReadingList = {
 export type ReadingListBook = {
   id: string;
   readingListId: string;
+  bookId?: string | null;
   title: string;
   author: string;
   isRead: boolean;
   addedAt: Date;
   order: number;
+  rank?: number | null;
+  commentary?: string | null;
 };
 
 export type ReadingListWithBooks = ReadingList & {
@@ -34,6 +40,7 @@ export type ReadingListWithBooks = ReadingList & {
 export type ReadingListFormData = {
   title: string;
   description: string;
+  curatorNote?: string;
   privacy: Privacy;
   explorable: boolean;
   tags: string[];
@@ -42,6 +49,7 @@ export type ReadingListFormData = {
 export type BookEntryData = {
   title: string;
   author: string;
+  bookId?: string;
 };
 
 export type ReadingListFormMode = 'create' | 'edit';
@@ -67,6 +75,10 @@ export interface ListStatsProps {
 export interface ReadingListHeaderProps {
   list: ReadingList;
   isOwner: boolean;
+  curator: { username: string | null; image: string | null };
+  isFollowing: boolean;
+  isLiked: boolean;
+  currentUserId: string | null;
 }
 
 export type ActionResult = { success: boolean; message: string };

@@ -6,10 +6,12 @@ import {
   integer,
   index,
   json,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { users } from './auth';
+import { books } from './books';
 
 export const readingLists = pgTable('reading_lists', {
   id: text('id')
@@ -20,12 +22,15 @@ export const readingLists = pgTable('reading_lists', {
     .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description').notNull().default(''),
+  curatorNote: text('curator_note').default(''),
   privacy: text('privacy', { enum: ['PUBLIC', 'PRIVATE', 'FRIENDS'] })
     .notNull()
     .default('PRIVATE'),
   explorable: boolean('explorable').notNull().default(false),
   bookCount: integer('book_count').notNull().default(0),
   readCount: integer('read_count').notNull().default(0),
+  followerCount: integer('follower_count').notNull().default(0),
+  likeCount: integer('like_count').notNull().default(0),
   currentlyReadingId: text('currently_reading_id'),
   currentlyReadingTitle: text('currently_reading_title'),
   currentlyReadingAuthor: text('currently_reading_author'),
@@ -48,8 +53,31 @@ export const readingListBooks = pgTable('reading_list_books', {
   author: text('author').notNull(),
   isRead: boolean('is_read').notNull().default(false),
   order: integer('order').notNull().default(0),
+  bookId: text('book_id').references(() => books.id, { onDelete: 'set null' }),
+  rank: integer('rank'),
+  commentary: text('commentary').default(''),
   addedAt: timestamp('added_at').defaultNow().notNull(),
 });
+
+export const readingListFollows = pgTable(
+  'reading_list_follows',
+  {
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    listId: text('list_id').notNull().references(() => readingLists.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.listId] })],
+);
+
+export const readingListLikes = pgTable(
+  'reading_list_likes',
+  {
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    listId: text('list_id').notNull().references(() => readingLists.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.listId] })],
+);
 
 // ---------------------------------------------------------------------------
 // Relations
@@ -63,6 +91,8 @@ export const readingListsRelations = relations(
       references: [users.id],
     }),
     books: many(readingListBooks),
+    follows: many(readingListFollows),
+    likes: many(readingListLikes),
   }),
 );
 
@@ -71,6 +101,38 @@ export const readingListBooksRelations = relations(
   ({ one }) => ({
     readingList: one(readingLists, {
       fields: [readingListBooks.readingListId],
+      references: [readingLists.id],
+    }),
+    book: one(books, {
+      fields: [readingListBooks.bookId],
+      references: [books.id],
+    }),
+  }),
+);
+
+export const readingListFollowsRelations = relations(
+  readingListFollows,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [readingListFollows.userId],
+      references: [users.id],
+    }),
+    list: one(readingLists, {
+      fields: [readingListFollows.listId],
+      references: [readingLists.id],
+    }),
+  }),
+);
+
+export const readingListLikesRelations = relations(
+  readingListLikes,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [readingListLikes.userId],
+      references: [users.id],
+    }),
+    list: one(readingLists, {
+      fields: [readingListLikes.listId],
       references: [readingLists.id],
     }),
   }),

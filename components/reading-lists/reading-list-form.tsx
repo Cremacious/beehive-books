@@ -44,6 +44,7 @@ export function ReadingListForm({
     defaultValues: {
       title: defaultValues?.title ?? '',
       description: defaultValues?.description ?? '',
+      curatorNote: defaultValues?.curatorNote ?? '',
       privacy: defaultValues?.privacy ?? 'PRIVATE',
       explorable: defaultValues?.explorable ?? false,
       tags: defaultValues?.tags ?? [],
@@ -134,6 +135,19 @@ export function ReadingListForm({
             {errors.description.message}
           </p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-white/80 mb-1.5">
+          Curator&apos;s Note <span className="text-white/80 font-normal">(optional)</span>
+        </label>
+        <textarea
+          {...register('curatorNote')}
+          rows={3}
+          maxLength={500}
+          placeholder="A personal intro — the story behind this list, what connects these books..."
+          className="bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 rounded-xl w-full resize-none"
+        />
       </div>
 
       <div>

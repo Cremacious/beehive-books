@@ -79,7 +79,8 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'BOOK_LIKE':           return 'liked your book';
     case 'BOOK_COMMENT':        return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
     case 'BOOK_COMMENT_REPLY':  return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
-    case 'BOOK_COMMENT_LIKE':   return `liked your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
+    case 'BOOK_COMMENT_LIKE':       return `liked your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
+    case 'READING_LIST_NEW_BOOK':   return `added "${metadata?.bookTitle}" to their list "${metadata?.listTitle}"`;
     case 'SUBMISSION_APPROVED': return `approved your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
     case 'SUBMISSION_REJECTED': return `did not accept your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
     default:                    return 'sent you a notification';
@@ -117,7 +118,8 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'BOOK_LIKE':           return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
     case 'BOOK_COMMENT':        return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'BOOK_COMMENT_REPLY':  return { Icon: CornerDownRight, bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
-    case 'BOOK_COMMENT_LIKE':   return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
+    case 'BOOK_COMMENT_LIKE':       return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
+    case 'READING_LIST_NEW_BOOK':   return { Icon: BookOpen,        bg: 'bg-sky-500/20',    fg: 'text-sky-400'    };
     case 'SUBMISSION_APPROVED': return { Icon: Upload,          bg: 'bg-green-500/20',  fg: 'text-green-400'  };
     case 'SUBMISSION_REJECTED': return { Icon: Upload,          bg: 'bg-red-500/20',    fg: 'text-red-400'    };
     default:                    return { Icon: Bell,            bg: 'bg-white/10',      fg: 'text-white/80'   };

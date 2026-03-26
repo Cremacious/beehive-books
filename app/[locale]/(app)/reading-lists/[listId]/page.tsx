@@ -33,14 +33,21 @@ export default async function ReadingListPage({
   const data = await getReadingListAction(listId);
   if (!data) notFound();
 
-  const { books, isOwner, ...list } = data;
+  const { books, isOwner, curator, isFollowing, isLiked, currentUserId, ...list } = data;
 
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
         <BackButton href="/reading-lists" label="Reading Lists" className="mb-6" />
 
-        <ReadingListHeader list={list} isOwner={isOwner} />
+        <ReadingListHeader
+          list={list}
+          isOwner={isOwner}
+          curator={curator}
+          isFollowing={isFollowing}
+          isLiked={isLiked}
+          currentUserId={currentUserId}
+        />
 
 {list.bookCount > 0 && (
           <ListStats bookCount={list.bookCount} readCount={list.readCount} />

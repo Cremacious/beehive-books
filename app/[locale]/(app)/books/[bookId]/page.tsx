@@ -24,6 +24,7 @@ import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
 import { LikeButton } from '@/components/books/like-button';
 import BookComments from '@/components/books/book-comments';
 import { getBookCommentsAction } from '@/lib/actions/book-comments.actions';
+import { getListsFeaturingBookAction } from '@/lib/actions/reading-list.actions';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -73,9 +74,12 @@ export default async function PublicBookPage({
     notFound();
   }
 
-  const bookCommentsList = book!.commentsEnabled
-    ? await getBookCommentsAction(bookId).catch(() => [])
-    : [];
+  const [bookCommentsList, featuringLists] = await Promise.all([
+    book!.commentsEnabled
+      ? getBookCommentsAction(bookId).catch(() => [])
+      : Promise.resolve([]),
+    getListsFeaturingBookAction(bookId).catch(() => []),
+  ]);
 
   const { chapters, collections, isOwner } = book;
 
@@ -253,6 +257,34 @@ export default async function PublicBookPage({
             />
           </div>
         )}
+
+        {featuringLists.length > 0 && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+              Appears in lists
+            </h2>
+            <div className="flex flex-col gap-2">
+              {featuringLists.map((list) => (
+                <Link
+                  key={list.id}
+                  href={`/reading-lists/${list.id}`}
+                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors group"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm text-white font-medium truncate group-hover:text-[#FFC300] transition-colors">
+                      {list.title}
+                    </p>
+                    {list.curatorUsername && (
+                      <p className="text-xs text-white/40 truncate">by @{list.curatorUsername}</p>
+                    )}
+                  </div>
+                  <span className="text-xs text-white/30 shrink-0">{list.bookCount} books</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
