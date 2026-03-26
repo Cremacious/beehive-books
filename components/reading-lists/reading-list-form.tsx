@@ -113,7 +113,7 @@ export function ReadingListForm({
         <input
           {...register('title')}
           placeholder="e.g. Fantasy Reads, Books to Read in 2025…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
         {errors.title && (
@@ -131,7 +131,7 @@ export function ReadingListForm({
           {...register('description')}
           rows={3}
           placeholder="What's this list about?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
@@ -163,7 +163,7 @@ export function ReadingListForm({
         <TagInput
           value={tags}
           onChange={(next) => { setTags(next); setValue('tags', next); }}
-          emptyMessage="No tags yet — tags help others find your list."
+          emptyMessage="No tags yet. Tags help readers find your book."
           error={errors.tags?.message}
         />
       </div>
@@ -337,7 +337,7 @@ export function ReadingListForm({
               </>
             ) : (
               <p className="text-sm text-white/80 text-center py-2">
-                No books added yet — you can always add them later.
+                No books added yet. You can always add them later.
               </p>
             )}
           </div>

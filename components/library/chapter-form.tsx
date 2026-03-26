@@ -5,7 +5,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, FileText, FolderOpen, Loader2, UploadCloud } from 'lucide-react';
+import {
+  AlertTriangle,
+  FileText,
+  FolderOpen,
+  Loader2,
+  UploadCloud,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
@@ -104,7 +110,6 @@ export function ChapterForm({
     }
   }
 
-
   const inputClass =
     'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white ' +
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
@@ -130,16 +135,23 @@ export function ChapterForm({
           <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-white">
-                Chapter Title <span className="text-white/80 text-xs font-normal">(required)</span>
+                Chapter Title{' '}
+                <span className="text-white/80 text-xs font-normal">
+                  (required)
+                </span>
               </label>
-              <p className="text-xs text-white/80">The chapter name shown in the table of contents.</p>
+              <p className="text-xs text-white/80">
+                The chapter name shown in the table of contents.
+              </p>
               <input
                 {...register('title')}
                 type="text"
                 placeholder="Enter your chapter title…"
                 className={inputClass}
               />
-              <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
+              <p className="text-xs text-white/80 text-right">
+                {watch('title')?.length ?? 0} / 100
+              </p>
               {errors.title && (
                 <p className={errorClass}>{errors.title.message}</p>
               )}
@@ -152,14 +164,16 @@ export function ChapterForm({
                   (optional)
                 </span>
               </label>
-              <p className="text-xs text-white/80">Private notes for yourself — readers won&apos;t see these.</p>
+              <p className="text-xs text-white/80">Notes about your chapter.</p>
               <textarea
                 {...register('authorNotes')}
                 rows={isEdit ? 4 : 3}
                 placeholder="Share thoughts, context, or a message to your readers…"
                 className={inputClass + ' resize-y'}
               />
-              <p className="text-xs text-white/80 text-right">{watch('authorNotes')?.length ?? 0} / 500</p>
+              <p className="text-xs text-white/80 text-right">
+                {watch('authorNotes')?.length ?? 0} / 500
+              </p>
               {errors.authorNotes && (
                 <p className={errorClass}>{errors.authorNotes.message}</p>
               )}
@@ -174,7 +188,9 @@ export function ChapterForm({
                     (optional)
                   </span>
                 </label>
-                <p className="text-xs text-white/80">Group chapters into parts, acts, or volumes.</p>
+                <p className="text-xs text-white/80">
+                  Group chapters into parts, acts, or volumes.
+                </p>
                 <select
                   {...register('collectionId')}
                   className={inputClass + ' appearance-none'}
@@ -194,7 +210,10 @@ export function ChapterForm({
             <div className="rounded-xl border border-[#2a2a2a] overflow-hidden flex">
               <button
                 type="button"
-                onClick={() => { setContentMode('write'); setDocxError(''); }}
+                onClick={() => {
+                  setContentMode('write');
+                  setDocxError('');
+                }}
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
                   contentMode === 'write'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
@@ -205,7 +224,10 @@ export function ChapterForm({
               </button>
               <button
                 type="button"
-                onClick={() => { setContentMode('upload'); setDocxError(''); }}
+                onClick={() => {
+                  setContentMode('upload');
+                  setDocxError('');
+                }}
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-[#2a2a2a] ${
                   contentMode === 'upload'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
@@ -220,11 +242,14 @@ export function ChapterForm({
           {!isEdit && contentMode === 'upload' && (
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-white/80">Upload a .docx file</p>
+                <p className="text-sm font-medium text-white/80">
+                  Upload a .docx file
+                </p>
                 <p className="text-xs text-white/80">
-                  The document content will become the chapter body. If the document starts with a
-                  Heading 1, that text will be suggested as the chapter title (only if you have not
-                  already filled in a title).
+                  The document content will become the chapter body. If the
+                  document starts with a Heading 1, that text will be suggested
+                  as the chapter title (only if you have not already filled in a
+                  title).
                 </p>
               </div>
 
@@ -234,13 +259,19 @@ export function ChapterForm({
                 ) : docxFileName ? (
                   <>
                     <FileText className="w-6 h-6 text-[#FFC300]/70" />
-                    <span className="text-xs text-white/80">{docxFileName}</span>
-                    <span className="text-[10px] text-white/80">Click to replace</span>
+                    <span className="text-xs text-white/80">
+                      {docxFileName}
+                    </span>
+                    <span className="text-[10px] text-white/80">
+                      Click to replace
+                    </span>
                   </>
                 ) : (
                   <>
                     <UploadCloud className="w-6 h-6 text-white/80" />
-                    <span className="text-xs text-white/80">Click to select a .docx file</span>
+                    <span className="text-xs text-white/80">
+                      Click to select a .docx file
+                    </span>
                     <span className="text-[10px] text-white/80">Max 10 MB</span>
                   </>
                 )}
@@ -261,8 +292,6 @@ export function ChapterForm({
 
           {(isEdit || contentMode === 'write') && (
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white">Content</label>
-              <p className="text-xs text-white/80">Write your chapter here. Auto-saves as you go.</p>
               <Controller
                 name="content"
                 control={control}

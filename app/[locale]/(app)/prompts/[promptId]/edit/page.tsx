@@ -63,12 +63,14 @@ export default async function EditPromptPage({ params }: Props) {
         </div>
       )}
 
-      <PromptForm
-        mode="edit"
-        prompt={prompt}
-        friends={invitableFriends}
-        pendingFriends={pendingFriends}
-      />
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
+        <PromptForm
+          mode="edit"
+          prompt={prompt}
+          friends={invitableFriends}
+          pendingFriends={pendingFriends}
+        />
+      </div>
     </div>
   );
 }

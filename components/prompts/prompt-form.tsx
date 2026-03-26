@@ -136,7 +136,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
         <TagInput
           value={tags}
           onChange={(next) => { setTags(next); setValue('tags', next); }}
-          emptyMessage="No tags yet — tags help others find your prompt."
+          emptyMessage="No tags yet. Tags help readers find your book."
           error={errors.tags?.message}
         />
       </div>

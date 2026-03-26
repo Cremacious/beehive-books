@@ -251,7 +251,7 @@ export default function HiveForm({
           value={tags}
           onChange={(next) => { setTags(next); setValue('tags', next); }}
           placeholder="e.g. fantasy, dark-fiction, co-write…"
-          emptyMessage="No tags yet — tags help others find your hive."
+          emptyMessage="No tags yet. Tags help readers find your book."
         />
       </div>
 

@@ -215,7 +215,7 @@ export default function ClubForm({
         <TagInput
           value={tags}
           onChange={(next) => { setTags(next); setValue('tags', next); }}
-          emptyMessage="No tags yet — tags help others find your club."
+          emptyMessage="No tags yet. Tags help readers find your book."
           error={errors.tags?.message}
         />
       </div>

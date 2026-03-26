@@ -409,7 +409,7 @@ export function BookForm({
             <TagInput
               value={tags}
               onChange={(next) => { setTags(next); setValue('tags', next); }}
-              emptyMessage="No tags yet — tags help readers find your book."
+              emptyMessage="No tags yet. Tags help readers find your book."
               error={errors.tags?.message}
             />
           </div>
