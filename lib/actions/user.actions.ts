@@ -2,10 +2,10 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, inArray, or } from 'drizzle-orm';
 import type { AnyColumn } from 'drizzle-orm';
 import { db } from '@/db';
-import { users, books, readingLists, friendships, clubMembers, hiveMembers, prompts } from '@/db/schema';
+import { users, books, readingLists, friendships, clubMembers, hiveMembers, prompts, promptEntries } from '@/db/schema';
 
 export async function getCurrentUserAction() {
   const userId = await requireAuth();
@@ -154,6 +154,28 @@ export async function getUserProfileAction(username: string) {
       return h.privacy === 'PUBLIC';
     });
 
+  // Prompt wins — prompts where this user's entry won community vote or author's choice
+  const userEntryRows = await db.query.promptEntries.findMany({
+    where: eq(promptEntries.userId, profileUser.id),
+    columns: { id: true },
+  });
+  const userEntryIds = userEntryRows.map((e) => e.id);
+
+  let promptWins: { id: string; title: string; communityWinnerId: string | null; authorChoiceId: string | null }[] = [];
+  if (userEntryIds.length > 0) {
+    promptWins = await db.query.prompts.findMany({
+      where: and(
+        eq(prompts.status, 'ENDED'),
+        or(
+          inArray(prompts.communityWinnerId, userEntryIds),
+          inArray(prompts.authorChoiceId, userEntryIds),
+        ),
+      ),
+      columns: { id: true, title: true, communityWinnerId: true, authorChoiceId: true },
+      limit: 10,
+    });
+  }
+
   return {
     user: profileUser,
     books: userBooks,
@@ -161,6 +183,12 @@ export async function getUserProfileAction(username: string) {
     clubs: visibleClubs,
     hives: visibleHives,
     prompts: userPrompts,
+    promptWins: promptWins.map((p) => ({
+      id: p.id,
+      title: p.title,
+      isCommunityWin: userEntryIds.some((id) => id === p.communityWinnerId),
+      isAuthorChoice: userEntryIds.some((id) => id === p.authorChoiceId),
+    })),
     isOwnProfile,
     isFriend,
     currentUserId,
