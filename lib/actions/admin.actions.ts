@@ -2,7 +2,7 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, count, desc, eq, gte, ilike, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, lt, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import {
@@ -23,6 +23,12 @@ import {
   adminAuditLog,
   contentReports,
   session,
+  friendships,
+  hiveInvites,
+  hiveJoinRequests,
+  clubInvites,
+  clubJoinRequests,
+  promptInvites,
 } from '@/db/schema';
 import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 import { coverPublicId } from '@/lib/cloudinary';
@@ -849,4 +855,54 @@ export async function getSignupChartDataAction(): Promise<{ date: string; count:
     .groupBy(sql`DATE(${users.createdAt})`)
     .orderBy(sql`DATE(${users.createdAt})`);
   return rows.map(r => ({ date: r.date, count: r.count }));
+}
+
+
+// ---------------------------------------------------------------------------
+// Cleanup stats
+// ---------------------------------------------------------------------------
+
+export type CleanupStats = {
+  pendingFriendRequests: number;
+  pendingHiveInvites: number;
+  pendingHiveJoinRequests: number;
+  pendingClubInvites: number;
+  pendingClubJoinRequests: number;
+  pendingPromptInvites: number;
+  oldReadNotifications: number;
+};
+
+export async function getCleanupStatsAction(): Promise<CleanupStats> {
+  await requireAdmin();
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+  const [
+    pendingFriends,
+    pendingHiveInv,
+    pendingHiveJoin,
+    pendingClubInv,
+    pendingClubJoin,
+    pendingPromptInv,
+    oldReadNotif,
+  ] = await Promise.all([
+    db.select({ count: count() }).from(friendships).where(and(eq(friendships.status, 'PENDING'), lt(friendships.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(hiveInvites).where(and(eq(hiveInvites.status, 'DECLINED'), lt(hiveInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(hiveJoinRequests).where(and(eq(hiveJoinRequests.status, 'REJECTED'), lt(hiveJoinRequests.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(clubInvites).where(and(eq(clubInvites.status, 'DECLINED'), lt(clubInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(clubJoinRequests).where(and(eq(clubJoinRequests.status, 'REJECTED'), lt(clubJoinRequests.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(promptInvites).where(and(eq(promptInvites.status, 'PENDING'), lt(promptInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(notifications).where(and(eq(notifications.isRead, true), lt(notifications.createdAt, thirtyDaysAgo))),
+  ]);
+
+  return {
+    pendingFriendRequests: pendingFriends[0]?.count ?? 0,
+    pendingHiveInvites: pendingHiveInv[0]?.count ?? 0,
+    pendingHiveJoinRequests: pendingHiveJoin[0]?.count ?? 0,
+    pendingClubInvites: pendingClubInv[0]?.count ?? 0,
+    pendingClubJoinRequests: pendingClubJoin[0]?.count ?? 0,
+    pendingPromptInvites: pendingPromptInv[0]?.count ?? 0,
+    oldReadNotifications: oldReadNotif[0]?.count ?? 0,
+  };
 }
