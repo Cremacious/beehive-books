@@ -9,6 +9,7 @@ import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
 import type { ClubWithMembership } from '@/lib/types/club.types';
+import type { HiveWithMembership } from '@/lib/types/hive.types';
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -196,7 +197,7 @@ export default async function UserProfilePage({ params }: Props) {
         books={books}
         readingLists={readingLists}
         clubs={clubs as unknown as ClubWithMembership[]}
-        hives={hives}
+        hives={hives as unknown as HiveWithMembership[]}
         promptCards={promptCards}
         isOwnProfile={isOwnProfile}
       />
