@@ -45,7 +45,7 @@ export default function LandingPage() {
           <p className="mb-10 text-lg text-white/80 leading-relaxed max-w-3xl mx-auto">
             Write your story. Collaborate with other writers. Share it with the world. Beehive Books is where books get made.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <Button className="w-full md:w-auto" asChild size="lg">
               <Link href="/sign-up">
                 Create your account
@@ -64,7 +64,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-[#2a2a2a] bg-[#1a1a1a] px-6 py-10">
+      {/* <section className="border-y border-[#2a2a2a] bg-[#1a1a1a] px-6 py-10">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
             {[
@@ -115,7 +115,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
@@ -352,7 +352,7 @@ export default function LandingPage() {
 
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Writing is <span className="text-[#FFC300]">better together.</span>
+                Writing is better <span className="text-[#FFC300]">together.</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
                 Invite co-authors, beta readers, and editors into your Hive. Claim chapters, leave feedback on specific passages, and watch the word count climb. Built for writers who want more than a shared document.
@@ -372,8 +372,8 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Find stories worth{' '}
-                <span className="text-[#FFC300]">reading together.</span>
+                Find stories worth reading{' '}
+                <span className="text-[#FFC300]">together.</span>
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
                 Browse public books from writers across the community. Join book clubs to read the same book and talk about it with people who are just as into it as you are.
