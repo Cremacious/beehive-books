@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, Circle, Trash2, Loader2, Edit, Crown } from 'lucide-react';
+import { CheckCircle2, Circle, Edit, Crown } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { updateBookCommentaryAction } from '@/lib/actions/reading-list.actions';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
 import type {
   BookListViewProps,
   ReadingListBook,
@@ -30,7 +31,6 @@ function BookRow({
   listId: string;
 }) {
   const [showMenu, setShowMenu] = useState(false);
-  const [removing, setRemoving] = useState(false);
   const [editingCommentary, setEditingCommentary] = useState(false);
   const [commentaryDraft, setCommentaryDraft] = useState(book.commentary ?? '');
   const [rankDraft, setRankDraft] = useState<string>(book.rank != null ? String(book.rank) : '');
@@ -51,14 +51,6 @@ function BookRow({
   useEffect(() => {
     if (editingCommentary) commentaryRef.current?.focus();
   }, [editingCommentary]);
-
-  const handleRemove = async () => {
-    setShowMenu(false);
-    if (!confirm(`Remove "${book.title}" from this list?`)) return;
-    setRemoving(true);
-    await onRemove();
-    setRemoving(false);
-  };
 
   const saveCommentary = async () => {
     setEditingCommentary(false);
@@ -163,19 +155,13 @@ function BookRow({
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
-          {removing ? (
-            <div className="p-1.5">
-              <Loader2 className="w-4 h-4 text-white/80 animate-spin" />
-            </div>
-          ) : (
-            <button
-              onClick={() => setShowMenu((v) => !v)}
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
-            >
-              <Edit className="w-5 h-5" />
-              Edit
-            </button>
-          )}
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-yellow-500 hover:bg-[#FFC300]/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+          >
+            <Edit className="w-5 h-5" />
+            Edit
+          </button>
 
           {showMenu && (
             <div className="absolute right-0 top-full mt-1 z-50 min-w-48 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
@@ -203,13 +189,19 @@ function BookRow({
 
               <div className="my-1 border-t border-[#2a2a2a]" />
 
-              <button
-                onClick={handleRemove}
-                className="w-full text-left px-3 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
-              >
-                <Trash2 className="w-3.5 h-3.5 shrink-0" />
-                Remove from list
-              </button>
+              <DeleteDialog
+                itemType="book"
+                itemName={book.title}
+                onDelete={async () => {
+                  await onRemove();
+                  setShowMenu(false);
+                }}
+                trigger={
+                  <button className="w-full text-left px-3 py-2 text-sm text-white/80 hover:text-white transition-colors">
+                    Remove
+                  </button>
+                }
+              />
             </div>
           )}
         </div>
@@ -264,6 +256,11 @@ export function BookListView({
 
   return (
     <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] px-4 mb-4">
+      {isOwner && (
+        <p className="text-xs text-white/80 mb-4 pt-4">
+         Add commentary below each title to explain why you included it. Users can optionally add a rank to their books by clicking # next to title.
+        </p>
+      )}
       {books.map((book) => {
         const optimisticRead =
           store.optimisticReadStatus[book.id] ?? book.isRead;
