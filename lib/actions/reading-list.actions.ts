@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { readingLists, readingListBooks } from '@/db/schema';
+import { readingLists, readingListBooks, readingListFollows, readingListLikes } from '@/db/schema';
 import {
   readingListSchema,
   bookEntrySchema,
@@ -35,12 +35,13 @@ export async function getUserReadingListsAction() {
 }
 
 export async function getReadingListAction(listId: string) {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
 
   const list = await db.query.readingLists.findFirst({
     where: eq(readingLists.id, listId),
     with: {
       books: { orderBy: (b, { asc }) => [asc(b.order)] },
+      user: { columns: { username: true, image: true } },
     },
   });
 
@@ -49,7 +50,170 @@ export async function getReadingListAction(listId: string) {
   if (list.privacy === 'PRIVATE' && list.userId !== userId) return null;
   if (list.privacy === 'FRIENDS' && list.userId !== userId) return null;
 
-  return { ...list, currentUserId: userId, isOwner: list.userId === userId };
+  const [followRow, likeRow] = userId
+    ? await Promise.all([
+        db.query.readingListFollows.findFirst({
+          where: and(
+            eq(readingListFollows.userId, userId),
+            eq(readingListFollows.listId, listId),
+          ),
+        }),
+        db.query.readingListLikes.findFirst({
+          where: and(
+            eq(readingListLikes.userId, userId),
+            eq(readingListLikes.listId, listId),
+          ),
+        }),
+      ])
+    : [null, null];
+
+  const { user, ...listData } = list;
+  return {
+    ...listData,
+    curator: { username: user?.username ?? null, image: user?.image ?? null },
+    currentUserId: userId,
+    isOwner: list.userId === userId,
+    isFollowing: !!followRow,
+    isLiked: !!likeRow,
+  };
+}
+
+export async function followListAction(listId: string): Promise<ActionResult> {
+  const userId = await requireAuth();
+  try {
+    const existing = await db.query.readingListFollows.findFirst({
+      where: and(
+        eq(readingListFollows.userId, userId),
+        eq(readingListFollows.listId, listId),
+      ),
+    });
+    if (existing) {
+      await db.delete(readingListFollows).where(
+        and(
+          eq(readingListFollows.userId, userId),
+          eq(readingListFollows.listId, listId),
+        ),
+      );
+      await db
+        .update(readingLists)
+        .set({ followerCount: sql`GREATEST(${readingLists.followerCount} - 1, 0)` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Unfollowed.' };
+    } else {
+      await db.insert(readingListFollows).values({ userId, listId });
+      await db
+        .update(readingLists)
+        .set({ followerCount: sql`${readingLists.followerCount} + 1` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Following.' };
+    }
+  } catch {
+    return { success: false, message: 'Failed to update follow.' };
+  }
+}
+
+export async function likeListAction(listId: string): Promise<ActionResult> {
+  const userId = await requireAuth();
+  try {
+    const existing = await db.query.readingListLikes.findFirst({
+      where: and(
+        eq(readingListLikes.userId, userId),
+        eq(readingListLikes.listId, listId),
+      ),
+    });
+    if (existing) {
+      await db.delete(readingListLikes).where(
+        and(
+          eq(readingListLikes.userId, userId),
+          eq(readingListLikes.listId, listId),
+        ),
+      );
+      await db
+        .update(readingLists)
+        .set({ likeCount: sql`GREATEST(${readingLists.likeCount} - 1, 0)` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Unliked.' };
+    } else {
+      await db.insert(readingListLikes).values({ userId, listId });
+      await db
+        .update(readingLists)
+        .set({ likeCount: sql`${readingLists.likeCount} + 1` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Liked.' };
+    }
+  } catch {
+    return { success: false, message: 'Failed to update like.' };
+  }
+}
+
+export async function getListFollowStatusAction(
+  listId: string,
+): Promise<{ isFollowing: boolean; isLiked: boolean }> {
+  const userId = await getOptionalUserId();
+  if (!userId) return { isFollowing: false, isLiked: false };
+  const [followRow, likeRow] = await Promise.all([
+    db.query.readingListFollows.findFirst({
+      where: and(
+        eq(readingListFollows.userId, userId),
+        eq(readingListFollows.listId, listId),
+      ),
+    }),
+    db.query.readingListLikes.findFirst({
+      where: and(
+        eq(readingListLikes.userId, userId),
+        eq(readingListLikes.listId, listId),
+      ),
+    }),
+  ]);
+  return { isFollowing: !!followRow, isLiked: !!likeRow };
+}
+
+export async function updateBookCommentaryAction(
+  listId: string,
+  bookId: string,
+  commentary: string,
+  rank?: number,
+): Promise<ActionResult> {
+  await requireListOwner(listId);
+  try {
+    await db
+      .update(readingListBooks)
+      .set({ commentary, ...(rank !== undefined ? { rank } : {}) })
+      .where(
+        and(
+          eq(readingListBooks.id, bookId),
+          eq(readingListBooks.readingListId, listId),
+        ),
+      );
+    revalidatePath(`/reading-lists/${listId}`);
+    return { success: true, message: 'Updated.' };
+  } catch {
+    return { success: false, message: 'Failed to update.' };
+  }
+}
+
+export async function getListsFeaturingBookAction(bookTitle: string) {
+  const rows = await db.query.readingListBooks.findMany({
+    where: eq(readingListBooks.title, bookTitle),
+    with: {
+      readingList: {
+        with: { user: { columns: { username: true } } },
+      },
+    },
+  });
+
+  return rows
+    .filter(
+      (r) =>
+        r.readingList.privacy === 'PUBLIC' && r.readingList.explorable,
+    )
+    .slice(0, 5)
+    .map((r) => ({
+      id: r.readingList.id,
+      title: r.readingList.title,
+      followerCount: r.readingList.followerCount,
+      curatorUsername: r.readingList.user?.username ?? null,
+    }));
 }
 
 export async function createReadingListAction(

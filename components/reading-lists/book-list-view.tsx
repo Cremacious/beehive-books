@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, Circle, Trash2, Loader2, Edit } from 'lucide-react';
+import { CheckCircle2, Circle, Trash2, Loader2, Edit, Crown } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
+import { updateBookCommentaryAction } from '@/lib/actions/reading-list.actions';
 import type {
   BookListViewProps,
   ReadingListBook,
@@ -17,6 +18,7 @@ function BookRow({
   onToggleRead,
   onSetCurrentlyReading,
   onRemove,
+  listId,
 }: {
   book: ReadingListBook;
   isOwner: boolean;
@@ -25,10 +27,15 @@ function BookRow({
   onToggleRead: () => void;
   onSetCurrentlyReading: () => void;
   onRemove: () => Promise<void>;
+  listId: string;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [editingCommentary, setEditingCommentary] = useState(false);
+  const [commentaryDraft, setCommentaryDraft] = useState(book.commentary ?? '');
+  const [rankDraft, setRankDraft] = useState<string>(book.rank != null ? String(book.rank) : '');
   const menuRef = useRef<HTMLDivElement>(null);
+  const commentaryRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!showMenu) return;
@@ -41,6 +48,10 @@ function BookRow({
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [showMenu]);
 
+  useEffect(() => {
+    if (editingCommentary) commentaryRef.current?.focus();
+  }, [editingCommentary]);
+
   const handleRemove = async () => {
     setShowMenu(false);
     if (!confirm(`Remove "${book.title}" from this list?`)) return;
@@ -49,9 +60,42 @@ function BookRow({
     setRemoving(false);
   };
 
+  const saveCommentary = async () => {
+    setEditingCommentary(false);
+    const rankVal = rankDraft.trim() !== '' ? parseInt(rankDraft, 10) : undefined;
+    await updateBookCommentaryAction(listId, book.id, commentaryDraft, rankVal);
+  };
+
+  const saveRank = async () => {
+    const rankVal = rankDraft.trim() !== '' ? parseInt(rankDraft, 10) : undefined;
+    await updateBookCommentaryAction(listId, book.id, commentaryDraft, rankVal);
+  };
+
+  const displayRank = book.rank ?? null;
+
   return (
-    <div className="flex items-center gap-3 py-3.5 border-b border-[#2a2a2a] last:border-0 group">
-      <div className="shrink-0">
+    <div className="flex items-start gap-3 py-3.5 border-b border-[#2a2a2a] last:border-0 group">
+      {/* Rank */}
+      <div className="shrink-0 w-8 flex flex-col items-center pt-0.5">
+        {isOwner ? (
+          <input
+            type="number"
+            min={1}
+            value={rankDraft}
+            onChange={(e) => setRankDraft(e.target.value)}
+            onBlur={saveRank}
+            placeholder="#"
+            className="w-8 text-center text-sm font-bold text-yellow-500 bg-transparent border-none outline-none focus:underline placeholder-white/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        ) : displayRank === 1 ? (
+          <Crown className="w-4 h-4 text-yellow-500" />
+        ) : displayRank != null ? (
+          <span className="text-sm font-bold text-yellow-500">{displayRank}</span>
+        ) : null}
+      </div>
+
+      {/* Read toggle */}
+      <div className="shrink-0 mt-0.5">
         {optimisticRead ? (
           <CheckCircle2 className="w-4 h-4 text-yellow-500" />
         ) : (
@@ -77,6 +121,40 @@ function BookRow({
           )}
         </div>
         <p className="text-sm text-white/80 truncate mt-0.5">{book.author}</p>
+
+        {/* Commentary */}
+        {isOwner ? (
+          editingCommentary ? (
+            <textarea
+              ref={commentaryRef}
+              value={commentaryDraft}
+              onChange={(e) => setCommentaryDraft(e.target.value)}
+              onBlur={saveCommentary}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  saveCommentary();
+                }
+              }}
+              placeholder="Why I included this..."
+              rows={2}
+              className="mt-1.5 w-full text-xs text-white/80 italic bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-2 py-1.5 resize-none outline-none focus:border-[#FFC300]/30 placeholder-white/20"
+            />
+          ) : (
+            <p
+              onClick={() => setEditingCommentary(true)}
+              className="text-xs text-white/80 italic mt-1 cursor-text hover:text-white transition-colors"
+            >
+              {commentaryDraft || (
+                <span className="text-white/30">Click to add commentary...</span>
+              )}
+            </p>
+          )
+        ) : (
+          book.commentary && (
+            <p className="text-xs text-white/80 italic mt-1">{book.commentary}</p>
+          )
+        )}
       </div>
 
       {isOwner && (
@@ -200,6 +278,7 @@ export function BookListView({
             onToggleRead={() => handleToggleRead(book)}
             onSetCurrentlyReading={() => handleSetCurrentlyReading(book)}
             onRemove={() => handleRemove(book)}
+            listId={listId}
           />
         );
       })}

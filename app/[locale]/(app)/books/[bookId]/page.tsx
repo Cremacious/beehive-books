@@ -24,6 +24,7 @@ import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
 import { LikeButton } from '@/components/books/like-button';
 import BookComments from '@/components/books/book-comments';
 import { getBookCommentsAction } from '@/lib/actions/book-comments.actions';
+import { getListsFeaturingBookAction } from '@/lib/actions/reading-list.actions';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -73,9 +74,12 @@ export default async function PublicBookPage({
     notFound();
   }
 
-  const bookCommentsList = book!.commentsEnabled
-    ? await getBookCommentsAction(bookId).catch(() => [])
-    : [];
+  const [bookCommentsList, listsFeaturingBook] = await Promise.all([
+    book!.commentsEnabled
+      ? getBookCommentsAction(bookId).catch(() => [])
+      : Promise.resolve([]),
+    getListsFeaturingBookAction(book!.title).catch(() => []),
+  ]);
 
   const { chapters, collections, isOwner } = book;
 
@@ -251,6 +255,34 @@ export default async function PublicBookPage({
               currentUserUsername={session?.user?.name ?? null}
               currentUserImage={session?.user?.image ?? null}
             />
+          </div>
+        )}
+
+        {listsFeaturingBook.length > 0 && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+              Appears in lists
+            </h2>
+            <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] divide-y divide-[#2a2a2a]">
+              {listsFeaturingBook.map((list) => (
+                <Link
+                  key={list.id}
+                  href={`/reading-lists/${list.id}`}
+                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/5 transition-colors"
+                >
+                  <span className="text-sm font-medium text-white truncate">
+                    {list.title}
+                  </span>
+                  <span className="text-xs text-white/80 shrink-0">
+                    {list.curatorUsername ? `by ${list.curatorUsername}` : ''}
+                    {list.curatorUsername && list.followerCount > 0 ? ' · ' : ''}
+                    {list.followerCount > 0
+                      ? `${list.followerCount} ${list.followerCount === 1 ? 'follower' : 'followers'}`
+                      : ''}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
