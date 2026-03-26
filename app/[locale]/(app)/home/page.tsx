@@ -459,6 +459,9 @@ export default async function UserHomePage() {
         <AnnouncementsSection announcements={announcements} />
       )}
 
+      {/* New User Welcome — shown immediately after announcements for users with no friends */}
+      {!hasFriends && <NewUserWelcome suggestedWriters={suggestions} />}
+
       {/* Your Writing */}
       {recentWriting.length > 0 && (
         <section>
@@ -550,33 +553,33 @@ export default async function UserHomePage() {
         </section>
       )}
 
-      {/* Friend Activity OR New User Welcome */}
-      {!hasFriends ? (
-        <NewUserWelcome suggestedWriters={suggestions} />
-      ) : events.length === 0 ? (
-        <section>
-          <SectionHeader
-            title="Friend Activity"
-            icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
-          />
-          <NoActivityEmpty />
-        </section>
-      ) : (
-        <section>
-          <SectionHeader
-            title="Friend Activity"
-            icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
-          />
-          <div className="space-y-4 mt-4">
-            {groups.map((group) => (
-              <DayGroup
-                key={group.label}
-                label={group.label}
-                events={group.events}
-              />
-            ))}
-          </div>
-        </section>
+      {/* Friend Activity */}
+      {hasFriends && (
+        events.length === 0 ? (
+          <section>
+            <SectionHeader
+              title="Friend Activity"
+              icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
+            />
+            <NoActivityEmpty />
+          </section>
+        ) : (
+          <section>
+            <SectionHeader
+              title="Friend Activity"
+              icon={<Users2 className="w-4 h-4" aria-hidden="true" />}
+            />
+            <div className="space-y-4 mt-4">
+              {groups.map((group) => (
+                <DayGroup
+                  key={group.label}
+                  label={group.label}
+                  events={group.events}
+                />
+              ))}
+            </div>
+          </section>
+        )
       )}
 
       {/* Quick Links */}
