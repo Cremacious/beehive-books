@@ -77,7 +77,7 @@ function BookRow({
             onChange={(e) => setRankDraft(e.target.value)}
             onBlur={saveRank}
             placeholder="#"
-            className="w-8 text-center text-sm font-bold text-yellow-500 bg-transparent border-none outline-none focus:underline placeholder-white/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-8 text-center text-sm font-bold text-yellow-500 bg-transparent border-none outline-none focus:underline placeholder-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         ) : displayRank === 1 ? (
           <Crown className="w-4 h-4 text-yellow-500" />
