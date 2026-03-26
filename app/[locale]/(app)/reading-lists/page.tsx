@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 };
 import { ReadingListGrid } from '@/components/reading-lists/reading-list-grid';
 import { getUserReadingListsAction, getLikedReadingListsAction } from '@/lib/actions/reading-list.actions';
+import type { ReadingList } from '@/lib/types/reading-list.types';
 
 export default async function ReadingListsPage() {
   const [lists, likedLists] = await Promise.all([
@@ -22,7 +23,7 @@ export default async function ReadingListsPage() {
         </h1>
       </div>
 
-      <ReadingListGrid lists={lists} likedLists={likedLists} />
+      <ReadingListGrid lists={lists as unknown as ReadingList[]} likedLists={likedLists as unknown as ReadingList[]} />
     </div>
   );
 }
