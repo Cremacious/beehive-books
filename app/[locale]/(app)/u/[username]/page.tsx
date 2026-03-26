@@ -10,6 +10,7 @@ import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
 import type { ClubWithMembership } from '@/lib/types/club.types';
 import type { HiveWithMembership } from '@/lib/types/hive.types';
+import type { PromptCard as PromptCardType } from '@/lib/types/prompt.types';
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -198,7 +199,7 @@ export default async function UserProfilePage({ params }: Props) {
         readingLists={readingLists}
         clubs={clubs as unknown as ClubWithMembership[]}
         hives={hives as unknown as HiveWithMembership[]}
-        promptCards={promptCards}
+        promptCards={promptCards as unknown as PromptCardType[]}
         isOwnProfile={isOwnProfile}
       />
     </div>
