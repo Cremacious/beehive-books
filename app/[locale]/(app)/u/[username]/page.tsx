@@ -8,6 +8,7 @@ import { FriendButton } from '@/components/friends/friend-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
 import { getUserProfileAction } from '@/lib/actions/user.actions';
 import { getFriendshipStatusAction } from '@/lib/actions/friend.actions';
+import type { ClubWithMembership } from '@/lib/types/club.types';
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -194,7 +195,7 @@ export default async function UserProfilePage({ params }: Props) {
       <ProfileContent
         books={books}
         readingLists={readingLists}
-        clubs={clubs}
+        clubs={clubs as unknown as ClubWithMembership[]}
         hives={hives}
         promptCards={promptCards}
         isOwnProfile={isOwnProfile}
