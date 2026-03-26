@@ -10,9 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import Popup from '@/components/ui/popup';
 import RoleBadge from '@/components/admin/role-badge';
 import Pagination from '@/components/shared/pagination';
+import ConfirmDeleteDialog from '@/components/admin/confirm-delete-dialog';
 import {
   updateUserRoleAction,
   toggleUserPremiumAction,
+  banUserAction,
+  unbanUserAction,
+  deleteUserAdminAction,
 } from '@/lib/actions/admin.actions';
 
 type Role = 'member' | 'moderator' | 'admin';
@@ -24,6 +28,7 @@ type User = {
   image: string | null;
   role: Role;
   premium: boolean;
+  banned: boolean;
   createdAt: Date;
 };
 
@@ -36,6 +41,8 @@ interface Props {
 
 type PendingRoleChange = { id: string; username: string | null; newRole: Role; currentRole: Role };
 type PendingPremiumToggle = { id: string; username: string | null; currentPremium: boolean };
+type PendingBan = { id: string; username: string | null };
+type PendingDelete = { id: string; username: string | null; role: Role };
 
 function UserAvatar({ u }: { u: User }) {
   return u.image ? (
@@ -48,10 +55,57 @@ function UserAvatar({ u }: { u: User }) {
     />
   ) : (
     <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center shrink-0">
-      <span className="text-[#FFC300] text-xs font-bold">
+      <span className="text-yellow-500 text-xs font-bold">
         {(u.username ?? '?')[0]?.toUpperCase()}
       </span>
     </div>
+  );
+}
+
+function BanDialog({
+  open,
+  onClose,
+  onConfirm,
+  username,
+  loading,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (reason: string) => void;
+  username: string | null;
+  loading: boolean;
+}) {
+  const [reason, setReason] = useState('');
+
+  const handleConfirm = () => {
+    onConfirm(reason);
+    setReason('');
+  };
+
+  const handleClose = () => {
+    setReason('');
+    onClose();
+  };
+
+  return (
+    <Popup open={open} onClose={handleClose} title="Ban User" maxWidth="sm">
+      <p className="text-sm text-white/80 mb-4">
+        Ban <span className="text-white font-medium">{username ?? 'this user'}</span>? They will no longer be able to log in.
+      </p>
+      <textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Reason (optional)"
+        rows={3}
+        className="w-full px-3 py-2 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder:text-white/80 focus:outline-none focus:border-[#FFC300]/40 resize-none mb-4"
+      />
+      <div className="flex justify-end gap-2">
+        <Button variant="ghost" onClick={handleClose} disabled={loading}>Cancel</Button>
+        <Button variant="destructive" onClick={handleConfirm} disabled={loading}>
+          {loading ? 'Banning…' : 'Ban User'}
+        </Button>
+      </div>
+    </Popup>
   );
 }
 
@@ -62,6 +116,8 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
   const [searchValue, setSearchValue] = useState(searchParams.get('search') ?? '');
   const [pendingRole, setPendingRole] = useState<PendingRoleChange | null>(null);
   const [pendingPremium, setPendingPremium] = useState<PendingPremiumToggle | null>(null);
+  const [pendingBan, setPendingBan] = useState<PendingBan | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [pending, startTransition] = useTransition();
 
   const totalPages = Math.ceil(total / pageSize);
@@ -97,8 +153,32 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
     });
   };
 
-  const displayName = (u: User) =>
-    u.username ?? u.email;
+  const handleBan = (reason: string) => {
+    if (!pendingBan) return;
+    startTransition(async () => {
+      await banUserAction(pendingBan.id, reason || undefined);
+      setPendingBan(null);
+      router.refresh();
+    });
+  };
+
+  const handleUnban = (userId: string) => {
+    startTransition(async () => {
+      await unbanUserAction(userId);
+      router.refresh();
+    });
+  };
+
+  const handleDelete = () => {
+    if (!pendingDelete) return;
+    startTransition(async () => {
+      await deleteUserAdminAction(pendingDelete.id);
+      setPendingDelete(null);
+      router.refresh();
+    });
+  };
+
+  const displayName = (u: User) => u.username ?? u.email;
 
   const RoleSelect = ({ u }: { u: User }) => (
     <select
@@ -155,6 +235,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
 
       <p className="text-sm text-white mb-3">{total.toLocaleString()} users</p>
 
+      {/* Mobile */}
       <div className="md:hidden rounded-2xl border border-[#2a2a2a] overflow-hidden divide-y divide-[#2a2a2a]">
         {users.map((u) => (
           <div key={u.id} className="p-4 hover:bg-white/2 transition-colors">
@@ -169,7 +250,13 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                   ) : (
                     <span className="text-white italic text-sm">no username</span>
                   )}
-                  <p className="text-xs text-white truncate">{u.email}</p>
+                  <p className="text-xs text-white/80 truncate">{u.email}</p>
+                  {u.banned && (
+                    <span className="inline-flex items-center gap-1 text-xs text-white/80 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+                      Banned
+                    </span>
+                  )}
                 </div>
               </div>
               <RoleBadge role={u.role} />
@@ -177,7 +264,33 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
             <div className="mt-3 flex items-center gap-3 flex-wrap">
               <RoleSelect u={u} />
               <PremiumButton u={u} />
-              <span className="text-xs text-white ml-auto">{new Date(u.createdAt).toLocaleDateString()}</span>
+              {u.banned ? (
+                <button
+                  onClick={() => handleUnban(u.id)}
+                  disabled={pending}
+                  className="border border-white/20 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  Unban
+                </button>
+              ) : (
+                <button
+                  onClick={() => setPendingBan({ id: u.id, username: u.username })}
+                  disabled={pending}
+                  className="border border-red-500/30 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                >
+                  Ban
+                </button>
+              )}
+              {u.role !== 'admin' && (
+                <button
+                  onClick={() => setPendingDelete({ id: u.id, username: u.username, role: u.role })}
+                  disabled={pending}
+                  className="border border-red-500/30 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                >
+                  Delete
+                </button>
+              )}
+              <span className="text-xs text-white/80 ml-auto">{new Date(u.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         ))}
@@ -186,6 +299,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         )}
       </div>
 
+      {/* Desktop */}
       <div className="hidden md:block rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
@@ -195,6 +309,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
               <th className="text-left px-4 py-3 text-white font-medium">Role</th>
               <th className="text-left px-4 py-3 text-white font-medium">Premium</th>
               <th className="text-left px-4 py-3 text-white font-medium hidden lg:table-cell">Joined</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-[#2a2a2a]">
@@ -211,23 +326,59 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
                       ) : (
                         <span className="text-white italic">no username</span>
                       )}
+                      {u.banned && (
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+                          <span className="text-xs text-white/80">Banned</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-white">{u.email}</td>
+                <td className="px-4 py-3 text-white/80">{u.email}</td>
                 <td className="px-4 py-3">
                   <RoleSelect u={u} />
                   <div className="mt-0.5"><RoleBadge role={u.role} /></div>
                 </td>
                 <td className="px-4 py-3"><PremiumButton u={u} /></td>
-                <td className="px-4 py-3 text-white text-xs hidden lg:table-cell">
+                <td className="px-4 py-3 text-white/80 text-xs hidden lg:table-cell">
                   {new Date(u.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    {u.banned ? (
+                      <button
+                        onClick={() => handleUnban(u.id)}
+                        disabled={pending}
+                        className="border border-white/20 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-white/5 transition-colors"
+                      >
+                        Unban
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setPendingBan({ id: u.id, username: u.username })}
+                        disabled={pending}
+                        className="border border-red-500/30 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                      >
+                        Ban
+                      </button>
+                    )}
+                    {u.role !== 'admin' && (
+                      <button
+                        onClick={() => setPendingDelete({ id: u.id, username: u.username, role: u.role })}
+                        disabled={pending}
+                        className="border border-red-500/30 text-white/80 text-xs px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-white text-sm">No users found.</td>
+                <td colSpan={6} className="px-4 py-8 text-center text-white text-sm">No users found.</td>
               </tr>
             )}
           </tbody>
@@ -238,6 +389,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         <Pagination page={page} totalPages={totalPages} onPageChange={(p) => updateUrl(p)} />
       </div>
 
+      {/* Role change popup */}
       <Popup open={!!pendingRole} onClose={() => setPendingRole(null)} title="Change Role" maxWidth="sm">
         <p className="text-sm text-white mb-1">
           Change role for{' '}
@@ -245,7 +397,7 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
             {pendingRole ? displayName(users.find((u) => u.id === pendingRole.id) ?? { username: pendingRole.username, email: '' } as unknown as User) : ''}
           </span>
         </p>
-        <p className="text-sm text-white mb-6">
+        <p className="text-sm text-white/80 mb-6">
           <span className="capitalize text-white">{pendingRole?.currentRole}</span>
           {' → '}
           <span className="capitalize text-white font-medium">{pendingRole?.newRole}</span>
@@ -256,13 +408,14 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
         </div>
       </Popup>
 
+      {/* Premium toggle popup */}
       <Popup
         open={!!pendingPremium}
         onClose={() => setPendingPremium(null)}
         title={pendingPremium?.currentPremium ? 'Revoke Premium' : 'Grant Premium'}
         maxWidth="sm"
       >
-        <p className="text-sm text-white mb-6">
+        <p className="text-sm text-white/80 mb-6">
           {pendingPremium?.currentPremium ? 'Remove premium status from ' : 'Grant premium status to '}
           <span className="text-white font-medium">
             {pendingPremium ? displayName(users.find((u) => u.id === pendingPremium.id) ?? { username: pendingPremium.username, email: '' } as unknown as User) : ''}
@@ -273,6 +426,25 @@ export default function UsersTable({ users, total, page, pageSize }: Props) {
           <Button onClick={confirmPremiumToggle} disabled={pending}>{pending ? 'Saving…' : 'Confirm'}</Button>
         </div>
       </Popup>
+
+      {/* Ban dialog */}
+      <BanDialog
+        open={!!pendingBan}
+        onClose={() => setPendingBan(null)}
+        onConfirm={handleBan}
+        username={pendingBan?.username ?? null}
+        loading={pending}
+      />
+
+      {/* Delete user dialog */}
+      <ConfirmDeleteDialog
+        open={!!pendingDelete}
+        onClose={() => setPendingDelete(null)}
+        onConfirm={handleDelete}
+        loading={pending}
+        title="Delete User"
+        description={`Delete "${pendingDelete?.username ?? 'this user'}"? This will permanently remove their account and all associated data.`}
+      />
     </div>
   );
 }

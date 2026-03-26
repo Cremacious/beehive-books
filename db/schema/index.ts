@@ -6,6 +6,7 @@ export * from './prompts';
 export * from './clubs';
 export * from './hives';
 export * from './system';
+export * from './admin';
 
 // ---------------------------------------------------------------------------
 // usersRelations — defined here because it references tables from all modules
@@ -30,6 +31,7 @@ import {
   clubDiscussionReplies,
 } from './clubs';
 import { hiveMembers, hiveInvites } from './hives';
+import { adminAuditLog, contentReports } from './admin';
 
 export const usersRelations = relations(users, ({ many }) => ({
   books: many(books),
@@ -55,4 +57,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   bookCommentLikes: many(bookCommentLikes),
   readingListFollows: many(readingListFollows),
   readingListLikes: many(readingListLikes),
+  adminAuditLogs: many(adminAuditLog),
+  contentReportsAsReporter: many(contentReports, { relationName: 'reporter' }),
+  contentReportsReviewed: many(contentReports, { relationName: 'reviewedBy' }),
 }));

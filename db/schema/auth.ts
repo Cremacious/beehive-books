@@ -28,6 +28,9 @@ export const users = pgTable('users', {
   stripeCurrentPeriodEnd: timestamp('stripe_current_period_end'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  banned: boolean('banned').notNull().default(false),
+  bannedAt: timestamp('banned_at'),
+  bannedReason: text('banned_reason'),
 });
 
 export const session = pgTable('session', {
