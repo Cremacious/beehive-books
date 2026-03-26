@@ -100,6 +100,26 @@ export async function getBookWithChaptersAction(bookId: string) {
 
 export async function getBookForViewAction(bookId: string) {
   const userId = await getOptionalUserId();
+
+  type ChapterRow = {
+    id: string; bookId: string; collectionId: string | null; title: string;
+    content: string | null; authorNotes: string | null; wordCount: number;
+    order: number; commentCount: number; createdAt: Date; updatedAt: Date;
+  };
+  type CollectionRow = { id: string; bookId: string; name: string; order: number; createdAt: Date };
+  type BookForView = {
+    id: string; userId: string; title: string; author: string; genre: string;
+    category: string; description: string; privacy: 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
+    coverUrl: string | null; explorable: boolean; draftStatus: string; wordCount: number;
+    chapterCount: number; commentCount: number; likeCount: number; commentsEnabled: boolean;
+    chapterCommentsEnabled: boolean; tags: string[];
+    milestones: { key: string; achievedAt: string }[];
+    createdAt: Date; updatedAt: Date;
+    user: { username: string | null } | null;
+    chapters: ChapterRow[];
+    collections: CollectionRow[];
+  };
+
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
     with: {
@@ -107,7 +127,7 @@ export async function getBookForViewAction(bookId: string) {
       collections: { orderBy: (c, { asc }) => [asc(c.order)] },
       user: { columns: { username: true } },
     },
-  });
+  }) as unknown as BookForView | undefined;
   if (!book) throw new Error('Book not found');
   const isOwner = book.userId === userId;
   if (book.privacy === 'PRIVATE' && !isOwner) throw new Error('This book is private');
@@ -248,10 +268,27 @@ export async function getPublicBookAction(bookId: string) {
 export async function getChapterWithContextAction(chapterId: string) {
   const userId = await getOptionalUserId();
 
+  type BookRow = {
+    id: string; userId: string; title: string; privacy: 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
+    author: string; genre: string; category: string; description: string;
+    coverUrl: string | null; explorable: boolean; wordCount: number; chapterCount: number;
+    commentCount: number; likeCount: number; commentsEnabled: boolean;
+    chapterCommentsEnabled: boolean; draftStatus: string; tags: string[];
+    milestones: { key: string; achievedAt: string }[];
+    createdAt: Date; updatedAt: Date;
+  };
+  type ChapterRow = {
+    id: string; bookId: string; collectionId: string | null; title: string;
+    content: string | null; authorNotes: string | null; wordCount: number;
+    order: number; commentCount: number; createdAt: Date; updatedAt: Date;
+    book: BookRow;
+    collection: { name: string } | null;
+  };
+
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),
     with: { book: true, collection: { columns: { name: true } } },
-  });
+  }) as unknown as ChapterRow | undefined;
   if (!chapter) throw new Error('Chapter not found');
 
   const { book } = chapter;

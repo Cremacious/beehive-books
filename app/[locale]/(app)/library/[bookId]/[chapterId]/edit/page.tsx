@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ChapterForm } from '@/components/library/chapter-form';
 import { getBookWithChaptersAction } from '@/lib/actions/book.actions';
+import type { ExistingChapter } from '@/lib/types/books.types';
 
 export const metadata: Metadata = {
   title: 'Edit Chapter',
@@ -31,7 +32,7 @@ export default async function EditChapterPage({
     <ChapterForm
       mode="edit"
       bookId={bookId}
-      chapter={chapter}
+      chapter={chapter as unknown as ExistingChapter}
       collections={collections}
       cancelHref={`/library/${bookId}/${chapterId}`}
     />

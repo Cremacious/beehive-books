@@ -188,7 +188,14 @@ export async function getAllBooksAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(books).where(where),
   ]);
 
-  return { books: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminBook = {
+    id: string; title: string; author: string; privacy: string;
+    wordCount: number; chapterCount: number; coverUrl: string | null;
+    createdAt: Date; userId: string;
+    user: { username: string | null } | null;
+  };
+
+  return { books: rows as unknown as AdminBook[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteBookAdminAction(bookId: string): Promise<ActionResult> {
@@ -242,7 +249,13 @@ export async function getAllChaptersAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(chapters).where(where),
   ]);
 
-  return { chapters: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminChapter = {
+    id: string; title: string; wordCount: number; bookId: string;
+    order: number; createdAt: Date;
+    book: { title: string; userId: string; user: { username: string | null } | null } | null;
+  };
+
+  return { chapters: rows as unknown as AdminChapter[], total, page, pageSize: PAGE_SIZE };
 }
 
 
@@ -273,7 +286,13 @@ export async function getAllClubsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(bookClubs).where(where),
   ]);
 
-  return { clubs: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminClub = {
+    id: string; name: string; privacy: string; memberCount: number;
+    createdAt: Date; ownerId: string;
+    owner: { username: string | null } | null;
+  };
+
+  return { clubs: rows as unknown as AdminClub[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteClubAdminAction(clubId: string): Promise<ActionResult> {
@@ -316,7 +335,13 @@ export async function getAllPromptsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(prompts).where(where),
   ]);
 
-  return { prompts: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminPrompt = {
+    id: string; title: string; status: string; entryCount: number;
+    endDate: Date; createdAt: Date; privacy: string;
+    creator: { username: string | null } | null;
+  };
+
+  return { prompts: rows as unknown as AdminPrompt[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deletePromptAdminAction(promptId: string): Promise<ActionResult> {
@@ -354,7 +379,14 @@ export async function getAllPromptEntriesAdminAction(page = 1) {
     db.select({ total: count() }).from(promptEntries),
   ]);
 
-  return { entries: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminPromptEntry = {
+    id: string; content: string; wordCount: number; likeCount: number;
+    createdAt: Date; promptId: string;
+    user: { username: string | null } | null;
+    prompt: { title: string } | null;
+  };
+
+  return { entries: rows as unknown as AdminPromptEntry[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deletePromptEntryAdminAction(entryId: string): Promise<ActionResult> {
@@ -397,7 +429,14 @@ export async function getAllDiscussionsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(clubDiscussions).where(where),
   ]);
 
-  return { discussions: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminDiscussion = {
+    id: string; title: string; likeCount: number; replyCount: number;
+    isPinned: boolean; createdAt: Date; clubId: string;
+    author: { username: string | null } | null;
+    club: { name: string } | null;
+  };
+
+  return { discussions: rows as unknown as AdminDiscussion[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteDiscussionAdminAction(discussionId: string): Promise<ActionResult> {
@@ -434,7 +473,14 @@ export async function getAllDiscussionRepliesAdminAction(page = 1) {
     db.select({ total: count() }).from(clubDiscussionReplies),
   ]);
 
-  return { replies: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminDiscussionReply = {
+    id: string; content: string; likeCount: number;
+    createdAt: Date; discussionId: string;
+    author: { username: string | null } | null;
+    discussion: { title: string } | null;
+  };
+
+  return { replies: rows as unknown as AdminDiscussionReply[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteDiscussionReplyAdminAction(replyId: string): Promise<ActionResult> {
@@ -474,7 +520,14 @@ export async function getAllNotificationsAdminAction(page = 1) {
     db.select({ total: count() }).from(notifications),
   ]);
 
-  return { notifications: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminNotification = {
+    id: string; type: string; isRead: boolean; link: string;
+    createdAt: Date; recipientId: string; actorId: string | null;
+    recipient: { username: string | null } | null;
+    actor: { username: string | null } | null;
+  };
+
+  return { notifications: rows as unknown as AdminNotification[], total, page, pageSize: PAGE_SIZE };
 }
 
 // ---------------------------------------------------------------------------
