@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { FileText, Clock, Trophy } from 'lucide-react';
 import type { PromptCard as PromptCardType, PromptUser } from '@/lib/types/prompt.types';
 
-function formatCountdown(endDate: Date): string {
-  const diff = endDate.getTime() - Date.now();
+function formatCountdown(endDate: Date | string): string {
+  const diff = new Date(endDate).getTime() - Date.now();
   if (diff <= 0) return 'Ended';
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
