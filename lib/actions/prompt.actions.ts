@@ -3,7 +3,7 @@
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { db } from '@/db';
@@ -204,7 +204,7 @@ export async function getPromptAction(promptId: string): Promise<PromptDetail> {
 
 export async function getPromptEntriesAction(
   promptId: string,
-): Promise<PromptEntry[]> {
+): Promise<{ entries: PromptEntry[]; votedEntryId: string | null }> {
   const userId = await requireAuth();
 
   const prompt = await db.query.prompts.findFirst({
@@ -216,7 +216,7 @@ export async function getPromptEntriesAction(
   const isCreator = userId === prompt.creatorId;
   const isEnded = prompt.endDate < new Date() || prompt.status === 'ENDED' || prompt.status === 'VOTING';
 
-  if (!isEnded && !isCreator) return [];
+  if (!isEnded && !isCreator) return { entries: [], votedEntryId: null };
 
   const entries = await db.query.promptEntries.findMany({
     where: eq(promptEntries.promptId, promptId),
@@ -233,7 +233,7 @@ export async function getPromptEntriesAction(
     likedIds = likes.map((l) => l.entryId);
   }
 
-  return entries.map((e) => ({
+  const mappedEntries = entries.map((e) => ({
     id: e.id,
     title: e.title ?? '',
     content: e.content,
@@ -245,6 +245,10 @@ export async function getPromptEntriesAction(
     createdAt: e.createdAt,
     user: e.user as PromptUser,
   }));
+
+  const votedEntryId = entries.find((e) => likedIds.includes(e.id))?.id ?? null;
+
+  return { entries: mappedEntries, votedEntryId };
 }
 
 export async function getEntryAction(
@@ -581,6 +585,39 @@ export async function transitionToEndedAction(promptId: string): Promise<void> {
   }
 
   revalidatePath(`/prompts/${promptId}`);
+}
+
+export async function voteForEntryAction(
+  entryId: string,
+  promptId: string,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+
+  const prompt = await db.query.prompts.findFirst({ where: eq(prompts.id, promptId) });
+  if (!prompt || prompt.status !== 'VOTING') return { success: false, message: 'Voting is not open.' };
+
+  const existingVote = await db.query.promptEntryLikes.findFirst({
+    where: and(
+      eq(promptEntryLikes.userId, userId),
+      inArray(
+        promptEntryLikes.entryId,
+        db.select({ id: promptEntries.id }).from(promptEntries).where(eq(promptEntries.promptId, promptId)),
+      ),
+    ),
+  });
+  if (existingVote) return { success: false, message: 'You have already voted.' };
+
+  const entry = await db.query.promptEntries.findFirst({ where: eq(promptEntries.id, entryId) });
+  if (entry?.userId === userId) return { success: false, message: 'You cannot vote for your own entry.' };
+
+  await db.insert(promptEntryLikes).values({ userId, entryId });
+  await db
+    .update(promptEntries)
+    .set({ likeCount: sql`${promptEntries.likeCount} + 1` })
+    .where(eq(promptEntries.id, entryId));
+
+  revalidatePath(`/prompts/${promptId}`);
+  return { success: true, message: 'Vote recorded.' };
 }
 
 export async function setAuthorChoiceAction(

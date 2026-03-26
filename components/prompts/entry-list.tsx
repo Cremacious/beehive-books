@@ -4,10 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
+import { VoteButton } from './vote-button';
+import { EntryLikeButton } from './entry-like-button';
 import { setAuthorChoiceAction } from '@/lib/actions/prompt.actions';
-import type { PromptEntry, PromptUser, PromptStatus } from '@/lib/types/prompt.types';
+import type { PromptEntry, PromptUser } from '@/lib/types/prompt.types';
 
 function UserAvatar({ user }: { user: PromptUser }) {
   const name = user.username || '?';
@@ -26,13 +27,15 @@ function displayName(user: PromptUser): string {
   return user.username || 'Anonymous';
 }
 
-interface Props {
+interface EntryListProps {
   entries: PromptEntry[];
   promptId: string;
   currentUserId: string | null;
-  promptStatus: PromptStatus;
-  isCreator: boolean;
-  authorChoiceId: string | null;
+  promptState: 'ACTIVE' | 'VOTING' | 'ENDED';
+  votedEntryId?: string | null;
+  communityWinnerId?: string | null;
+  authorChoiceId?: string | null;
+  isCreator?: boolean;
 }
 
 function AuthorChoicePicker({
@@ -49,7 +52,7 @@ function AuthorChoicePicker({
 
   if (isAlreadyPicked) {
     return (
-      <span className="text-xs text-white/80 italic">Author&apos;s Pick set</span>
+      <span className="text-xs text-white/80 italic">Creator&apos;s Pick set</span>
     );
   }
 
@@ -64,7 +67,7 @@ function AuthorChoicePicker({
       }
       className="text-xs text-white/80 hover:text-white transition-colors disabled:opacity-40"
     >
-      Set as Author&apos;s Pick
+      Set as Creator&apos;s Pick
     </button>
   );
 }
@@ -72,11 +75,13 @@ function AuthorChoicePicker({
 export function EntryList({
   entries,
   promptId,
-  promptStatus,
-  isCreator,
+  currentUserId,
+  promptState,
+  votedEntryId,
   authorChoiceId,
-}: Props) {
-  const isLeaderboard = promptStatus === 'VOTING' || promptStatus === 'ENDED';
+  isCreator,
+}: EntryListProps) {
+  const isLeaderboard = promptState === 'VOTING' || promptState === 'ENDED';
 
   if (entries.length === 0) {
     return (
@@ -100,7 +105,7 @@ export function EntryList({
               )}
               {entry.isAuthorChoice && (
                 <span className="bg-white/10 border border-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  Author&apos;s Pick
+                  Creator&apos;s Pick
                 </span>
               )}
             </div>
@@ -133,17 +138,9 @@ export function EntryList({
                   <span className="font-semibold text-white">{displayName(entry.user)}</span>
                 )}
 
-                {/* Vote count — prominent during VOTING/ENDED */}
-                {isLeaderboard && (
-                  <span className="flex items-center gap-1 text-sm text-white/80 ml-auto mr-2">
-                    <Heart className="w-3.5 h-3.5 text-yellow-500" />
-                    {entry.likeCount}
-                  </span>
-                )}
-
-                <Button asChild size="sm" className={isLeaderboard ? '' : 'ml-auto'}>
+                <Button asChild size="sm" className="ml-auto">
                   <Link href={`/prompts/${promptId}/${entry.id}`} className="text-sm">
-                    {promptStatus === 'VOTING' ? 'Vote →' : 'Read entry →'}
+                    Read entry →
                   </Link>
                 </Button>
               </div>
@@ -159,8 +156,41 @@ export function EntryList({
                 }}
               />
 
-              {/* Author's choice picker — creator only, VOTING or ENDED */}
-              {isCreator && (promptStatus === 'VOTING' || promptStatus === 'ENDED') && (
+              {/* Vote button — only shown during VOTING state */}
+              {promptState === 'VOTING' && currentUserId && (
+                <div className="mt-3 flex items-center justify-between">
+                  <VoteButton
+                    entryId={entry.id}
+                    promptId={promptId}
+                    voteCount={entry.likeCount}
+                    hasVoted={votedEntryId === entry.id}
+                    isDisabled={!!votedEntryId && votedEntryId !== entry.id}
+                  />
+                  {votedEntryId === entry.id && (
+                    <span className="text-xs text-yellow-500 font-medium">Your vote</span>
+                  )}
+                </div>
+              )}
+
+              {/* Like count during ACTIVE */}
+              {promptState === 'ACTIVE' && (
+                <div className="mt-2">
+                  <EntryLikeButton
+                    entryId={entry.id}
+                    likeCount={entry.likeCount}
+                    likedByMe={entry.likedByMe ?? false}
+                    currentUserId={currentUserId}
+                  />
+                </div>
+              )}
+
+              {/* Vote count during ENDED */}
+              {promptState === 'ENDED' && (
+                <span className="text-xs text-white/80 mt-2 block">{entry.likeCount} votes</span>
+              )}
+
+              {/* Creator's choice picker — creator only, VOTING or ENDED */}
+              {isCreator && (promptState === 'VOTING' || promptState === 'ENDED') && (
                 <div className="mt-2">
                   <AuthorChoicePicker
                     promptId={promptId}

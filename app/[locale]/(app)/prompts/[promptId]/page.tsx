@@ -15,7 +15,6 @@ import {
   getPromptEntriesAction,
   getPromptFriendsForInviteAction,
   getPromptPendingInvitedFriendsAction,
-  setAuthorChoiceAction,
 } from '@/lib/actions/prompt.actions';
 import type { PromptUser } from '@/lib/types/prompt.types';
 
@@ -83,7 +82,7 @@ export default async function PromptDetailPage({ params }: Props) {
     !hasEntry &&
     (isCreator || myInvite === 'ACCEPTED' || prompt.privacy !== 'PRIVATE');
 
-  const [entries, invitableFriends, pendingInvitedFriends] = await Promise.all([
+  const [{ entries, votedEntryId }, invitableFriends, pendingInvitedFriends] = await Promise.all([
     getPromptEntriesAction(promptId),
     isCreator && isActive ? getPromptFriendsForInviteAction(promptId) : Promise.resolve([]),
     isCreator && isActive ? getPromptPendingInvitedFriendsAction(promptId) : Promise.resolve([]),
@@ -172,7 +171,8 @@ export default async function PromptDetailPage({ params }: Props) {
             entries={entries}
             promptId={promptId}
             currentUserId={userId}
-            promptStatus={prompt.status}
+            promptState={prompt.status}
+            votedEntryId={votedEntryId}
             isCreator={isCreator}
             authorChoiceId={prompt.authorChoiceId}
           />

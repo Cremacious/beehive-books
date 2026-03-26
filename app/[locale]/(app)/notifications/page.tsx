@@ -82,7 +82,7 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'BOOK_COMMENT_LIKE':       return `liked your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
     case 'READING_LIST_NEW_BOOK':   return `added "${metadata?.bookTitle}" to their list "${metadata?.listTitle}"`;
     case 'PROMPT_COMMUNITY_WIN':    return `Your entry won the community vote on "${metadata?.promptTitle}"`;
-    case 'PROMPT_AUTHOR_CHOICE':    return `Your entry was chosen as the author's pick on "${metadata?.promptTitle}"`;
+    case 'PROMPT_AUTHOR_CHOICE':    return `Your entry was chosen as the creator's pick on "${metadata?.promptTitle}"`;
     case 'SUBMISSION_APPROVED': return `approved your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
     case 'SUBMISSION_REJECTED': return `did not accept your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
     default:                    return 'sent you a notification';
