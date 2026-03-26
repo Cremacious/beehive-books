@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const readingListSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
   description: z.string().max(500, 'Description too long'),
+  curatorNote: z.string().max(500, 'Curator note too long').optional(),
   privacy: z.enum(['PUBLIC', 'PRIVATE', 'FRIENDS']),
   explorable: z.boolean(),
   tags: z.array(z.string().max(30)).max(10),

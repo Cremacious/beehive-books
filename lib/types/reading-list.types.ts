@@ -39,6 +39,7 @@ export type ReadingListWithBooks = ReadingList & {
 export type ReadingListFormData = {
   title: string;
   description: string;
+  curatorNote?: string;
   privacy: Privacy;
   explorable: boolean;
   tags: string[];
