@@ -54,8 +54,8 @@ export default async function ExplorePage() {
   return (
     <div className="min-h-screen">
       {/* Hero section */}
-      <div className="relative px-4 md:px-8 pt-8 pb-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(255,195,0,0.07),transparent)] pointer-events-none" />
+      <div className="relative px-4 md:px-8 pb-10 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative">
           <h1 className="text-3xl md:text-4xl font-bold text-white mainFont mb-2">
             Discover Stories

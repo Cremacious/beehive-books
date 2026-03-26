@@ -27,7 +27,7 @@ export default async function CreateDiscussionPage({
     <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
       <BackButton href={`/clubs/${clubId}/discussions`} label="Discussions" className="mb-6" />
       <h1 className="text-2xl font-bold text-white mb-6 mainFont">Start a Discussion</h1>
-      <div className="bg-[#1e1e1e] rounded-2xl border border-[#2a2a2a] p-6">
+      <div className="bg-[#252525] rounded-2xl border border-[#2a2a2a] p-6">
         <CreateClubDiscussionForm clubId={clubId} />
       </div>
     </div>

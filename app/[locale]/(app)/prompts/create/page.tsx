@@ -19,7 +19,9 @@ export default async function CreatePromptPage() {
 
       </div>
 
-      <PromptForm mode="create" friends={friends.map((f) => f.user)} />
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
+        <PromptForm mode="create" friends={friends.map((f) => f.user)} />
+      </div>
     </div>
   );
 }

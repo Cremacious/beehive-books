@@ -58,7 +58,7 @@ export default async function CreateEntryPage({ params }: Props) {
       </div>
 
 
-      <div className="mb-8 p-5 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a]">
+      <div className="mb-8 p-5 rounded-2xl bg-[#252525] border border-[#2a2a2a]">
         <h2 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">The Challenge</h2>
         <h3 className="text-base font-semibold text-white mb-2 mainFont">{prompt.title}</h3>
         <p className="text-sm text-white/80 leading-relaxed">{prompt.description}</p>

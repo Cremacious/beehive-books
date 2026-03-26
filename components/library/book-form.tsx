@@ -206,7 +206,7 @@ export function BookForm({
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
-  const errorClass = 'text-xs text-red-400 mt-1';
+  const errorClass = 'text-xs text-white/80';
 
   return (
     <div className="px-4 py-8">
@@ -265,7 +265,7 @@ export function BookForm({
                   setCoverUrl(null);
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="flex items-center gap-1 text-xs text-red-400/70 hover:text-red-400 transition-colors"
+                className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors"
               >
                 <X className="w-3 h-3" /> Remove cover
               </button>
@@ -278,24 +278,27 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
-              Book Title <span className="text-red-400">*</span>
+            <label className="text-sm font-medium text-white">
+              Book Title <span className="text-white/80 text-xs font-normal">(required)</span>
             </label>
+            <p className="text-xs text-white/80">The name of your book — make it memorable.</p>
             <input
               {...register('title')}
               type="text"
               placeholder="Enter your book title…"
               className={inputClass}
             />
+            <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
             {errors.title && (
               <p className={errorClass}>{errors.title.message}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
-              Author Name <span className="text-red-400">*</span>
+            <label className="text-sm font-medium text-white">
+              Author Name <span className="text-white/80 text-xs font-normal">(required)</span>
             </label>
+            <p className="text-xs text-white/80">Your pen name or real name as it appears on the cover.</p>
             <input
               {...register('author')}
               type="text"
@@ -309,9 +312,10 @@ export function BookForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
-                Category <span className="text-red-400">*</span>
+              <label className="text-sm font-medium text-white">
+                Category
               </label>
+              <p className="text-xs text-white/80">Fiction or non-fiction — affects how your book is listed.</p>
               <select
                 {...register('category')}
                 className={inputClass + ' appearance-none'}
@@ -330,9 +334,10 @@ export function BookForm({
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
-                Genre <span className="text-red-400">*</span>
+              <label className="text-sm font-medium text-white">
+                Genre <span className="text-white/80 text-xs font-normal">(required)</span>
               </label>
+              <p className="text-xs text-white/80">Helps readers find your book.</p>
               <select
                 {...register('genre')}
                 className={inputClass + ' appearance-none'}
@@ -353,9 +358,10 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
-              Description <span className="text-red-400">*</span>
+            <label className="text-sm font-medium text-white">
+              Description
             </label>
+            <p className="text-xs text-white/80">A compelling blurb that makes readers want to read. Spoiler-free.</p>
             <textarea
               {...register('description')}
               rows={6}
@@ -372,7 +378,7 @@ export function BookForm({
                 <span
                   className={
                     descWords > 200
-                      ? 'text-red-400'
+                      ? 'text-yellow-500'
                       : descWords > 180
                         ? 'text-yellow-500'
                         : 'text-white/80'
@@ -384,7 +390,7 @@ export function BookForm({
                 <span
                   className={
                     descChars > 1200
-                      ? 'text-red-400'
+                      ? 'text-yellow-500'
                       : descChars > 1080
                         ? 'text-yellow-500'
                         : 'text-white/80'
@@ -403,15 +409,16 @@ export function BookForm({
             <TagInput
               value={tags}
               onChange={(next) => { setTags(next); setValue('tags', next); }}
-              emptyMessage="No tags yet — tags help readers find your book."
+              emptyMessage="No tags yet. Tags help readers find your book."
               error={errors.tags?.message}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
-              Privacy <span className="text-red-400">*</span>
+            <label className="text-sm font-medium text-white">
+              Privacy
             </label>
+            <p className="text-xs text-white/80">Public: anyone can read. Friends: only your friends. Private: just you.</p>
             <div className="grid grid-cols-3 gap-3">
               {PRIVACY_OPTIONS.map((opt) => (
                 <button
@@ -435,9 +442,10 @@ export function BookForm({
 
      
           <div className="space-y-2">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
+            <label className="text-sm font-medium text-white">
               Draft Status
             </label>
+            <p className="text-xs text-white/80">Track where you are in the writing process.</p>
             <Controller
               name="draftStatus"
               control={control}
@@ -453,16 +461,12 @@ export function BookForm({
                 </select>
               )}
             />
-            <p className="text-sm text-white/80">
-              Track which revision your book is on. Drafts show a status label
-              on your book page.
-            </p>
           </div>
 
         
           <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-yellow-500 mainFont">Explorable</p>
+              <p className="text-sm font-medium text-white">Explorable</p>
               <p className="text-sm text-white/80 mt-0.5">
                 List this book on the Explore page so all users can discover it.
                 Enabling this will make the book public.
@@ -493,9 +497,9 @@ export function BookForm({
             <p className="text-xs font-semibold text-white uppercase tracking-wider">Comments</p>
             <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-yellow-500 mainFont">Book Comments</p>
-                <p className="text-sm text-white/80 mt-0.5">
-                  Allow readers to leave comments on this book.
+                <p className="text-sm font-medium text-white">Book Comments</p>
+                <p className="text-xs text-white/80 mt-0.5">
+                  Turn off if you&apos;d prefer not to receive comments.
                 </p>
               </div>
               <button
@@ -514,9 +518,9 @@ export function BookForm({
             </div>
             <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-yellow-500 mainFont">Chapter Comments</p>
-                <p className="text-sm text-white/80 mt-0.5">
-                  Allow readers to leave comments on individual chapters.
+                <p className="text-sm font-medium text-white">Chapter Comments</p>
+                <p className="text-xs text-white/80 mt-0.5">
+                  Turn off if you&apos;d prefer not to receive comments on individual chapters.
                 </p>
               </div>
               <button
@@ -632,9 +636,9 @@ export function BookForm({
                   </label>
 
                   {bookDocxError && (
-                    <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
-                      <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-                      <p className="text-sm text-red-400">{bookDocxError}</p>
+                    <div className="flex items-start gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+                      <p className="text-sm text-white/80">{bookDocxError}</p>
                     </div>
                   )}
 
@@ -723,9 +727,9 @@ export function BookForm({
                   </label>
 
                   {bookEpubError && (
-                    <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
-                      <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-                      <p className="text-sm text-red-400">{bookEpubError}</p>
+                    <div className="flex items-start gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+                      <p className="text-sm text-white/80">{bookEpubError}</p>
                     </div>
                   )}
 
@@ -744,8 +748,8 @@ export function BookForm({
           )}
 
           {serverError && (
-            <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
-              <p className="text-sm text-red-400">{serverError}</p>
+            <div className="flex items-start gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+              <p className="text-sm text-white/80">{serverError}</p>
             </div>
           )}
 

@@ -33,7 +33,7 @@ export default async function ClubSettingsPage({
     <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
       <BackButton href={`/clubs/${clubId}`} label={club.name} className="mb-6" />
       <h1 className="text-2xl font-bold text-white mb-6 mainFont">Club Settings</h1>
-      <div className="bg-[#1e1e1e] rounded-2xl border border-[#2a2a2a] p-6">
+      <div className="bg-[#252525] rounded-2xl border border-[#2a2a2a] p-6">
         <EditClubForm club={club} invitableFriends={invitableFriends} pendingInvitedFriends={pendingInvitedFriends} />
       </div>
     </div>

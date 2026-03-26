@@ -104,7 +104,7 @@ export default async function PromptDetailPage({ params }: Props) {
 
       {/* Participants */}
       {(acceptedParticipants.length > 0 || isCreator) && (
-        <div className="mt-6 p-5 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a]">
+        <div className="mt-6 p-5 rounded-2xl bg-[#252525] border border-[#2a2a2a]">
           <h2 className="text-xs font-semibold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
             <Users className="w-3.5 h-3.5" />
             Participants ({acceptedParticipants.length + 1})
