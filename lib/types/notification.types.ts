@@ -28,7 +28,8 @@ export type NotificationType =
   | 'BOOK_LIKE'
   | 'BOOK_COMMENT'
   | 'BOOK_COMMENT_REPLY'
-  | 'BOOK_COMMENT_LIKE';
+  | 'BOOK_COMMENT_LIKE'
+  | 'READING_LIST_NEW_BOOK';
 
 export type NotificationItem = {
   id: string;

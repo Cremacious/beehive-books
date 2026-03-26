@@ -6,10 +6,13 @@ export const metadata: Metadata = {
     'Track your reading journey — organize books into lists and monitor your progress.',
 };
 import { ReadingListGrid } from '@/components/reading-lists/reading-list-grid';
-import { getUserReadingListsAction } from '@/lib/actions/reading-list.actions';
+import { getUserReadingListsAction, getLikedReadingListsAction } from '@/lib/actions/reading-list.actions';
 
 export default async function ReadingListsPage() {
-  const lists = await getUserReadingListsAction();
+  const [lists, likedLists] = await Promise.all([
+    getUserReadingListsAction(),
+    getLikedReadingListsAction(),
+  ]);
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
@@ -19,7 +22,7 @@ export default async function ReadingListsPage() {
         </h1>
       </div>
 
-      <ReadingListGrid lists={lists} />
+      <ReadingListGrid lists={lists} likedLists={likedLists} />
     </div>
   );
 }

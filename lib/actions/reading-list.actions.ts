@@ -5,6 +5,7 @@ import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
 import { and, eq, max, sql } from 'drizzle-orm';
+import { insertNotification } from '@/lib/notifications';
 import { db } from '@/db';
 import { readingLists, readingListBooks, readingListFollows, readingListLikes } from '@/db/schema';
 import {
@@ -32,6 +33,18 @@ export async function getUserReadingListsAction() {
     where: eq(readingLists.userId, userId),
     orderBy: (rl, { desc }) => [desc(rl.updatedAt)],
   });
+}
+
+export async function getLikedReadingListsAction() {
+  const userId = await requireAuth();
+  const likeRows = await db.query.readingListLikes.findMany({
+    where: eq(readingListLikes.userId, userId),
+    with: { list: true },
+  });
+  return likeRows
+    .map((r) => r.list)
+    .filter((l) => l.privacy === 'PUBLIC')
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 }
 
 export async function getReadingListAction(listId: string) {
@@ -192,29 +205,6 @@ export async function updateBookCommentaryAction(
   }
 }
 
-export async function getListsFeaturingBookAction(bookTitle: string) {
-  const rows = await db.query.readingListBooks.findMany({
-    where: eq(readingListBooks.title, bookTitle),
-    with: {
-      readingList: {
-        with: { user: { columns: { username: true } } },
-      },
-    },
-  });
-
-  return rows
-    .filter(
-      (r) =>
-        r.readingList.privacy === 'PUBLIC' && r.readingList.explorable,
-    )
-    .slice(0, 5)
-    .map((r) => ({
-      id: r.readingList.id,
-      title: r.readingList.title,
-      followerCount: r.readingList.followerCount,
-      curatorUsername: r.readingList.user?.username ?? null,
-    }));
-}
 
 export async function createReadingListAction(
   data: ReadingListFormData,
@@ -324,7 +314,7 @@ export async function addBookToListAction(
   listId: string,
   bookData: BookEntryData,
 ): Promise<ActionResult> {
-  await requireListOwner(listId);
+  const { userId: ownerId, list } = await requireListOwner(listId);
   const parsed = bookEntrySchema.safeParse(bookData);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -348,6 +338,22 @@ export async function addBookToListAction(
         updatedAt: new Date(),
       })
       .where(eq(readingLists.id, listId));
+
+    // Notify followers
+    const followers = await db.query.readingListFollows.findMany({
+      where: eq(readingListFollows.listId, listId),
+      columns: { userId: true },
+    });
+    for (const follower of followers) {
+      if (follower.userId === ownerId) continue;
+      void insertNotification({
+        recipientId: follower.userId,
+        actorId: ownerId,
+        type: 'READING_LIST_NEW_BOOK',
+        link: `/reading-lists/${listId}`,
+        metadata: { listTitle: list.title, bookTitle: parsed.data.title },
+      });
+    }
 
     revalidatePath(`/reading-lists/${listId}`);
     return { success: true, message: 'Book added.' };
