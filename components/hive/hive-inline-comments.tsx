@@ -131,9 +131,13 @@ function AuthorRow({ comment }: { comment: InlineComment }) {
 function AnnotationPreviewCard({
   comment,
   onClick,
+  onHover,
+  onLeave,
 }: {
   comment: InlineComment;
   onClick: () => void;
+  onHover: (text: string) => void;
+  onLeave: () => void;
 }) {
   const conf = layerConfig(comment.layer);
   const Icon = conf.Icon;
@@ -142,10 +146,12 @@ function AnnotationPreviewCard({
   return (
     <button
       onClick={onClick}
+      onMouseEnter={() => { if (comment.selectedText) onHover(comment.selectedText); }}
+      onMouseLeave={onLeave}
       className={`hover:cursor-pointer w-full text-left rounded-xl border p-3 space-y-2 transition-all group ${
         isResolved
           ? 'bg-[#1a1a1a] border-[#252525] opacity-60 hover:opacity-80 hover:border-[#2a2a2a]'
-          : 'bg-[#252525] border-[#2a2a2a] hover:bg-[#2d2d2d] hover:border-white/15'
+          : 'bg-[#252525] border-[#2a2a2a] hover:bg-[#2d2d2d] hover:border-yellow-500/30'
       }`}
     >
       <div className="flex items-center justify-between gap-2">
@@ -304,15 +310,17 @@ function AnnotationDetail({
 function AddCommentForm({
   hiveId,
   chapterId,
+  prefilledText,
   onAdded,
   onCancel,
 }: {
   hiveId: string;
   chapterId: string;
+  prefilledText?: string;
   onAdded: (comment: InlineComment) => void;
   onCancel: () => void;
 }) {
-  const [selectedText, setSelectedText] = useState('');
+  const [selectedText, setSelectedText] = useState(prefilledText ?? '');
   const [content, setContent] = useState('');
   const [layer, setLayer] = useState<AnnotationLayer>('GENERAL');
   const [error, setError] = useState('');
@@ -371,13 +379,31 @@ function AddCommentForm({
         ))}
       </div>
 
-      <input
-        value={selectedText}
-        onChange={(e) => setSelectedText(e.target.value)}
-        placeholder="Text you're referencing (optional)…"
-        maxLength={500}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
-      />
+      <div className="space-y-1">
+        <label className="text-xs text-white/80">
+          {selectedText ? 'Referencing this passage:' : 'Referencing (optional):'}
+        </label>
+        {prefilledText ? (
+          <div className="border-l-2 border-[#FFC300]/40 pl-3 py-1 bg-[#FFC300]/5 rounded-r-lg">
+            <p className="text-xs text-white/80 italic line-clamp-3">&ldquo;{selectedText}&rdquo;</p>
+            <button
+              type="button"
+              onClick={() => setSelectedText('')}
+              className="text-[10px] text-white/80 hover:text-white mt-1"
+            >
+              Remove reference
+            </button>
+          </div>
+        ) : (
+          <input
+            value={selectedText}
+            onChange={(e) => setSelectedText(e.target.value)}
+            placeholder="Text you're referencing (optional)…"
+            maxLength={500}
+            className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+          />
+        )}
+      </div>
 
       <textarea
         value={content}
@@ -595,6 +621,14 @@ export default function HiveInlineComments({
     null,
   );
   const [, startTransition] = useTransition();
+  const chapterRef = useRef<HTMLDivElement>(null);
+  const [selectionPopup, setSelectionPopup] = useState<{
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [prefilledText, setPrefilledText] = useState('');
+  const [highlightedText, setHighlightedText] = useState<string | null>(null);
 
   const loadChapter = (chapterId: string) => {
     setSelectedChapterId(chapterId);
@@ -631,7 +665,56 @@ export default function HiveInlineComments({
   const handleAdded = (comment: InlineComment) => {
     setComments((prev) => [comment, ...prev]);
     setShowAddForm(false);
+    setPrefilledText('');
   };
+
+  const handleMouseUp = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !chapterRef.current) {
+      setSelectionPopup(null);
+      return;
+    }
+    const selectedText = selection.toString().trim();
+    if (!selectedText || selectedText.length < 3) {
+      setSelectionPopup(null);
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const containerRect = chapterRef.current.getBoundingClientRect();
+    setSelectionPopup({
+      text: selectedText.slice(0, 500),
+      x: rect.left - containerRect.left + rect.width / 2,
+      y: rect.top - containerRect.top - 8,
+    });
+  };
+
+  const scrollToText = (text: string) => {
+    if (!chapterRef.current || !text) return;
+    const walker = document.createTreeWalker(chapterRef.current, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const idx = node.textContent?.indexOf(text) ?? -1;
+      if (idx !== -1) {
+        const range = document.createRange();
+        range.setStart(node, idx);
+        range.setEnd(node, idx + text.length);
+        range.startContainer.parentElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!selectionPopup) return;
+    const handler = (e: MouseEvent) => {
+      if (chapterRef.current && !chapterRef.current.contains(e.target as Node)) {
+        setSelectionPopup(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [selectionPopup]);
 
   const filtered = comments.filter((c) => {
     const layerMatch = activeLayer === 'ALL' || c.layer === activeLayer;
@@ -674,7 +757,7 @@ export default function HiveInlineComments({
             ))}
           </select>
           {!showAddForm && selectedChapterId && (
-            <Button size="sm" onClick={() => setShowAddForm(true)}>
+            <Button size="sm" onClick={() => { setPrefilledText(''); setShowAddForm(true); }}>
               <Plus className="w-3.5 h-3.5" />
               Add Annotation
             </Button>
@@ -685,8 +768,9 @@ export default function HiveInlineComments({
           <AddCommentForm
             hiveId={hiveId}
             chapterId={selectedChapterId}
+            prefilledText={prefilledText}
             onAdded={handleAdded}
-            onCancel={() => setShowAddForm(false)}
+            onCancel={() => { setShowAddForm(false); setPrefilledText(''); }}
           />
         )}
 
@@ -716,6 +800,8 @@ export default function HiveInlineComments({
                   key={comment.id}
                   comment={comment}
                   onClick={() => setViewingComment(comment)}
+                  onHover={(text) => { setHighlightedText(text); scrollToText(text); }}
+                  onLeave={() => setHighlightedText(null)}
                 />
               ))
             )}
@@ -732,14 +818,42 @@ export default function HiveInlineComments({
                       {chapterContent.title}
                     </h3>
                   </div>
-                  <div
-                    className="p-5 prose prose-invert prose-sm max-w-none text-white leading-relaxed max-h-150 overflow-y-auto"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        chapterContent.content ||
-                        '<p class="text-white/80 italic">No content yet.</p>',
-                    }}
-                  />
+                  <div className="relative">
+                    <div
+                      ref={chapterRef}
+                      className="relative p-5 prose prose-invert prose-sm max-w-none text-white leading-relaxed max-h-150 overflow-y-auto select-text"
+                      onMouseUp={handleMouseUp}
+                      onClick={() => {
+                        if (!window.getSelection()?.toString()) setSelectionPopup(null);
+                      }}
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          chapterContent.content ||
+                          '<p class="text-white/80 italic">No content yet.</p>',
+                      }}
+                    />
+                    {selectionPopup && (
+                      <button
+                        style={{
+                          position: 'absolute',
+                          left: selectionPopup.x,
+                          top: selectionPopup.y,
+                          transform: 'translate(-50%, -100%)',
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setShowAddForm(true);
+                          setPrefilledText(selectionPopup.text);
+                          setSelectionPopup(null);
+                          window.getSelection()?.removeAllRanges();
+                        }}
+                        className="z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFC300] text-black text-xs font-bold shadow-lg hover:bg-[#FFD040] transition-colors whitespace-nowrap"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        Add Comment
+                      </button>
+                    )}
+                  </div>
                 </>
               ) : (
                 <div className="flex items-center justify-center py-16 text-white/80">
@@ -776,6 +890,8 @@ export default function HiveInlineComments({
                     key={comment.id}
                     comment={comment}
                     onClick={() => setViewingComment(comment)}
+                    onHover={(text) => { setHighlightedText(text); scrollToText(text); }}
+                    onLeave={() => setHighlightedText(null)}
                   />
                 ))
               )}
