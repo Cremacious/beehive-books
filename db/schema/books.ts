@@ -33,6 +33,9 @@ export const books = pgTable('books', {
   draftStatus: text('draft_status', {
     enum: ['FIRST_DRAFT', 'SECOND_DRAFT', 'THIRD_DRAFT', 'FOURTH_DRAFT', 'FIFTH_DRAFT', 'COMPLETED'],
   }).notNull().default('FIRST_DRAFT'),
+  publishingStatus: text('publishing_status', {
+    enum: ['draft', 'self_published', 'submitted', 'published'],
+  }).notNull().default('draft'),
   wordCount: integer('word_count').notNull().default(0),
   chapterCount: integer('chapter_count').notNull().default(0),
   commentCount: integer('comment_count').notNull().default(0),
