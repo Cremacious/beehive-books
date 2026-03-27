@@ -558,10 +558,15 @@ export async function getAllNotificationsAdminAction(page = 1) {
 // Announcements
 // ---------------------------------------------------------------------------
 
+export type AnnouncementType = 'new_feature' | 'coming_soon' | 'maintenance' | 'community_update';
+
 export type AnnouncementItem = {
   id: string;
   title: string;
   content: string;
+  type: AnnouncementType;
+  link: string | null;
+  isActive: boolean;
   createdAt: Date;
   createdBy: { username: string | null } | null;
 };
@@ -570,19 +575,24 @@ export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
   const userId = await getOptionalUserId();
 
   const rows = await db.query.announcements.findMany({
+    where: eq(announcements.isActive, true),
     orderBy: desc(announcements.createdAt),
     with: { createdBy: { columns: { username: true } } },
   });
 
-  if (!userId) {
-    return rows.map((r) => ({
-      id: r.id,
-      title: r.title,
-      content: r.content,
-      createdAt: r.createdAt,
-      createdBy: r.createdBy,
-    }));
-  }
+  type CreatedByRow = { username: string | null } | null;
+  const allItems: AnnouncementItem[] = rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    type: r.type as AnnouncementType,
+    link: r.link ?? null,
+    isActive: r.isActive,
+    createdAt: r.createdAt,
+    createdBy: (r.createdBy as unknown as CreatedByRow) ?? null,
+  }));
+
+  if (!userId) return allItems;
 
   const dismissals = await db.query.announcementDismissals.findMany({
     where: eq(announcementDismissals.userId, userId),
@@ -590,15 +600,7 @@ export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
   });
   const dismissedIds = new Set(dismissals.map((d) => d.announcementId));
 
-  return rows
-    .filter((r) => !dismissedIds.has(r.id))
-    .map((r) => ({
-      id: r.id,
-      title: r.title,
-      content: r.content,
-      createdAt: r.createdAt,
-      createdBy: r.createdBy,
-    }));
+  return allItems.filter((a) => !dismissedIds.has(a.id));
 }
 
 export async function dismissAnnouncementAction(
@@ -618,12 +620,31 @@ export async function dismissAnnouncementAction(
 
 export async function getAllAnnouncementsAdminAction(): Promise<AnnouncementItem[]> {
   await requireAdmin();
-  return getAnnouncementsAction();
+
+  const rows = await db.query.announcements.findMany({
+    orderBy: desc(announcements.createdAt),
+    with: { createdBy: { columns: { username: true } } },
+  });
+
+  type CreatedByRow = { username: string | null } | null;
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    type: r.type as AnnouncementType,
+    link: r.link ?? null,
+    isActive: r.isActive,
+    createdAt: r.createdAt,
+    createdBy: (r.createdBy as unknown as CreatedByRow) ?? null,
+  }));
 }
 
 export async function createAnnouncementAction(
   title: string,
   content: string,
+  type: AnnouncementType = 'community_update',
+  link?: string,
+  isActive = true,
 ): Promise<ActionResult> {
   const userId = await requireAdmin();
   if (!title.trim() || !content.trim()) {
@@ -632,11 +653,58 @@ export async function createAnnouncementAction(
   await db.insert(announcements).values({
     title: title.trim(),
     content: content.trim(),
+    type,
+    link: link?.trim() || null,
+    isActive,
     createdById: userId,
   });
   revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement created.' };
+}
+
+export async function updateAnnouncementAction(
+  id: string,
+  title: string,
+  content: string,
+  type: AnnouncementType,
+  link?: string,
+  isActive = true,
+): Promise<ActionResult> {
+  await requireAdmin();
+  if (!title.trim() || !content.trim()) {
+    return { success: false, message: 'Title and content are required.' };
+  }
+  await db
+    .update(announcements)
+    .set({
+      title: title.trim(),
+      content: content.trim(),
+      type,
+      link: link?.trim() || null,
+      isActive,
+      updatedAt: new Date(),
+    })
+    .where(eq(announcements.id, id));
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement updated.' };
+}
+
+export async function toggleAnnouncementActiveAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  const row = await db.query.announcements.findFirst({
+    where: eq(announcements.id, id),
+    columns: { isActive: true },
+  });
+  if (!row) return { success: false, message: 'Not found.' };
+  await db
+    .update(announcements)
+    .set({ isActive: !row.isActive, updatedAt: new Date() })
+    .where(eq(announcements.id, id));
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: `Announcement ${!row.isActive ? 'activated' : 'deactivated'}.` };
 }
 
 export async function deleteAnnouncementAdminAction(id: string): Promise<ActionResult> {
