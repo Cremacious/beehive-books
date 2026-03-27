@@ -315,14 +315,20 @@ export default function HiveSuggestEditor({
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
           {/* Editor panel */}
           <div className={`${isMod ? 'xl:col-span-3' : 'xl:col-span-5'} space-y-3`}>
-            <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
-              <RichTextEditor
-                key={`${selectedChapterId}-${mode}`}
-                content={mode === 'View' ? chapterContent : editorContent}
-                editable={mode !== 'View'}
-                onChange={setEditorContent}
-              />
-            </div>
+            {mode === 'View' ? (
+              <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
+                <RichTextEditor editable={false} content={chapterContent} />
+              </div>
+            ) : (
+              <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] overflow-hidden">
+                <RichTextEditor
+                  key={`${selectedChapterId}-${mode}`}
+                  content={editorContent}
+                  editable={true}
+                  onChange={setEditorContent}
+                />
+              </div>
+            )}
 
             {mode === 'Suggest' && (
               <div className="space-y-2">
