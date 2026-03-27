@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Check, Loader2, XCircle } from 'lucide-react';
+import DiffMatchPatch from 'diff-match-patch';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
@@ -11,6 +12,8 @@ import {
   rejectSuggestionAction,
 } from '@/lib/actions/hive-suggestions.actions';
 import type { HiveChapterSuggestion } from '@/lib/types/hive.types';
+
+type ViewTab = 'current' | 'changes' | 'suggested';
 
 function timeAgo(date: Date): string {
   const diff = Date.now() - new Date(date).getTime();
@@ -22,6 +25,37 @@ function timeAgo(date: Date): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function DiffView({ original, suggested }: { original: string; suggested: string }) {
+  const dmp = new DiffMatchPatch();
+  const diffs = dmp.diff_main(stripHtml(original), stripHtml(suggested));
+  dmp.diff_cleanupSemantic(diffs);
+
+  return (
+    <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 font-mono text-sm leading-relaxed overflow-y-auto max-h-[70vh] whitespace-pre-wrap">
+      {diffs.map(([op, text], i) => {
+        if (op === 0) return <span key={i} className="text-white/80">{text}</span>;
+        if (op === 1) return <span key={i} className="bg-yellow-500/20 text-yellow-500">{text}</span>;
+        if (op === -1) return <span key={i} className="line-through text-white/40">{text}</span>;
+      })}
+    </div>
+  );
+}
+
+const TABS: { id: ViewTab; label: string }[] = [
+  { id: 'current', label: 'Current' },
+  { id: 'changes', label: 'Changes' },
+  { id: 'suggested', label: 'Suggested' },
+];
+
 export default function SuggestionReviewPage({
   hiveId,
   suggestion,
@@ -30,6 +64,7 @@ export default function SuggestionReviewPage({
   suggestion: HiveChapterSuggestion;
 }) {
   const router = useRouter();
+  const [tab, setTab] = useState<ViewTab>('changes');
   const [rejectNote, setRejectNote] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -96,20 +131,46 @@ export default function SuggestionReviewPage({
         </div>
       )}
 
-      {/* Two-column diff */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 overflow-y-auto max-h-[70vh]">
-          <p className="text-xs font-semibold text-white/60 mb-3 uppercase tracking-wide">
-            Current Version
-          </p>
-          <RichTextEditor content={suggestion.originalContent} editable={false} />
-        </div>
-        <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 overflow-y-auto max-h-[70vh]">
-          <p className="text-xs font-semibold text-yellow-500 mb-3 uppercase tracking-wide">
-            Suggested Version
-          </p>
-          <RichTextEditor content={suggestion.suggestedContent} editable={false} />
-        </div>
+      {/* Tab switcher */}
+      <div className="flex items-center gap-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-1 mb-4 self-start">
+        {TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              tab === id
+                ? 'bg-yellow-500 text-black'
+                : 'text-white/80 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content panels */}
+      <div className="flex-1">
+        {tab === 'current' && (
+          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 overflow-y-auto max-h-[70vh]">
+            <p className="text-xs font-semibold text-white/60 mb-3 uppercase tracking-wide">
+              Current Version
+            </p>
+            <RichTextEditor content={suggestion.originalContent} editable={false} />
+          </div>
+        )}
+
+        {tab === 'changes' && (
+          <DiffView original={suggestion.originalContent} suggested={suggestion.suggestedContent} />
+        )}
+
+        {tab === 'suggested' && (
+          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6 overflow-y-auto max-h-[70vh]">
+            <p className="text-xs font-semibold text-yellow-500 mb-3 uppercase tracking-wide">
+              Suggested Version
+            </p>
+            <RichTextEditor content={suggestion.suggestedContent} editable={false} />
+          </div>
+        )}
       </div>
 
       {/* Sticky footer */}

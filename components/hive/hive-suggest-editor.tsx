@@ -152,6 +152,16 @@ export default function HiveSuggestEditor({
 
   return (
     <div className="space-y-5">
+        {/* How this works */}
+        <div className="rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4 space-y-1">
+          <p className="text-sm font-medium text-white">How this works</p>
+          <ul className="text-xs text-white/80 space-y-1 list-disc list-inside">
+            <li><span className="text-white font-medium">View</span> — Read the chapter as-is</li>
+            <li><span className="text-white font-medium">Suggest</span> — Edit the chapter and submit your changes for the owner to review</li>
+            {isMod && <li><span className="text-white font-medium">Write</span> — Directly edit the chapter (owners and moderators only)</li>}
+          </ul>
+        </div>
+
         {/* Header row */}
         <div className="flex items-center gap-3 flex-wrap">
           <select
