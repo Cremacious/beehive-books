@@ -69,7 +69,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           />
         </div>
 
-        <div className="px-2 xl:px-3 pb-1">
+        {/* <div className="px-2 xl:px-3 pb-1">
           <Link
             href="/search"
             aria-label="Search"
@@ -87,7 +87,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             />
             <span className="hidden lg:block" aria-hidden="true">Search</span>
           </Link>
-        </div>
+        </div> */}
 
         <nav className="flex-1 px-2 xl:px-3 py-1 min-h-0">
           <ul className="space-y-1 flex flex-col md:items-center lg:items-stretch">
