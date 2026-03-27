@@ -2,15 +2,13 @@
 
 import { useState, useTransition } from 'react';
 import Image from 'next/image';
-import { Loader2, X, Check, XCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Popup from '@/components/ui/popup';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import {
   getHiveChapterSuggestionsAction,
   createSuggestionAction,
-  acceptSuggestionAction,
-  rejectSuggestionAction,
   writeChapterContentAction,
 } from '@/lib/actions/hive-suggestions.actions';
 import type { HiveRole, HiveChapterSuggestion } from '@/lib/types/hive.types';
@@ -57,15 +55,15 @@ function AuthorAvatar({ author }: { author: { username: string | null; image: st
 
 function SuggestionCard({
   suggestion,
-  onClick,
+  hiveId,
 }: {
   suggestion: HiveChapterSuggestion;
-  onClick: () => void;
+  hiveId: string;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className="w-full text-left rounded-xl border border-[#2a2a2a] bg-[#252525] hover:bg-[#2d2d2d] hover:border-yellow-500/30 p-3 space-y-2 transition-all"
+    <Link
+      href={`/hive/${hiveId}/suggest/${suggestion.id}`}
+      className="block w-full text-left rounded-xl border border-[#2a2a2a] bg-[#252525] hover:bg-[#2d2d2d] hover:border-yellow-500/30 p-3 space-y-2 transition-all"
     >
       <div className="flex items-center gap-2">
         <AuthorAvatar author={suggestion.author} />
@@ -81,115 +79,7 @@ function SuggestionCard({
       {suggestion.summary && (
         <p className="text-xs text-white/80 line-clamp-2 italic">{suggestion.summary}</p>
       )}
-    </button>
-  );
-}
-
-function SuggestionReviewPopup({
-  suggestion,
-  onClose,
-  onAccepted,
-  onRejected,
-}: {
-  suggestion: HiveChapterSuggestion;
-  onClose: () => void;
-  onAccepted: (id: string) => void;
-  onRejected: (id: string) => void;
-}) {
-  const [rejectNote, setRejectNote] = useState('');
-  const [showRejectInput, setShowRejectInput] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState('');
-
-  const handleAccept = () => {
-    setError('');
-    startTransition(async () => {
-      const result = await acceptSuggestionAction(suggestion.id);
-      if (!result.success) { setError(result.message); return; }
-      onAccepted(suggestion.id);
-      onClose();
-    });
-  };
-
-  const handleReject = () => {
-    setError('');
-    startTransition(async () => {
-      const result = await rejectSuggestionAction(suggestion.id, rejectNote);
-      if (!result.success) { setError(result.message); return; }
-      onRejected(suggestion.id);
-      onClose();
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-xs text-white/80 mb-1">Chapter</p>
-        <p className="text-sm font-semibold text-white">{suggestion.chapter.title}</p>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <AuthorAvatar author={suggestion.author} />
-        <span className="text-sm text-white/80">
-          {suggestion.author.username ?? 'Member'} &middot; {timeAgo(suggestion.createdAt)}
-        </span>
-      </div>
-
-      {suggestion.summary && (
-        <div className="rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2">
-          <p className="text-xs text-white/80 italic">{suggestion.summary}</p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold text-white/80">Current Version</p>
-          <div className="rounded-xl border border-[#2a2a2a] overflow-hidden max-h-80 overflow-y-auto">
-            <RichTextEditor content={suggestion.originalContent} editable={false} />
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold text-yellow-500">Suggested Version</p>
-          <div className="rounded-xl border border-yellow-500/20 overflow-hidden max-h-80 overflow-y-auto">
-            <RichTextEditor content={suggestion.suggestedContent} editable={false} />
-          </div>
-        </div>
-      </div>
-
-      {error && <p className="text-xs text-red-400">{error}</p>}
-
-      {showRejectInput ? (
-        <div className="space-y-2">
-          <input
-            value={rejectNote}
-            onChange={(e) => setRejectNote(e.target.value)}
-            placeholder="Optional note for the author…"
-            maxLength={500}
-            className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
-          />
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="destructive" onClick={handleReject} disabled={isPending}>
-              {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              Confirm Reject
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowRejectInput(false)} disabled={isPending}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 pt-1">
-          <Button size="sm" onClick={handleAccept} disabled={isPending}>
-            {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-            Accept
-          </Button>
-          <Button size="sm" variant="destructive" onClick={() => setShowRejectInput(true)} disabled={isPending}>
-            <XCircle className="w-3.5 h-3.5" />
-            Reject
-          </Button>
-        </div>
-      )}
-    </div>
+    </Link>
   );
 }
 
@@ -210,7 +100,6 @@ export default function HiveSuggestEditor({
   const [mode, setMode] = useState<EditorMode>(defaultMode);
   const [summary, setSummary] = useState('');
   const [suggestions, setSuggestions] = useState<HiveChapterSuggestion[]>(initialSuggestions);
-  const [viewingSuggestion, setViewingSuggestion] = useState<HiveChapterSuggestion | null>(null);
   const [isPending, startTransition] = useTransition();
   const [saveMessage, setSaveMessage] = useState('');
   const [error, setError] = useState('');
@@ -259,27 +148,10 @@ export default function HiveSuggestEditor({
     });
   };
 
-  const handleAccepted = (id: string) => {
-    setSuggestions((prev) => prev.filter((s) => s.id !== id));
-    const chapter = chapters.find((c) => c.id === selectedChapterId);
-    if (chapter) {
-      const accepted = suggestions.find((s) => s.id === id);
-      if (accepted) {
-        setChapterContent(accepted.suggestedContent);
-        setEditorContent(accepted.suggestedContent);
-      }
-    }
-  };
-
-  const handleRejected = (id: string) => {
-    setSuggestions((prev) => prev.filter((s) => s.id !== id));
-  };
-
   const filteredSuggestions = suggestions.filter((s) => s.chapterId === selectedChapterId);
 
   return (
-    <>
-      <div className="space-y-5">
+    <div className="space-y-5">
         {/* Header row */}
         <div className="flex items-center gap-3 flex-wrap">
           <select
@@ -386,7 +258,7 @@ export default function HiveSuggestEditor({
                     <SuggestionCard
                       key={s.id}
                       suggestion={s}
-                      onClick={() => setViewingSuggestion(s)}
+                      hiveId={hiveId}
                     />
                   ))
                 )}
@@ -394,23 +266,6 @@ export default function HiveSuggestEditor({
             </div>
           )}
         </div>
-      </div>
-
-      <Popup
-        open={viewingSuggestion !== null}
-        onClose={() => setViewingSuggestion(null)}
-        title="Review Suggestion"
-        maxWidth="lg"
-      >
-        {viewingSuggestion && (
-          <SuggestionReviewPopup
-            suggestion={viewingSuggestion}
-            onClose={() => setViewingSuggestion(null)}
-            onAccepted={handleAccepted}
-            onRejected={handleRejected}
-          />
-        )}
-      </Popup>
-    </>
+    </div>
   );
 }
