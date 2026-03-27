@@ -98,7 +98,7 @@ export async function searchExplorableBooksAction(
       : undefined;
 
   const draftStatusFilter = draftStatuses.length > 0
-    ? inArray(books.draftStatus, draftStatuses)
+    ? inArray(books.draftStatus, draftStatuses as ('FIRST_DRAFT' | 'SECOND_DRAFT' | 'THIRD_DRAFT' | 'FOURTH_DRAFT' | 'FIFTH_DRAFT' | 'COMPLETED')[])
     : undefined;
 
   const wordCountFilter = wordCountRange
