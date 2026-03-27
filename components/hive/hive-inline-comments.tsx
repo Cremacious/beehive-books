@@ -764,6 +764,12 @@ export default function HiveInlineComments({
           )}
         </div>
 
+        {selectedChapterId && !showAddForm && (
+          <p className="text-xs text-white/80">
+            Select any text in the chapter below using mouse to add an anchored annotation.
+          </p>
+        )}
+
         {showAddForm && selectedChapterId && (
           <AddCommentForm
             hiveId={hiveId}
