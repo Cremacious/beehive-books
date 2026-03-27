@@ -48,6 +48,20 @@ interface HiveWikiProps {
   myRole: HiveRole;
 }
 
+const WIKI_TEMPLATES: Partial<Record<WikiCategory, string>> = {
+  CHARACTER: `<h2>Overview</h2><p></p><h2>Appearance</h2><p></p><h2>Personality</h2><p></p><h2>Backstory</h2><p></p><h2>Relationships</h2><p></p><h2>Notes</h2><p></p>`,
+  LOCATION: `<h2>Description</h2><p></p><h2>Geography</h2><p></p><h2>History</h2><p></p><h2>Notable Residents</h2><p></p><h2>Notes</h2><p></p>`,
+  FACTION: `<h2>Purpose</h2><p></p><h2>Members</h2><p></p><h2>Allegiances</h2><p></p><h2>History</h2><p></p><h2>Notes</h2><p></p>`,
+  TIMELINE: `<h2>Date / Period</h2><p></p><h2>Description</h2><p></p><h2>Participants</h2><p></p><h2>Consequences</h2><p></p><h2>Notes</h2><p></p>`,
+  LORE: `<h2>Overview</h2><p></p><h2>Origins</h2><p></p><h2>Significance</h2><p></p><h2>Notes</h2><p></p>`,
+  ARTIFACT: `<h2>Description</h2><p></p><h2>Origin</h2><p></p><h2>Abilities / Properties</h2><p></p><h2>Current Location</h2><p></p><h2>Notes</h2><p></p>`,
+  BIOLOGY: `<h2>Overview</h2><p></p><h2>Appearance</h2><p></p><h2>Habitat</h2><p></p><h2>Behavior</h2><p></p><h2>Notes</h2><p></p>`,
+  CULTURE: `<h2>Overview</h2><p></p><h2>Traditions</h2><p></p><h2>Values</h2><p></p><h2>Notes</h2><p></p>`,
+  PLOT: `<h2>Summary</h2><p></p><h2>Key Beats</h2><p></p><h2>Characters Involved</h2><p></p><h2>Resolution</h2><p></p><h2>Notes</h2><p></p>`,
+  THEME: `<h2>Overview</h2><p></p><h2>How It Appears</h2><p></p><h2>Key Moments</h2><p></p><h2>Notes</h2><p></p>`,
+};
+// LANGUAGE, ECONOMY, TERMINOLOGY, OTHER → no template (free-form)
+
 const CATEGORIES: {
   value: WikiCategory;
   label: string;
@@ -172,7 +186,13 @@ function EntryForm({
             key={value}
             type="button"
             title={tooltip}
-            onClick={() => setCategory(value)}
+            onClick={() => {
+              setCategory(value);
+              if (!initial && !content.trim()) {
+                const template = WIKI_TEMPLATES[value];
+                if (template) setContent(template);
+              }
+            }}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               category === value
                 ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
@@ -184,6 +204,12 @@ function EntryForm({
           </button>
         ))}
       </div>
+
+      {!initial && (
+        <p className="text-xs text-white/80">
+          Select a category to load a starter template. You can edit or remove any section.
+        </p>
+      )}
 
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
         <RichTextEditor content={content} onChange={setContent} editable />
