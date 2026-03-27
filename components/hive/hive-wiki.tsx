@@ -212,7 +212,7 @@ function EntryForm({
       )}
 
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
-        <RichTextEditor content={content} onChange={setContent} editable />
+        <RichTextEditor key={content === '' ? 'empty' : category} content={content} onChange={setContent} editable />
       </div>
 
       <div className="space-y-2">
