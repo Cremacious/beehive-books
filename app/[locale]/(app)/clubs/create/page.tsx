@@ -23,7 +23,7 @@ export default async function CreateClubPage() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
+    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto overflow-x-hidden">
 
       <div className="bg-[#252525] rounded-2xl border border-[#2a2a2a] p-6">
         <ClubForm mode="create" cancelHref="/clubs" friends={friends} />
