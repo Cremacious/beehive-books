@@ -77,9 +77,10 @@ export default function FeedbackForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Category cards */}
       <div>
-        <p className="text-xs font-semibold text-white/80 uppercase tracking-wide mb-3">
-          What kind of feedback is this?
-        </p>
+        <label className="block text-sm font-medium text-white mb-1">
+          Category
+        </label>
+        <p className="text-xs text-white/80 mb-2">Select the type that best fits your feedback.</p>
         <div className="grid grid-cols-2 gap-3">
           {CATEGORIES.map(({ value, label, description }) => {
             const selected = category === value;
@@ -106,40 +107,42 @@ export default function FeedbackForm() {
       {category && (
         <>
           <div>
-            <label className="block text-xs font-semibold text-white/80 uppercase tracking-wide mb-2">
+            <label className="block text-sm font-medium text-white mb-1">
               Your Feedback
             </label>
+            <p className="text-xs text-white/80 mb-2">Share your thoughts, suggestion, or describe the issue. Minimum 10 characters.</p>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={6}
               placeholder="Share your thoughts, suggestions, or describe your issue..."
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors resize-none"
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors resize-none"
             />
-            {contentError && <p className="mt-1 text-xs text-red-400">{contentError}</p>}
+            {contentError && <p className="mt-1 text-xs text-white/80">{contentError}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-white/80 uppercase tracking-wide mb-2">
-              Email <span className="normal-case font-normal text-white/60">(optional — for a response)</span>
+            <label className="block text-sm font-medium text-white mb-1">
+              Email
             </label>
+            <p className="text-xs text-white/80 mb-2">Optional — include if you want a reply.</p>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors"
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors"
             />
           </div>
 
-          {serverError && <p className="text-sm text-red-400">{serverError}</p>}
+          {serverError && <p className="text-sm text-white/80">{serverError}</p>}
 
           <Button
             type="submit"
             disabled={isPending}
             className="w-full bg-[#FFC300] text-black hover:bg-[#FFD040] font-semibold"
           >
-            {isPending ? 'Submitting...' : 'Submit Feedback'}
+            {isPending ? 'Submitting...' : 'Send Feedback'}
           </Button>
         </>
       )}

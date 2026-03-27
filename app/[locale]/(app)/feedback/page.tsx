@@ -10,7 +10,9 @@ export default function FeedbackPage() {
         </p>
       </div>
 
-      <FeedbackForm />
+      <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
+        <FeedbackForm />
+      </div>
     </div>
   );
 }
