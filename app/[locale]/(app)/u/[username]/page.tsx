@@ -106,14 +106,14 @@ export default async function UserProfilePage({ params }: Props) {
                 <Link
                   href="/settings"
                   data-testid="edit-profile-link"
-                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/70 hover:text-white hover:border-[#FFC300]/30 transition-all"
+                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/80 hover:text-white hover:border-[#FFC300]/30 transition-all"
                 >
                   Edit Profile
                 </Link>
               ) : (
                 <button
                   disabled
-                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/50 cursor-not-allowed"
+                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/80 cursor-not-allowed"
                   title="Follow feature coming soon"
                 >
                   Follow
@@ -133,15 +133,15 @@ export default async function UserProfilePage({ params }: Props) {
             <h1 data-testid="profile-username" className="text-xl md:text-2xl font-bold text-white mainFont">
               {displayName}
             </h1>
-            <p className="text-xs text-white/50 mt-0.5">Member since {memberSince}</p>
+            <p className="text-xs text-white/80 mt-0.5">Member since {memberSince}</p>
 
             {/* Stats row */}
             <div className="flex items-center gap-5 mt-3 flex-wrap">
-              <div className="flex items-center gap-1.5 text-sm text-white/60">
+              <div className="flex items-center gap-1.5 text-sm text-white/80">
                 <BookOpen className="w-4 h-4 text-[#FFC300]/60" />
                 <span>{totalBooks} {totalBooks === 1 ? 'book' : 'books'}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-sm text-white/60">
+              <div className="flex items-center gap-1.5 text-sm text-white/80">
                 <Heart className="w-4 h-4 text-rose-400/60" />
                 <span>{totalLikes} {totalLikes === 1 ? 'like' : 'likes'}</span>
               </div>

@@ -62,19 +62,19 @@ export default async function ExploreBooksPage({
       param: 'status',
       label: 'Status',
       options: ['DRAFTING', 'COMPLETE', 'ON_HIATUS'],
-      labels: { DRAFTING: 'In Progress', COMPLETE: 'Complete', ON_HIATUS: 'On Hiatus' },
+      labels: { DRAFTING: 'In Progress', COMPLETE: 'Complete', ON_HIATUS: 'On Hiatus' } as Record<string, string>,
     },
     {
       param: 'length',
       label: 'Length',
       options: ['short', 'novella', 'novel', 'epic'],
-      labels: { short: 'Short (< 10k words)', novella: 'Novella (10k–40k)', novel: 'Novel (40k–100k)', epic: 'Epic (100k+)' },
+      labels: { short: 'Short (< 10k words)', novella: 'Novella (10k–40k)', novel: 'Novel (40k–100k)', epic: 'Epic (100k+)' } as Record<string, string>,
     },
     {
       param: 'updated',
       label: 'Recently Updated',
       options: ['week', 'month', 'year'],
-      labels: { week: 'This week', month: 'This month', year: 'This year' },
+      labels: { week: 'This week', month: 'This month', year: 'This year' } as Record<string, string>,
     },
     {
       param: 'tag',
