@@ -59,8 +59,10 @@ const WIKI_TEMPLATES: Partial<Record<WikiCategory, string>> = {
   CULTURE: `<h2>Overview</h2><p></p><h2>Traditions</h2><p></p><h2>Values</h2><p></p><h2>Notes</h2><p></p>`,
   PLOT: `<h2>Summary</h2><p></p><h2>Key Beats</h2><p></p><h2>Characters Involved</h2><p></p><h2>Resolution</h2><p></p><h2>Notes</h2><p></p>`,
   THEME: `<h2>Overview</h2><p></p><h2>How It Appears</h2><p></p><h2>Key Moments</h2><p></p><h2>Notes</h2><p></p>`,
+  ECONOMY: `<h2>Overview</h2><p></p><h2>Currency System</h2><p></p><h2>Trade & Commerce</h2><p></p><h2>Key Resources</h2><p></p><h2>Economic Powers</h2><p></p><h2>Notes</h2><p></p>`,
+  TERMINOLOGY: `<h2>Term</h2><p></p><h2>Definition</h2><p></p><h2>Etymology</h2><p></p><h2>Usage</h2><p></p><h2>Related Terms</h2><p></p><h2>Notes</h2><p></p>`,
 };
-// LANGUAGE, ECONOMY, TERMINOLOGY, OTHER → no template (free-form)
+// LANGUAGE, OTHER → no template (free-form)
 
 const CATEGORIES: {
   value: WikiCategory;
@@ -188,9 +190,9 @@ function EntryForm({
             title={tooltip}
             onClick={() => {
               setCategory(value);
-              if (!initial && !content.trim()) {
+              if (!initial) {
                 const template = WIKI_TEMPLATES[value];
-                if (template) setContent(template);
+                setContent(template ?? '');
               }
             }}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
@@ -571,7 +573,7 @@ export default function HiveWiki({
                 </span>
 
                 <div
-                  className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none"
+                  className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none [&_h2]:border-l-2 [&_h2]:border-[#FFC300]/40 [&_h2]:pl-3 [&_h2]:text-white"
                   dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
                 />
 
