@@ -51,7 +51,7 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0 overflow-y-auto">
       <div className="flex flex-col min-h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
-        <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-3">
+        <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 pt-3 pb-6">
           <Image
             src={logoImage}
             alt="Beehive Books"
