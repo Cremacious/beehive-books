@@ -85,6 +85,9 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'PROMPT_AUTHOR_CHOICE':    return `Your entry was chosen as the creator's pick on "${metadata?.promptTitle}"`;
     case 'SUBMISSION_APPROVED': return `approved your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
     case 'SUBMISSION_REJECTED': return `did not accept your chapter submission — "${metadata?.submissionTitle ?? 'your submission'}"`;
+    case 'HIVE_SUGGESTION':     return `submitted a chapter suggestion in ${metadata?.hiveName ?? 'the hive'}`;
+    case 'SUGGESTION_ACCEPTED': return `accepted your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
+    case 'SUGGESTION_REJECTED': return `did not accept your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
     default:                    return 'sent you a notification';
   }
 }
@@ -126,6 +129,9 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'PROMPT_AUTHOR_CHOICE':    return { Icon: Trophy,          bg: 'bg-yellow-500/20', fg: 'text-yellow-500' };
     case 'SUBMISSION_APPROVED': return { Icon: Upload,          bg: 'bg-green-500/20',  fg: 'text-green-400'  };
     case 'SUBMISSION_REJECTED': return { Icon: Upload,          bg: 'bg-red-500/20',    fg: 'text-red-400'    };
+    case 'HIVE_SUGGESTION':     return { Icon: Hexagon,         bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'SUGGESTION_ACCEPTED': return { Icon: Hexagon,         bg: 'bg-green-500/20',  fg: 'text-green-400'  };
+    case 'SUGGESTION_REJECTED': return { Icon: Hexagon,         bg: 'bg-red-500/20',    fg: 'text-red-400'    };
     default:                    return { Icon: Bell,            bg: 'bg-white/10',      fg: 'text-white/80'   };
   }
 }

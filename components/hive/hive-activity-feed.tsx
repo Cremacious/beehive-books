@@ -162,6 +162,18 @@ const EVENT_CONFIG: Record<
     bg: 'bg-green-400/10',
     describe: (meta, name) => `${name}'s chapter submission was approved — "${meta.title}"`,
   },
+  CHAPTER_SUGGESTION_SUBMITTED: {
+    icon: Upload,
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-500/10',
+    describe: (meta, name) => `${name} submitted a chapter suggestion — "${meta.chapterTitle ?? 'a chapter'}"`,
+  },
+  CHAPTER_SUGGESTION_ACCEPTED: {
+    icon: CheckCheck,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
+    describe: (meta, name) => `${name}'s chapter suggestion was accepted — "${meta.chapterTitle ?? 'a chapter'}"`,
+  },
 };
 
 function EventRow({ event }: { event: ActivityEvent }) {

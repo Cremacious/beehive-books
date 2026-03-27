@@ -507,6 +507,22 @@ export const hiveChapterSubmissions = pgTable('hive_chapter_submissions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const hiveChapterSuggestions = pgTable('hive_chapter_suggestions', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  hiveId: text('hive_id').notNull().references(() => hives.id, { onDelete: 'cascade' }),
+  chapterId: text('chapter_id').notNull().references(() => chapters.id, { onDelete: 'cascade' }),
+  authorId: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  originalContent: text('original_content').notNull(),
+  suggestedContent: text('suggested_content').notNull(),
+  summary: text('summary'),
+  status: text('status', { enum: ['PENDING', 'ACCEPTED', 'REJECTED'] }).notNull().default('PENDING'),
+  reviewedById: text('reviewed_by_id').references(() => users.id, { onDelete: 'set null' }),
+  reviewNote: text('review_note'),
+  reviewedAt: timestamp('reviewed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
@@ -528,6 +544,7 @@ export const hivesRelations = relations(hives, ({ one, many }) => ({
   chatMessages: many(hiveChatMessages),
   buzzItems: many(hiveBuzzItems),
   submissions: many(hiveChapterSubmissions),
+  chapterSuggestions: many(hiveChapterSuggestions),
 }));
 
 export const hiveMembersRelations = relations(hiveMembers, ({ one }) => ({
@@ -664,5 +681,16 @@ export const hiveChapterSubmissionsRelations = relations(hiveChapterSubmissions,
     fields: [hiveChapterSubmissions.reviewedById],
     references: [users.id],
     relationName: 'reviewedSubmissions',
+  }),
+}));
+
+export const hiveChapterSuggestionsRelations = relations(hiveChapterSuggestions, ({ one }) => ({
+  hive: one(hives, { fields: [hiveChapterSuggestions.hiveId], references: [hives.id] }),
+  chapter: one(chapters, { fields: [hiveChapterSuggestions.chapterId], references: [chapters.id] }),
+  author: one(users, { fields: [hiveChapterSuggestions.authorId], references: [users.id] }),
+  reviewedBy: one(users, {
+    fields: [hiveChapterSuggestions.reviewedById],
+    references: [users.id],
+    relationName: 'suggestionReviewer',
   }),
 }));

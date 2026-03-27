@@ -299,6 +299,26 @@ export type BetaChapterWithStatus = {
   } | null;
 };
 
+export type SuggestionStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+
+export type HiveChapterSuggestion = {
+  id: string;
+  hiveId: string;
+  chapterId: string;
+  authorId: string;
+  originalContent: string;
+  suggestedContent: string;
+  summary: string | null;
+  status: SuggestionStatus;
+  reviewedById: string | null;
+  reviewNote: string | null;
+  reviewedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  author: HiveUser;
+  chapter: { id: string; title: string };
+};
+
 export type InlineCommentStatus = 'OPEN' | 'RESOLVED';
 
 export type InlineComment = {
@@ -403,7 +423,9 @@ export type ActivityEventType =
   | 'BUZZ_ITEM'
   | 'MEMBER_JOINED'
   | 'CHAPTER_SUBMITTED'
-  | 'CHAPTER_SUBMISSION_APPROVED';
+  | 'CHAPTER_SUBMISSION_APPROVED'
+  | 'CHAPTER_SUGGESTION_SUBMITTED'
+  | 'CHAPTER_SUGGESTION_ACCEPTED';
 
 export type ActivityEvent = {
   id: string;

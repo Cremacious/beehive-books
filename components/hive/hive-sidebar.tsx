@@ -16,6 +16,7 @@ import {
   Trophy,
   ChevronLeft,
   Upload,
+  Pencil,
 } from 'lucide-react';
 import type { HiveWithMembership, HiveUser } from '@/lib/types/hive.types';
 
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { href: '/milestones', label: 'Milestones', icon: Trophy },
   { href: '/members', label: 'Members', icon: Users },
   { href: '/submissions', label: 'Submissions', icon: Upload },
+  { href: '/suggest', label: 'Suggest', icon: Pencil },
   { href: '/forum', label: 'Forum', icon: MessageSquare },
 ] as const;
 
@@ -39,6 +41,7 @@ interface HiveSidebarProps {
   topMembers: HiveUser[];
   onNavClick?: () => void;
   pendingSubmissionCount?: number;
+  pendingSuggestionCount?: number;
 }
 
 export default function HiveSidebar({
@@ -48,6 +51,7 @@ export default function HiveSidebar({
   topMembers,
   onNavClick,
   pendingSubmissionCount = 0,
+  pendingSuggestionCount = 0,
 }: HiveSidebarProps) {
   const pathname = usePathname();
   const base = `/hive/${hiveId}`;
@@ -115,7 +119,10 @@ export default function HiveSidebar({
       <nav className="flex flex-col gap-0.5 flex-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
-          const showBadge = href === '/submissions' && pendingSubmissionCount > 0;
+          const showBadge =
+            (href === '/submissions' && pendingSubmissionCount > 0) ||
+            (href === '/suggest' && pendingSuggestionCount > 0);
+          const badgeCount = href === '/submissions' ? pendingSubmissionCount : pendingSuggestionCount;
           return (
             <Link
               key={href}
@@ -131,7 +138,7 @@ export default function HiveSidebar({
               {label}
               {showBadge && (
                 <span className="ml-auto text-xs font-bold bg-yellow-500 text-black rounded-full px-1.5 py-0.5 leading-none">
-                  {pendingSubmissionCount}
+                  {badgeCount}
                 </span>
               )}
             </Link>

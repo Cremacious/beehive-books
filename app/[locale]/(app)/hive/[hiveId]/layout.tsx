@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getHiveAction, getHiveMembersAction } from '@/lib/actions/hive.actions';
 import { getPendingSubmissionCountAction } from '@/lib/actions/hive-submissions.actions';
+import { getSuggestionCountAction } from '@/lib/actions/hive-suggestions.actions';
 import HiveSidebar from '@/components/hive/hive-sidebar';
 import HiveMobileMenuButton from '@/components/hive/hive-mobile-menu-button';
 import BackButton from '@/components/shared/back-button';
@@ -24,7 +25,12 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
   const isMember = hive.isMember;
   const topMembers = members.slice(0, 5).map((m) => m.user);
 
-  const pendingSubmissionCount = isMod ? await getPendingSubmissionCountAction(hiveId) : 0;
+  const [pendingSubmissionCount, pendingSuggestionCount] = isMod
+    ? await Promise.all([
+        getPendingSubmissionCountAction(hiveId),
+        getSuggestionCountAction(hiveId),
+      ])
+    : [0, 0];
 
   return (
     <div className="min-h-screen">
@@ -41,6 +47,7 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
                   hive={hive}
                   topMembers={topMembers}
                   pendingSubmissionCount={pendingSubmissionCount}
+                  pendingSuggestionCount={pendingSuggestionCount}
                 />
               </div>
             </aside>
@@ -59,6 +66,7 @@ export default async function HiveLayout({ children, params }: HiveLayoutProps) 
                   hive={hive}
                   topMembers={topMembers}
                   pendingSubmissionCount={pendingSubmissionCount}
+                  pendingSuggestionCount={pendingSuggestionCount}
                 />
                 <span className="text-xs text-white/80 truncate max-w-[60%] text-right">{hive.name}</span>
               </div>

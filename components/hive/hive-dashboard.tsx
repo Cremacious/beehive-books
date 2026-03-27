@@ -150,6 +150,16 @@ const EVENT_CONFIG: Record<
     color: 'text-green-400',
     bg: 'bg-green-400/10',
   },
+  CHAPTER_SUGGESTION_SUBMITTED: {
+    icon: <Upload className="w-3 h-3" />,
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-500/10',
+  },
+  CHAPTER_SUGGESTION_ACCEPTED: {
+    icon: <CheckCheck className="w-3 h-3" />,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
+  },
 };
 
 function eventDescription(event: ActivityEvent): React.ReactNode {
@@ -294,6 +304,20 @@ function eventDescription(event: ActivityEvent): React.ReactNode {
         <>
           {name}&apos;s submission was approved —{' '}
           <span className="font-semibold text-green-400">{String(m.title)}</span>
+        </>
+      );
+    case 'CHAPTER_SUGGESTION_SUBMITTED':
+      return (
+        <>
+          {name} submitted a chapter suggestion —{' '}
+          <span className="font-semibold text-yellow-500">{String(m.chapterTitle ?? 'a chapter')}</span>
+        </>
+      );
+    case 'CHAPTER_SUGGESTION_ACCEPTED':
+      return (
+        <>
+          {name}&apos;s chapter suggestion was accepted —{' '}
+          <span className="font-semibold text-green-400">{String(m.chapterTitle ?? 'a chapter')}</span>
         </>
       );
     default:

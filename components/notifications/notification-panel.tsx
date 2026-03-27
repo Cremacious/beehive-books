@@ -61,6 +61,9 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_JOIN_REQUEST':      return 'wants to join your hive';
     case 'SUBMISSION_APPROVED':    return `approved your chapter submission${metadata?.submissionTitle ? ` — "${metadata.submissionTitle}"` : ''}`;
     case 'SUBMISSION_REJECTED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was not accepted`;
+    case 'HIVE_SUGGESTION':        return `submitted a chapter suggestion in ${metadata?.hiveName ?? 'the hive'}`;
+    case 'SUGGESTION_ACCEPTED':    return `accepted your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
+    case 'SUGGESTION_REJECTED':    return `did not accept your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
     case 'BOOK_LIKE':              return 'liked your book';
     case 'BOOK_COMMENT':           return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
     case 'BOOK_COMMENT_REPLY':     return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
@@ -108,6 +111,9 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'READING_LIST_NEW_BOOK':     return { Icon: BookOpen,   bg: 'bg-sky-500/20',   fg: 'text-sky-400'   };
     case 'PROMPT_COMMUNITY_WIN':      return { Icon: Trophy,     bg: 'bg-yellow-500/20', fg: 'text-yellow-500' };
     case 'PROMPT_AUTHOR_CHOICE':      return { Icon: Trophy,     bg: 'bg-yellow-500/20', fg: 'text-yellow-500' };
+    case 'HIVE_SUGGESTION':           return { Icon: Hexagon,    bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'SUGGESTION_ACCEPTED':       return { Icon: Hexagon,    bg: 'bg-green-500/20',  fg: 'text-green-400'  };
+    case 'SUGGESTION_REJECTED':       return { Icon: Hexagon,    bg: 'bg-red-500/20',    fg: 'text-red-400'    };
   }
 }
 
