@@ -17,7 +17,7 @@ export default async function RootLayout({
   const locale = await getLocale();
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${comfortaa.variable} antialiased`}>{children}</body>
+      <body className={`${comfortaa.variable} antialiased overflow-hidden h-screen`}>{children}</body>
     </html>
   );
 }
