@@ -3,6 +3,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
@@ -14,10 +15,16 @@ export const announcements = pgTable('announcements', {
     .$defaultFn(() => createId()),
   title: text('title').notNull(),
   content: text('content').notNull(),
+  type: text('type', {
+    enum: ['new_feature', 'coming_soon', 'maintenance', 'community_update'],
+  }).notNull().default('community_update'),
+  link: text('link'),
+  isActive: boolean('is_active').notNull().default(true),
   createdById: text('created_by_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const announcementDismissals = pgTable(
@@ -35,12 +42,17 @@ export const feedback = pgTable('feedback', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createId()),
-  type: text('type', {
-    enum: ['content_suggestion', 'general_feedback', 'technical_support'],
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  category: text('category', {
+    enum: ['feature_request', 'bug_report', 'general', 'content_concern'],
   }).notNull(),
   email: text('email'),
   content: text('content').notNull(),
+  status: text('status', {
+    enum: ['pending', 'reviewed', 'in_progress', 'shipped', 'declined'],
+  }).notNull().default('pending'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // ---------------------------------------------------------------------------
@@ -54,4 +66,8 @@ export const announcementsRelations = relations(announcements, ({ one }) => ({
 export const announcementDismissalsRelations = relations(announcementDismissals, ({ one }) => ({
   user: one(users, { fields: [announcementDismissals.userId], references: [users.id] }),
   announcement: one(announcements, { fields: [announcementDismissals.announcementId], references: [announcements.id] }),
+}));
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  user: one(users, { fields: [feedback.userId], references: [users.id] }),
 }));
