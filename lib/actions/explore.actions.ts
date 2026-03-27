@@ -68,11 +68,14 @@ function mapBook(b: typeof books.$inferSelect): Book {
 
 
 const LIMIT = 30;
+const FTS_LIMIT = 50;
 
 export async function searchExplorableBooksAction(
   query: string,
   genres: string[] = [],
   categories: string[] = [],
+  tags: string[] = [],
+  sort: 'newest' | 'most_liked' | 'most_chapters' = 'newest',
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -80,16 +83,54 @@ export async function searchExplorableBooksAction(
   if (!success) throw new Error('Too many requests. Please slow down.');
 
   const q = query.trim();
+
+  const ftsFilter = q
+    ? sql`to_tsvector('english', coalesce(${books.title}, '') || ' ' || coalesce(${books.author}, '') || ' ' || coalesce(${books.description}, '')) @@ plainto_tsquery('english', ${q})`
+    : undefined;
+
+  const tagFilter =
+    tags.length > 0
+      ? sql`${books.tags}::text ilike any(array[${sql.join(tags.map((t) => sql`${'%"' + t + '"%'}`), sql`, `)}])`
+      : undefined;
+
+  const orderBy = q
+    ? [
+        desc(sql`ts_rank(to_tsvector('english', coalesce(${books.title}, '') || ' ' || coalesce(${books.author}, '') || ' ' || coalesce(${books.description}, '')), plainto_tsquery('english', ${q}))`),
+        desc(books.likeCount),
+      ]
+    : sort === 'most_liked'
+    ? [desc(books.likeCount), desc(books.createdAt)]
+    : sort === 'most_chapters'
+    ? [desc(books.chapterCount), desc(books.createdAt)]
+    : [desc(books.createdAt)];
+
+  if (q) {
+    // FTS: no cursor, cap at FTS_LIMIT
+    const rows = await db.query.books.findMany({
+      where: and(
+        eq(books.explorable, true),
+        eq(books.privacy, 'PUBLIC'),
+        ftsFilter,
+        genres.length > 0 ? inArray(books.genre, genres) : undefined,
+        categories.length > 0 ? inArray(books.category, categories) : undefined,
+        tagFilter,
+      ),
+      orderBy,
+      limit: FTS_LIMIT,
+    });
+    return { books: rows.map(mapBook), nextCursor: null };
+  }
+
   const rows = await db.query.books.findMany({
     where: and(
       eq(books.explorable, true),
       eq(books.privacy, 'PUBLIC'),
-      q ? or(ilike(books.title, `%${q}%`), ilike(books.author, `%${q}%`)) : undefined,
       genres.length > 0 ? inArray(books.genre, genres) : undefined,
       categories.length > 0 ? inArray(books.category, categories) : undefined,
+      tagFilter,
       cursor ? lt(books.createdAt, new Date(cursor)) : undefined,
     ),
-    orderBy: [desc(books.createdAt)],
+    orderBy,
     limit: LIMIT + 1,
   });
 
@@ -101,11 +142,29 @@ export async function searchExplorableBooksAction(
   };
 }
 
+export async function getExplorableTagsAction(): Promise<string[]> {
+  const rows = await db.query.books.findMany({
+    where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+    columns: { tags: true },
+  });
+  const tagCounts = new Map<string, number>();
+  for (const row of rows) {
+    for (const tag of (row.tags as string[])) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...tagCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([tag]) => tag);
+}
+
 
 
 export async function searchExplorableClubsAction(
   query: string,
   tags: string[] = [],
+  sort: 'newest' | 'most_liked' | 'most_members' = 'most_members',
   cursor?: string,
 ): Promise<{ clubs: ClubWithMembership[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -128,9 +187,16 @@ export async function searchExplorableClubsAction(
       )
     : undefined;
 
+  const clubOrderBy =
+    sort === 'newest'
+      ? [desc(bookClubs.createdAt)]
+      : sort === 'most_liked'
+      ? [desc(bookClubs.likeCount), desc(bookClubs.createdAt)]
+      : [desc(bookClubs.memberCount), desc(bookClubs.createdAt)];
+
   const publicPromise = db.query.bookClubs.findMany({
     where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC'), queryFilter, tagFilter, cursorFilter),
-    orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+    orderBy: clubOrderBy,
     limit: LIMIT + 1,
   });
 
@@ -157,17 +223,23 @@ export async function searchExplorableClubsAction(
             tagFilter,
             cursorFilter,
           ),
-          orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+          orderBy: clubOrderBy,
           limit: LIMIT + 1,
         })
       : Promise.resolve([]),
   ]);
 
-  // Deduplicate, sort by createdAt desc, slice to LIMIT+1
+  // Deduplicate, sort by selected field desc, slice to LIMIT+1
   const seen = new Set<string>();
   const combined = [...publicClubs, ...friendClubs]
     .filter((c) => { if (seen.has(c.id)) return false; seen.add(c.id); return true; })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .sort((a, b) =>
+      sort === 'newest'
+        ? b.createdAt.getTime() - a.createdAt.getTime()
+        : sort === 'most_liked'
+        ? (b.likeCount ?? 0) - (a.likeCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime()
+        : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
 
   const hasMore = combined.length > LIMIT;
   const allClubs = hasMore ? combined.slice(0, LIMIT) : combined;
@@ -209,6 +281,7 @@ export async function searchExplorableHivesAction(
   query: string,
   genres: string[] = [],
   tags: string[] = [],
+  sort: 'newest' | 'most_liked' | 'most_members' = 'most_members',
   cursor?: string,
 ): Promise<{ hives: HiveWithMembership[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -229,9 +302,16 @@ export async function searchExplorableHivesAction(
 
   const genreFilter = genres.length > 0 ? inArray(hives.genre, genres) : undefined;
 
+  const hiveOrderBy =
+    sort === 'newest'
+      ? [desc(hives.createdAt)]
+      : sort === 'most_liked'
+      ? [desc(hives.likeCount), desc(hives.createdAt)]
+      : [desc(hives.memberCount), desc(hives.createdAt)];
+
   const publicPromise = db.query.hives.findMany({
     where: and(eq(hives.explorable, true), eq(hives.privacy, 'PUBLIC'), queryFilter, genreFilter, tagFilter, cursorFilter),
-    orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+    orderBy: hiveOrderBy,
     limit: LIMIT + 1,
   });
 
@@ -259,17 +339,23 @@ export async function searchExplorableHivesAction(
             tagFilter,
             cursorFilter,
           ),
-          orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+          orderBy: hiveOrderBy,
           limit: LIMIT + 1,
         })
       : Promise.resolve([]),
   ]);
 
-  // Deduplicate, sort by createdAt desc, slice to LIMIT+1
+  // Deduplicate, sort by selected field desc, slice to LIMIT+1
   const seen = new Set<string>();
   const combined = [...publicHiveList, ...friendHives]
     .filter((h) => { if (seen.has(h.id)) return false; seen.add(h.id); return true; })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .sort((a, b) =>
+      sort === 'newest'
+        ? b.createdAt.getTime() - a.createdAt.getTime()
+        : sort === 'most_liked'
+        ? (b.likeCount ?? 0) - (a.likeCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime()
+        : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
 
   const hasMore = combined.length > LIMIT;
   const allHivesList = hasMore ? combined.slice(0, LIMIT) : combined;
