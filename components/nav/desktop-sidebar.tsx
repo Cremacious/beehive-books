@@ -19,6 +19,7 @@ import {
   Hexagon,
   ShieldCheck,
   MessageSquarePlus,
+  Search,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
@@ -66,6 +67,26 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
             panelPosition="right"
             className="w-full flex items-center justify-center py-1.5 rounded-2xl bg-yellow-500/10 border-2 border-yellow-500/30 text-[#FFC300] hover:bg-yellow-500/15 transition-colors cursor-pointer"
           />
+        </div>
+
+        <div className="px-2 xl:px-3 pb-1">
+          <Link
+            href="/search"
+            aria-label="Search"
+            aria-current={isActive('/search') ? 'page' : undefined}
+            className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-2 lg:px-4 lg:py-1.5 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+              isActive('/search')
+                ? 'text-[#FFC300]'
+                : 'text-white/90 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Search
+              aria-hidden="true"
+              className="w-5.5 h-5.5 shrink-0"
+              strokeWidth={isActive('/search') ? 2.5 : 1.75}
+            />
+            <span className="hidden lg:block" aria-hidden="true">Search</span>
+          </Link>
         </div>
 
         <nav className="flex-1 px-2 xl:px-3 py-1 min-h-0">
