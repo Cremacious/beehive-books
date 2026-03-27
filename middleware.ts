@@ -112,8 +112,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Rate limit page routes (DDoS protection) ──────────────────────────────
-  if (!isDev) {
+  // ── Page route auth guard ─────────────────────────────────────────────────
+  const sessionToken =
+    request.cookies.get('better-auth.session_token') ??
+    request.cookies.get('__Secure-better-auth.session_token');
+
+  // ── Rate limit page routes (unauthenticated only) ──────────────────────────
+  if (!isDev && !sessionToken) {
     const pageResult = await pageLimiter.limit(ip);
     if (!pageResult.success) {
       return new NextResponse('Too many requests', {
@@ -122,11 +127,6 @@ export default async function middleware(request: NextRequest) {
       });
     }
   }
-
-  // ── Page route auth guard ─────────────────────────────────────────────────
-  const sessionToken =
-    request.cookies.get('better-auth.session_token') ??
-    request.cookies.get('__Secure-better-auth.session_token');
 
   const isAuthenticated = !!sessionToken;
   const pathWithoutLocale = stripLocale(pathname);
