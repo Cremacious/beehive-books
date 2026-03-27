@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Heart } from 'lucide-react';
+import { Heart, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ClubDiscussionWithAuthor } from '@/lib/types/club.types';
 
@@ -81,9 +81,12 @@ export default function ClubDiscussionPreview({
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-white mainFont">Discussions</h3>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/clubs/${clubId}/discussions`}>View all</Link>
-        </Button>
+        <Link
+          href={`/clubs/${clubId}/discussions`}
+          className="text-xs font-medium text-yellow-500 hover:text-white transition-colors flex items-center gap-1"
+        >
+          See all <ArrowRight className="w-3 h-3" />
+        </Link>
       </div>
 
       {preview.length === 0 ? (

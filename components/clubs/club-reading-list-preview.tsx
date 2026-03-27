@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import type { ClubReadingListBook, BookStatus } from '@/lib/types/club.types';
 
 function StatusBadge({ status }: { status: BookStatus }) {
@@ -37,15 +37,21 @@ export default function ClubReadingListPreview({
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-white mainFont">Reading List</h3>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/clubs/${clubId}/reading-list`}>View all</Link>
-        </Button>
+        <Link
+          href={`/clubs/${clubId}/reading-list`}
+          className="text-xs font-medium text-yellow-500 hover:text-white transition-colors flex items-center gap-1"
+        >
+          See all <ArrowRight className="w-3 h-3" />
+        </Link>
       </div>
 
       {preview.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-center">
-          <p className="text-sm font-semibold text-white mb-1">No books yet</p>
-          <p className="text-sm text-white/80 max-w-sm">
+        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-white/80" />
+          </div>
+          <p className="text-sm font-medium text-white">No books yet</p>
+          <p className="text-xs text-white/80 max-w-xs">
             {isMember
               ? "Add the first book to start building your club's reading list."
               : "This club hasn't added any books to their reading list yet."}

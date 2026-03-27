@@ -167,7 +167,7 @@ export function OnboardingFlow({
               </p>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-yellow-500 mainFont">
+                <label className="block text-sm font-medium text-white mainFont">
                   Choose a username
                 </label>
                 <div className="relative">
@@ -223,7 +223,7 @@ export function OnboardingFlow({
               </p>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-yellow-500 mainFont">
+                <label className="block text-sm font-medium text-white mainFont">
                   Bio <span className="text-white/40 font-normal">(optional)</span>
                 </label>
                 <textarea

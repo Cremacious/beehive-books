@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Crown, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Crown, Shield, ArrowRight, Users } from 'lucide-react';
 import type { ClubMemberWithUser } from '@/lib/types/club.types';
 
 function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
@@ -66,17 +65,21 @@ export default function ClubMembersPreview({
             {total}
           </span>
         </h3>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/clubs/${clubId}/members`}>View all</Link>
-        </Button>
+        <Link
+          href={`/clubs/${clubId}/members`}
+          className="text-xs font-medium text-yellow-500 hover:text-white transition-colors flex items-center gap-1"
+        >
+          See all <ArrowRight className="w-3 h-3" />
+        </Link>
       </div>
 
       {preview.length === 0 ? (
-        <div className="py-8 flex flex-col items-center text-center">
-          <p className="text-sm font-medium text-white mb-1">No members yet</p>
-          <p className="text-sm text-white/80 max-w-xs">
-            Share the club link to invite others to join.
-          </p>
+        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center">
+            <Users className="w-6 h-6 text-white/80" />
+          </div>
+          <p className="text-sm font-medium text-white">No members yet</p>
+          <p className="text-xs text-white/80 max-w-xs">Share the club link to invite others to join.</p>
         </div>
       ) : (
         <div className="flex items-center gap-3">

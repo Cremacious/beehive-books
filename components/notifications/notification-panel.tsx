@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Bell,
+  ArrowRight,
   UserPlus,
   UserCheck,
   MessageCircle,
@@ -227,9 +228,9 @@ export function NotificationPanel({ notifications, onClose }: Props) {
           <button
             type="button"
             onClick={() => { router.push('/notifications'); onClose(); }}
-            className="w-full text-center text-xs font-medium text-white/70 hover:text-[#FFC300] py-1.5 transition-colors"
+            className="w-full flex items-center justify-center gap-1 text-xs font-medium text-yellow-500 hover:text-white py-1.5 transition-colors"
           >
-            View all notifications
+            See all <ArrowRight className="w-3 h-3" />
           </button>
         </div>
       )}

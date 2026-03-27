@@ -116,7 +116,7 @@ export default function FeedbackForm() {
               onChange={(e) => setContent(e.target.value)}
               rows={6}
               placeholder="Share your thoughts, suggestions, or describe your issue..."
-              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors resize-none"
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors resize-none"
             />
             {contentError && <p className="mt-1 text-xs text-white/80">{contentError}</p>}
           </div>
@@ -131,7 +131,7 @@ export default function FeedbackForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors"
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-colors"
             />
           </div>
 

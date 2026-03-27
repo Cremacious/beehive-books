@@ -98,7 +98,7 @@ export default function ClubForm({
           aria-required="true"
           aria-describedby={errors.name ? 'club-name-error' : undefined}
           placeholder="e.g. Midnight Mystery Readers…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         <p className="text-xs text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
         {errors.name && (
@@ -117,7 +117,7 @@ export default function ClubForm({
           id="club-description"
           rows={3}
           placeholder="What is this club about? What kinds of books do you read?"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
@@ -201,7 +201,7 @@ export default function ClubForm({
           id="club-rules"
           rows={4}
           placeholder="Any rules or guidelines for members? e.g. Be respectful, finish the book before posting spoilers…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.rules && (
           <p className="text-xs text-white/80">{errors.rules.message}</p>

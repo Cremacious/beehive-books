@@ -202,7 +202,7 @@ export function BookForm({
 
 
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white ' +
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
@@ -403,7 +403,7 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-yellow-500 mainFont">
+            <label className="text-sm font-medium text-white mainFont">
               Tags <span className="text-white/80 font-normal">(up to 10)</span>
             </label>
             <TagInput
