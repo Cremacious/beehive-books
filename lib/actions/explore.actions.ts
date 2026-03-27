@@ -190,8 +190,6 @@ export async function searchExplorableClubsAction(
   const clubOrderBy =
     sort === 'newest'
       ? [desc(bookClubs.createdAt)]
-      : sort === 'most_liked'
-      ? [desc(bookClubs.likeCount), desc(bookClubs.createdAt)]
       : [desc(bookClubs.memberCount), desc(bookClubs.createdAt)];
 
   const publicPromise = db.query.bookClubs.findMany({
@@ -236,8 +234,6 @@ export async function searchExplorableClubsAction(
     .sort((a, b) =>
       sort === 'newest'
         ? b.createdAt.getTime() - a.createdAt.getTime()
-        : sort === 'most_liked'
-        ? (b.likeCount ?? 0) - (a.likeCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime()
         : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
     );
 
@@ -305,8 +301,6 @@ export async function searchExplorableHivesAction(
   const hiveOrderBy =
     sort === 'newest'
       ? [desc(hives.createdAt)]
-      : sort === 'most_liked'
-      ? [desc(hives.likeCount), desc(hives.createdAt)]
       : [desc(hives.memberCount), desc(hives.createdAt)];
 
   const publicPromise = db.query.hives.findMany({
@@ -352,8 +346,6 @@ export async function searchExplorableHivesAction(
     .sort((a, b) =>
       sort === 'newest'
         ? b.createdAt.getTime() - a.createdAt.getTime()
-        : sort === 'most_liked'
-        ? (b.likeCount ?? 0) - (a.likeCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime()
         : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
     );
 

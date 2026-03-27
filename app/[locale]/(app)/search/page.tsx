@@ -11,7 +11,7 @@ import { SearchInput } from '@/components/search/search-input';
 import BookCard from '@/components/library/book-card';
 import ClubCard from '@/components/clubs/club-card';
 import HiveCard from '@/components/hive/hive-card';
-import PromptCard from '@/components/prompts/prompt-card';
+import { PromptCard } from '@/components/prompts/prompt-card';
 
 export const metadata: Metadata = { title: 'Search' };
 
