@@ -32,7 +32,7 @@ export default async function SearchPage({
     { hives },
     { prompts },
   ] = await Promise.all([
-    searchExplorableBooksAction(q, [], [], [], 'newest'),
+    searchExplorableBooksAction(q, [], [], [], [], '', false, '', 'newest'),
     searchExplorableClubsAction(q, [], 'most_members'),
     searchExplorableHivesAction(q, [], [], 'most_members'),
     searchExplorablePromptsAction(q),
