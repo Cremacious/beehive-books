@@ -35,7 +35,7 @@ export function FriendInvitePicker({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+      <label className="block text-sm font-medium text-white mainFont mb-1.5">
         <Users className="inline w-3.5 h-3.5 mr-1 text-yellow-500" aria-hidden="true" />
         Invite Friends{' '}
         <span className="text-white/80 font-normal">(optional)</span>

@@ -44,7 +44,7 @@ export function ExpandableGrid({
             onClick={() => setShowAll((p) => !p)}
             className="text-sm text-white/80 hover:text-[#FFC300] border border-[#2a2a2a] hover:border-[#FFC300]/30 rounded-lg px-4 py-2 transition-all"
           >
-            {showAll ? 'Show less' : `View all (${count})`}
+            {showAll ? 'Show less' : `See all (${count})`}
           </button>
         </div>
       )}

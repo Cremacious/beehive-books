@@ -154,7 +154,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
               maxLength={200}
               rows={3}
               placeholder="Tell the community a little about yourself..."
-              className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+              className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 resize-none focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
             />
             <div className="flex items-center justify-between">
               <span className="text-xs text-white/80">{bio.length} / 200</span>
@@ -197,7 +197,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Current password"
-                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-base text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
                     />
                     <button
                       type="button"
@@ -214,7 +214,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="New password"
-                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                      className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 pr-11 text-base text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
                     />
                     <button
                       type="button"
@@ -230,7 +230,7 @@ export function SettingsClient({ user, hasPasswordAccount }: SettingsClientProps
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
-                    className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
+                    className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#FFC300]/30 transition-colors"
                   />
                   {passwordError && (
                     <p className="text-xs text-white/80 bg-white/5 border border-white/10 rounded-lg px-3 py-2">{passwordError}</p>

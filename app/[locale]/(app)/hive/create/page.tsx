@@ -27,7 +27,7 @@ export default async function CreateHivePage() {
   }));
 
   return (
-    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
+    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto overflow-x-hidden">
       <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-6">
         <HiveForm mode="create" cancelHref="/hive" userBooks={userBooks} friends={friends} />
       </div>

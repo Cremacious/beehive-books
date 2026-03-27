@@ -32,9 +32,9 @@ export default function BookCard({
         <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-[#FFC300] transition-colors mainFont">
           {book.title}
         </h3>
-        <p className="text-xs text-white/60 truncate mt-0.5">{book.author}</p>
+        <p className="text-xs text-white/80 truncate mt-0.5">{book.author}</p>
         {book.genre && (
-          <span className="mt-1.5 self-start text-xs px-2 py-0.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium truncate max-w-full">
+          <span className="mt-1.5 self-start text-xs px-2 py-0.5 rounded-full bg-[#2a2a2a] text-white/80 font-medium truncate max-w-full">
             {book.genre}
           </span>
         )}

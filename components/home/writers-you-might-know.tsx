@@ -79,9 +79,9 @@ export default function WritersYouMightKnow({ suggestions }: WritersYouMightKnow
 
   return (
     <section>
-      <p className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-3">
+      <h2 className="text-base font-semibold text-white mainFont mb-3">
         Writers you might know
-      </p>
+      </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:-mx-8 md:px-8">
         {suggestions.map((user) => (
           <SuggestedCard key={user.id} user={user} />

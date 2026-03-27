@@ -60,7 +60,7 @@ export default async function ExplorePage() {
           <h1 className="text-3xl md:text-4xl font-bold text-white mainFont mb-2">
             Discover Stories
           </h1>
-          <p className="text-white/50 text-base max-w-lg mb-6">
+          <p className="text-white/80 text-base max-w-lg mb-6">
             Books, writing communities, and creative challenges from the Beehive Books community.
           </p>
           <ExploreSearchBar placeholder="Search books, clubs, hives, prompts..." />

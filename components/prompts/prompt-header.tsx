@@ -81,10 +81,10 @@ export function PromptHeader({ prompt, entries, isCreator, promptId, canSubmit }
             </span>
           </div>
           {isCreator && (
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 flex-wrap shrink-0">
               <Link
                 href={`/prompts/${promptId}/edit`}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white/5 text-white/80 border border-[#2a2a2a] hover:text-white hover:border-[#FFC300]/40 transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/80 border border-[#2a2a2a] hover:text-white hover:border-white/20 transition-all"
               >
                 <PenLine className="w-3.5 h-3.5" />
                 Edit

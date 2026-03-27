@@ -4,7 +4,7 @@ import { getOptionalUserId } from '@/lib/require-auth';
 import { searchLimiter } from '@/lib/rate-limit';
 
 import { unstable_cache } from 'next/cache';
-import { and, desc, eq, ilike, inArray, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, gt, ilike, inArray, lt, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
@@ -75,6 +75,10 @@ export async function searchExplorableBooksAction(
   genres: string[] = [],
   categories: string[] = [],
   tags: string[] = [],
+  draftStatuses: string[] = [],
+  wordCountRange: string = '',
+  hasComments: boolean = false,
+  updatedWithin: string = '',
   sort: 'newest' | 'most_liked' | 'most_chapters' = 'newest',
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
@@ -90,8 +94,29 @@ export async function searchExplorableBooksAction(
 
   const tagFilter =
     tags.length > 0
-      ? sql`${books.tags}::text ilike any(array[${sql.join(tags.map((t) => sql`${'%"' + t + '"%'}`), sql`, `)}])`
+      ? and(...tags.map((t) => sql`${books.tags}::text ilike ${'%"' + t + '"%'}` as ReturnType<typeof sql>))
       : undefined;
+
+  const draftStatusFilter = draftStatuses.length > 0
+    ? inArray(books.draftStatus, draftStatuses as ('FIRST_DRAFT' | 'SECOND_DRAFT' | 'THIRD_DRAFT' | 'FOURTH_DRAFT' | 'FIFTH_DRAFT' | 'COMPLETED')[])
+    : undefined;
+
+  const wordCountFilter = wordCountRange
+    ? wordCountRange === 'short' ? and(gte(books.wordCount, 0), lt(books.wordCount, 10000))
+    : wordCountRange === 'novella' ? and(gte(books.wordCount, 10000), lt(books.wordCount, 40000))
+    : wordCountRange === 'novel' ? and(gte(books.wordCount, 40000), lt(books.wordCount, 100000))
+    : wordCountRange === 'epic' ? gte(books.wordCount, 100000)
+    : undefined
+    : undefined;
+
+  const commentFilter = hasComments ? gt(books.commentCount, 0) : undefined;
+
+  const updatedWithinFilter = updatedWithin
+    ? updatedWithin === 'week' ? gte(books.updatedAt, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+    : updatedWithin === 'month' ? gte(books.updatedAt, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+    : updatedWithin === 'year' ? gte(books.updatedAt, new Date(Date.now() - 365 * 24 * 60 * 60 * 1000))
+    : undefined
+    : undefined;
 
   const orderBy = q
     ? [
@@ -114,6 +139,10 @@ export async function searchExplorableBooksAction(
         genres.length > 0 ? inArray(books.genre, genres) : undefined,
         categories.length > 0 ? inArray(books.category, categories) : undefined,
         tagFilter,
+        draftStatusFilter,
+        wordCountFilter,
+        commentFilter,
+        updatedWithinFilter,
       ),
       orderBy,
       limit: FTS_LIMIT,
@@ -128,6 +157,10 @@ export async function searchExplorableBooksAction(
       genres.length > 0 ? inArray(books.genre, genres) : undefined,
       categories.length > 0 ? inArray(books.category, categories) : undefined,
       tagFilter,
+      draftStatusFilter,
+      wordCountFilter,
+      commentFilter,
+      updatedWithinFilter,
       cursor ? lt(books.createdAt, new Date(cursor)) : undefined,
     ),
     orderBy,

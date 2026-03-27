@@ -71,7 +71,7 @@ export function ProfileSectionGrid({
           </div>
           {count > limit && (
             <Button variant="outline" size="sm" onClick={() => setExpanded(true)}>
-              View all ({count})
+              See all ({count})
             </Button>
           )}
         </div>

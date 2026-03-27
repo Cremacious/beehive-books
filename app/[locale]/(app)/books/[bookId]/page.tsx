@@ -121,7 +121,7 @@ export default async function PublicBookPage({
                   <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight mainFont">
                     {book.title}
                   </h1>
-                  <p className="text-sm text-white/70 mt-1.5">
+                  <p className="text-sm text-white/80 mt-1.5">
                     by {book.author}
                     {book.user?.username && (
                       <Link
@@ -149,13 +149,13 @@ export default async function PublicBookPage({
 
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.genre}
                 </span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.category}
                 </span>
-                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium capitalize">
+                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium capitalize">
                   {book.privacy === 'PRIVATE' && <Lock className="w-3 h-3" />}
                   {book.privacy === 'PUBLIC' && <Globe className="w-3 h-3" />}
                   {book.privacy.toLowerCase()}
@@ -166,17 +166,17 @@ export default async function PublicBookPage({
 
               {/* Stats row — desktop: includes LikeButton inline */}
               <div className="hidden sm:flex flex-wrap items-center gap-1 mt-5">
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
@@ -191,17 +191,17 @@ export default async function PublicBookPage({
 
               {/* Stats row — mobile: no LikeButton (shown below) */}
               <div className="flex sm:hidden flex-wrap items-center gap-1 mt-5">
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>

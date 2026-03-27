@@ -113,7 +113,7 @@ export function ReadingListForm({
         <input
           {...register('title')}
           placeholder="e.g. Fantasy Reads, Books to Read in 2025…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
         <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
         {errors.title && (
@@ -131,7 +131,7 @@ export function ReadingListForm({
           {...register('description')}
           rows={3}
           placeholder="What's this list about?"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
@@ -151,7 +151,7 @@ export function ReadingListForm({
           rows={3}
           maxLength={500}
           placeholder="A personal intro — the story behind this list, what connects these books..."
-          className="bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 rounded-xl w-full resize-none"
+          className="bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 rounded-xl w-full resize-none"
         />
         <p className="text-xs text-white/80 text-right">{watch('curatorNote')?.length ?? 0} / 500</p>
       </div>
@@ -230,7 +230,7 @@ export function ReadingListForm({
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          <label className="block text-sm font-medium text-white mainFont mb-1.5">
             Add Books{' '}
             <span className="text-white/80 font-normal">(optional)</span>
           </label>
@@ -248,7 +248,7 @@ export function ReadingListForm({
                   }
                 }}
                 placeholder="Book title"
-                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <input
                 type="text"
@@ -261,7 +261,7 @@ export function ReadingListForm({
                   }
                 }}
                 placeholder="Author"
-                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <button
                 type="button"
