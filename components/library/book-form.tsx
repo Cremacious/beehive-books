@@ -202,11 +202,11 @@ export function BookForm({
 
 
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white ' +
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
-  const errorClass = 'text-xs text-white/80';
+  const errorClass = 'text-sm text-white/80';
 
   return (
     <div className="px-4 py-8">
@@ -239,7 +239,7 @@ export function BookForm({
                   ) : (
                     <>
                       <Upload className="w-6 h-6 text-white/80 group-hover:text-[#FFC300]/50 transition-colors" />
-                      <span className="text-xs text-white/80 text-center px-3 leading-snug group-hover:text-white/80 transition-colors">
+                      <span className="text-sm text-white/80 text-center px-3 leading-snug group-hover:text-white/80 transition-colors">
                         Upload cover
                       </span>
                       <span className="text-[10px] text-white/80">
@@ -265,7 +265,7 @@ export function BookForm({
                   setCoverUrl(null);
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors"
+                className="flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors"
               >
                 <X className="w-3 h-3" /> Remove cover
               </button>
@@ -278,27 +278,27 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white">
-              Book Title <span className="text-white/80 text-xs font-normal">(required)</span>
+            <label className="text-base font-medium text-white">
+              Book Title <span className="text-white/80 text-sm font-normal">(required)</span>
             </label>
-            <p className="text-xs text-white/80">The name of your book — make it memorable.</p>
+            <p className="text-sm text-white/80">The name of your book — make it memorable.</p>
             <input
               {...register('title')}
               type="text"
               placeholder="Enter your book title…"
               className={inputClass}
             />
-            <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
+            <p className="text-sm text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
             {errors.title && (
               <p className={errorClass}>{errors.title.message}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white">
-              Author Name <span className="text-white/80 text-xs font-normal">(required)</span>
+            <label className="text-base font-medium text-white">
+              Author Name <span className="text-white/80 text-sm font-normal">(required)</span>
             </label>
-            <p className="text-xs text-white/80">Your pen name or real name as it appears on the cover.</p>
+            <p className="text-sm text-white/80">Your pen name or real name as it appears on the cover.</p>
             <input
               {...register('author')}
               type="text"
@@ -310,12 +310,12 @@ export function BookForm({
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white">
+              <label className="text-base font-medium text-white">
                 Category
               </label>
-              <p className="text-xs text-white/80">Fiction or non-fiction — affects how your book is listed.</p>
+              <p className="text-sm text-white/80">Fiction or non-fiction — affects how your book is listed.</p>
               <select
                 {...register('category')}
                 className={inputClass + ' appearance-none'}
@@ -334,10 +334,10 @@ export function BookForm({
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white">
-                Genre <span className="text-white/80 text-xs font-normal">(required)</span>
+              <label className="text-base font-medium text-white">
+                Genre <span className="text-white/80 text-sm font-normal">(required)</span>
               </label>
-              <p className="text-xs text-white/80">Helps readers find your book.</p>
+              <p className="text-sm text-white/80">Helps readers find your book.</p>
               <select
                 {...register('genre')}
                 className={inputClass + ' appearance-none'}
@@ -358,10 +358,10 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white">
+            <label className="text-base font-medium text-white">
               Description
             </label>
-            <p className="text-xs text-white/80">A compelling blurb that makes readers want to read. Spoiler-free.</p>
+            <p className="text-sm text-white/80">A compelling blurb that makes readers want to read. Spoiler-free.</p>
             <textarea
               {...register('description')}
               rows={6}
@@ -374,7 +374,7 @@ export function BookForm({
               ) : (
                 <span />
               )}
-              <p className="text-xs shrink-0 ml-2">
+              <p className="text-sm shrink-0 ml-2">
                 <span
                   className={
                     descWords > 200
@@ -403,7 +403,7 @@ export function BookForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white mainFont">
+            <label className="text-base font-medium text-white mainFont">
               Tags <span className="text-white/80 font-normal">(up to 10)</span>
             </label>
             <TagInput
@@ -415,10 +415,10 @@ export function BookForm({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">
+            <label className="text-base font-medium text-white">
               Privacy
             </label>
-            <p className="text-xs text-white/80">Public: anyone can read. Friends: only your friends. Private: just you.</p>
+            <p className="text-sm text-white/80">Public: anyone can read. Friends: only your friends. Private: just you.</p>
             <div className="grid grid-cols-3 gap-3">
               {PRIVACY_OPTIONS.map((opt) => (
                 <button
@@ -431,8 +431,8 @@ export function BookForm({
                       : 'border-[#2a2a2a] bg-[#1e1e1e] text-white/85 hover:border-[#444] hover:text-white/80'
                   }`}
                 >
-                  <span className="text-sm font-semibold">{opt.label}</span>
-                  <span className="text-[12px] leading-tight opacity-80">
+                  <span className="text-base font-semibold">{opt.label}</span>
+                  <span className="text-sm leading-tight opacity-80">
                     {opt.description}
                   </span>
                 </button>
@@ -442,10 +442,10 @@ export function BookForm({
 
      
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">
+            <label className="text-base font-medium text-white">
               Draft Status
             </label>
-            <p className="text-xs text-white/80">Track where you are in the writing process.</p>
+            <p className="text-sm text-white/80">Track where you are in the writing process.</p>
             <Controller
               name="draftStatus"
               control={control}
@@ -466,7 +466,7 @@ export function BookForm({
         
           <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white">Explorable</p>
+              <p className="text-base font-medium text-white">Explorable</p>
               <p className="text-sm text-white/80 mt-0.5">
                 List this book on the Explore page so all users can discover it.
                 Enabling this will make the book public.
@@ -497,8 +497,8 @@ export function BookForm({
             <p className="text-xs font-semibold text-white uppercase tracking-wider">Comments</p>
             <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white">Book Comments</p>
-                <p className="text-xs text-white/80 mt-0.5">
+                <p className="text-base font-medium text-white">Book Comments</p>
+                <p className="text-sm text-white/80 mt-0.5">
                   Turn off if you&apos;d prefer not to receive comments.
                 </p>
               </div>
@@ -518,8 +518,8 @@ export function BookForm({
             </div>
             <div className="flex items-start justify-between gap-4 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] p-4">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white">Chapter Comments</p>
-                <p className="text-xs text-white/80 mt-0.5">
+                <p className="text-base font-medium text-white">Chapter Comments</p>
+                <p className="text-sm text-white/80 mt-0.5">
                   Turn off if you&apos;d prefer not to receive comments on individual chapters.
                 </p>
               </div>
@@ -566,7 +566,7 @@ export function BookForm({
                       How to format your document
                     </p>
 
-                    <p className="text-xs text-white/80 leading-relaxed">
+                    <p className="text-sm text-white/80 leading-relaxed">
                       Beehive splits your document into chapters using{' '}
                       <strong className="text-white">Heading 1</strong> — the
                       style selector in Word or Google Docs (not just big or
@@ -605,7 +605,7 @@ export function BookForm({
                     {bookDocxFileName ? (
                       <>
                         <FileText className="w-5 h-5 text-[#FFC300]/70" />
-                        <span className="text-xs text-white/80">
+                        <span className="text-sm text-white/80">
                           {bookDocxFileName}
                         </span>
                         {bookDocxChapterCount !== null && (
@@ -622,7 +622,7 @@ export function BookForm({
                         <span className="text-sm text-white/85">
                           Select a .docx file
                         </span>
-                        <span className="text-xs text-white/80">
+                        <span className="text-sm text-white/80">
                           Max 10 MB · Heading 1 per chapter
                         </span>
                       </>
@@ -644,7 +644,7 @@ export function BookForm({
 
                   {bookDocxChapterCount !== null &&
                     bookDocxChapterCount > 0 && (
-                      <p className="text-xs text-white/80">
+                      <p className="text-sm text-white/80">
                         When you click &quot;Create Book&quot;, the book will be
                         saved first, then all {bookDocxChapterCount} chapter
                         {bookDocxChapterCount !== 1 ? 's' : ''} will be imported
@@ -679,7 +679,7 @@ export function BookForm({
                     <p className="text-xs font-semibold text-[#FFC300]/80 uppercase tracking-wide">
                       How chapters are detected
                     </p>
-                    <p className="text-xs text-white/80 leading-relaxed">
+                    <p className="text-sm text-white/80 leading-relaxed">
                       Beehive reads each spine item in the EPUB and uses its{' '}
                       <strong className="text-white">&lt;h1&gt;</strong> tag as the chapter
                       title. Navigation and cover pages are skipped automatically.
@@ -696,7 +696,7 @@ export function BookForm({
                     {bookEpubFileName ? (
                       <>
                         <FileText className="w-5 h-5 text-[#FFC300]/70" />
-                        <span className="text-xs text-white/80">
+                        <span className="text-sm text-white/80">
                           {bookEpubFileName}
                         </span>
                         {bookEpubChapterCount !== null && (
@@ -713,7 +713,7 @@ export function BookForm({
                         <span className="text-sm text-white/85">
                           Select a .epub file
                         </span>
-                        <span className="text-xs text-white/80">
+                        <span className="text-sm text-white/80">
                           Max 50 MB · one &lt;h1&gt; per chapter
                         </span>
                       </>
@@ -734,7 +734,7 @@ export function BookForm({
                   )}
 
                   {bookEpubChapterCount !== null && bookEpubChapterCount > 0 && (
-                    <p className="text-xs text-white/80">
+                    <p className="text-sm text-white/80">
                       When you click &quot;Create Book&quot;, the book will be
                       saved first, then all {bookEpubChapterCount} chapter
                       {bookEpubChapterCount !== 1 ? 's' : ''} will be imported

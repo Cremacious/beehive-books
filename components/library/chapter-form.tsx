@@ -111,11 +111,11 @@ export function ChapterForm({
   }
 
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white ' +
     'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
-  const errorClass = 'text-xs text-white/80';
+  const errorClass = 'text-sm text-white/80';
 
   return (
     <div className="px-4 py-8">
@@ -132,15 +132,15 @@ export function ChapterForm({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
+          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-6">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white">
+              <label className="text-base font-medium text-white">
                 Chapter Title{' '}
-                <span className="text-white/80 text-xs font-normal">
+                <span className="text-white/80 text-sm font-normal">
                   (required)
                 </span>
               </label>
-              <p className="text-xs text-white/80">
+              <p className="text-sm text-white/80">
                 The chapter name shown in the table of contents.
               </p>
               <input
@@ -149,7 +149,7 @@ export function ChapterForm({
                 placeholder="Enter your chapter title…"
                 className={inputClass}
               />
-              <p className="text-xs text-white/80 text-right">
+              <p className="text-sm text-white/80 text-right">
                 {watch('title')?.length ?? 0} / 100
               </p>
               {errors.title && (
@@ -158,20 +158,20 @@ export function ChapterForm({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white">
+              <label className="text-base font-medium text-white">
                 Author&apos;s Notes
-                <span className="ml-2 text-xs text-white/80 font-normal">
+                <span className="ml-2 text-sm text-white/80 font-normal">
                   (optional)
                 </span>
               </label>
-              <p className="text-xs text-white/80">Notes about your chapter.</p>
+              <p className="text-sm text-white/80">Notes about your chapter.</p>
               <textarea
                 {...register('authorNotes')}
                 rows={isEdit ? 4 : 3}
                 placeholder="Share thoughts, context, or a message to your readers…"
                 className={inputClass + ' resize-y'}
               />
-              <p className="text-xs text-white/80 text-right">
+              <p className="text-sm text-white/80 text-right">
                 {watch('authorNotes')?.length ?? 0} / 500
               </p>
               {errors.authorNotes && (
@@ -181,14 +181,14 @@ export function ChapterForm({
 
             {collections.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-white flex items-center gap-1.5">
+                <label className="text-base font-medium text-white flex items-center gap-1.5">
                   <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />
                   Collection
-                  <span className="ml-1 text-xs text-white/80 font-normal">
+                  <span className="ml-1 text-sm text-white/80 font-normal">
                     (optional)
                   </span>
                 </label>
-                <p className="text-xs text-white/80">
+                <p className="text-sm text-white/80">
                   Group chapters into parts, acts, or volumes.
                 </p>
                 <select
@@ -242,10 +242,10 @@ export function ChapterForm({
           {!isEdit && contentMode === 'upload' && (
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-white/80">
+                <p className="text-base font-medium text-white/80">
                   Upload a .docx file
                 </p>
-                <p className="text-xs text-white/80">
+                <p className="text-sm text-white/80">
                   The document content will become the chapter body. If the
                   document starts with a Heading 1, that text will be suggested
                   as the chapter title (only if you have not already filled in a
@@ -259,7 +259,7 @@ export function ChapterForm({
                 ) : docxFileName ? (
                   <>
                     <FileText className="w-6 h-6 text-[#FFC300]/70" />
-                    <span className="text-xs text-white/80">
+                    <span className="text-sm text-white/80">
                       {docxFileName}
                     </span>
                     <span className="text-[10px] text-white/80">
@@ -269,7 +269,7 @@ export function ChapterForm({
                 ) : (
                   <>
                     <UploadCloud className="w-6 h-6 text-white/80" />
-                    <span className="text-xs text-white/80">
+                    <span className="text-sm text-white/80">
                       Click to select a .docx file
                     </span>
                     <span className="text-[10px] text-white/80">Max 10 MB</span>
@@ -285,7 +285,7 @@ export function ChapterForm({
               </label>
 
               {docxError && (
-                <p className="text-xs text-white/80">{docxError}</p>
+                <p className="text-sm text-white/80">{docxError}</p>
               )}
             </div>
           )}

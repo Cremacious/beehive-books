@@ -95,43 +95,43 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
-          Title <span className="text-white/80 text-xs font-normal">(required)</span>
+        <label className="text-base font-medium text-white">
+          Title <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
-        <p className="text-xs text-white/80">A short, inspiring challenge title.</p>
+        <p className="text-sm text-white/80">A short, inspiring challenge title.</p>
         <input
           {...register('title')}
           placeholder="e.g. Write a scene where two strangers share an umbrella…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
-        <p className="text-xs text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
+        <p className="text-sm text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
         {errors.title && (
-          <p className="text-xs text-white/80">{errors.title.message}</p>
+          <p className="text-sm text-white/80">{errors.title.message}</p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
-          Description <span className="text-white/80 text-xs font-normal">(required)</span>
+        <label className="text-base font-medium text-white">
+          Description <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
-        <p className="text-xs text-white/80">The full prompt — give writers something to react to.</p>
+        <p className="text-sm text-white/80">The full prompt — give writers something to react to.</p>
         <textarea
           {...register('description')}
           rows={4}
           placeholder="Describe the creative challenge, set the scene, give inspiration…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
-        <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 1000</p>
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 1000</p>
         {errors.description && (
-          <p className="text-xs text-white/80">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Tags <span className="text-white/80 text-xs font-normal">(up to 10)</span>
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
         </label>
         <TagInput
           value={tags}
@@ -142,28 +142,28 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
+        <label className="text-base font-medium text-white">
           Challenge Deadline
         </label>
-        <p className="text-xs text-white/80">When submissions close. Voting opens automatically after this.</p>
+        <p className="text-sm text-white/80">When submissions close. Voting opens automatically after this.</p>
         <input
           type="date"
           {...register('endDate')}
           min={toDateInputValue(new Date(Date.now() + 86400000))}
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
         />
         {errors.endDate && (
-          <p className="text-xs text-white/80">
+          <p className="text-sm text-white/80">
             {errors.endDate.message as string}
           </p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
-        <p className="text-xs text-white/80">Public prompts appear in Explore and attract more entries.</p>
+        <p className="text-sm text-white/80">Public prompts appear in Explore and attract more entries.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
@@ -174,10 +174,10 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
                 className="sr-only peer"
               />
               <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -185,7 +185,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-white/80">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -193,7 +193,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-white">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this prompt on the Explore page so all users can discover it.

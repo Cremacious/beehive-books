@@ -134,60 +134,60 @@ export default function HiveForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
-          Hive Name <span className="text-white/80 text-xs font-normal">(required)</span>
+        <label className="text-base font-medium text-white">
+          Hive Name <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
-        <p className="text-xs text-white/80">The name of your writing group or collaboration.</p>
+        <p className="text-sm text-white/80">The name of your writing group or collaboration.</p>
         <input
           {...register('name')}
           placeholder="e.g. The Midnight Chronicles Hive…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
-        <p className="text-xs text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
+        <p className="text-sm text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
         {errors.name && (
-          <p className="text-xs text-white/80">{errors.name.message}</p>
+          <p className="text-sm text-white/80">{errors.name.message}</p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
+        <label className="text-base font-medium text-white">
           Description{' '}
-          <span className="text-white/80 text-xs font-normal">(optional)</span>
+          <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
-        <p className="text-xs text-white/80">Tell potential members what this hive is about.</p>
+        <p className="text-sm text-white/80">Tell potential members what this hive is about.</p>
         <textarea
           {...register('description')}
           rows={3}
           placeholder="What are you building? What's the story about?"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
-        <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
-          <p className="text-xs text-white/80">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
-          Genre <span className="text-white/80 text-xs font-normal">(optional)</span>
+        <label className="text-base font-medium text-white">
+          Genre <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
-        <p className="text-xs text-white/80">The primary genre your hive focuses on.</p>
+        <p className="text-sm text-white/80">The primary genre your hive focuses on.</p>
         <input
           {...register('genre')}
           placeholder="e.g. Fantasy, Sci-Fi, Romance…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
-        <p className="text-xs text-white/80">Open: anyone can request to join. Invite-only: you control membership.</p>
+        <p className="text-sm text-white/80">Open: anyone can request to join. Invite-only: you control membership.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
@@ -198,10 +198,10 @@ export default function HiveForm({
                 className="sr-only peer"
               />
               <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export default function HiveForm({
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-white/80">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -217,7 +217,7 @@ export default function HiveForm({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-white">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this hive on the Explore page so all users can discover it.
@@ -244,8 +244,8 @@ export default function HiveForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Tags <span className="text-white/80 text-xs font-normal">(up to 10)</span>
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
         </label>
         <TagInput
           value={tags}
@@ -257,7 +257,7 @@ export default function HiveForm({
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-white mainFont mb-1.5">
+          <label className="block text-base font-medium text-white mainFont mb-1.5">
             Book
           </label>
           <div className="grid grid-cols-3 gap-2 mb-3">
@@ -276,11 +276,11 @@ export default function HiveForm({
                   className={`w-4 h-4 ${bookOption === value ? 'text-[#FFC300]' : 'text-white/80'}`}
                 />
                 <span
-                  className={`text-xs font-semibold ${bookOption === value ? 'text-[#FFC300]' : 'text-white'}`}
+                  className={`text-sm font-semibold ${bookOption === value ? 'text-[#FFC300]' : 'text-white'}`}
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/80 leading-tight">
+                <span className="text-sm text-white/80 leading-tight">
                   {desc}
                 </span>
               </button>
@@ -312,7 +312,7 @@ export default function HiveForm({
                   <p className="text-sm text-white/80">
                     No books in your library yet.
                   </p>
-                  <p className="text-xs text-white/80">
+                  <p className="text-sm text-white/80">
                     Create a book first, or choose &ldquo;Start fresh&rdquo; to
                     create one now.
                   </p>
@@ -351,7 +351,7 @@ export default function HiveForm({
                             >
                               {book.title}
                             </p>
-                            <p className="text-xs text-white/80 truncate">
+                            <p className="text-sm text-white/80 truncate">
                               {book.author}
                             </p>
                           </div>
