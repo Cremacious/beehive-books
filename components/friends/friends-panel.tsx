@@ -122,13 +122,13 @@ function FriendDetail({ user, friendshipId }: { user: FriendUser; friendshipId: 
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <Feather className="w-3.5 h-3.5 text-yellow-500" />
-                <span className="text-xs font-medium text-white">Prompts</span>
+                <span className="text-xs font-medium text-white">Sparks</span>
               </div>
               <div className="flex flex-col gap-1.5">
                 {activity.recentPrompts.map((prompt) => (
                   <Link
                     key={prompt.id}
-                    href={`/prompts/${prompt.id}`}
+                    href={`/sparks/${prompt.id}`}
                     className="group flex items-center justify-between gap-3 p-2.5 rounded-lg bg-[#141414] border border-[#2a2a2a] hover:border-yellow-500/20 transition-colors"
                   >
                     <p className="text-sm text-white group-hover:text-yellow-500 transition-colors truncate">

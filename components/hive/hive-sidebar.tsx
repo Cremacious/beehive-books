@@ -25,13 +25,13 @@ const NAV_ITEMS = [
   { href: '/outline', label: 'Outline', icon: ListTree },
   { href: '/wiki', label: 'Wiki', icon: BookOpen },
   { href: '/comments', label: 'Annotations', icon: MessageCircle },
+  { href: '/forum', label: 'Discussions', icon: MessageSquare },
+  { href: '/submissions', label: 'Submit Chapter', icon: Upload },
+  { href: '/suggest', label: 'Edit Suggestions', icon: Pencil },
   { href: '/word-goals', label: 'Word Goals', icon: Target },
-  { href: '/buzz', label: 'Buzz Board', icon: Sparkles },
   { href: '/milestones', label: 'Milestones', icon: Trophy },
+  { href: '/buzz', label: 'Buzz Board', icon: Sparkles },
   { href: '/members', label: 'Members', icon: Users },
-  { href: '/submissions', label: 'Submissions', icon: Upload },
-  { href: '/suggest', label: 'Suggest', icon: Pencil },
-  { href: '/forum', label: 'Forum', icon: MessageSquare },
 ] as const;
 
 interface HiveSidebarProps {

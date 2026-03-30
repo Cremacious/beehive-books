@@ -27,10 +27,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#141414] text-white">
       <section className="px-6 pt-24 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,195,0,0.08),transparent)]" />
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
-          backgroundSize: '56px 100px'
-        }} />
+        <div className="absolute inset-0 opacity-[0.04]" />
         <div className="mx-auto max-w-3xl relative">
           <Image
             src={logoImage}
@@ -40,20 +37,31 @@ export default function LandingPage() {
             height={200}
           />
           <h1 className="mb-6 text-4xl font-bold mainFont">
-            More than a <span className="text-yellow-500">text editor.</span>
+            Get <span className="text-yellow-500">buzzed</span> about writing!
           </h1>
           <p className="mb-10 text-lg text-white/80 leading-relaxed max-w-3xl mx-auto">
-            Write your story. Collaborate with other writers. Share it with the world. Beehive Books is where books get made.
+            Write your story. Collaborate with other writers. Share it with the
+            world. More than a text editor, Beehive Books is where books get
+            made.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <Button className="w-full md:w-auto" asChild size="lg">
-              <Link href="/sign-up">
-                Create your account
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
+          <div className="flex flex-col items-center justify-center gap-3 mb-14">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+              <Button className="w-full sm:w-48" asChild size="lg">
+                <Link href="/sign-up">
+                  Create account
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button
+                className="w-full sm:w-48 bg-white text-black hover:bg-white/90 border-none"
+                asChild
+                size="lg"
+              >
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+            </div>
             <Button
-              className="w-full md:w-auto"
+              className="w-full sm:w-[24.5rem] mt-1"
               asChild
               variant="outline"
               size="lg"
@@ -122,14 +130,28 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Your book, the way you <span className="text-[#FFC300]">imagined it.</span>
+                Your book, the way you{' '}
+                <span className="text-[#FFC300]">imagined</span> it.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                A real writing environment built for long-form work. Organize your story into chapters and collections, track your word count, and export finished work to EPUB and more. No distractions. No compromises.
+                A real writing environment built for long-form work. Organize
+                your story into chapters and collections, track your word count,
+                and export finished work to EPUB, DOCX, or PDF. No distractions.
+                No compromises.
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                {['Rich text editor', 'Chapter collections', 'EPUB export', 'Privacy controls'].map(f => (
-                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
+                {[
+                  'Rich text editor',
+                  'Chapter collections',
+                  'EPUB export',
+                  'Privacy controls',
+                ].map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium"
+                  >
+                    {f}
+                  </span>
                 ))}
               </div>
             </div>
@@ -352,14 +374,30 @@ export default function LandingPage() {
 
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Writing is better <span className="text-[#FFC300]">together.</span>
+                Writing is better{' '}
+                <span className="text-[#FFC300]">together</span>.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Invite co-authors, beta readers, and editors into your Hive. Claim chapters, leave feedback on specific passages, and watch the word count climb. Built for writers who want more than a shared document.
+                Your Hive is your book&apos;s command center. Invite co-authors,
+                beta readers, and editors to annotate specific passages, propose
+                rewrites you can accept or reject, and submit chapters for
+                approval. Plan your story on the outline board, build your world
+                in the wiki, track progress with shared word goals, and more!
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                {['Co-author tools', 'Annotations', 'World wiki', 'Word goals', 'Outline board'].map(f => (
-                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
+                {[
+                  'Co-author tools',
+                  'Annotations',
+                  'World wiki',
+                  'Word goals',
+                  'Outline board',
+                ].map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium"
+                  >
+                    {f}
+                  </span>
                 ))}
               </div>
             </div>
@@ -372,11 +410,14 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Find stories worth reading{' '}
-                <span className="text-[#FFC300]">together.</span>
+                Read More. Discuss{' '}
+                <span className="text-[#FFC300]">everything</span>.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Browse public books from writers across the community. Join book clubs to read the same book and talk about it with people who are just as into it as you are.
+                Reading alone is fine. Reading with people who actually want to
+                talk about it is better. Join a book club to track progress
+                together and discuss chapters as you go. Find your people in the
+                community or start your own club.
               </p>
             </div>
 
@@ -482,85 +523,144 @@ export default function LandingPage() {
 
       <section className="px-6 py-20 bg-[#1a1a1a]">
         <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mainFont mb-3">
               Even more ways to engage
             </h2>
             <p className="text-white/80 max-w-xl mx-auto">
-              Curate your reading, spark creativity, and stay inspired every
-              day.
+              Curate your reading, spark creativity, and stay inspired every day.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
-              <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">Your shelves, your way.</h3>
+          <div className="grid md:grid-cols-2 gap-8">
+
+            {/* Reading Lists */}
+            <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
+              <div className="h-0.5 w-full bg-linear-to-r from-yellow-500 to-amber-400" />
+              <div className="p-6">
+                <h3 className="text-xl font-bold mainFont mb-1">
+                  Curated reading.
+                </h3>
+                <p className="text-white/80 leading-relaxed mb-5 text-sm">
+                  Build ranked lists of books worth reading and add your own commentary on why each one made the cut. Follow curators whose taste you trust, like the lists that speak to you, and discover what the community is reading right now.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['Book commentary', 'Follow curators', 'Community discovery'].map(f => (
+                    <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/80 font-medium">{f}</span>
+                  ))}
+                </div>
               </div>
-              <p className="text-white/80 leading-relaxed mb-5">
-                Curate collections of books you love, want to read, or recommend
-                to others. Share your lists publicly or keep them for personal
-                reference.
-              </p>
-              <div className="space-y-2 mb-5">
-                {[
-                  { title: 'A Memory Called Empire', author: 'Arkady Martine' },
-                  { title: 'The Name of the Wind', author: 'Patrick Rothfuss' },
-                  { title: 'Piranesi', author: 'Susanna Clarke' },
-                ].map(({ title, author }) => (
-                  <div
-                    key={title}
-                    className="flex items-center gap-3 rounded-lg bg-[#252525] px-3 py-2"
-                  >
-                    <BookOpen className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm text-white/80 truncate">{title}</p>
-                      <p className="text-[11px] text-white/80">{author}</p>
+
+              {/* Mock reading list UI */}
+              <div className="border-t border-[#2a2a2a]">
+                <div className="px-5 py-3 flex items-center justify-between border-b border-[#2a2a2a]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-[#FFC300]/15 flex items-center justify-center text-[10px] font-bold text-[#FFC300]">
+                      EV
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white">Essential Fantasy Reads</p>
+                      <p className="text-[10px] text-white/80">by Eleanor Voss</p>
                     </div>
                   </div>
-                ))}
+                  <div className="flex items-center gap-3 text-[10px] text-white/80">
+                    <span>124 followers</span>
+                    <button className="px-2.5 py-1 rounded-full bg-[#FFC300]/15 text-[#FFC300] text-[10px] font-semibold">
+                      Follow
+                    </button>
+                  </div>
+                </div>
+
+                <div className="divide-y divide-[#2a2a2a]">
+                  {[
+                    { rank: 1, title: 'A Memory Called Empire', author: 'Arkady Martine', note: 'A masterclass in political intrigue and identity.' },
+                    { rank: 2, title: 'The Name of the Wind', author: 'Patrick Rothfuss', note: 'The best prose in modern fantasy, full stop.' },
+                    { rank: 3, title: 'Piranesi', author: 'Susanna Clarke', note: 'Unlike anything else you will ever read.' },
+                  ].map(({ rank, title, author, note }) => (
+                    <div key={title} className="px-5 py-3 flex items-start gap-3">
+                      <div className="shrink-0 w-6 flex items-center justify-center mt-0.5">
+                        {rank === 1
+                          ? <span className="text-yellow-500 text-base">♛</span>
+                          : <span className="text-xs font-bold text-white/80">#{rank}</span>
+                        }
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-white truncate">{title}</p>
+                        <p className="text-[11px] text-white/80">{author}</p>
+                        <p className="text-[11px] text-white/80 italic mt-0.5">{note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
-              <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">A spark when you need one.</h3>
+            {/* Sparks */}
+            <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] overflow-hidden shadow-xl">
+              <div className="h-0.5 w-full bg-linear-to-r from-yellow-500 to-amber-400" />
+              <div className="p-6">
+                <h3 className="text-xl font-bold mainFont mb-1">
+                  One prompt. Infinite stories.
+                </h3>
+                <p className="text-white/80 leading-relaxed mb-5 text-sm">
+                  Create a writing prompt, invites others to join, and the community votes on their favorite. The best entries rise to the top and the creator can also pick their own personal favorite as well. Every Spark is a chance to write something new.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['Timed challenges', 'Community voting',].map(f => (
+                    <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/80 font-medium">{f}</span>
+                  ))}
+                </div>
               </div>
-              <p className="text-white/80 leading-relaxed mb-5">
-                Browse community writing prompts, submit your own story entries,
-                and read how others interpreted the same spark of an idea.
-              </p>
-              <div className="space-y-2 mb-5">
-                {[
-                  {
-                    prompt:
-                      '"Write a scene where time stops — except for one person."',
-                    entries: 23,
-                  },
-                  {
-                    prompt:
-                      '"A letter found in a book returned to the library 30 years later."',
-                    entries: 14,
-                  },
-                  {
-                    prompt:
-                      '"Write a story that starts with the line: "The last thing I expected to find in the attic was..."',
-                    entries: 8,
-                  },
-                ].map(({ prompt, entries }) => (
-                  <div
-                    key={prompt}
-                    className="rounded-lg bg-[#252525] px-3 py-2.5"
-                  >
-                    <p className="text-sm text-white/80 leading-snug italic">
-                      {prompt}
-                    </p>
-                    <p className="text-[11px] text-purple-400/70 mt-1">
-                      {entries} entries
+
+              {/* Mock Spark UI */}
+              <div className="border-t border-[#2a2a2a]">
+                <div className="px-5 py-3 border-b border-[#2a2a2a] flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-1">Active Challenge</p>
+                    <p className="text-sm font-semibold text-white leading-snug italic">
+                      &quot;Write a scene where time stops for everyone except for one person.&quot;
                     </p>
                   </div>
-                ))}
+                  <div className="shrink-0 text-right">
+                    <p className="text-[10px] text-white/80">Ends in</p>
+                    <p className="text-sm font-bold text-yellow-500">3d 14h</p>
+                  </div>
+                </div>
+
+                <div className="divide-y divide-[#2a2a2a]">
+                  {[
+                    { rank: 1, title: 'The Frozen Market', author: 'James K.', votes: 47, winner: true },
+                    { rank: 2, title: 'Still Life in Motion', author: 'Priya M.', votes: 31, winner: false },
+                    { rank: 3, title: 'Between Seconds', author: 'Tom R.', votes: 19, winner: false },
+                  ].map(({ rank, title, author, votes, winner }) => (
+                    <div key={title} className="px-5 py-3 flex items-center gap-3">
+                      <span className="text-xs font-bold text-white/80 w-4 shrink-0">#{rank}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-white truncate">{title}</p>
+                          {winner && (
+                            <span className="shrink-0 text-[10px] font-bold text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded-full">
+                              Leading
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-white/80">{author}</p>
+                      </div>
+                      <div className="shrink-0 flex items-center gap-1 text-xs text-white/80">
+                        <Heart className="w-3 h-3" />
+                        {votes}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="px-5 py-3 border-t border-[#2a2a2a]">
+                  <button className="w-full py-2 rounded-xl bg-[#FFC300]/10 border border-[#FFC300]/20 text-yellow-500 text-xs font-semibold hover:bg-[#FFC300]/15 transition-colors">
+                    Submit Your Entry
+                  </button>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -590,10 +690,30 @@ export default function LandingPage() {
           © {new Date().getFullYear()} Beehive Books. All rights reserved.
         </p>
         <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-2 mt-3">
-          <Link href="/terms" className="text-sm text-white/80 hover:text-white transition-colors">Terms</Link>
-          <Link href="/privacy" className="text-sm text-white/80 hover:text-white transition-colors">Privacy</Link>
-          <Link href="/dmca" className="text-sm text-white/80 hover:text-white transition-colors">DMCA</Link>
-          <Link href="/cookies" className="text-sm text-white/80 hover:text-white transition-colors">Cookies</Link>
+          <Link
+            href="/terms"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Terms
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Privacy
+          </Link>
+          <Link
+            href="/dmca"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            DMCA
+          </Link>
+          <Link
+            href="/cookies"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Cookies
+          </Link>
         </div>
       </footer>
     </div>

@@ -5,7 +5,7 @@
     "library": "Bibliothek",
     "hives": "Bienenstöcke",
     "clubs": "Clubs",
-    "prompts": "Schreibimpulse",
+    "prompts": "Sparks",
     "readingLists": "Leselisten",
     "friends": "Freunde",
     "profile": "Profil",
@@ -47,7 +47,7 @@
       "hives": "Schreib-Bienenstöcke",
       "clubs": "Buchclubs",
       "readingLists": "Leselisten",
-      "prompts": "Schreibimpulse"
+      "prompts": "Writing Sparks"
     },
     "sections": {
       "libraryTitle": "Ihre persönliche Schreibbibliothek",

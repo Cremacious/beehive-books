@@ -156,7 +156,7 @@ export function SortableChapterRow({
                     onClick={() => setShowMenu((v) => !v)}
                     className="p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <MoreHorizontal className="w-4 h-4 " />
                   </button>
                   {showMenu && (
                     <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">

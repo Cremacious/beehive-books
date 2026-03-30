@@ -44,7 +44,7 @@ export function EntryForm({ promptId }: Props) {
     setServerError('');
     const result = await createEntryAction(promptId, data.content);
     if (result.success) {
-      router.push(`/prompts/${promptId}`);
+      router.push(`/sparks/${promptId}`);
       router.refresh();
     } else {
       setServerError(result.message);

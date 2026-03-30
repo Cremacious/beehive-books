@@ -6,7 +6,7 @@ import { InviteActions } from '@/components/prompts/invite-actions';
 import { getMyPromptsAction } from '@/lib/actions/prompt.actions';
 
 export const metadata: Metadata = {
-  title: 'Prompts',
+  title: 'Sparks',
   description:
     'Discover and join creative writing challenges. Submit entries and compete with other writers.',
 };
@@ -20,7 +20,7 @@ export default async function PromptsPage() {
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mainFont">
-          My Writing Prompts
+          My Writing Sparks
         </h1>
       </div>
 
@@ -40,7 +40,7 @@ export default async function PromptsPage() {
             >
               <div className="min-w-0">
                 <Link
-                  href={`/prompts/${p.id}`}
+                  href={`/sparks/${p.id}`}
                   className="text-sm font-medium text-white hover:text-[#FFC300] transition-colors truncate block"
                 >
                   {p.title}

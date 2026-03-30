@@ -216,14 +216,14 @@ function NewUserWelcome({ suggestedWriters }: { suggestedWriters: SuggestedUser[
       cta: 'Explore Hives',
     },
     {
-      href: '/prompts',
+      href: '/sparks',
       icon: Lightbulb,
       color: 'text-emerald-400',
       bg: 'bg-emerald-400/10',
-      title: 'Writing Prompts',
+      title: 'Writing Sparks',
       description:
         'Challenge yourself with writing prompts and see what others create.',
-      cta: 'See Prompts',
+      cta: 'See Sparks',
     },
     {
       href: '/reading-lists',
@@ -591,7 +591,7 @@ export default async function UserHomePage() {
               { href: '/explore', label: 'Explore', icon: Compass },
               { href: '/hive', label: 'Hives', icon: Hexagon },
               { href: '/clubs', label: 'Clubs', icon: Users2 },
-              { href: '/prompts', label: 'Prompts', icon: Lightbulb },
+              { href: '/sparks', label: 'Sparks', icon: Lightbulb },
               {
                 href: '/reading-lists',
                 label: 'Reading Lists',

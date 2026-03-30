@@ -29,7 +29,7 @@ export default async function EditPromptPage({ params }: Props) {
   }
 
 
-  if (userId !== prompt.creator.id) redirect(`/prompts/${promptId}`);
+  if (userId !== prompt.creator.id) redirect(`/sparks/${promptId}`);
 
   const { friends } = await getMyFriendsDataAction();
 
@@ -45,7 +45,7 @@ export default async function EditPromptPage({ params }: Props) {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto">
-      <BackButton href={`/prompts/${promptId}`} label="Back to Prompt" />
+      <BackButton href={`/sparks/${promptId}`} label="Back to Prompt" />
 
       <div className="mt-6 mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-white mainFont">Edit Challenge</h1>

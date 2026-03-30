@@ -5,7 +5,7 @@ import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import { PromptCard } from '@/components/prompts/prompt-card';
 
-export const metadata: Metadata = { title: 'Explore Prompts' };
+export const metadata: Metadata = { title: 'Explore Sparks' };
 
 export default async function ExplorePromptsPage({
   searchParams,
@@ -21,7 +21,7 @@ export default async function ExplorePromptsPage({
       <div>
         <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
           <Lightbulb className="w-6 h-6 text-purple-400" />
-          Writing Prompts
+          Writing Sparks
         </h1>
       </div>
 

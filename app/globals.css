@@ -130,7 +130,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-none;
   }
   body {
     @apply bg-background text-foreground;
@@ -156,12 +156,4 @@ scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar {
 display: none;
-}
-
-/* Prevent document-level scrollbar on desktop — app uses internal scroll only */
-@media (min-width: 768px) {
-  html, body {
-    overflow: hidden;
-    height: 100%;
-  }
 }

@@ -1,9 +1,15 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Trophy, Clock, FileText, PenLine } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Trophy, Clock, FileText, PenLine, MoreHorizontal, Flag, Trash2 } from 'lucide-react';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
 import { EndPromptButton } from '@/components/prompts/end-prompt-button';
 import { DeletePromptButton } from '@/components/prompts/delete-prompt-button';
+import { DeleteDialog } from '@/components/shared/delete-dialog';
+import { deletePromptAction } from '@/lib/actions/prompt.actions';
 import type { PromptDetail, PromptEntry, PromptUser } from '@/lib/types/prompt.types';
 
 function formatCountdown(date: Date): string {
@@ -48,7 +54,22 @@ interface Props {
 }
 
 export function PromptHeader({ prompt, entries, isCreator, promptId, canSubmit }: Props) {
+  const router = useRouter();
   const status = prompt.status;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [endOpen, setEndOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const communityWinner = prompt.communityWinnerId
     ? entries.find((e) => e.id === prompt.communityWinnerId) ?? null
@@ -56,7 +77,7 @@ export function PromptHeader({ prompt, entries, isCreator, promptId, canSubmit }
   const authorChoice = prompt.authorChoiceId
     ? entries.find((e) => e.id === prompt.authorChoiceId) ?? null
     : null;
-  const leader = entries[0] ?? null; // entries already sorted by likeCount desc
+  const leader = entries[0] ?? null;
 
   const statePill =
     status === 'ACTIVE'
@@ -81,17 +102,74 @@ export function PromptHeader({ prompt, entries, isCreator, promptId, canSubmit }
             </span>
           </div>
           {isCreator && (
-            <div className="flex items-center gap-2 flex-wrap shrink-0">
-              <Link
-                href={`/prompts/${promptId}/edit`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/80 border border-[#2a2a2a] hover:text-white hover:border-white/20 transition-all"
-              >
-                <PenLine className="w-3.5 h-3.5" />
-                Edit
-              </Link>
-              {status === 'ACTIVE' && <EndPromptButton promptId={promptId} />}
-              <DeletePromptButton promptId={promptId} />
-            </div>
+            <>
+              {/* Desktop buttons */}
+              <div className="hidden sm:flex items-center gap-2 shrink-0">
+                <Link
+                  href={`/prompts/${promptId}/edit`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/80 border border-[#2a2a2a] hover:text-white hover:border-white/20 transition-all"
+                >
+                  <PenLine className="w-3.5 h-3.5" />
+                  Edit
+                </Link>
+                {status === 'ACTIVE' && <EndPromptButton promptId={promptId} />}
+                <DeletePromptButton promptId={promptId} />
+              </div>
+
+              {/* Mobile three-dot menu */}
+              <div className="sm:hidden relative" ref={mobileMenuRef}>
+                <button
+                  onClick={() => setMobileMenuOpen(v => !v)}
+                  className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all"
+                >
+                  <MoreHorizontal className="w-5 h-5 text-yellow-500" />
+                </button>
+                {mobileMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 z-50 min-w-40 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
+                    <Link
+                      href={`/prompts/${promptId}/edit`}
+                      className="flex items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-white/5 transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <PenLine className="w-4 h-4 text-white/80" />
+                      Edit
+                    </Link>
+                    {status === 'ACTIVE' && (
+                      <button
+                        onClick={() => { setMobileMenuOpen(false); setEndOpen(true); }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-white/5 transition-colors"
+                      >
+                        <Flag className="w-4 h-4 text-white/80" />
+                        End Early
+                      </button>
+                    )}
+                    <div className="my-1 border-t border-[#2a2a2a]" />
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); setDeleteOpen(true); }}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-white/5 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-white/80" />
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Controlled dialogs for mobile triggers */}
+              {status === 'ACTIVE' && (
+                <EndPromptButton promptId={promptId} open={endOpen} onOpenChange={setEndOpen} />
+              )}
+              <DeleteDialog
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                itemType="prompt"
+                onDelete={async () => {
+                  const result = await deletePromptAction(promptId);
+                  if (!result.success) throw new Error(result.message);
+                  router.push('/prompts');
+                }}
+              />
+            </>
           )}
         </div>
 

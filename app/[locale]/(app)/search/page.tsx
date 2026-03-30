@@ -113,9 +113,9 @@ export default async function SearchPage({
       {promptResults.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white mainFont">Prompts</h2>
+            <h2 className="text-lg font-bold text-white mainFont">Sparks</h2>
             <Link
-              href={`/explore/prompts?q=${encodeURIComponent(q)}`}
+              href={`/explore/sparks?q=${encodeURIComponent(q)}`}
               className="text-xs text-yellow-500 hover:text-white transition-colors"
             >
               See all

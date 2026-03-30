@@ -270,7 +270,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       timestamp: p.createdAt,
       user,
       meta: { title: p.title, promptId: p.id },
-      link: `/prompts/${p.id}`,
+      link: `/sparks/${p.id}`,
     });
   }
 

@@ -86,52 +86,52 @@ export default function ClubForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-1.5">
-        <label htmlFor="club-name" className="text-sm font-medium text-white">
-          Club Name <span className="text-white/80 text-xs font-normal">(required)</span>
+        <label htmlFor="club-name" className="text-base font-medium text-white">
+          Club Name <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
-        <p className="text-xs text-white/80">Your book club&apos;s name.</p>
+        <p className="text-sm text-white/80">Your book club&apos;s name.</p>
         <input
           {...register('name')}
           id="club-name"
           aria-required="true"
           aria-describedby={errors.name ? 'club-name-error' : undefined}
           placeholder="e.g. Midnight Mystery Readers…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
-        <p className="text-xs text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
+        <p className="text-sm text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
         {errors.name && (
-          <p id="club-name-error" role="alert" className="text-xs text-white/80">{errors.name.message}</p>
+          <p id="club-name-error" role="alert" className="text-sm text-white/80">{errors.name.message}</p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="club-description" className="text-sm font-medium text-white">
+        <label htmlFor="club-description" className="text-base font-medium text-white">
           Description{' '}
-          <span className="text-white/80 text-xs font-normal">(optional)</span>
+          <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
-        <p className="text-xs text-white/80">What kind of books does your club read? Who&apos;s it for?</p>
+        <p className="text-sm text-white/80">What kind of books does your club read? Who&apos;s it for?</p>
         <textarea
           {...register('description')}
           id="club-description"
           rows={3}
           placeholder="What is this club about? What kinds of books do you read?"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
-        <p className="text-xs text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
-          <p className="text-xs text-white/80">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-white">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
-        <p className="text-xs text-white/80">Public clubs appear in Explore. Private clubs are invite-only.</p>
+        <p className="text-sm text-white/80">Public clubs appear in Explore. Private clubs are invite-only.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer h-full">
@@ -142,10 +142,10 @@ export default function ClubForm({
                 className="sr-only peer"
               />
               <div className="h-full flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -153,7 +153,7 @@ export default function ClubForm({
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-white/80">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -161,7 +161,7 @@ export default function ClubForm({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-white">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this club on the Explore page so all users can discover it.
@@ -192,25 +192,25 @@ export default function ClubForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="club-rules" className="text-sm font-medium text-white">
+        <label htmlFor="club-rules" className="text-base font-medium text-white">
           Club Rules{' '}
-          <span className="text-white/80 text-xs font-normal">(optional)</span>
+          <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
         <textarea
           {...register('rules')}
           id="club-rules"
           rows={4}
           placeholder="Any rules or guidelines for members? e.g. Be respectful, finish the book before posting spoilers…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
         {errors.rules && (
-          <p className="text-xs text-white/80">{errors.rules.message}</p>
+          <p className="text-sm text-white/80">{errors.rules.message}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-1.5">
-          Tags <span className="text-white/80 text-xs font-normal">(up to 10)</span>
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
         </label>
         <TagInput
           value={tags}

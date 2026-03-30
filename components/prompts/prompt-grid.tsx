@@ -97,13 +97,13 @@ export function PromptGrid({ prompts }: Props) {
         </p>
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link
-            href="/prompts/create"
+            href="/sparks/create"
             className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
           >
             Create a prompt
           </Link>
           <Link
-            href="/explore/prompts"
+            href="/explore/sparks"
             className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
           >
             Browse prompts
@@ -144,7 +144,7 @@ export function PromptGrid({ prompts }: Props) {
           </div>
 
           <Link
-            href="/prompts/create"
+            href="/sparks/create"
             className="flex mainFont leading-none items-center gap-2 px-4 py-3 rounded-xl bg-[#FFC300] text-black text-sm font-semibold hover:bg-[#FFD700] transition-colors whitespace-nowrap shrink-0"
           >
             <Plus className="w-4 h-4" />

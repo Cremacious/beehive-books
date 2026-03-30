@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { label: 'Books', href: '/explore/books', icon: BookOpen, exact: false },
   { label: 'Clubs', href: '/explore/clubs', icon: Users, exact: false },
   { label: 'Hives', href: '/explore/hives', icon: Hexagon, exact: false },
-  { label: 'Prompts', href: '/explore/prompts', icon: Lightbulb, exact: false },
+  { label: 'Sparks', href: '/explore/sparks', icon: Lightbulb, exact: false },
   { label: 'Reading Lists', href: '/explore/reading-lists', icon: List, exact: false },
 ];
 
