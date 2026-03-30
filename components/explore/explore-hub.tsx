@@ -136,9 +136,9 @@ export function ExploreHub({ books, clubs, hives, prompts, readingLists }: Explo
     sections.push(
       <GridSection
         key="prompts"
-        title="Writing Prompts"
+        title="Writing Sparks"
         icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
-        seeAllHref="/explore/prompts"
+        seeAllHref="/explore/sparks"
         items={prompts}
         renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
       />

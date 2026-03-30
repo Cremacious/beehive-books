@@ -39,7 +39,7 @@ const HIGHLIGHTS = [
   { icon: BookOpen, color: 'text-[#FFC300]', bg: 'bg-[#FFC300]/10', title: 'Unlimited Writing', description: 'No caps on books, chapters, or words. Write as much as you want.' },
   { icon: Users2, color: 'text-blue-400', bg: 'bg-blue-400/10', title: 'Unlimited Clubs', description: 'Join and create as many book clubs as you like.' },
   { icon: Hexagon, color: 'text-teal-400', bg: 'bg-teal-400/10', title: 'Full Hive Access', description: 'Collaborate on unlimited hives with writers across the community.' },
-  { icon: PenLine, color: 'text-emerald-400', bg: 'bg-emerald-400/10', title: 'Writing Prompts', description: 'Participate in all prompts and share your entries with everyone.' },
+  { icon: PenLine, color: 'text-emerald-400', bg: 'bg-emerald-400/10', title: 'Writing Sparks', description: 'Participate in all sparks and share your entries with everyone.' },
   { icon: Star, color: 'text-purple-400', bg: 'bg-purple-400/10', title: 'Premium Badge', description: 'Stand out on your profile with an exclusive premium badge.' },
   { icon: Zap, color: 'text-orange-400', bg: 'bg-orange-400/10', title: 'Early Access', description: 'Be the first to try new features before they roll out to everyone.' },
 ];

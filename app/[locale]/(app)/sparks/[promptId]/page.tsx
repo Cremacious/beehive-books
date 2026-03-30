@@ -92,7 +92,7 @@ export default async function PromptDetailPage({ params }: Props) {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-4xl mx-auto">
-      <BackButton href="/prompts" label="Prompts" className="mb-6" />
+      <BackButton href="/sparks" label="Sparks" className="mb-6" />
 
       <PromptHeader
         prompt={prompt}
@@ -149,7 +149,7 @@ export default async function PromptDetailPage({ params }: Props) {
           </p>
           {prompt.myEntryId && (
             <Link
-              href={`/prompts/${promptId}/${prompt.myEntryId}`}
+              href={`/sparks/${promptId}/${prompt.myEntryId}`}
               className="ml-auto text-xs text-yellow-500 hover:underline shrink-0"
             >
               Preview →

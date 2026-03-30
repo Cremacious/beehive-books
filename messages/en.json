@@ -5,7 +5,7 @@
     "library": "Library",
     "hives": "Hives",
     "clubs": "Clubs",
-    "prompts": "Prompts",
+    "prompts": "Sparks",
     "readingLists": "Reading Lists",
     "friends": "Friends",
     "profile": "Profile",
@@ -47,7 +47,7 @@
       "hives": "Writing Hives",
       "clubs": "Book Clubs",
       "readingLists": "Reading Lists",
-      "prompts": "Writing Prompts"
+      "prompts": "Writing Sparks"
     },
     "sections": {
       "libraryTitle": "Your personal writing library",

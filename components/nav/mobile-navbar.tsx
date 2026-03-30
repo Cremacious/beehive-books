@@ -42,7 +42,7 @@ export function MobileNavbar({ isAdmin = false }: { isAdmin?: boolean }) {
     { href: '/library', label: t('library'), icon: Library },
     { href: '/hive', label: t('hives'), icon: Hexagon },
     { href: '/clubs', label: t('clubs'), icon: Users },
-    { href: '/prompts', label: t('prompts'), icon: Lightbulb },
+    { href: '/sparks', label: t('prompts'), icon: Lightbulb },
     { href: '/reading-lists', label: t('readingLists'), icon: BookMarked },
     { href: '/friends', label: t('friends'), icon: Users2 },
   ] as const;

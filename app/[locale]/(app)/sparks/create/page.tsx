@@ -13,7 +13,7 @@ export default async function CreatePromptPage() {
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-3xl mx-auto overflow-x-hidden">
-      <BackButton href="/prompts" label="Prompts" />
+      <BackButton href="/sparks" label="Sparks" />
 
       <div className="mt-6 mb-8">
 

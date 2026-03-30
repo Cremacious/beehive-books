@@ -78,14 +78,14 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
     if (mode === 'create') {
       const result = await createPromptAction({ ...data, tags }, invitedIds);
       if (result.success && result.promptId) {
-        router.push(`/prompts/${result.promptId}`);
+        router.push(`/sparks/${result.promptId}`);
       } else {
         setServerError(result.message);
       }
     } else {
       const result = await updatePromptAction(prompt!.id, { ...data, tags }, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
       if (result.success) {
-        router.push(`/prompts/${prompt!.id}`);
+        router.push(`/sparks/${prompt!.id}`);
       } else {
         setServerError(result.message);
       }

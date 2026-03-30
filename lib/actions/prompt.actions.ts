@@ -399,7 +399,7 @@ export async function createPromptAction(
           recipientId: uid,
           actorId: userId,
           type: 'PROMPT_INVITE',
-          link: `/prompts/${promptId}`,
+          link: `/sparks/${promptId}`,
           metadata: {
             actorUsername: actor?.username ?? '',
             promptId,
@@ -409,7 +409,7 @@ export async function createPromptAction(
       }
     }
 
-    revalidatePath('/prompts');
+    revalidatePath('/sparks');
     return { success: true, message: 'Prompt created.', promptId };
   } catch {
     return { success: false, message: 'Failed to create prompt.' };
@@ -490,7 +490,7 @@ export async function updatePromptAction(
           recipientId: uid,
           actorId: userId,
           type: 'PROMPT_INVITE',
-          link: `/prompts/${promptId}`,
+          link: `/sparks/${promptId}`,
           metadata: {
             actorUsername: actor?.username ?? '',
             promptId,
@@ -500,9 +500,9 @@ export async function updatePromptAction(
       }
     }
 
-    revalidatePath('/prompts');
-    revalidatePath(`/prompts/${promptId}`);
-    revalidatePath(`/prompts/${promptId}/edit`);
+    revalidatePath('/sparks');
+    revalidatePath(`/sparks/${promptId}`);
+    revalidatePath(`/sparks/${promptId}/edit`);
     return { success: true, message: 'Prompt updated.' };
   } catch {
     return { success: false, message: 'Failed to update prompt.' };
@@ -541,13 +541,13 @@ export async function endPromptEarlyAction(
         recipientId: inv.userId,
         actorId: userId,
         type: 'PROMPT_ENDED',
-        link: `/prompts/${promptId}`,
+        link: `/sparks/${promptId}`,
         metadata: { promptId, promptTitle: prompt.title },
       });
     }
 
-    revalidatePath('/prompts');
-    revalidatePath(`/prompts/${promptId}`);
+    revalidatePath('/sparks');
+    revalidatePath(`/sparks/${promptId}`);
     return { success: true, message: 'Voting period started.' };
   } catch {
     return { success: false, message: 'Failed to end prompt.' };
@@ -582,12 +582,12 @@ export async function transitionToEndedAction(promptId: string): Promise<void> {
       recipientId: topEntry.userId,
       actorId: prompt.creatorId,
       type: 'PROMPT_COMMUNITY_WIN',
-      link: `/prompts/${promptId}`,
+      link: `/sparks/${promptId}`,
       metadata: { promptTitle: prompt.title },
     });
   }
 
-  revalidatePath(`/prompts/${promptId}`);
+  revalidatePath(`/sparks/${promptId}`);
 }
 
 export async function voteForEntryAction(
@@ -619,7 +619,7 @@ export async function voteForEntryAction(
     .set({ likeCount: sql`${promptEntries.likeCount} + 1` })
     .where(eq(promptEntries.id, entryId));
 
-  revalidatePath(`/prompts/${promptId}`);
+  revalidatePath(`/sparks/${promptId}`);
   return { success: true, message: 'Vote recorded.' };
 }
 
@@ -653,12 +653,12 @@ export async function setAuthorChoiceAction(
         recipientId: entry.userId,
         actorId: userId,
         type: 'PROMPT_AUTHOR_CHOICE',
-        link: `/prompts/${promptId}`,
+        link: `/sparks/${promptId}`,
         metadata: { promptTitle: prompt.title },
       });
     }
 
-    revalidatePath(`/prompts/${promptId}`);
+    revalidatePath(`/sparks/${promptId}`);
     return { success: true, message: 'Author choice set.' };
   } catch {
     return { success: false, message: 'Failed to set author choice.' };
@@ -678,7 +678,7 @@ export async function deletePromptAction(
 
   try {
     await db.delete(prompts).where(eq(prompts.id, promptId));
-    revalidatePath('/prompts');
+    revalidatePath('/sparks');
     return { success: true, message: 'Prompt deleted.' };
   } catch {
     return { success: false, message: 'Failed to delete prompt.' };
@@ -710,8 +710,8 @@ export async function acceptInviteAction(
         ),
       );
 
-    revalidatePath('/prompts');
-    revalidatePath(`/prompts/${promptId}`);
+    revalidatePath('/sparks');
+    revalidatePath(`/sparks/${promptId}`);
     return { success: true, message: 'Invite accepted.' };
   } catch {
     return { success: false, message: 'Failed to accept invite.' };
@@ -732,7 +732,7 @@ export async function declineInviteAction(
           eq(promptInvites.userId, userId),
         ),
       );
-    revalidatePath('/prompts');
+    revalidatePath('/sparks');
     return { success: true, message: 'Invite declined.' };
   } catch {
     return { success: false, message: 'Failed to decline invite.' };
@@ -819,7 +819,7 @@ export async function createEntryAction(
       recipientId: prompt.creatorId,
       actorId: userId,
       type: 'PROMPT_ENTRY',
-      link: `/prompts/${promptId}/${entryId}`,
+      link: `/sparks/${promptId}/${entryId}`,
       metadata: {
         actorUsername: actor?.username ?? '',
         promptId,
@@ -828,7 +828,7 @@ export async function createEntryAction(
       },
     });
 
-    revalidatePath(`/prompts/${promptId}`);
+    revalidatePath(`/sparks/${promptId}`);
     return { success: true, message: 'Entry submitted.', entryId };
   } catch {
     return { success: false, message: 'Failed to submit entry.' };
@@ -923,7 +923,7 @@ export async function addEntryCommentAction(
       columns: { username: true },
     });
     const meta = { actorUsername: actor?.username ?? '', promptId, entryId };
-    const link = `/prompts/${promptId}/${entryId}`;
+    const link = `/sparks/${promptId}/${entryId}`;
 
     if (parentId) {
       const parent = await db.query.promptEntryComments.findFirst({
@@ -949,7 +949,7 @@ export async function addEntryCommentAction(
       });
     }
 
-    revalidatePath(`/prompts/${promptId}/${entryId}`);
+    revalidatePath(`/sparks/${promptId}/${entryId}`);
     return { success: true, message: 'Comment added.' };
   } catch {
     return { success: false, message: 'Failed to add comment.' };
@@ -1005,7 +1005,7 @@ export async function toggleEntryCommentLikeAction(
           recipientId: comment.userId,
           actorId: userId,
           type: 'ENTRY_COMMENT_LIKE',
-          link: `/prompts/${comment.entry.promptId}/${comment.entryId}`,
+          link: `/sparks/${comment.entry.promptId}/${comment.entryId}`,
           metadata: {
             actorUsername: actor?.username ?? '',
             promptId: comment.entry.promptId,
@@ -1135,7 +1135,7 @@ export async function inviteFriendsToPromptAction(
         recipientId: uid,
         actorId: userId,
         type: 'PROMPT_INVITE',
-        link: `/prompts/${promptId}`,
+        link: `/sparks/${promptId}`,
         metadata: {
           actorUsername: actor?.username ?? '',
           promptId,
@@ -1143,7 +1143,7 @@ export async function inviteFriendsToPromptAction(
         },
       });
     }
-    revalidatePath(`/prompts/${promptId}`);
+    revalidatePath(`/sparks/${promptId}`);
     return { success: true, message: `${toAdd.length} invite${toAdd.length !== 1 ? 's' : ''} sent!` };
   } catch {
     return { success: false, message: 'Failed to send invites.' };
