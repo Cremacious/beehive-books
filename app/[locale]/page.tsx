@@ -27,10 +27,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#141414] text-white">
       <section className="px-6 pt-24 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,195,0,0.08),transparent)]" />
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
-          backgroundSize: '56px 100px'
-        }} />
+        <div className="absolute inset-0 opacity-[0.04]" />
         <div className="mx-auto max-w-3xl relative">
           <Image
             src={logoImage}
@@ -40,10 +37,12 @@ export default function LandingPage() {
             height={200}
           />
           <h1 className="mb-6 text-4xl font-bold mainFont">
-            More than a <span className="text-yellow-500">text editor.</span>
+            Get <span className="text-yellow-500">buzzed</span> about writing!
           </h1>
           <p className="mb-10 text-lg text-white/80 leading-relaxed max-w-3xl mx-auto">
-            Write your story. Collaborate with other writers. Share it with the world. Beehive Books is where books get made.
+            Write your story. Collaborate with other writers. Share it with the
+            world. More than a text editor, Beehive Books is where books get
+            made.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <Button className="w-full md:w-auto" asChild size="lg">
@@ -122,14 +121,28 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Your book, the way you <span className="text-[#FFC300]">imagined it.</span>
+                Your book, the way you{' '}
+                <span className="text-[#FFC300]">imagined</span> it.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                A real writing environment built for long-form work. Organize your story into chapters and collections, track your word count, and export finished work to EPUB and more. No distractions. No compromises.
+                A real writing environment built for long-form work. Organize
+                your story into chapters and collections, track your word count,
+                and export finished work to EPUB, DOCX, or PDF. No distractions.
+                No compromises.
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                {['Rich text editor', 'Chapter collections', 'EPUB export', 'Privacy controls'].map(f => (
-                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
+                {[
+                  'Rich text editor',
+                  'Chapter collections',
+                  'EPUB export',
+                  'Privacy controls',
+                ].map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium"
+                  >
+                    {f}
+                  </span>
                 ))}
               </div>
             </div>
@@ -352,14 +365,30 @@ export default function LandingPage() {
 
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Writing is better <span className="text-[#FFC300]">together.</span>
+                Writing is better{' '}
+                <span className="text-[#FFC300]">together</span>.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Invite co-authors, beta readers, and editors into your Hive. Claim chapters, leave feedback on specific passages, and watch the word count climb. Built for writers who want more than a shared document.
+                Your Hive is your book&apos;s command center. Invite co-authors,
+                beta readers, and editors to annotate specific passages, propose
+                rewrites you can accept or reject, and submit chapters for
+                approval. Plan your story on the outline board, build your world
+                in the wiki, track progress with shared word goals, and more!
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                {['Co-author tools', 'Annotations', 'World wiki', 'Word goals', 'Outline board'].map(f => (
-                  <span key={f} className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium">{f}</span>
+                {[
+                  'Co-author tools',
+                  'Annotations',
+                  'World wiki',
+                  'Word goals',
+                  'Outline board',
+                ].map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs px-3 py-1.5 rounded-full bg-[#2a2a2a] text-white/70 font-medium"
+                  >
+                    {f}
+                  </span>
                 ))}
               </div>
             </div>
@@ -372,11 +401,14 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="mb-4 text-3xl font-bold mainFont">
-                Find stories worth reading{' '}
-                <span className="text-[#FFC300]">together.</span>
+                Read More. Discuss{' '}
+                <span className="text-[#FFC300]">everything</span>.
               </h2>
               <p className="mb-6 text-white/80 leading-relaxed">
-                Browse public books from writers across the community. Join book clubs to read the same book and talk about it with people who are just as into it as you are.
+                Reading alone is fine. Reading with people who actually want to
+                talk about it is better. Join a book club to track progress
+                together and discuss chapters as you go. Find your people in the
+                community or start your own club.
               </p>
             </div>
 
@@ -494,7 +526,9 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">Your shelves, your way.</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">
+                  Your shelves, your way.
+                </h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Curate collections of books you love, want to read, or recommend
@@ -523,7 +557,9 @@ export default function LandingPage() {
 
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] p-8">
               <div className="mb-2 flex items-center gap-3">
-                <h3 className="text-xl font-bold mainFont text-yellow-500">A spark when you need one.</h3>
+                <h3 className="text-xl font-bold mainFont text-yellow-500">
+                  A spark when you need one.
+                </h3>
               </div>
               <p className="text-white/80 leading-relaxed mb-5">
                 Browse community writing prompts, submit your own story entries,
@@ -590,10 +626,30 @@ export default function LandingPage() {
           © {new Date().getFullYear()} Beehive Books. All rights reserved.
         </p>
         <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-2 mt-3">
-          <Link href="/terms" className="text-sm text-white/80 hover:text-white transition-colors">Terms</Link>
-          <Link href="/privacy" className="text-sm text-white/80 hover:text-white transition-colors">Privacy</Link>
-          <Link href="/dmca" className="text-sm text-white/80 hover:text-white transition-colors">DMCA</Link>
-          <Link href="/cookies" className="text-sm text-white/80 hover:text-white transition-colors">Cookies</Link>
+          <Link
+            href="/terms"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Terms
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Privacy
+          </Link>
+          <Link
+            href="/dmca"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            DMCA
+          </Link>
+          <Link
+            href="/cookies"
+            className="text-sm text-white/80 hover:text-white transition-colors"
+          >
+            Cookies
+          </Link>
         </div>
       </footer>
     </div>
