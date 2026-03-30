@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
@@ -91,6 +92,7 @@ export default function HiveSuggestEditor({
   initialContent,
   initialSuggestions,
 }: HiveSuggestEditorProps) {
+  const router = useRouter();
   const isMod = myRole === 'OWNER' || myRole === 'MODERATOR';
   const defaultMode: EditorMode = isMod ? 'Write' : 'Suggest';
 
@@ -136,16 +138,18 @@ export default function HiveSuggestEditor({
     });
   };
 
-  const handleSuggest = () => {
+  const handleSuggest = async () => {
     setError('');
     setSaveMessage('');
-    startTransition(async () => {
-      const result = await createSuggestionAction(hiveId, selectedChapterId, editorContent, summary);
-      if (!result.success) { setError(result.message); return; }
-      setSaveMessage('Suggestion submitted.');
-      setEditorContent(chapterContent);
-      setSummary('');
-    });
+    const result = await createSuggestionAction(hiveId, selectedChapterId, editorContent, summary);
+    if (!result.success) { setError(result.message); return; }
+
+    const fresh = await getHiveChapterSuggestionsAction(hiveId, selectedChapterId);
+    setSuggestions(fresh);
+
+    setSaveMessage('Suggestion submitted.');
+    setEditorContent(chapterContent);
+    setSummary('');
   };
 
   const filteredSuggestions = suggestions.filter((s) => s.chapterId === selectedChapterId);
