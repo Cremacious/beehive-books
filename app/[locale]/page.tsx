@@ -44,15 +44,24 @@ export default function LandingPage() {
             world. More than a text editor, Beehive Books is where books get
             made.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <Button className="w-full md:w-auto" asChild size="lg">
-              <Link href="/sign-up">
-                Create your account
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
+          <div className="flex flex-col items-center justify-center gap-3 mb-14">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+              <Button className="w-full sm:w-48" asChild size="lg">
+                <Link href="/sign-up">
+                  Create account
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button
+                className="w-full sm:w-48 bg-white text-black hover:bg-white/90 border-none"
+                asChild
+                size="lg"
+              >
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+            </div>
             <Button
-              className="w-full md:w-auto"
+              className="w-full sm:w-[24.5rem] mt-1"
               asChild
               variant="outline"
               size="lg"
