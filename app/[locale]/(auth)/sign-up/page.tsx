@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signIn, signUp } from '@/lib/auth-client';
@@ -26,6 +27,7 @@ function validatePassword(password: string): string[] {
 }
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -75,6 +77,14 @@ export default function SignUpPage() {
       return;
     }
 
+    if (process.env.NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION === 'false') {
+      // Auto sign in and go straight to onboarding
+      const signInResult = await signIn.email({ email, password });
+      if (!signInResult.error) {
+        router.push('/onboarding');
+        return;
+      }
+    }
     setVerificationEmail(email);
     setLoading(false);
   }
