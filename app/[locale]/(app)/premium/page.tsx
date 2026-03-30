@@ -82,61 +82,43 @@ export default async function PremiumPage() {
       </div>
 
       {/* Pricing Card */}
-      <div className="relative rounded-2xl border border-[#FFC300]/30 bg-[#FFC300]/5 p-8 mb-10 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-[#FFC300]/5 to-transparent pointer-events-none" />
-        <div className="relative">
-          {isPremium && stripeSubscriptionId ? (
-            <>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFC300]/20 border border-[#FFC300]/40 mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-[#FFC300]" />
-                <span className="text-sm font-bold text-[#FFC300]">Active Subscription</span>
-              </div>
-              <p className="text-white/80 text-sm mb-7">
-                You&apos;re on Premium. Manage or cancel anytime below.
-              </p>
-              <ManageSubscriptionButton className={btnClass} />
-            </>
-          ) : !isPremium ? (
-            <>
-              <p className="text-sm font-semibold text-[#FFC300] uppercase tracking-widest mb-3">Monthly</p>
-              <div className="flex items-end justify-center gap-1 mb-1">
-                <span className="text-5xl font-bold text-white mainFont">$2</span>
-                <span className="text-white/80 mb-2 text-base">/ month</span>
-              </div>
-              <p className="text-white/80 text-sm mb-7">Cancel anytime. No commitments.</p>
-              <UpgradeButton className={btnClass} />
-            </>
-          ) : null}
-        </div>
-      </div>
-
-      {/* Complimentary Access */}
-      {isPremium && !stripeSubscriptionId && (
-        <div className="rounded-2xl bg-[#252525] border border-[#FFC300]/25 p-8 text-center max-w-md mx-auto mb-10">
+      {isPremium && !stripeSubscriptionId ? (
+        <div className="rounded-2xl border border-[#2a2a2a] bg-[#252525] p-8 mb-10 text-center">
           <Crown className="w-10 h-10 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mainFont mb-2">Premium Access</h2>
-          <p className="text-sm text-white/80 mb-1">Your account has complimentary premium access.</p>
-          <p className="text-sm text-white/80">All features are unlocked.</p>
+          <p className="text-white font-semibold mb-1">Premium Access</p>
+          <p className="text-sm text-white/80">Your account has complimentary premium access. All features are unlocked.</p>
+        </div>
+      ) : (
+        <div className="relative rounded-2xl border border-[#FFC300]/30 bg-[#FFC300]/5 p-8 mb-10 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-linear-to-b from-[#FFC300]/5 to-transparent pointer-events-none" />
+          <div className="relative">
+            {isPremium ? (
+              <>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFC300]/20 border border-[#FFC300]/40 mb-4">
+                  <Sparkles className="w-3.5 h-3.5 text-[#FFC300]" />
+                  <span className="text-sm font-bold text-[#FFC300]">Active Subscription</span>
+                </div>
+                <p className="text-white/80 text-sm mb-7">
+                  You&apos;re on Premium. Manage or cancel anytime below.
+                </p>
+                <ManageSubscriptionButton className={btnClass} />
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-semibold text-[#FFC300] uppercase tracking-widest mb-3">Monthly</p>
+                <div className="flex items-end justify-center gap-1 mb-1">
+                  <span className="text-5xl font-bold text-white mainFont">$2</span>
+                  <span className="text-white/80 mb-2 text-base">/ month</span>
+                </div>
+                <p className="text-white/80 text-sm mb-7">Cancel anytime. No commitments.</p>
+                <UpgradeButton className={btnClass} />
+              </>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Feature Highlights Grid */}
-      <div className="mb-12">
-        <h2 className="text-lg font-bold text-white mainFont mb-5">Everything included</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {HIGHLIGHTS.map(({ icon: Icon, color, bg, title, description }) => (
-            <div key={title} className="flex items-start gap-4 p-4 rounded-2xl bg-[#252525] border border-[#2a2a2a]">
-              <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
-                <Icon className={`w-4.5 h-4.5 ${color}`} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white mb-0.5">{title}</p>
-                <p className="text-xs text-white/80 leading-relaxed">{description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+  
 
       {/* Comparison Table */}
       <div>
