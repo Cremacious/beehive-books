@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, Copy, Check, FileText, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Share2, Copy, Check, FileText, Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Popup from '@/components/ui/popup';
 import { exportBookToDocxAction, exportBookToEpubAction } from '@/lib/actions/export.actions';
@@ -11,11 +12,12 @@ interface ShareBookButtonProps {
   bookId: string;
   variant?: 'default' | 'icon';
   isOwner?: boolean;
+  isPremium?: boolean;
   className?: string;
   size?: 'sm' | 'default';
 }
 
-export function ShareBookButton({ bookId, variant = 'default', isOwner = false, className, size = 'sm' }: ShareBookButtonProps) {
+export function ShareBookButton({ bookId, variant = 'default', isOwner = false, isPremium = false, className, size = 'sm' }: ShareBookButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exportingDocx, setExportingDocx] = useState(false);
@@ -135,52 +137,66 @@ export function ShareBookButton({ bookId, variant = 'default', isOwner = false, 
           {isOwner && (
             <div className="space-y-2 pt-1 border-t border-[#2a2a2a]">
               <p className="text-xs font-semibold text-white/80 uppercase tracking-wider pt-1">Export</p>
-              {exportError && (
-                <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg px-3 py-2">
-                  {exportError}
-                </p>
-              )}
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="secondary"
-                    onClick={handleDocxExport}
-                    disabled={exportingDocx || exportingPdf || exportingEpub}
-                  >
-                    {exportingDocx ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <FileText className="w-4 h-4" />
-                    )}
-                    {exportingDocx ? 'Exporting…' : 'DOCX'}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handlePdfExport}
-                    disabled={exportingDocx || exportingPdf || exportingEpub}
-                  >
-                    {exportingPdf ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <FileText className="w-4 h-4" />
-                    )}
-                    {exportingPdf ? 'Exporting…' : 'PDF'}
-                  </Button>
+              {!isPremium ? (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a]">
+                  <Lock className="w-4 h-4 text-white/80 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-white">Export is a Premium feature</p>
+                    <Link href="/premium" className="text-xs text-yellow-500 hover:text-white transition-colors">
+                      Upgrade to unlock EPUB, DOCX, and PDF exports
+                    </Link>
+                  </div>
                 </div>
-                <Button
-                  className="w-full"
-                  variant="secondary"
-                  onClick={handleEpubExport}
-                  disabled={exportingDocx || exportingPdf || exportingEpub}
-                >
-                  {exportingEpub ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileText className="w-4 h-4" />
+              ) : (
+                <>
+                  {exportError && (
+                    <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg px-3 py-2">
+                      {exportError}
+                    </p>
                   )}
-                  {exportingEpub ? 'Exporting…' : 'EPUB'}
-                </Button>
-              </div>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={handleDocxExport}
+                        disabled={exportingDocx || exportingPdf || exportingEpub}
+                      >
+                        {exportingDocx ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <FileText className="w-4 h-4" />
+                        )}
+                        {exportingDocx ? 'Exporting…' : 'DOCX'}
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={handlePdfExport}
+                        disabled={exportingDocx || exportingPdf || exportingEpub}
+                      >
+                        {exportingPdf ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <FileText className="w-4 h-4" />
+                        )}
+                        {exportingPdf ? 'Exporting…' : 'PDF'}
+                      </Button>
+                    </div>
+                    <Button
+                      className="w-full"
+                      variant="secondary"
+                      onClick={handleEpubExport}
+                      disabled={exportingDocx || exportingPdf || exportingEpub}
+                    >
+                      {exportingEpub ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <FileText className="w-4 h-4" />
+                      )}
+                      {exportingEpub ? 'Exporting…' : 'EPUB'}
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

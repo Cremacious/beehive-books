@@ -8,7 +8,7 @@ export type PremiumResource =
 export const PREMIUM_CONFIG = {
   limits: {
     free: {
-      books: 1,
+      books: 2,
       clubs: 1,
       hives: 1,
       readingLists: 1,
