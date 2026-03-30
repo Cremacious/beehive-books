@@ -415,7 +415,7 @@ export default function ChapterList({
                       onClick={() => setMobileMenuOpen((v) => !v)}
                       className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-all"
                     >
-                      <MoreHorizontal className="w-4 h-4" />
+                      <MoreHorizontal className="w-5 h-5 text-yellow-500" />
                     </button>
                     {mobileMenuOpen && (
                       <div className="absolute right-0 top-full mt-1 z-50 min-w-44 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1">

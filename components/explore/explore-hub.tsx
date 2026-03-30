@@ -163,7 +163,7 @@ export function ExploreHub({ books, clubs, hives, prompts, readingLists }: Explo
       {sections.map((section, i) => (
         <div key={i}>
           {section}
-          {i < sections.length - 1 && <hr className="border-[#e60c0c] mb-10" />}
+          {i < sections.length - 1 && <hr className="border-[#2f2e2e] mb-10" />}
         </div>
       ))}
     </div>
