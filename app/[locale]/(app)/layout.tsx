@@ -56,7 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen overflow-hidden bg-[#141414]">
       <DesktopSidebar isAdmin={isAdmin} />
       <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden pt-14 md:pt-3 pb-16 md:pb-3 px-2 md:px-3 mt-2 md:mt-0">
-        <div className="w-full min-h-full bg-[#1e1e1e] rounded-2xl animate-in fade-in duration-200">
+        <div className="w-full bg-[#1e1e1e] rounded-2xl animate-in fade-in duration-200">
           {children}
         </div>
       </main>
