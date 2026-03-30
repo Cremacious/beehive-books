@@ -45,7 +45,7 @@ export default async function BookPage({
     notFound();
   }
 
-  const { chapters, collections, isOwner } = book;
+  const { chapters, collections, isOwner, isPremium } = book;
 
   return (
     <div className="px-4 py-6 md:px-8">
@@ -93,7 +93,7 @@ export default async function BookPage({
 
                 {/* Desktop action buttons */}
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <ShareBookButton bookId={book.id} isOwner={isOwner} />
+                  <ShareBookButton bookId={book.id} isOwner={isOwner} isPremium={isPremium} />
                   {isOwner && (
                     <Link
                       href={`/library/${book.id}/edit`}
@@ -162,6 +162,7 @@ export default async function BookPage({
             <ShareBookButton
               bookId={book.id}
               isOwner={isOwner}
+              isPremium={isPremium}
               size="default"
               className="w-full rounded-full border border-[#2a2a2a] text-white"
             />

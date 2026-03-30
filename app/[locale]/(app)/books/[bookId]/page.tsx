@@ -81,7 +81,7 @@ export default async function PublicBookPage({
     getListsFeaturingBookAction(bookId).catch(() => []),
   ]);
 
-  const { chapters, collections, isOwner } = book;
+  const { chapters, collections, isOwner, isPremium } = book;
 
   return (
     <div className="px-4 py-6 md:px-8">
@@ -135,7 +135,7 @@ export default async function PublicBookPage({
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <ShareBookButton bookId={book.id} isOwner={isOwner} />
+                  <ShareBookButton bookId={book.id} isOwner={isOwner} isPremium={isPremium} />
                   {isOwner && (
                     <Button asChild size="sm">
                       <Link href={`/library/${book.id}/edit`}>
@@ -229,6 +229,7 @@ export default async function PublicBookPage({
               <ShareBookButton
                 bookId={book.id}
                 isOwner={isOwner}
+                isPremium={isPremium}
                 size="default"
                 className="flex-1"
               />

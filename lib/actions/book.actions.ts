@@ -136,7 +136,16 @@ export async function getBookForViewAction(bookId: string) {
       throw new Error('This book is only available to friends');
     }
   }
-  return { ...book, isOwner };
+  let isPremium = false;
+  if (userId && isOwner) {
+    const [userRow] = await db
+      .select({ premium: users.premium })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    isPremium = userRow?.premium === true;
+  }
+  return { ...book, isOwner, isPremium };
 }
 
 
@@ -409,6 +418,29 @@ export async function createChapterAction(
 
   const wordCount = parsed.data.content ? countWords(parsed.data.content) : 0;
 
+  // Check 50k word limit for free users
+  const [userRow] = await db
+    .select({ premium: users.premium })
+    .from(users)
+    .where(eq(users.id, authorId))
+    .limit(1);
+
+  if (!userRow?.premium) {
+    const [bookRow] = await db
+      .select({ wordCount: books.wordCount })
+      .from(books)
+      .where(eq(books.id, bookId))
+      .limit(1);
+
+    const currentTotal = bookRow?.wordCount ?? 0;
+    if (currentTotal + wordCount > 50000) {
+      return {
+        success: false,
+        message: `Free accounts are limited to 50,000 words per book. This book has ${currentTotal.toLocaleString()} words. Upgrade to Premium for unlimited writing.`,
+      };
+    }
+  }
+
   const maxOrderResult = await db
     .select({ maxOrder: max(chapters.order) })
     .from(chapters)
@@ -493,7 +525,7 @@ export async function updateChapterAction(
   chapterId: string,
   data: ChapterFormData,
 ): Promise<ActionResult> {
-  await requireBookOwner(bookId);
+  const { userId: authorId } = await requireBookOwner(bookId);
   const parsed = chapterSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -507,6 +539,31 @@ export async function updateChapterAction(
     ? countWords(parsed.data.content)
     : 0;
   const wordCountDiff = newWordCount - existing.wordCount;
+
+  // Check 50k word limit for free users when adding words
+  if (wordCountDiff > 0) {
+    const [userRow] = await db
+      .select({ premium: users.premium })
+      .from(users)
+      .where(eq(users.id, authorId))
+      .limit(1);
+
+    if (!userRow?.premium) {
+      const [bookRow] = await db
+        .select({ wordCount: books.wordCount })
+        .from(books)
+        .where(eq(books.id, bookId))
+        .limit(1);
+
+      const currentTotal = bookRow?.wordCount ?? 0;
+      if (currentTotal + wordCountDiff > 50000) {
+        return {
+          success: false,
+          message: `Free accounts are limited to 50,000 words per book. This book has ${currentTotal.toLocaleString()} words. Upgrade to Premium for unlimited writing.`,
+        };
+      }
+    }
+  }
 
   const hadNoContent = !existing.content || existing.content.trim() === '';
   const hasNewContent = !!parsed.data.content && parsed.data.content.trim() !== '';
@@ -866,7 +923,18 @@ export async function toggleCommentLikeAction(
 }
 
 export async function getBookForExportAction(bookId: string) {
-  const { book } = await requireBookOwner(bookId);
+  const { userId, book } = await requireBookOwner(bookId);
+
+  const [userRow] = await db
+    .select({ premium: users.premium })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!userRow?.premium) {
+    throw new Error('Export is a Premium feature. Upgrade to unlock EPUB, DOCX, and PDF exports.');
+  }
+
   const chapterRows = await db.query.chapters.findMany({
     where: eq(chapters.bookId, bookId),
     orderBy: (c, { asc }) => [asc(c.order)],
