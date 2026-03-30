@@ -1,12 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import {
   Crown,
   Sparkles,
   ArrowRight,
-  Loader2,
   CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,26 +18,6 @@ export function PremiumStatusCard({
   premium,
   stripeCurrentPeriodEnd,
 }: PremiumStatusCardProps) {
-  const [loading, setLoading] = useState(false);
-
-  async function handleManage() {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' });
-      if (!res.ok) {
-        window.location.href = '/premium';
-        return;
-      }
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else window.location.href = '/premium';
-    } catch {
-      window.location.href = '/premium';
-    } finally {
-      setLoading(false);
-    }
-  }
-
   const renewalDate = stripeCurrentPeriodEnd
     ? new Intl.DateTimeFormat(undefined, {
         month: 'long',
@@ -75,15 +53,11 @@ export function PremiumStatusCard({
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleManage}
-            disabled={loading}
-            className="shrink-0 text-xs"
-          >
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-            {loading ? 'Loading…' : 'Manage'}
+          <Button variant="outline" size="sm" asChild className="shrink-0 text-xs">
+            <Link href="/premium">
+              Manage
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </Button>
         </div>
 
@@ -127,7 +101,7 @@ export function PremiumStatusCard({
           </div>
         </div>
 
-        <Button size="sm" asChild className="shrink-0 text-xs">
+        <Button variant="outline" size="sm" asChild className="shrink-0 text-xs">
           <Link href="/premium">
             Upgrade
             <ArrowRight className="w-3.5 h-3.5" />
