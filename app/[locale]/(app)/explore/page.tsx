@@ -71,7 +71,8 @@ export default async function ExplorePage() {
       <div className="px-4 md:px-8 pb-12 max-w-6xl mx-auto">
         {friendsBooks.length > 0 && <FriendsReadingSection books={friendsBooks} />}
         <ExploreHub
-          books={books}
+          featured={featured}
+          genreRows={genreRows}
           clubs={clubs}
           hives={hives}
           prompts={prompts}

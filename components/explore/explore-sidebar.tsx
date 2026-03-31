@@ -147,6 +147,7 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
                   <div className="space-y-1 pb-3">
                     {group.options.map((option) => {
                       const isChecked = selected.includes(option);
+                      const displayLabel = group.labels?.[option] ?? option;
                       return (
                         <label
                           key={option}

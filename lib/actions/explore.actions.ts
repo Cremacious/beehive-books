@@ -58,6 +58,7 @@ function mapBook(b: typeof books.$inferSelect): Book {
     wordCount: b.wordCount,
     commentCount: b.commentCount,
     chapterCount: b.chapterCount,
+    likeCount: b.likeCount,
     coverUrl: b.coverUrl,
     tags: (b.tags ?? []) as string[],
     commentsEnabled: b.commentsEnabled,
@@ -69,6 +70,36 @@ function mapBook(b: typeof books.$inferSelect): Book {
 
 const LIMIT = 30;
 const FTS_LIMIT = 50;
+
+function updatedSinceCutoff(windows: string[]): Date | null {
+  if (windows.length === 0) return null;
+  const now = Date.now();
+  const ms = { week: 7, month: 30, year: 365 };
+  const days = Math.max(...windows.map((w) => ms[w as keyof typeof ms] ?? 0));
+  return new Date(now - days * 86_400_000);
+}
+
+function lengthConditions(lengths: string[]) {
+  if (lengths.length === 0) return undefined;
+  const conds = lengths.map((l) => {
+    if (l === 'short') return lt(books.wordCount, 10_000);
+    if (l === 'novella') return and(gte(books.wordCount, 10_000), lt(books.wordCount, 40_000));
+    if (l === 'novel') return and(gte(books.wordCount, 40_000), lt(books.wordCount, 100_000));
+    if (l === 'epic') return gte(books.wordCount, 100_000);
+    return undefined;
+  }).filter(Boolean) as NonNullable<ReturnType<typeof lt>>[];
+  return conds.length === 1 ? conds[0] : or(...conds);
+}
+
+function statusConditions(statuses: string[]) {
+  if (statuses.length === 0) return undefined;
+  const conds = statuses.map((s) => {
+    if (s === 'COMPLETE') return eq(books.draftStatus, 'COMPLETED');
+    if (s === 'DRAFTING') return ne(books.draftStatus, 'COMPLETED');
+    return undefined;
+  }).filter(Boolean) as NonNullable<ReturnType<typeof eq>>[];
+  return conds.length === 1 ? conds[0] : or(...conds);
+}
 
 export async function searchExplorableBooksAction(
   query: string,
@@ -497,12 +528,7 @@ export async function searchExplorableReadingListsAction(
 
 const getCachedHubData = unstable_cache(
   async () => {
-    const [bookRows, clubRows, hiveRows, promptRows, readingListRows] = await Promise.all([
-      db.query.books.findMany({
-        where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
-        orderBy: [desc(books.createdAt)],
-        limit: 8,
-      }),
+    const [clubRows, hiveRows, promptRows, readingListRows] = await Promise.all([
       db.query.bookClubs.findMany({
         where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC')),
         orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
@@ -527,7 +553,6 @@ const getCachedHubData = unstable_cache(
     ]);
 
     return {
-      books: bookRows.map(mapBook),
       clubs: clubRows.map((c) => ({ ...c, tags: c.tags as string[], myRole: null, isMember: false })),
       hives: hiveRows.map((h) => ({ ...h, tags: h.tags as string[], myRole: null, isMember: false })),
       prompts: promptRows.map((p) => ({
@@ -553,7 +578,6 @@ const getCachedHubData = unstable_cache(
 );
 
 export async function getExplorableHubDataAction(): Promise<{
-  books: Book[];
   clubs: ClubWithMembership[];
   hives: HiveWithMembership[];
   prompts: PromptCard[];
@@ -604,4 +628,38 @@ export async function getFriendsReadingAction(): Promise<Book[]> {
   });
 
   return rows.map(mapBook);
+}
+
+const getCachedBooksByGenre = unstable_cache(
+  async () => {
+    const rows = await db.query.books.findMany({
+      where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+      orderBy: [desc(books.likeCount), desc(books.createdAt)],
+    });
+
+    const featured = rows.slice(0, 5).map(mapBook);
+
+    const genreMap = new Map<string, Book[]>();
+    for (const row of rows) {
+      const genre = row.genre;
+      if (!genreMap.has(genre)) genreMap.set(genre, []);
+      const arr = genreMap.get(genre)!;
+      if (arr.length < 10) arr.push(mapBook(row));
+    }
+
+    const genreRows = Array.from(genreMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([genre, books]) => ({ genre, books }));
+
+    return { featured, genreRows };
+  },
+  ['explore-books-by-genre'],
+  { revalidate: 300 },
+);
+
+export async function getExplorableBooksByGenreAction(): Promise<{
+  featured: Book[];
+  genreRows: { genre: string; books: Book[] }[];
+}> {
+  return getCachedBooksByGenre();
 }

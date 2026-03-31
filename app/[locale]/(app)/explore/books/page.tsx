@@ -4,8 +4,8 @@ import { BookOpen } from 'lucide-react';
 import { searchExplorableBooksAction, getExplorableTagsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
-import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
-import BookCard from '@/components/library/book-card';
+import { ExploreBooksGrid } from '@/components/explore/explore-books-grid';
+import { ExploreGenreChips } from '@/components/explore/explore-genre-chips';
 import { GENRES, CATEGORIES } from '@/lib/config/constants';
 
 export const metadata: Metadata = { title: 'Explore Books' };
@@ -130,6 +130,8 @@ export default async function ExploreBooksPage({
           </Link>
         ))}
       </div>
+
+      <ExploreGenreChips genres={GENRES} />
 
       <div className="flex flex-col lg:flex-row gap-6">
         <ExploreSidebar filterGroups={filterGroups} />

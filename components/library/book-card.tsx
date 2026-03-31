@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import type { Book } from '@/lib/types/books.types';
 import { GeneratedCover } from '@/components/library/generated-cover';
 
@@ -29,7 +30,7 @@ export default function BookCard({
       </div>
 
       <div className="flex flex-col flex-1 px-3 pt-2.5 pb-3">
-        <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-[#FFC300] transition-colors mainFont">
+        <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-10 group-hover:text-[#FFC300] transition-colors mainFont">
           {book.title}
         </h3>
         <p className="text-xs text-white/80 truncate mt-0.5">{book.author}</p>
