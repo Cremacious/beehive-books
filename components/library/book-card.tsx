@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GeneratedCover } from '@/components/library/generated-cover';
 import type { Book } from '@/lib/types/books.types';
-import { GeneratedCover } from '@/components/library/generated-cover';
 
 export default function BookCard({
   book,

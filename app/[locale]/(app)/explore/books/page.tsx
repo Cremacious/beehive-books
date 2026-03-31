@@ -6,6 +6,8 @@ import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
 import { ExploreBooksGrid } from '@/components/explore/explore-books-grid';
 import { ExploreGenreChips } from '@/components/explore/explore-genre-chips';
+import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
+import BookCard from '@/components/library/book-card';
 import { GENRES, CATEGORIES } from '@/lib/config/constants';
 
 export const metadata: Metadata = { title: 'Explore Books' };

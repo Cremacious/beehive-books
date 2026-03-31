@@ -6,15 +6,20 @@ import { searchExplorableBooksAction } from '@/lib/actions/explore.actions';
 import BookCard from '@/components/library/book-card';
 import type { Book } from '@/lib/types/books.types';
 
+type BookSort = 'newest' | 'most_liked' | 'most_chapters';
+
 interface ExploreBooksGridProps {
   initialBooks: Book[];
   initialNextCursor: string | null;
   query: string;
   genres: string[];
   categories: string[];
-  statuses: string[];
-  lengths: string[];
-  updatedSince: string[];
+  tags: string[];
+  draftStatuses: string[];
+  wordCountRange: string;
+  hasComments: boolean;
+  updatedWithin: string;
+  sort: BookSort;
 }
 
 export function ExploreBooksGrid({
@@ -23,9 +28,12 @@ export function ExploreBooksGrid({
   query,
   genres,
   categories,
-  statuses,
-  lengths,
-  updatedSince,
+  tags,
+  draftStatuses,
+  wordCountRange,
+  hasComments,
+  updatedWithin,
+  sort,
 }: ExploreBooksGridProps) {
   const [allBooks, setAllBooks] = useState<Book[]>(initialBooks);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -39,9 +47,12 @@ export function ExploreBooksGrid({
         query,
         genres,
         categories,
-        statuses,
-        lengths,
-        updatedSince,
+        tags,
+        draftStatuses,
+        wordCountRange,
+        hasComments,
+        updatedWithin,
+        sort,
         nextCursor,
       );
       setAllBooks((prev) => [...prev, ...result.books]);

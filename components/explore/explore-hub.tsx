@@ -52,12 +52,15 @@ function BookScrollSection({
   return (
     <section className="mb-10">
       <SectionHeader title={title} icon={icon} seeAllHref={seeAllHref} />
-      <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
-        {items.map((item, i) => (
-          <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
-            {renderItem(item)}
-          </div>
-        ))}
+      <div className="relative">
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+          {books.map((book) => (
+            <div key={book.id} className={`shrink-0 ${cardWidth} flex flex-col`}>
+              <BookCard book={book} basePath="/books" />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#1e1e1e] to-transparent" />
       </div>
     </section>
   );
@@ -149,38 +152,38 @@ export function ExploreHub({
         />
       )}
 
-  if (prompts.length > 0) {
-    sections.push(
-      <GridSection
-        key="prompts"
-        title="Writing Sparks"
-        icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
-        seeAllHref="/explore/sparks"
-        items={prompts}
-        renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
-      />
-    );
-  }
+      {hives.length > 0 && (
+        <GridSection
+          key="hives"
+          title="Writing Hives"
+          icon={<Hexagon className="w-4 h-4 text-[#FFC300]" />}
+          seeAllHref="/explore/hives"
+          items={hives}
+          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
+        />
+      )}
 
       {prompts.length > 0 && (
         <GridSection
           key="prompts"
-          title="Writing Prompts"
+          title="Writing Sparks"
           icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
-          seeAllHref="/explore/prompts"
+          seeAllHref="/explore/sparks"
           items={prompts}
           renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
         />
       )}
 
-  return (
-    <div>
-      {sections.map((section, i) => (
-        <div key={i}>
-          {section}
-          {i < sections.length - 1 && <hr className="border-[#2f2e2e] mb-10" />}
-        </div>
-      ))}
+      {readingLists.length > 0 && (
+        <GridSection
+          key="reading-lists"
+          title="Reading Lists"
+          icon={<List className="w-4 h-4 text-emerald-400" />}
+          seeAllHref="/explore/reading-lists"
+          items={readingLists}
+          renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
+        />
+      )}
     </div>
   );
 }

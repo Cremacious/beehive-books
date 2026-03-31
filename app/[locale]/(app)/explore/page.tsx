@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getExplorableHubDataAction, getFriendsReadingAction } from '@/lib/actions/explore.actions';
+import { getExplorableHubDataAction, getExplorableBooksByGenreAction, getFriendsReadingAction } from '@/lib/actions/explore.actions';
 import { ExploreHub } from '@/components/explore/explore-hub';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { GeneratedCover } from '@/components/library/generated-cover';
@@ -46,8 +46,9 @@ function FriendsReadingSection({ books }: { books: Book[] }) {
 }
 
 export default async function ExplorePage() {
-  const [{ books, clubs, hives, prompts, readingLists }, friendsBooks] = await Promise.all([
+  const [{ clubs, hives, prompts, readingLists }, { featured, genreRows }, friendsBooks] = await Promise.all([
     getExplorableHubDataAction(),
+    getExplorableBooksByGenreAction(),
     getFriendsReadingAction(),
   ]);
 
