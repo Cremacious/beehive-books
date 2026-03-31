@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -20,7 +20,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { Button } from '@/components/ui/button';
-import { Plus, FolderOpen, FileText, Loader2 } from 'lucide-react';
+import { Plus, FolderOpen, FileText, Loader2, MoreHorizontal, GripVertical } from 'lucide-react';
 import type { Chapter, Collection } from '@/lib/types/books.types';
 import { useBookStore } from '@/lib/stores/book-store';
 import { toggleChapterReadAction } from '@/lib/actions/reading.actions';
@@ -144,6 +144,19 @@ export default function ChapterList({
   const [showColInput, setShowColInput] = useState(false);
   const [addingCol, setAddingCol] = useState(false);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    function onMouseDown(e: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [mobileMenuOpen]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -396,6 +409,33 @@ export default function ChapterList({
                       </Link>
                     </Button>
                   )}
+                  {/* Mobile overflow menu */}
+                  <div className="relative sm:hidden" ref={mobileMenuRef}>
+                    <button
+                      onClick={() => setMobileMenuOpen((v) => !v)}
+                      className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-all"
+                    >
+                      <MoreHorizontal className="w-5 h-5 text-yellow-500" />
+                    </button>
+                    {mobileMenuOpen && (
+                      <div className="absolute right-0 top-full mt-1 z-50 min-w-44 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1">
+                        <button
+                          onClick={() => { enterReorderMode(); setMobileMenuOpen(false); }}
+                          className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 flex items-center gap-2"
+                        >
+                          <GripVertical className="w-4 h-4 text-white/40" />
+                          Reorder chapters
+                        </button>
+                        <button
+                          onClick={() => { setShowColInput((v) => !v); setMobileMenuOpen(false); }}
+                          className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 flex items-center gap-2"
+                        >
+                          <FolderOpen className="w-4 h-4 text-yellow-500" />
+                          Add collection
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -410,15 +450,6 @@ export default function ChapterList({
             </p>
           </div>
         )}
-        {isOwner && !reorderMode && (
-          <div className="flex sm:hidden items-center gap-2 mt-3">
-            <Button size="sm" variant="outline" onClick={enterReorderMode}>Reorder</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowColInput((v) => !v)}>
-              <FolderOpen />
-              Collection
-            </Button>
-          </div>
-        )}
         {showColInput && (
           <div className="flex items-center gap-2 mt-3">
             <input
@@ -428,7 +459,7 @@ export default function ChapterList({
               onKeyDown={(e) => { if (e.key === 'Enter') handleAddCollection(); }}
               placeholder="Collection name…"
               autoFocus
-              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#FFC300]/50 transition-all"
+              className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 transition-all"
             />
             <Button size="sm" onClick={handleAddCollection} disabled={addingCol || !newColName.trim()}>
               {addingCol ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Add'}

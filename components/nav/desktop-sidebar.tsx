@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,6 +20,7 @@ import {
   Hexagon,
   ShieldCheck,
   MessageSquarePlus,
+  Search,
 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserSkeleton } from '@/components/ui/skeleton';
@@ -39,18 +41,32 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
     { href: '/library', label: t('library'), icon: Library },
     { href: '/hive', label: t('hives'), icon: Hexagon },
     { href: '/clubs', label: t('clubs'), icon: Users },
-    { href: '/prompts', label: t('prompts'), icon: Lightbulb },
+    { href: '/sparks', label: t('prompts'), icon: Lightbulb },
     { href: '/reading-lists', label: t('readingLists'), icon: BookMarked },
     { href: '/friends', label: t('friends'), icon: Users2 },
   ] as const;
+
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!avatarMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) {
+        setAvatarMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [avatarMenuOpen]);
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-screen sticky top-0 bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
-      <div className="flex flex-col h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
-        <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 py-3">
+    <aside aria-label={t('mainNavigation')} className="hidden md:flex flex-col md:w-20 lg:w-64 xl:w-72 2xl:w-80 h-full bg-[#252525] border-r border-[#2a2a2a] z-40 shrink-0">
+      <div className="flex flex-col min-h-full w-full xl:max-w-65 xl:ml-auto 2xl:max-w-70">
+        <div className="flex items-center md:justify-center lg:justify-start px-4 xl:px-5 pt-3 pb-6">
           <Image
             src={logoImage}
             alt="Beehive Books"
@@ -68,8 +84,28 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           />
         </div>
 
-        <nav className="flex-1 px-2 xl:px-3 py-1">
-          <ul className="space-y-0 flex flex-col md:items-center lg:items-stretch">
+        {/* <div className="px-2 xl:px-3 pb-1">
+          <Link
+            href="/search"
+            aria-label="Search"
+            aria-current={isActive('/search') ? 'page' : undefined}
+            className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-2 lg:px-4 lg:py-1.5 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+              isActive('/search')
+                ? 'text-[#FFC300]'
+                : 'text-white/90 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Search
+              aria-hidden="true"
+              className="w-5.5 h-5.5 shrink-0"
+              strokeWidth={isActive('/search') ? 2.5 : 1.75}
+            />
+            <span className="hidden lg:block" aria-hidden="true">Search</span>
+          </Link>
+        </div> */}
+
+        <nav className="flex-1 px-2 xl:px-3 py-1 min-h-0 overflow-y-auto">
+          <ul className="space-y-1 flex flex-col md:items-center lg:items-stretch">
             {navItems.map(({ href, label, icon: Icon }) => {
               const active = isActive(href);
               return (
@@ -78,9 +114,9 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                     href={href}
                     aria-label={label}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-3 lg:px-4 lg:py-2 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
+                    className={`flex items-center md:justify-center lg:justify-start gap-4 md:p-2 lg:px-4 lg:py-1.5 rounded-2xl text-[15px] font-semibold transition-all duration-150 ${
                       active
-                        ? 'text-[#FFC300] bg-[#FFC300]/8'
+                        ? 'text-[#FFC300]'
                         : 'text-white/90 hover:text-white hover:bg-white/5'
                     }`}
                   >
@@ -165,46 +201,101 @@ export function DesktopSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           {isPending ? (
             <UserSkeleton />
           ) : (
-            <div className="flex items-center md:justify-center lg:justify-start gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={username ?? 'User'}
-                  width={38}
-                  height={38}
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
-                  <span className="text-[#FFC300] text-sm font-bold">
-                    {username?.[0]?.toUpperCase() ?? '?'}
-                  </span>
+            <div className="relative">
+              {/* Collapsed avatar — clickable on md, hidden on lg+ */}
+              <button
+                type="button"
+                onClick={() => setAvatarMenuOpen(v => !v)}
+                className="md:flex lg:hidden w-full items-center justify-center p-2 rounded-2xl hover:bg-white/5 transition-all"
+              >
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={username ?? 'User'}
+                    width={38}
+                    height={38}
+                    className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
+                    <span className="text-[#FFC300] text-sm font-bold">
+                      {username?.[0]?.toUpperCase() ?? '?'}
+                    </span>
+                  </div>
+                )}
+              </button>
+
+              {/* Popup menu — appears above avatar on md */}
+              {avatarMenuOpen && (
+                <div
+                  ref={avatarMenuRef}
+                  className="absolute bottom-full left-0 mb-2 z-100 w-44 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden md:block lg:hidden"
+                >
+                  <div className="px-3 py-2 border-b border-[#2a2a2a]">
+                    <p className="text-xs font-semibold text-white truncate">{username ?? 'User'}</p>
+                  </div>
+                  <Link
+                    href="/settings"
+                    onClick={() => setAvatarMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Settings className="w-4 h-4 shrink-0" />
+                    Settings
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarMenuOpen(false);
+                      signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 shrink-0" />
+                    Sign out
+                  </button>
                 </div>
               )}
 
-              <div className="hidden lg:block flex-1 min-w-0">
-                <p className="text-white/90 font-semibold truncate leading-tight">
-                  {username ?? 'User'}
-                </p>
-              </div>
-
-              <div className="hidden lg:flex items-center gap-0.5 shrink-0">
-                <Link
-                  href="/settings"
-                  aria-label={t('settings')}
-                  className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
-                >
-                  <Settings aria-hidden="true" className="w-5 h-5" />
-                </Link>
-                <button
-                  type="button"
-                  data-testid="sign-out-button"
-                  onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
-                  aria-label={t('signOut')}
-                  className="p-1.5 rounded-lg text-white/90 hover:text-red-400 hover:bg-red-400/10 transition-all"
-                >
-                  <LogOut aria-hidden="true" className="w-5 h-5" />
-                </button>
+              {/* Expanded user row — lg+ only */}
+              <div className="hidden lg:flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/5 transition-all">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={username ?? 'User'}
+                    width={38}
+                    height={38}
+                    className="w-9 h-9 rounded-full object-cover ring-2 ring-[#FFC300]/20 shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#FFC300]/15 flex items-center justify-center ring-2 ring-[#FFC300]/20 shrink-0">
+                    <span className="text-[#FFC300] text-sm font-bold">
+                      {username?.[0]?.toUpperCase() ?? '?'}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-white/90 font-semibold truncate leading-tight" title={username}>
+                    {username ?? 'User'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Link
+                    href="/settings"
+                    aria-label={t('settings')}
+                    className="p-1.5 rounded-lg text-white/90 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
+                  >
+                    <Settings aria-hidden="true" className="w-5 h-5" />
+                  </Link>
+                  <button
+                    type="button"
+                    data-testid="sign-out-button"
+                    onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } })}
+                    aria-label={t('signOut')}
+                    className="p-1.5 rounded-lg text-white/90 hover:text-white/80 hover:bg-white/5 transition-all"
+                  >
+                    <LogOut aria-hidden="true" className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
           )}

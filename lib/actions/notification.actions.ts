@@ -20,6 +20,7 @@ export async function getNotificationsAction(): Promise<{
     limit: 30,
   });
 
+  type ActorRow = { username: string | null; image: string | null } | null;
   const items: NotificationItem[] = rows.map((r) => ({
     id:        r.id,
     type:      r.type as NotificationItem['type'],
@@ -27,7 +28,7 @@ export async function getNotificationsAction(): Promise<{
     link:      r.link,
     metadata:  (r.metadata ?? {}) as Record<string, string>,
     createdAt: r.createdAt,
-    actor:     r.actor ?? null,
+    actor:     (r.actor as unknown as ActorRow) ?? null,
   }));
 
   const unreadCount = items.filter((n) => !n.isRead).length;
@@ -52,6 +53,7 @@ export async function getNotificationsPageAction(
     db.select({ count: count() }).from(notifications).where(eq(notifications.recipientId, userId)),
   ]);
 
+  type ActorRow = { username: string | null; image: string | null } | null;
   const items: NotificationItem[] = rows.map((r) => ({
     id:       r.id,
     type:     r.type as NotificationItem['type'],
@@ -59,7 +61,7 @@ export async function getNotificationsPageAction(
     link:     r.link,
     metadata: (r.metadata ?? {}) as Record<string, string>,
     createdAt: r.createdAt,
-    actor:    r.actor ?? null,
+    actor:    (r.actor as unknown as ActorRow) ?? null,
   }));
 
   return { notifications: items, total: countResult[0]?.count ?? 0 };

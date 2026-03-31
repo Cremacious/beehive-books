@@ -7,13 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import {
   Plus,
-  X,
   Loader2,
   BookOpen,
   Sparkles,
   Check,
   Compass,
 } from 'lucide-react';
+import { TagInput } from '@/components/ui/tag-input';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
@@ -61,7 +61,6 @@ export default function HiveForm({
   const router = useRouter();
   const store = useHiveStore();
 
-  const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
   const [invitedIds, setInvitedIds] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -97,20 +96,6 @@ export default function HiveForm({
   const privacy = watch('privacy');
   const explorableValue = watch('explorable');
 
-  function addTag() {
-    const t = tagInput.trim();
-    if (!t || tags.includes(t) || tags.length >= 10) return;
-    const next = [...tags, t];
-    setTags(next);
-    setValue('tags', next);
-    setTagInput('');
-  }
-
-  function removeTag(tag: string) {
-    const next = tags.filter((t) => t !== tag);
-    setTags(next);
-    setValue('tags', next);
-  }
 
   const onSubmit = async (data: HiveSchemaData) => {
     setError('');
@@ -149,54 +134,60 @@ export default function HiveForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Hive Name <span className="text-red-400">*</span>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          Hive Name <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
+        <p className="text-sm text-white/80">The name of your writing group or collaboration.</p>
         <input
           {...register('name')}
           placeholder="e.g. The Midnight Chronicles Hive…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
+        <p className="text-sm text-white/80 text-right">{watch('name')?.length ?? 0} / 80</p>
         {errors.name && (
-          <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+          <p className="text-sm text-white/80">{errors.name.message}</p>
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Description{' '}
-          <span className="text-white/80 font-normal">(optional)</span>
+          <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
+        <p className="text-sm text-white/80">Tell potential members what this hive is about.</p>
         <textarea
           {...register('description')}
           rows={3}
           placeholder="What are you building? What's the story about?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
-          <p className="text-xs text-red-400 mt-1">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Genre <span className="text-white/80 font-normal">(optional)</span>
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          Genre <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
+        <p className="text-sm text-white/80">The primary genre your hive focuses on.</p>
         <input
           {...register('genre')}
           placeholder="e.g. Fantasy, Sci-Fi, Romance…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
+        <p className="text-sm text-white/80">Open: anyone can request to join. Invite-only: you control membership.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
@@ -207,10 +198,10 @@ export default function HiveForm({
                 className="sr-only peer"
               />
               <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -218,7 +209,7 @@ export default function HiveForm({
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -226,7 +217,7 @@ export default function HiveForm({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this hive on the Explore page so all users can discover it.
@@ -253,63 +244,20 @@ export default function HiveForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Tags <span className="text-white/80 font-normal">(up to 10)</span>
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
         </label>
-        <div className="rounded-xl border border-[#2a2a2a] bg-[#252525] p-3 space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-              placeholder="e.g. fantasy, dark-fiction, co-write…"
-              className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              disabled={!tagInput.trim() || tags.length >= 10}
-              className="px-3 py-2 rounded-lg bg-[#FFC300]/15 text-[#FFC300] hover:bg-[#FFC300]/25 disabled:opacity-30 transition-colors shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-
-          {tags.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 text-xs text-white bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2.5 py-1"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="text-white/80 hover:text-red-400 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-white/80 text-center py-1">
-              No tags yet — tags help others find your hive.
-            </p>
-          )}
-        </div>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          placeholder="e.g. fantasy, dark-fiction, co-write…"
+          emptyMessage="No tags yet. Tags help readers find your book."
+        />
       </div>
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          <label className="block text-base font-medium text-white mainFont mb-1.5">
             Book
           </label>
           <div className="grid grid-cols-3 gap-2 mb-3">
@@ -328,11 +276,11 @@ export default function HiveForm({
                   className={`w-4 h-4 ${bookOption === value ? 'text-[#FFC300]' : 'text-white/80'}`}
                 />
                 <span
-                  className={`text-xs font-semibold ${bookOption === value ? 'text-[#FFC300]' : 'text-white'}`}
+                  className={`text-sm font-semibold ${bookOption === value ? 'text-[#FFC300]' : 'text-white'}`}
                 >
                   {label}
                 </span>
-                <span className="text-xs text-white/80 leading-tight">
+                <span className="text-sm text-white/80 leading-tight">
                   {desc}
                 </span>
               </button>
@@ -345,13 +293,13 @@ export default function HiveForm({
                 value={newBookTitle}
                 onChange={(e) => setNewBookTitle(e.target.value)}
                 placeholder="Book title"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <input
                 value={newBookAuthor}
                 onChange={(e) => setNewBookAuthor(e.target.value)}
                 placeholder="Author name (you or a pen name)"
-                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="w-full rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
             </div>
           )}
@@ -364,7 +312,7 @@ export default function HiveForm({
                   <p className="text-sm text-white/80">
                     No books in your library yet.
                   </p>
-                  <p className="text-xs text-white/80">
+                  <p className="text-sm text-white/80">
                     Create a book first, or choose &ldquo;Start fresh&rdquo; to
                     create one now.
                   </p>
@@ -403,7 +351,7 @@ export default function HiveForm({
                             >
                               {book.title}
                             </p>
-                            <p className="text-xs text-white/80 truncate">
+                            <p className="text-sm text-white/80 truncate">
                               {book.author}
                             </p>
                           </div>
@@ -431,7 +379,7 @@ export default function HiveForm({
       )}
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+        <p className="text-sm text-white/80 bg-white/5 rounded-xl px-4 py-2.5">
           {error}
         </p>
       )}

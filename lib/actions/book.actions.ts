@@ -5,10 +5,11 @@ import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
-import { and, eq, max, or, sql } from 'drizzle-orm';
+import { and, desc, eq, max, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
+  bookLikes,
   chapters,
   collections,
   chapterComments,
@@ -27,6 +28,7 @@ import {
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
 import { insertNotification } from '@/lib/notifications';
+import { awardMilestoneIfNew } from '@/lib/milestones';
 
 export type ActionResult = { success: boolean; message: string };
 
@@ -70,6 +72,18 @@ export async function getUserBooksAction() {
   });
 }
 
+export async function getLikedBooksAction() {
+  const userId = await requireAuth();
+  const rows = await db.query.bookLikes.findMany({
+    where: eq(bookLikes.userId, userId),
+    with: {
+      book: true,
+    },
+    orderBy: (bl, { desc }) => [desc(bl.createdAt)],
+  });
+  return rows.map((r) => r.book);
+}
+
 export async function getBookWithChaptersAction(bookId: string) {
   const userId = await requireAuth();
   const book = await db.query.books.findFirst({
@@ -85,7 +99,27 @@ export async function getBookWithChaptersAction(bookId: string) {
 
 
 export async function getBookForViewAction(bookId: string) {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
+
+  type ChapterRow = {
+    id: string; bookId: string; collectionId: string | null; title: string;
+    content: string | null; authorNotes: string | null; wordCount: number;
+    order: number; commentCount: number; createdAt: Date; updatedAt: Date;
+  };
+  type CollectionRow = { id: string; bookId: string; name: string; order: number; createdAt: Date };
+  type BookForView = {
+    id: string; userId: string; title: string; author: string; genre: string;
+    category: string; description: string; privacy: 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
+    coverUrl: string | null; explorable: boolean; draftStatus: string; wordCount: number;
+    chapterCount: number; commentCount: number; likeCount: number; commentsEnabled: boolean;
+    chapterCommentsEnabled: boolean; tags: string[];
+    milestones: { key: string; achievedAt: string }[];
+    createdAt: Date; updatedAt: Date;
+    user: { username: string | null } | null;
+    chapters: ChapterRow[];
+    collections: CollectionRow[];
+  };
+
   const book = await db.query.books.findFirst({
     where: eq(books.id, bookId),
     with: {
@@ -93,7 +127,7 @@ export async function getBookForViewAction(bookId: string) {
       collections: { orderBy: (c, { asc }) => [asc(c.order)] },
       user: { columns: { username: true } },
     },
-  });
+  }) as unknown as BookForView | undefined;
   if (!book) throw new Error('Book not found');
   const isOwner = book.userId === userId;
   if (book.privacy === 'PRIVATE' && !isOwner) throw new Error('This book is private');
@@ -102,7 +136,16 @@ export async function getBookForViewAction(bookId: string) {
       throw new Error('This book is only available to friends');
     }
   }
-  return { ...book, isOwner };
+  let isPremium = false;
+  if (userId && isOwner) {
+    const [userRow] = await db
+      .select({ premium: users.premium })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    isPremium = userRow?.premium === true;
+  }
+  return { ...book, isOwner, isPremium };
 }
 
 
@@ -128,13 +171,14 @@ export async function createBookAction(
 
   try {
     const values = parsed.data;
-    await db.insert(books).values({
+    const [inserted] = await db.insert(books).values({
       ...(presetId ? { id: presetId } : {}),
       userId,
       ...values,
       privacy: values.explorable ? 'PUBLIC' : values.privacy,
       coverUrl: coverUrl || null,
-    });
+    }).returning({ id: books.id });
+    void awardMilestoneIfNew(inserted.id, 'FIRST_WORD');
     revalidatePath('/library');
     return { success: true, message: 'Book created.' };
   } catch {
@@ -158,15 +202,30 @@ export async function updateBookAction(
 
   try {
     const values = parsed.data;
+    const effectivePrivacy = values.explorable ? 'PUBLIC' : values.privacy;
     await db
       .update(books)
       .set({
         ...values,
-        privacy: values.explorable ? 'PUBLIC' : values.privacy,
+        privacy: effectivePrivacy,
         coverUrl: coverUrl ?? book.coverUrl,
         updatedAt: new Date(),
       })
       .where(eq(books.id, bookId));
+
+    if (effectivePrivacy !== 'PRIVATE' && book.privacy === 'PRIVATE') {
+      void awardMilestoneIfNew(bookId, 'FRESH_EYES');
+    }
+    if (values.draftStatus === 'FIRST_DRAFT') {
+      void awardMilestoneIfNew(bookId, 'FIRST_DRAFT_DONE');
+    }
+    if (values.draftStatus === 'SECOND_DRAFT') {
+      void awardMilestoneIfNew(bookId, 'SECOND_DRAFT');
+    }
+    if (values.draftStatus === 'COMPLETED') {
+      void awardMilestoneIfNew(bookId, 'FINISHED');
+    }
+
     revalidatePath(`/library/${bookId}`);
     revalidatePath('/library');
     return { success: true, message: 'Book updated.' };
@@ -216,12 +275,29 @@ export async function getPublicBookAction(bookId: string) {
 }
 
 export async function getChapterWithContextAction(chapterId: string) {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
+
+  type BookRow = {
+    id: string; userId: string; title: string; privacy: 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
+    author: string; genre: string; category: string; description: string;
+    coverUrl: string | null; explorable: boolean; wordCount: number; chapterCount: number;
+    commentCount: number; likeCount: number; commentsEnabled: boolean;
+    chapterCommentsEnabled: boolean; draftStatus: string; tags: string[];
+    milestones: { key: string; achievedAt: string }[];
+    createdAt: Date; updatedAt: Date;
+  };
+  type ChapterRow = {
+    id: string; bookId: string; collectionId: string | null; title: string;
+    content: string | null; authorNotes: string | null; wordCount: number;
+    order: number; commentCount: number; createdAt: Date; updatedAt: Date;
+    book: BookRow;
+    collection: { name: string } | null;
+  };
 
   const chapter = await db.query.chapters.findFirst({
     where: eq(chapters.id, chapterId),
     with: { book: true, collection: { columns: { name: true } } },
-  });
+  }) as unknown as ChapterRow | undefined;
   if (!chapter) throw new Error('Chapter not found');
 
   const { book } = chapter;
@@ -342,6 +418,29 @@ export async function createChapterAction(
 
   const wordCount = parsed.data.content ? countWords(parsed.data.content) : 0;
 
+  // Check 50k word limit for free users
+  const [userRow] = await db
+    .select({ premium: users.premium })
+    .from(users)
+    .where(eq(users.id, authorId))
+    .limit(1);
+
+  if (!userRow?.premium) {
+    const [bookRow] = await db
+      .select({ wordCount: books.wordCount })
+      .from(books)
+      .where(eq(books.id, bookId))
+      .limit(1);
+
+    const currentTotal = bookRow?.wordCount ?? 0;
+    if (currentTotal + wordCount > 50000) {
+      return {
+        success: false,
+        message: `Free accounts are limited to 50,000 words per book. This book has ${currentTotal.toLocaleString()} words. Upgrade to Premium for unlimited writing.`,
+      };
+    }
+  }
+
   const maxOrderResult = await db
     .select({ maxOrder: max(chapters.order) })
     .from(chapters)
@@ -358,14 +457,20 @@ export async function createChapterAction(
         order: nextOrder,
       })
       .returning({ id: chapters.id });
-    await db
+    const [updatedBook] = await db
       .update(books)
       .set({
         chapterCount: sql`${books.chapterCount} + 1`,
         wordCount: sql`${books.wordCount} + ${wordCount}`,
         updatedAt: new Date(),
       })
-      .where(eq(books.id, bookId));
+      .where(eq(books.id, bookId))
+      .returning({ chapterCount: books.chapterCount });
+
+    const newChapterCount = updatedBook?.chapterCount ?? 1;
+    if (newChapterCount === 1) void awardMilestoneIfNew(bookId, 'FIRST_CHAPTER');
+    if (newChapterCount === 3) void awardMilestoneIfNew(bookId, 'IN_THE_GROOVE');
+
     revalidatePath(`/library/${bookId}`);
 
     // Fire-and-forget: auto-log word count to any hive linked to this book
@@ -420,7 +525,7 @@ export async function updateChapterAction(
   chapterId: string,
   data: ChapterFormData,
 ): Promise<ActionResult> {
-  await requireBookOwner(bookId);
+  const { userId: authorId } = await requireBookOwner(bookId);
   const parsed = chapterSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -435,6 +540,34 @@ export async function updateChapterAction(
     : 0;
   const wordCountDiff = newWordCount - existing.wordCount;
 
+  // Check 50k word limit for free users when adding words
+  if (wordCountDiff > 0) {
+    const [userRow] = await db
+      .select({ premium: users.premium })
+      .from(users)
+      .where(eq(users.id, authorId))
+      .limit(1);
+
+    if (!userRow?.premium) {
+      const [bookRow] = await db
+        .select({ wordCount: books.wordCount })
+        .from(books)
+        .where(eq(books.id, bookId))
+        .limit(1);
+
+      const currentTotal = bookRow?.wordCount ?? 0;
+      if (currentTotal + wordCountDiff > 50000) {
+        return {
+          success: false,
+          message: `Free accounts are limited to 50,000 words per book. This book has ${currentTotal.toLocaleString()} words. Upgrade to Premium for unlimited writing.`,
+        };
+      }
+    }
+  }
+
+  const hadNoContent = !existing.content || existing.content.trim() === '';
+  const hasNewContent = !!parsed.data.content && parsed.data.content.trim() !== '';
+
   try {
     await db
       .update(chapters)
@@ -448,6 +581,9 @@ export async function updateChapterAction(
           updatedAt: new Date(),
         })
         .where(eq(books.id, bookId));
+    }
+    if (hadNoContent && hasNewContent) {
+      void awardMilestoneIfNew(bookId, 'GETTING_STARTED');
     }
     revalidatePath(`/library/${bookId}/${chapterId}`);
     revalidatePath(`/library/${bookId}`);
@@ -787,7 +923,18 @@ export async function toggleCommentLikeAction(
 }
 
 export async function getBookForExportAction(bookId: string) {
-  const { book } = await requireBookOwner(bookId);
+  const { userId, book } = await requireBookOwner(bookId);
+
+  const [userRow] = await db
+    .select({ premium: users.premium })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!userRow?.premium) {
+    throw new Error('Export is a Premium feature. Upgrade to unlock EPUB, DOCX, and PDF exports.');
+  }
+
   const chapterRows = await db.query.chapters.findMany({
     where: eq(chapters.bookId, bookId),
     orderBy: (c, { asc }) => [asc(c.order)],
@@ -797,4 +944,35 @@ export async function getBookForExportAction(bookId: string) {
     book: { title: book.title, author: book.author, description: book.description ?? '' },
     chapters: chapterRows,
   };
+}
+
+export async function getRecentWritingAction(): Promise<
+  {
+    id: string;
+    title: string;
+    coverUrl: string | null;
+    updatedAt: Date;
+    chapterCount: number;
+    wordCount: number;
+    privacy: string;
+  }[]
+> {
+  const userId = await requireAuth();
+
+  const rows = await db.query.books.findMany({
+    where: eq(books.userId, userId),
+    orderBy: desc(books.updatedAt),
+    limit: 3,
+    columns: {
+      id: true,
+      title: true,
+      coverUrl: true,
+      updatedAt: true,
+      chapterCount: true,
+      wordCount: true,
+      privacy: true,
+    },
+  });
+
+  return rows;
 }

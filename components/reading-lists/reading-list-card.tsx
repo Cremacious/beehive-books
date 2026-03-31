@@ -28,7 +28,7 @@ export default function ReadingListCard({ list }: { list: ReadingList }) {
   return (
     <Link
       href={`/reading-lists/${list.id}`}
-      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#34d399]/30 hover:bg-[#1e1e1e] transition-all duration-200"
+      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#34d399]/30 hover:bg-[#1e1e1e] hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className="h-0.75 w-full bg-[#34d399]" />
 

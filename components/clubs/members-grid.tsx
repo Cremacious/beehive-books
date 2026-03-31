@@ -35,29 +35,14 @@ const ROLE_TABS: { value: RoleFilter; label: string }[] = [
   { value: 'MEMBER', label: 'Members' },
 ];
 
-function RoleBadge({ role }: { role: ClubRole }) {
+function RoleIcon({ role }: { role: ClubRole }) {
   if (role === 'OWNER') {
-    return (
-      <span className="inline-flex items-center gap-1 text-[11px] text-[#FFC300] bg-[#FFC300]/10 rounded-full px-2 py-0.5">
-        <Crown aria-hidden="true" className="w-3 h-3" />
-        Owner
-      </span>
-    );
+    return <Crown className="w-4 h-4 text-yellow-500" aria-label="Owner" />;
   }
   if (role === 'MODERATOR') {
-    return (
-      <span className="inline-flex items-center gap-1 text-[11px] text-blue-400 bg-blue-400/10 rounded-full px-2 py-0.5">
-        <Shield aria-hidden="true" className="w-3 h-3" />
-        Moderator
-      </span>
-    );
+    return <Shield className="w-4 h-4 text-white/80" aria-label="Moderator" />;
   }
-  return (
-    <span className="inline-flex items-center gap-1 text-[11px] text-green-400 bg-green-400/10 rounded-full px-2 py-0.5">
-      <Check aria-hidden="true" className="w-3 h-3" />
-      Member
-    </span>
-  );
+  return null;
 }
 
 function MemberCard({
@@ -142,8 +127,8 @@ function MemberCard({
           className="w-11 h-11 rounded-full object-cover shrink-0"
         />
       ) : (
-        <div className="w-11 h-11 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-          <span className="text-base font-semibold text-[#FFC300]">
+        <div className="w-11 h-11 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+          <span className="text-base font-semibold text-yellow-500">
             {initials}
           </span>
         </div>
@@ -153,7 +138,7 @@ function MemberCard({
         <p className=" font-medium text-white truncate">{displayName}</p>
 
         <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-          <RoleBadge role={member.role} />
+          <RoleIcon role={member.role} />
           <span className="text-sm text-white/80">
             Joined {new Date(member.joinedAt).toLocaleDateString()}
           </span>
@@ -194,7 +179,7 @@ function MemberCard({
                   }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
-                  <Shield aria-hidden="true" className="w-4 h-4 text-blue-400 shrink-0" />
+                  <Shield aria-hidden="true" className="w-4 h-4 text-white/80 shrink-0" />
                   Promote to Moderator
                 </button>
               )}
@@ -208,7 +193,7 @@ function MemberCard({
                   }}
                   className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors flex items-center gap-2"
                 >
-                  <Check aria-hidden="true" className="w-4 h-4 text-green-400 shrink-0" />
+                  <Check aria-hidden="true" className="w-4 h-4 text-white/80 shrink-0" />
                   Demote to Member
                 </button>
               )}
@@ -282,8 +267,8 @@ function JoinRequestRow({
               className="w-9 h-9 rounded-full object-cover"
             />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center">
-              <span className="text-sm font-semibold text-[#FFC300]">
+            <div className="w-9 h-9 rounded-full bg-yellow-500/20 flex items-center justify-center">
+              <span className="text-sm font-semibold text-yellow-500">
                 {displayName.charAt(0).toUpperCase()}
               </span>
             </div>
@@ -298,15 +283,15 @@ function JoinRequestRow({
           className="w-9 h-9 rounded-full object-cover shrink-0"
         />
       ) : (
-        <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-          <span className="text-sm font-semibold text-[#FFC300]">
+        <div className="w-9 h-9 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+          <span className="text-sm font-semibold text-yellow-500">
             {displayName.charAt(0).toUpperCase()}
           </span>
         </div>
       )}
       <div className="flex-1 min-w-0">
         {request.user.username ? (
-          <Link href={`/u/${request.user.username}`} onClick={e => e.stopPropagation()} className="text-sm font-medium text-white hover:text-[#FFC300] transition-colors truncate block">
+          <Link href={`/u/${request.user.username}`} onClick={e => e.stopPropagation()} className="text-sm font-medium text-white hover:text-yellow-500 transition-colors truncate block">
             {displayName}
           </Link>
         ) : (
@@ -383,7 +368,7 @@ export default function MembersGrid({
     <div>
       {isOwnerOrMod && pendingRequests.length > 0 && (
         <div className="mb-6 rounded-2xl bg-[#FFC300]/5 border border-[#FFC300]/20 p-4">
-          <p className="text-sm font-semibold text-[#FFC300] mb-3">
+          <p className="text-sm font-semibold text-yellow-500 mb-3">
             {pendingRequests.length} pending join request{pendingRequests.length !== 1 ? 's' : ''}
           </p>
           <div className="space-y-2">
@@ -400,7 +385,7 @@ export default function MembersGrid({
             type="button"
             aria-expanded={showInvitePicker}
             onClick={() => setShowInvitePicker((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-[#FFC300]/80 hover:text-[#FFC300] border border-[#FFC300]/20 hover:border-[#FFC300]/40 px-4 py-2 rounded-xl bg-[#FFC300]/5 hover:bg-[#FFC300]/10 transition-all"
+            className="flex items-center gap-2 text-sm font-medium text-yellow-500/80 hover:text-yellow-500 border border-[#FFC300]/20 hover:border-[#FFC300]/40 px-4 py-2 rounded-xl bg-[#FFC300]/5 hover:bg-[#FFC300]/10 transition-all"
           >
             <UserPlus aria-hidden="true" className="w-4 h-4" />
             Invite Friend
@@ -419,7 +404,7 @@ export default function MembersGrid({
                 onChange={setSelectedInviteIds}
               />
               {sentCount > 0 && (
-                <p className="text-xs text-green-400">
+                <p className="text-xs text-white/80">
                   {sentCount} invite{sentCount !== 1 ? 's' : ''} sent!
                 </p>
               )}
@@ -462,7 +447,7 @@ export default function MembersGrid({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search members…"
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/80 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#252525] border border-[#2a2a2a] text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
       </div>
 
@@ -501,7 +486,7 @@ export default function MembersGrid({
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="text-xs text-[#FFC300]/80 hover:text-[#FFC300] transition-colors mt-2"
+              className="text-xs text-yellow-500/80 hover:text-yellow-500 transition-colors mt-2"
             >
               Clear search
             </button>

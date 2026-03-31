@@ -30,7 +30,10 @@ export default async function HiveCommentsPage({
     ? await db.query.chapters.findMany({
         where: eq(chapters.bookId, hive.bookId),
         orderBy: [asc(chapters.order)],
-        columns: { id: true, title: true, order: true },
+        columns: { id: true, title: true, order: true, collectionId: true },
+        with: {
+          collection: { columns: { name: true } },
+        },
       })
     : [];
 
@@ -44,7 +47,7 @@ export default async function HiveCommentsPage({
   return (
     <HiveInlineComments
       hiveId={hiveId}
-      chapters={bookChapters}
+      chapters={bookChapters as unknown as { id: string; title: string; order: number; collection: { name: string } | null }[]}
       initialChapterId={firstChapterId}
       initialComments={initialComments}
       initialContent={initialContent}

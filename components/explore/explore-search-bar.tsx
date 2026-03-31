@@ -15,7 +15,15 @@ export function ExploreSearchBar({ placeholder = 'Search...' }: ExploreSearchBar
   const [value, setValue] = useState(searchParams.get('q') ?? '');
   const [, startTransition] = useTransition();
 
+  const isHubPage = pathname.endsWith('/explore') || pathname.match(/\/[a-z]{2}\/explore$/) !== null;
+
   const submit = (q: string) => {
+    if (isHubPage && q.trim()) {
+      startTransition(() => {
+        router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+      });
+      return;
+    }
     const params = new URLSearchParams(searchParams.toString());
     if (q.trim()) {
       params.set('q', q.trim());

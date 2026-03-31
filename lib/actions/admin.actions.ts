@@ -2,7 +2,7 @@
 
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
-import { and, count, desc, eq, gte, ilike, or } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, lt, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import {
@@ -10,14 +10,27 @@ import {
   books,
   chapters,
   bookClubs,
+  bookComments,
   hives,
   prompts,
   promptEntries,
+  promptEntryComments,
   clubDiscussions,
   clubDiscussionReplies,
   notifications,
   announcements,
+  announcementDismissals,
+  adminAuditLog,
+  contentReports,
+  session,
+  friendships,
+  hiveInvites,
+  hiveJoinRequests,
+  clubInvites,
+  clubJoinRequests,
+  promptInvites,
 } from '@/db/schema';
+import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
 import { coverPublicId } from '@/lib/cloudinary';
 import { deleteImageAction } from '@/lib/actions/cloudinary.actions';
 
@@ -34,6 +47,17 @@ async function requireAdmin() {
   });
   if (user?.role !== 'admin') throw new Error('Forbidden');
   return userId;
+}
+
+async function logAdminAction(
+  adminId: string,
+  action: string,
+  targetType: string,
+  targetId: string,
+  targetLabel?: string,
+  note?: string,
+) {
+  await db.insert(adminAuditLog).values({ adminId, action, targetType, targetId, targetLabel, note });
 }
 
 
@@ -115,6 +139,7 @@ export async function getAllUsersAdminAction(page = 1, search?: string) {
         image: true,
         role: true,
         premium: true,
+        banned: true,
         createdAt: true,
       },
     }),
@@ -187,7 +212,14 @@ export async function getAllBooksAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(books).where(where),
   ]);
 
-  return { books: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminBook = {
+    id: string; title: string; author: string; privacy: string;
+    wordCount: number; chapterCount: number; coverUrl: string | null;
+    createdAt: Date; userId: string;
+    user: { username: string | null } | null;
+  };
+
+  return { books: rows as unknown as AdminBook[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteBookAdminAction(bookId: string): Promise<ActionResult> {
@@ -241,7 +273,13 @@ export async function getAllChaptersAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(chapters).where(where),
   ]);
 
-  return { chapters: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminChapter = {
+    id: string; title: string; wordCount: number; bookId: string;
+    order: number; createdAt: Date;
+    book: { title: string; userId: string; user: { username: string | null } | null } | null;
+  };
+
+  return { chapters: rows as unknown as AdminChapter[], total, page, pageSize: PAGE_SIZE };
 }
 
 
@@ -272,7 +310,13 @@ export async function getAllClubsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(bookClubs).where(where),
   ]);
 
-  return { clubs: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminClub = {
+    id: string; name: string; privacy: string; memberCount: number;
+    createdAt: Date; ownerId: string;
+    owner: { username: string | null } | null;
+  };
+
+  return { clubs: rows as unknown as AdminClub[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteClubAdminAction(clubId: string): Promise<ActionResult> {
@@ -315,7 +359,13 @@ export async function getAllPromptsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(prompts).where(where),
   ]);
 
-  return { prompts: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminPrompt = {
+    id: string; title: string; status: string; entryCount: number;
+    endDate: Date; createdAt: Date; privacy: string;
+    creator: { username: string | null } | null;
+  };
+
+  return { prompts: rows as unknown as AdminPrompt[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deletePromptAdminAction(promptId: string): Promise<ActionResult> {
@@ -353,7 +403,14 @@ export async function getAllPromptEntriesAdminAction(page = 1) {
     db.select({ total: count() }).from(promptEntries),
   ]);
 
-  return { entries: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminPromptEntry = {
+    id: string; content: string; wordCount: number; likeCount: number;
+    createdAt: Date; promptId: string;
+    user: { username: string | null } | null;
+    prompt: { title: string } | null;
+  };
+
+  return { entries: rows as unknown as AdminPromptEntry[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deletePromptEntryAdminAction(entryId: string): Promise<ActionResult> {
@@ -396,7 +453,14 @@ export async function getAllDiscussionsAdminAction(page = 1, search?: string) {
     db.select({ total: count() }).from(clubDiscussions).where(where),
   ]);
 
-  return { discussions: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminDiscussion = {
+    id: string; title: string; likeCount: number; replyCount: number;
+    isPinned: boolean; createdAt: Date; clubId: string;
+    author: { username: string | null } | null;
+    club: { name: string } | null;
+  };
+
+  return { discussions: rows as unknown as AdminDiscussion[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteDiscussionAdminAction(discussionId: string): Promise<ActionResult> {
@@ -433,7 +497,14 @@ export async function getAllDiscussionRepliesAdminAction(page = 1) {
     db.select({ total: count() }).from(clubDiscussionReplies),
   ]);
 
-  return { replies: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminDiscussionReply = {
+    id: string; content: string; likeCount: number;
+    createdAt: Date; discussionId: string;
+    author: { username: string | null } | null;
+    discussion: { title: string } | null;
+  };
+
+  return { replies: rows as unknown as AdminDiscussionReply[], total, page, pageSize: PAGE_SIZE };
 }
 
 export async function deleteDiscussionReplyAdminAction(replyId: string): Promise<ActionResult> {
@@ -473,43 +544,107 @@ export async function getAllNotificationsAdminAction(page = 1) {
     db.select({ total: count() }).from(notifications),
   ]);
 
-  return { notifications: rows, total, page, pageSize: PAGE_SIZE };
+  type AdminNotification = {
+    id: string; type: string; isRead: boolean; link: string;
+    createdAt: Date; recipientId: string; actorId: string | null;
+    recipient: { username: string | null } | null;
+    actor: { username: string | null } | null;
+  };
+
+  return { notifications: rows as unknown as AdminNotification[], total, page, pageSize: PAGE_SIZE };
 }
 
 // ---------------------------------------------------------------------------
 // Announcements
 // ---------------------------------------------------------------------------
 
+export type AnnouncementType = 'new_feature' | 'coming_soon' | 'maintenance' | 'community_update';
+
 export type AnnouncementItem = {
   id: string;
   title: string;
   content: string;
+  type: AnnouncementType;
+  link: string | null;
+  isActive: boolean;
   createdAt: Date;
   createdBy: { username: string | null } | null;
 };
 
 export async function getAnnouncementsAction(): Promise<AnnouncementItem[]> {
+  const userId = await getOptionalUserId();
+
   const rows = await db.query.announcements.findMany({
+    where: eq(announcements.isActive, true),
     orderBy: desc(announcements.createdAt),
     with: { createdBy: { columns: { username: true } } },
   });
-  return rows.map((r) => ({
+
+  type CreatedByRow = { username: string | null } | null;
+  const allItems: AnnouncementItem[] = rows.map((r) => ({
     id: r.id,
     title: r.title,
     content: r.content,
+    type: r.type as AnnouncementType,
+    link: r.link ?? null,
+    isActive: r.isActive,
     createdAt: r.createdAt,
-    createdBy: r.createdBy,
+    createdBy: (r.createdBy as unknown as CreatedByRow) ?? null,
   }));
+
+  if (!userId) return allItems;
+
+  const dismissals = await db.query.announcementDismissals.findMany({
+    where: eq(announcementDismissals.userId, userId),
+    columns: { announcementId: true },
+  });
+  const dismissedIds = new Set(dismissals.map((d) => d.announcementId));
+
+  return allItems.filter((a) => !dismissedIds.has(a.id));
+}
+
+export async function dismissAnnouncementAction(
+  announcementId: string,
+): Promise<{ success: boolean }> {
+  try {
+    const userId = await requireAuth();
+    await db
+      .insert(announcementDismissals)
+      .values({ userId, announcementId })
+      .onConflictDoNothing();
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
 }
 
 export async function getAllAnnouncementsAdminAction(): Promise<AnnouncementItem[]> {
   await requireAdmin();
-  return getAnnouncementsAction();
+
+  const rows = await db.query.announcements.findMany({
+    orderBy: desc(announcements.createdAt),
+    with: { createdBy: { columns: { username: true } } },
+  });
+
+  type CreatedByRow = { username: string | null } | null;
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    type: r.type as AnnouncementType,
+    link: r.link ?? null,
+    isActive: r.isActive,
+    createdAt: r.createdAt,
+    createdBy: (r.createdBy as unknown as CreatedByRow) ?? null,
+  }));
 }
 
 export async function createAnnouncementAction(
   title: string,
   content: string,
+  type: AnnouncementType = 'community_update',
+  link?: string,
+  isActive = true,
 ): Promise<ActionResult> {
   const userId = await requireAdmin();
   if (!title.trim() || !content.trim()) {
@@ -518,11 +653,58 @@ export async function createAnnouncementAction(
   await db.insert(announcements).values({
     title: title.trim(),
     content: content.trim(),
+    type,
+    link: link?.trim() || null,
+    isActive,
     createdById: userId,
   });
   revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement created.' };
+}
+
+export async function updateAnnouncementAction(
+  id: string,
+  title: string,
+  content: string,
+  type: AnnouncementType,
+  link?: string,
+  isActive = true,
+): Promise<ActionResult> {
+  await requireAdmin();
+  if (!title.trim() || !content.trim()) {
+    return { success: false, message: 'Title and content are required.' };
+  }
+  await db
+    .update(announcements)
+    .set({
+      title: title.trim(),
+      content: content.trim(),
+      type,
+      link: link?.trim() || null,
+      isActive,
+      updatedAt: new Date(),
+    })
+    .where(eq(announcements.id, id));
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: 'Announcement updated.' };
+}
+
+export async function toggleAnnouncementActiveAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  const row = await db.query.announcements.findFirst({
+    where: eq(announcements.id, id),
+    columns: { isActive: true },
+  });
+  if (!row) return { success: false, message: 'Not found.' };
+  await db
+    .update(announcements)
+    .set({ isActive: !row.isActive, updatedAt: new Date() })
+    .where(eq(announcements.id, id));
+  revalidatePath('/home');
+  revalidatePath('/admin/announcements');
+  return { success: true, message: `Announcement ${!row.isActive ? 'activated' : 'deactivated'}.` };
 }
 
 export async function deleteAnnouncementAdminAction(id: string): Promise<ActionResult> {
@@ -531,4 +713,264 @@ export async function deleteAnnouncementAdminAction(id: string): Promise<ActionR
   revalidatePath('/home');
   revalidatePath('/admin/announcements');
   return { success: true, message: 'Announcement deleted.' };
+}
+
+
+// ---------------------------------------------------------------------------
+// Ban / Unban / Delete user
+// ---------------------------------------------------------------------------
+
+export async function banUserAction(userId: string, reason?: string): Promise<ActionResult> {
+  const adminId = await requireAdmin();
+  const target = await db.query.users.findFirst({ where: eq(users.id, userId), columns: { username: true, role: true } });
+  if (!target) return { success: false, message: 'User not found.' };
+  if (target.role === 'admin') return { success: false, message: 'Cannot ban an admin.' };
+  await db.update(users).set({ banned: true, bannedAt: new Date(), bannedReason: reason ?? null, updatedAt: new Date() }).where(eq(users.id, userId));
+  // Delete all sessions for the user
+  await db.delete(session).where(eq(session.userId, userId));
+  void logAdminAction(adminId, 'BAN_USER', 'USER', userId, target.username ?? userId, reason);
+  revalidatePath('/admin/users');
+  return { success: true, message: 'User banned.' };
+}
+
+export async function unbanUserAction(userId: string): Promise<ActionResult> {
+  const adminId = await requireAdmin();
+  const target = await db.query.users.findFirst({ where: eq(users.id, userId), columns: { username: true } });
+  if (!target) return { success: false, message: 'User not found.' };
+  await db.update(users).set({ banned: false, bannedAt: null, bannedReason: null, updatedAt: new Date() }).where(eq(users.id, userId));
+  void logAdminAction(adminId, 'UNBAN_USER', 'USER', userId, target.username ?? userId);
+  revalidatePath('/admin/users');
+  return { success: true, message: 'User unbanned.' };
+}
+
+export async function deleteUserAdminAction(userId: string): Promise<ActionResult> {
+  const adminId = await requireAdmin();
+  if (userId === adminId) return { success: false, message: 'Cannot delete yourself.' };
+  const target = await db.query.users.findFirst({ where: eq(users.id, userId), columns: { username: true, role: true } });
+  if (!target) return { success: false, message: 'User not found.' };
+  if (target.role === 'admin') return { success: false, message: 'Cannot delete an admin.' };
+  void logAdminAction(adminId, 'DELETE_USER', 'USER', userId, target.username ?? userId);
+  await db.delete(users).where(eq(users.id, userId));
+  revalidatePath('/admin/users');
+  return { success: true, message: 'User deleted.' };
+}
+
+
+// ---------------------------------------------------------------------------
+// Audit log
+// ---------------------------------------------------------------------------
+
+export async function getAdminAuditLogAction(page = 1, perPage = PAGE_SIZE) {
+  await requireAdmin();
+  const offset = (page - 1) * perPage;
+  const [rows, [{ total }]] = await Promise.all([
+    db.query.adminAuditLog.findMany({
+      orderBy: desc(adminAuditLog.createdAt),
+      limit: perPage,
+      offset,
+      with: { admin: { columns: { username: true } } },
+    }),
+    db.select({ total: count() }).from(adminAuditLog),
+  ]);
+  type AuditRow = {
+    id: string; action: string; targetType: string; targetId: string;
+    targetLabel: string | null; note: string | null; createdAt: Date;
+    admin: { username: string | null } | null;
+  };
+  return { rows: rows as unknown as AuditRow[], total, page, pageSize: perPage };
+}
+
+
+// ---------------------------------------------------------------------------
+// Content reports
+// ---------------------------------------------------------------------------
+
+export async function getContentReportsAction(page = 1, perPage = PAGE_SIZE, status?: 'PENDING' | 'REVIEWED' | 'DISMISSED') {
+  await requireAdmin();
+  const offset = (page - 1) * perPage;
+  const where = status ? eq(contentReports.status, status) : undefined;
+  const [rows, [{ total }]] = await Promise.all([
+    db.query.contentReports.findMany({
+      where,
+      orderBy: desc(contentReports.createdAt),
+      limit: perPage,
+      offset,
+      with: { reporter: { columns: { username: true } } },
+    }),
+    db.select({ total: count() }).from(contentReports).where(where),
+  ]);
+  type ReportRow = {
+    id: string; targetType: string; targetId: string; reason: string;
+    status: string; createdAt: Date; reviewedAt: Date | null;
+    reporter: { username: string | null } | null;
+  };
+  return { rows: rows as unknown as ReportRow[], total, page, pageSize: perPage };
+}
+
+export async function dismissReportAction(reportId: string): Promise<ActionResult> {
+  const adminId = await requireAdmin();
+  await db.update(contentReports).set({ status: 'DISMISSED', reviewedAt: new Date(), reviewedById: adminId }).where(eq(contentReports.id, reportId));
+  void logAdminAction(adminId, 'DISMISS_REPORT', 'REPORT', reportId);
+  revalidatePath('/admin/reports');
+  return { success: true, message: 'Report dismissed.' };
+}
+
+export async function removeReportedContentAction(reportId: string): Promise<ActionResult> {
+  const adminId = await requireAdmin();
+  const report = await db.query.contentReports.findFirst({ where: eq(contentReports.id, reportId) });
+  if (!report) return { success: false, message: 'Report not found.' };
+  try {
+    if (report.targetType === 'BOOK') await db.delete(books).where(eq(books.id, report.targetId));
+    else if (report.targetType === 'CLUB') await db.delete(bookClubs).where(eq(bookClubs.id, report.targetId));
+    else if (report.targetType === 'PROMPT') await db.delete(prompts).where(eq(prompts.id, report.targetId));
+    else if (report.targetType === 'COMMENT') await db.delete(promptEntryComments).where(eq(promptEntryComments.id, report.targetId));
+    else if (report.targetType === 'BOOK_COMMENT') await db.delete(bookComments).where(eq(bookComments.id, report.targetId));
+    else if (report.targetType === 'USER') await db.delete(users).where(eq(users.id, report.targetId));
+    await db.update(contentReports).set({ status: 'REVIEWED', reviewedAt: new Date(), reviewedById: adminId }).where(eq(contentReports.id, reportId));
+    void logAdminAction(adminId, `DELETE_${report.targetType}`, report.targetType, report.targetId);
+    revalidatePath('/admin/reports');
+    return { success: true, message: 'Content removed.' };
+  } catch {
+    return { success: false, message: 'Failed to remove content.' };
+  }
+}
+
+export async function createReportAction(
+  targetType: 'BOOK' | 'COMMENT' | 'BOOK_COMMENT' | 'CLUB' | 'PROMPT' | 'USER',
+  targetId: string,
+  reason: string,
+): Promise<ActionResult> {
+  const userId = await requireAuth();
+  const limited = await checkActionRateLimit(userId);
+  if (limited) return { success: false, message: limited };
+  if (!reason.trim()) return { success: false, message: 'Reason is required.' };
+  await db.insert(contentReports).values({ reporterId: userId, targetType, targetId, reason: reason.trim() });
+  return { success: true, message: 'Report submitted.' };
+}
+
+export async function getPendingReportsCountAction(): Promise<number> {
+  await requireAdmin();
+  const [{ total }] = await db.select({ total: count() }).from(contentReports).where(eq(contentReports.status, 'PENDING'));
+  return total;
+}
+
+
+// ---------------------------------------------------------------------------
+// Hives admin
+// ---------------------------------------------------------------------------
+
+export async function getAllHivesAdminAction(page = 1, search?: string) {
+  await requireAdmin();
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const where = search ? ilike(hives.name, `%${search}%`) : undefined;
+
+  const [rows, [{ total }]] = await Promise.all([
+    db.query.hives.findMany({
+      where,
+      orderBy: desc(hives.createdAt),
+      limit: PAGE_SIZE,
+      offset,
+      columns: {
+        id: true,
+        name: true,
+        privacy: true,
+        memberCount: true,
+        createdAt: true,
+        ownerId: true,
+        bookId: true,
+      },
+      with: {
+        owner: { columns: { username: true } },
+        book: { columns: { title: true } },
+      },
+    }),
+    db.select({ total: count() }).from(hives).where(where),
+  ]);
+
+  type AdminHive = {
+    id: string; name: string; privacy: string; memberCount: number;
+    createdAt: Date; ownerId: string; bookId: string | null;
+    owner: { username: string | null } | null;
+    book: { title: string } | null;
+  };
+
+  return { hives: rows as unknown as AdminHive[], total, page, pageSize: PAGE_SIZE };
+}
+
+export async function deleteHiveAdminAction(hiveId: string): Promise<ActionResult> {
+  await requireAdmin();
+  try {
+    await db.delete(hives).where(eq(hives.id, hiveId));
+    return { success: true, message: 'Hive deleted.' };
+  } catch {
+    return { success: false, message: 'Failed to delete hive.' };
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Signup chart
+// ---------------------------------------------------------------------------
+
+export async function getSignupChartDataAction(): Promise<{ date: string; count: number }[]> {
+  await requireAdmin();
+  const rows = await db.select({
+    date: sql<string>`DATE(${users.createdAt})`,
+    count: count(),
+  }).from(users)
+    .where(gte(users.createdAt, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)))
+    .groupBy(sql`DATE(${users.createdAt})`)
+    .orderBy(sql`DATE(${users.createdAt})`);
+  return rows.map(r => ({ date: r.date, count: r.count }));
+}
+
+
+// ---------------------------------------------------------------------------
+// Cleanup stats
+// ---------------------------------------------------------------------------
+
+export type CleanupStats = {
+  pendingFriendRequests: number;
+  pendingHiveInvites: number;
+  pendingHiveJoinRequests: number;
+  pendingClubInvites: number;
+  pendingClubJoinRequests: number;
+  pendingPromptInvites: number;
+  oldReadNotifications: number;
+};
+
+export async function getCleanupStatsAction(): Promise<CleanupStats> {
+  await requireAdmin();
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+  const [
+    pendingFriends,
+    pendingHiveInv,
+    pendingHiveJoin,
+    pendingClubInv,
+    pendingClubJoin,
+    pendingPromptInv,
+    oldReadNotif,
+  ] = await Promise.all([
+    db.select({ count: count() }).from(friendships).where(and(eq(friendships.status, 'PENDING'), lt(friendships.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(hiveInvites).where(and(eq(hiveInvites.status, 'DECLINED'), lt(hiveInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(hiveJoinRequests).where(and(eq(hiveJoinRequests.status, 'REJECTED'), lt(hiveJoinRequests.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(clubInvites).where(and(eq(clubInvites.status, 'DECLINED'), lt(clubInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(clubJoinRequests).where(and(eq(clubJoinRequests.status, 'REJECTED'), lt(clubJoinRequests.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(promptInvites).where(and(eq(promptInvites.status, 'PENDING'), lt(promptInvites.createdAt, ninetyDaysAgo))),
+    db.select({ count: count() }).from(notifications).where(and(eq(notifications.isRead, true), lt(notifications.createdAt, thirtyDaysAgo))),
+  ]);
+
+  return {
+    pendingFriendRequests: pendingFriends[0]?.count ?? 0,
+    pendingHiveInvites: pendingHiveInv[0]?.count ?? 0,
+    pendingHiveJoinRequests: pendingHiveJoin[0]?.count ?? 0,
+    pendingClubInvites: pendingClubInv[0]?.count ?? 0,
+    pendingClubJoinRequests: pendingClubJoin[0]?.count ?? 0,
+    pendingPromptInvites: pendingPromptInv[0]?.count ?? 0,
+    oldReadNotifications: oldReadNotif[0]?.count ?? 0,
+  };
 }

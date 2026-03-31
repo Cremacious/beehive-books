@@ -3,9 +3,9 @@ import { Users, Crown, Shield, Check, BookOpen } from 'lucide-react';
 import type { ClubWithMembership } from '@/lib/types/club.types';
 
 const ROLE_CONFIG = {
-  OWNER: { label: 'Owner', icon: Crown, className: 'text-[#fb923c] bg-[#fb923c]/10' },
-  MODERATOR: { label: 'Mod', icon: Shield, className: 'text-blue-400 bg-blue-400/10' },
-  MEMBER: { label: 'Member', icon: Check, className: 'text-green-400 bg-green-400/10' },
+  OWNER: { label: 'Owner', icon: Crown, className: 'text-yellow-500 bg-yellow-500/10' },
+  MODERATOR: { label: 'Mod', icon: Shield, className: 'text-white/80 bg-white/10' },
+  MEMBER: { label: 'Member', icon: Check, className: 'text-white/80 bg-white/10' },
 } as const;
 
 export default function ClubCard({ club }: { club: ClubWithMembership }) {
@@ -16,7 +16,7 @@ export default function ClubCard({ club }: { club: ClubWithMembership }) {
   return (
     <Link
       href={`/clubs/${club.id}`}
-      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#fb923c]/30 hover:bg-[#1e1e1e] transition-all duration-200"
+      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#fb923c]/30 hover:bg-[#1e1e1e] hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className="h-0.75 w-full bg-[#fb923c]" />
 
@@ -75,10 +75,16 @@ export default function ClubCard({ club }: { club: ClubWithMembership }) {
               {club.memberCount} member{club.memberCount !== 1 ? 's' : ''}
             </span>
           </div>
-          <span className={club.privacy === 'PUBLIC' ? 'text-green-400' : club.privacy === 'FRIENDS' ? 'text-blue-400' : 'text-white/80'}>
+          <span className="text-white/80">
             {club.privacy === 'PUBLIC' ? 'Public' : club.privacy === 'FRIENDS' ? 'Friends' : 'Private'}
           </span>
         </div>
+
+        {(club.friendCount ?? 0) > 0 && (
+          <p className="text-xs text-white/80">
+            {club.friendCount} friend{club.friendCount !== 1 ? 's' : ''} are members
+          </p>
+        )}
       </div>
     </Link>
   );

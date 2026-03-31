@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/ui/tag-input';
 import { FriendInvitePicker } from '@/components/shared/friend-invite-picker';
 import {
   promptSchema,
@@ -48,6 +49,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
   const pendingIds = new Set(pendingFriends.map((f) => f.id));
   const initialInvited = prompt?.invites.map((i) => i.user.id).filter((id) => !pendingIds.has(id)) ?? [];
   const [invitedIds, setInvitedIds] = useState<string[]>(initialInvited);
+  const [tags, setTags] = useState<string[]>(prompt?.tags ?? []);
 
   const {
     register,
@@ -63,6 +65,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
       endDate: prompt ? toDateInputValue(prompt.endDate) : defaultEndDate(),
       privacy: prompt?.privacy ?? 'PRIVATE',
       explorable: prompt?.explorable ?? false,
+      tags: prompt?.tags ?? [],
     },
   });
 
@@ -73,16 +76,16 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
     setServerError('');
 
     if (mode === 'create') {
-      const result = await createPromptAction(data, invitedIds);
+      const result = await createPromptAction({ ...data, tags }, invitedIds);
       if (result.success && result.promptId) {
-        router.push(`/prompts/${result.promptId}`);
+        router.push(`/sparks/${result.promptId}`);
       } else {
         setServerError(result.message);
       }
     } else {
-      const result = await updatePromptAction(prompt!.id, data, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
+      const result = await updatePromptAction(prompt!.id, { ...data, tags }, [...invitedIds, ...pendingFriends.map((f) => f.id)]);
       if (result.success) {
-        router.push(`/prompts/${prompt!.id}`);
+        router.push(`/sparks/${prompt!.id}`);
       } else {
         setServerError(result.message);
       }
@@ -91,61 +94,76 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Title
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          Title <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
+        <p className="text-sm text-white/80">A short, inspiring challenge title.</p>
         <input
           {...register('title')}
           placeholder="e.g. Write a scene where two strangers share an umbrella…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
+        <p className="text-sm text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
         {errors.title && (
-          <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
+          <p className="text-sm text-white/80">{errors.title.message}</p>
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          Description
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          Description <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
+        <p className="text-sm text-white/80">The full prompt — give writers something to react to.</p>
         <textarea
           {...register('description')}
           rows={4}
           placeholder="Describe the creative challenge, set the scene, give inspiration…"
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 1000</p>
         {errors.description && (
-          <p className="mt-1 text-xs text-red-400">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
+        </label>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          emptyMessage="No tags yet. Tags help readers find your book."
+          error={errors.tags?.message}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Challenge Deadline
         </label>
+        <p className="text-sm text-white/80">When submissions close. Voting opens automatically after this.</p>
         <input
           type="date"
           {...register('endDate')}
           min={toDateInputValue(new Date(Date.now() + 86400000))}
-          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 transition-all scheme-dark"
         />
         {errors.endDate && (
-          <p className="mt-1 text-xs text-red-400">
+          <p className="text-sm text-white/80">
             {errors.endDate.message as string}
           </p>
         )}
-        <p className="mt-1.5 text-sm text-white/80">
-          Entries will be revealed to all participants when the deadline passes.
-        </p>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
+        <p className="text-sm text-white/80">Public prompts appear in Explore and attract more entries.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
@@ -156,10 +174,10 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
                 className="sr-only peer"
               />
               <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -167,7 +185,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -175,7 +193,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this prompt on the Explore page so all users can discover it.
@@ -211,7 +229,7 @@ export function PromptForm({ mode, prompt, friends, pendingFriends = [] }: Props
       )}
 
       {serverError && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+        <p className="text-sm text-white/80 bg-white/5 rounded-xl px-4 py-2.5">
           {serverError}
         </p>
       )}

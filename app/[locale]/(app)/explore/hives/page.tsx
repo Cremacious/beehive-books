@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Hexagon } from 'lucide-react';
 import { searchExplorableHivesAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
@@ -9,18 +10,38 @@ import { GENRES } from '@/lib/config/constants';
 
 export const metadata: Metadata = { title: 'Explore Hives' };
 
+type HiveSort = 'newest' | 'most_liked' | 'most_members';
+
 export default async function ExploreHivesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; genre?: string; tag?: string; cursor?: string }>;
+  searchParams: Promise<{ q?: string; genre?: string; tag?: string; sort?: string; cursor?: string }>;
 }) {
-  const { q = '', genre = '', tag = '', cursor } = await searchParams;
+  const { q = '', genre = '', tag = '', sort = 'most_members', cursor } = await searchParams;
   const genres = genre ? genre.split(',').filter(Boolean) : [];
   const tags = tag ? tag.split(',').filter(Boolean) : [];
+  const sortParam = (['newest', 'most_liked', 'most_members'] as HiveSort[]).includes(sort as HiveSort)
+    ? (sort as HiveSort)
+    : 'most_members';
 
-  const { hives, nextCursor } = await searchExplorableHivesAction(q, genres, tags, cursor);
+  const { hives, nextCursor } = await searchExplorableHivesAction(q, genres, tags, sortParam, cursor);
 
   const filterGroups = [{ param: 'genre', label: 'Genre', options: GENRES }];
+
+  function buildSortUrl(s: HiveSort) {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (genre) params.set('genre', genre);
+    if (tag) params.set('tag', tag);
+    params.set('sort', s);
+    return `?${params.toString()}`;
+  }
+
+  const sortOptions: { value: HiveSort; label: string }[] = [
+    { value: 'most_members', label: 'Most Members' },
+    { value: 'newest', label: 'Newest' },
+    { value: 'most_liked', label: 'Most Liked' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -32,6 +53,22 @@ export default async function ExploreHivesPage({
       </div>
 
       <ExploreSearchBar placeholder="Search hives by name, genre, or tags..." />
+
+      <div className="flex items-center gap-2 flex-wrap">
+        {sortOptions.map(({ value, label }) => (
+          <Link
+            key={value}
+            href={buildSortUrl(value)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              sortParam === value
+                ? 'bg-[#FFC300] text-black'
+                : 'bg-[#1e1e1e] border border-[#2a2a2a] text-white/80 hover:text-white'
+            }`}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         <ExploreSidebar filterGroups={filterGroups} />

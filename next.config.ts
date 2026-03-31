@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      { source: '/prompts', destination: '/sparks', permanent: true },
+      { source: '/prompts/:path*', destination: '/sparks/:path*', permanent: true },
+      { source: '/explore/prompts', destination: '/explore/sparks', permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       {

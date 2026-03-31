@@ -11,6 +11,7 @@ import {
   List,
 } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import Pagination from '@/components/shared/pagination';
 import type { Book } from '@/lib/types/books.types';
 
@@ -40,11 +41,7 @@ function BookListItem({ book }: { book: Book }) {
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-[#1e1e1e] to-[#141414] flex items-center justify-center">
-            <span className="text-xl font-bold text-white/20 mainFont">
-              {book.title[0]?.toUpperCase()}
-            </span>
-          </div>
+          <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
         )}
       </div>
 
@@ -139,20 +136,28 @@ export default function BookGrid({ books }: { books: Book[] }) {
 
   if (books.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-          <BookOpen className="w-7 h-7 text-white/20" />
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <BookOpen className="w-9 h-9 text-white/20" />
         </div>
-        <p className="text-base font-semibold text-white/80 mb-1">No books yet</p>
-        <p className="text-sm text-white/40 mb-4 max-w-xs">
-          Start writing your first book and it will appear here.
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No books yet</h2>
+        <p className="text-sm text-white/80 mb-5 max-w-sm">
+          Write your own book or discover stories from other authors on the Explore page.
         </p>
-        <Link
-          href="/library/create"
-          className="px-4 py-2 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors mainFont"
-        >
-          Create your first book
-        </Link>
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Link
+            href="/library/create"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold transition-all duration-100 hover:bg-[#FFD040] active:scale-95 mainFont"
+          >
+            Start writing
+          </Link>
+          <Link
+            href="/explore"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
+          >
+            Explore books
+          </Link>
+        </div>
       </div>
     );
   }
@@ -167,7 +172,7 @@ export default function BookGrid({ books }: { books: Book[] }) {
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by title, author, or genre…"
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
 
@@ -228,11 +233,9 @@ export default function BookGrid({ books }: { books: Book[] }) {
               }`}
             >
               {label}
-              <span
-                className={`text-sm ${
-                  privacyFilter === value ? 'text-black/60' : 'text-yellow-500'
-                }`}
-              >
+              <span className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold ${
+                privacyFilter === value ? 'bg-black/20 text-black' : 'bg-[#FFC300] text-black'
+              }`}>
                 {count}
               </span>
             </button>
@@ -241,14 +244,14 @@ export default function BookGrid({ books }: { books: Book[] }) {
       </div>
 
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
-            <BookOpen className="w-7 h-7 text-white/20" />
+        <div className="flex flex-col items-center justify-center py-28 text-center">
+          <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+            <BookOpen className="w-9 h-9 text-white/20" />
           </div>
-          <p className="text-base font-semibold text-white/80 mb-1">
+          <h2 className="text-xl font-bold text-white mainFont mb-2">
             {query ? `No results for "${query}"` : 'No books in this category'}
-          </p>
-          <p className="text-sm text-white/40 mb-4 max-w-xs">
+          </h2>
+          <p className="text-sm text-white/80 mb-4 max-w-sm">
             {query
               ? 'Try a different search term or clear your filters.'
               : 'Try a different filter.'}

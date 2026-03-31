@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Plus, X, Loader2, BookMarked, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/ui/tag-input';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { readingListSchema } from '@/lib/validations/reading-list.schema';
@@ -36,14 +37,17 @@ export function ReadingListForm({
     null,
   );
   const [error, setError] = useState('');
+  const [tags, setTags] = useState<string[]>(defaultValues?.tags ?? []);
 
   const form = useForm<ReadingListFormData>({
     resolver: zodResolver(readingListSchema),
     defaultValues: {
       title: defaultValues?.title ?? '',
       description: defaultValues?.description ?? '',
+      curatorNote: defaultValues?.curatorNote ?? '',
       privacy: defaultValues?.privacy ?? 'PRIVATE',
       explorable: defaultValues?.explorable ?? false,
+      tags: defaultValues?.tags ?? [],
     },
   });
 
@@ -100,43 +104,75 @@ export function ReadingListForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
-          List Title <span className="text-red-400">*</span>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          List Title <span className="text-white/80 text-sm font-normal">(required)</span>
         </label>
+        <p className="text-sm text-white/80">Give your list a name that captures its theme.</p>
         <input
           {...register('title')}
           placeholder="e.g. Fantasy Reads, Books to Read in 2025…"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
         />
+        <p className="text-sm text-white/80 text-right">{watch('title')?.length ?? 0} / 100</p>
         {errors.title && (
-          <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>
+          <p className="text-sm text-white/80">{errors.title.message}</p>
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Description{' '}
-          <span className="text-white/80 font-normal">(optional)</span>
+          <span className="text-white/80 text-sm font-normal">(optional)</span>
         </label>
+        <p className="text-sm text-white/80">A sentence or two about what connects these books.</p>
         <textarea
           {...register('description')}
           rows={3}
           placeholder="What's this list about?"
-          className="w-full rounded-xl bg-[#252525] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
+          className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all resize-none"
         />
+        <p className="text-sm text-white/80 text-right">{watch('description')?.length ?? 0} / 300</p>
         {errors.description && (
-          <p className="text-xs text-red-400 mt-1">
+          <p className="text-sm text-white/80">
             {errors.description.message}
           </p>
         )}
       </div>
 
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
+          Curator&apos;s Note <span className="text-white/80 text-sm font-normal">(optional)</span>
+        </label>
+        <p className="text-sm text-white/80">A personal intro — the story behind this list.</p>
+        <textarea
+          {...register('curatorNote')}
+          rows={3}
+          maxLength={500}
+          placeholder="A personal intro — the story behind this list, what connects these books..."
+          className="bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 focus:ring-1 focus:ring-[#FFC300]/20 rounded-xl w-full resize-none"
+        />
+        <p className="text-sm text-white/80 text-right">{watch('curatorNote')?.length ?? 0} / 500</p>
+      </div>
+
       <div>
-        <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+        <label className="block text-base font-medium text-white mb-1.5">
+          Tags <span className="text-white/80 text-sm font-normal">(up to 10)</span>
+        </label>
+        <TagInput
+          value={tags}
+          onChange={(next) => { setTags(next); setValue('tags', next); }}
+          emptyMessage="No tags yet. Tags help readers find your book."
+          error={errors.tags?.message}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-base font-medium text-white">
           Privacy
         </label>
+        <p className="text-sm text-white/80">Public lists appear in Explore and can be followed by others.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRIVACY_OPTIONS.map(({ value, label, desc }) => (
             <label key={value} className="relative cursor-pointer">
@@ -147,10 +183,10 @@ export function ReadingListForm({
                 className="sr-only peer"
               />
               <div className="flex flex-col p-3 rounded-xl border border-[#2a2a2a] bg-[#252525] peer-checked:border-[#FFC300]/50 peer-checked:bg-[#FFC300]/8 transition-all">
-                <span className="text-xs font-semibold text-white peer-checked:text-[#FFC300]">
+                <span className="text-sm font-semibold text-white peer-checked:text-[#FFC300]">
                   {label}
                 </span>
-                <span className="text-xs text-white/80 mt-0.5 leading-tight">
+                <span className="text-sm text-white/80 mt-0.5 leading-tight">
                   {desc}
                 </span>
               </div>
@@ -158,7 +194,7 @@ export function ReadingListForm({
           ))}
         </div>
         {errors.privacy && (
-          <p className="text-xs text-red-400 mt-1">{errors.privacy.message}</p>
+          <p className="text-sm text-white/80">{errors.privacy.message}</p>
         )}
       </div>
 
@@ -166,7 +202,7 @@ export function ReadingListForm({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <Compass className="w-4 h-4 text-[#FFC300]" />
-            <span className="text-sm font-medium text-yellow-500 mainFont">Explorable</span>
+            <span className="text-base font-medium text-white">Explorable</span>
           </div>
           <p className="text-sm text-white/80">
             List this reading list on the Explore page so all users can discover it.
@@ -194,7 +230,7 @@ export function ReadingListForm({
 
       {mode === 'create' && (
         <div>
-          <label className="block text-sm font-medium text-yellow-500 mainFont mb-1.5">
+          <label className="block text-base font-medium text-white mainFont mb-1.5">
             Add Books{' '}
             <span className="text-white/80 font-normal">(optional)</span>
           </label>
@@ -212,7 +248,7 @@ export function ReadingListForm({
                   }
                 }}
                 placeholder="Book title"
-                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <input
                 type="text"
@@ -225,7 +261,7 @@ export function ReadingListForm({
                   }
                 }}
                 placeholder="Author"
-                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/55 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+                className="flex-1 min-w-0 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
               />
               <button
                 type="button"
@@ -275,10 +311,10 @@ export function ReadingListForm({
                           />
                         </button>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">
+                          <p className="text-base font-medium text-white truncate">
                             {book.title}
                           </p>
-                          <p className="text-xs text-white/80 truncate">
+                          <p className="text-sm text-white/80 truncate">
                             {book.author}
                           </p>
                         </div>
@@ -290,7 +326,7 @@ export function ReadingListForm({
                         <button
                           type="button"
                           onClick={() => removeBook(idx)}
-                          className="p-0.5 rounded text-white hover:text-red-400 transition-colors shrink-0"
+                          className="p-0.5 rounded text-white hover:text-white/80 transition-colors shrink-0"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -301,7 +337,7 @@ export function ReadingListForm({
               </>
             ) : (
               <p className="text-sm text-white/80 text-center py-2">
-                No books added yet — you can always add them later.
+                No books added yet. You can always add them later.
               </p>
             )}
           </div>
@@ -309,7 +345,7 @@ export function ReadingListForm({
       )}
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-2.5">
+        <p className="text-sm text-white/80 bg-white/5 rounded-xl px-4 py-2.5">
           {error}
         </p>
       )}

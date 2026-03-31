@@ -18,26 +18,20 @@ function ResetPasswordForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!token) {
-      setError('Invalid or missing reset token. Please request a new password reset link.');
-    }
-  }, [token]);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
+    if (!token) {
+      setError('Invalid or missing reset token. Please request a new password reset link.');
+      return;
+    }
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
       return;
     }
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
-      return;
-    }
-    if (!token) {
-      setError('Invalid or missing reset token.');
       return;
     }
 
@@ -122,7 +116,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center px-4 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.07]" style={{
+      <div className="absolute inset-0 opacity-[0.01]" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-2l26-15V18L28 2 2 18v30l26 15z' fill='%23FFC300'/%3E%3C/svg%3E")`,
         backgroundSize: '56px 100px',
       }} />

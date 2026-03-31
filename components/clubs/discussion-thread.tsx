@@ -46,6 +46,7 @@ export default function DiscussionThread({
   const isOwn = currentUserId === discussion.authorId;
 
   const [pinning, setPinning] = useState(false);
+  const [isPinned, setIsPinned] = useState(discussion.isPinned);
   const [error, setError] = useState('');
 
   const optimisticLike = store.optimisticDiscussionLikes[discussion.id];
@@ -64,17 +65,14 @@ export default function DiscussionThread({
 
   const handlePin = async () => {
     setPinning(true);
-    setError('');
-    const result = await store.pinDiscussion(
-      clubId,
-      discussion.id,
-      !discussion.isPinned,
-    );
+    setIsPinned((prev) => !prev);
+    const result = await store.pinDiscussion(clubId, discussion.id, !isPinned);
     setPinning(false);
-    if (result.success) {
-      router.refresh();
-    } else {
+    if (!result.success) {
+      setIsPinned((prev) => !prev);
       setError(result.message);
+    } else {
+      router.refresh();
     }
   };
 
@@ -85,10 +83,10 @@ export default function DiscussionThread({
   return (
     <div>
       <div className="rounded-xl bg-[#252525] border border-[#2a2a2a] p-5 mb-5">
-        {discussion.isPinned && (
+        {isPinned && (
           <div className="flex items-center gap-1.5 mb-3">
-            <Pin className="w-3.5 h-3.5 text-[#FFC300]" />
-            <span className="text-[11px] font-semibold text-[#FFC300] uppercase tracking-wider">
+            <Pin className="w-3.5 h-3.5 text-yellow-500" />
+            <span className="text-[11px] font-semibold text-yellow-500 uppercase tracking-wider">
               Pinned Discussion
             </span>
           </div>
@@ -107,7 +105,7 @@ export default function DiscussionThread({
                 />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center hover:opacity-80 transition-opacity">
-                  <span className="text-sm font-semibold text-[#FFC300]">
+                  <span className="text-sm font-semibold text-yellow-500">
                     {initials}
                   </span>
                 </div>
@@ -123,14 +121,14 @@ export default function DiscussionThread({
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-[#FFC300]/20 flex items-center justify-center shrink-0">
-              <span className="text-sm font-semibold text-[#FFC300]">
+              <span className="text-sm font-semibold text-yellow-500">
                 {initials}
               </span>
             </div>
           )}
           <div>
             {author.username ? (
-              <Link href={`/u/${author.username}`} className="text-sm font-medium text-white hover:text-[#FFC300] transition-colors">
+              <Link href={`/u/${author.username}`} className="text-sm font-medium text-white hover:text-yellow-500 transition-colors">
                 {authorName}
               </Link>
             ) : (
@@ -184,17 +182,17 @@ export default function DiscussionThread({
                 type="button"
                 onClick={handlePin}
                 disabled={pinning}
-                aria-label={discussion.isPinned ? 'Unpin discussion' : 'Pin discussion'}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/80 hover:text-[#FFC300] hover:bg-[#FFC300]/10 transition-all"
+                aria-label={isPinned ? 'Unpin discussion' : 'Pin discussion'}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/80 hover:text-yellow-500 hover:bg-yellow-500/10 transition-all"
               >
                 {pinning ? (
                   <Loader2 aria-hidden="true" className="w-3.5 h-3.5 animate-spin" />
-                ) : discussion.isPinned ? (
+                ) : isPinned ? (
                   <PinOff aria-hidden="true" className="w-3.5 h-3.5" />
                 ) : (
                   <Pin aria-hidden="true" className="w-3.5 h-3.5" />
                 )}
-                {discussion.isPinned ? 'Unpin' : 'Pin'}
+                {isPinned ? 'Unpin' : 'Pin'}
               </button>
             )}
 

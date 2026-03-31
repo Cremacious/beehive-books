@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Users, Crown, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Crown, Shield, ArrowRight, Users } from 'lucide-react';
 import type { ClubMemberWithUser } from '@/lib/types/club.types';
 
 function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
@@ -23,7 +22,7 @@ function MemberAvatar({ member }: { member: ClubMemberWithUser }) {
           />
         ) : (
           <div className="w-10 h-10 rounded-full bg-[#FFC300]/20 flex items-center justify-center border-2 border-[#252525]">
-            <span className="text-sm font-semibold text-[#FFC300]">
+            <span className="text-sm font-semibold text-yellow-500">
               {initials}
             </span>
           </div>
@@ -60,26 +59,27 @@ export default function ClubMembersPreview({
   return (
     <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-[#FFC300]" />
-          <h3 className="text-base font-semibold text-white">
-            Members <span className="font-normal text-white/80">({total})</span>
-          </h3>
-        </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/clubs/${clubId}/members`}>View all</Link>
-        </Button>
+        <h3 className="text-base font-semibold mainFont text-white flex items-center gap-1.5">
+          Members
+          <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-bold bg-[#FFC300] text-black ml-1">
+            {total}
+          </span>
+        </h3>
+        <Link
+          href={`/clubs/${clubId}/members`}
+          className="text-xs font-medium text-yellow-500 hover:text-white transition-colors flex items-center gap-1"
+        >
+          See all <ArrowRight className="w-3 h-3" />
+        </Link>
       </div>
 
       {preview.length === 0 ? (
-        <div className="py-10 flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center mb-4">
-            <Users className="w-7 h-7 text-white/80" />
+        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <div className="w-14 h-14 rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center">
+            <Users className="w-6 h-6 text-white/80" />
           </div>
-          <p className="text-sm font-medium text-white mb-1">No members yet</p>
-          <p className="text-sm text-white/80 max-w-xs">
-            Share the club link to invite others to join.
-          </p>
+          <p className="text-sm font-medium text-white">No members yet</p>
+          <p className="text-xs text-white/80 max-w-xs">Share the club link to invite others to join.</p>
         </div>
       ) : (
         <div className="flex items-center gap-3">

@@ -13,6 +13,8 @@ import {
   clubDiscussions,
   prompts,
   readingLists,
+  readingListBooks,
+  readingListFollows,
   hives,
 } from '@/db/schema';
 
@@ -26,7 +28,8 @@ export type FeedEventType =
   | 'CLUB_DISCUSSION'
   | 'NEW_PROMPT'
   | 'NEW_READING_LIST'
-  | 'NEW_HIVE';
+  | 'NEW_HIVE'
+  | 'LIST_NEW_BOOK';
 
 export type FeedUser = {
   id: string;
@@ -62,9 +65,15 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     f.requesterId === userId ? f.addresseeId : f.requesterId,
   );
 
-  if (friendIds.length === 0) return [];
-
   const cutoff = new Date(Date.now() - FEED_DAYS * 24 * 60 * 60 * 1000);
+
+  // Followed list books — independent of friends
+  const followedListIdRows = await db.query.readingListFollows.findMany({
+    where: eq(readingListFollows.userId, userId),
+    columns: { listId: true },
+  });
+
+  if (friendIds.length === 0 && followedListIdRows.length === 0) return [];
 
 
   const [
@@ -76,7 +85,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
     recentPrompts,
     recentLists,
     recentHives,
-  ] = await Promise.all([
+  ] = friendIds.length > 0 ? await Promise.all([
     db.query.users.findMany({
       where: inArray(users.id, friendIds),
       columns: { id: true, username: true, image: true },
@@ -165,9 +174,9 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       orderBy: [desc(hives.createdAt)],
       limit: LIMIT_PER_TYPE,
     }),
-  ]);
+  ]) : [[], [], [], [], [], [], [], []];
 
-  const userMap = Object.fromEntries(friendUsers.map((u) => [u.id, u]));
+  const userMap = Object.fromEntries((friendUsers as { id: string; username: string | null; image: string | null }[]).map((u) => [u.id, u]));
   const events: FeedEvent[] = [];
 
   for (const b of recentBooks) {
@@ -261,7 +270,7 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       timestamp: p.createdAt,
       user,
       meta: { title: p.title, promptId: p.id },
-      link: `/prompts/${p.id}`,
+      link: `/sparks/${p.id}`,
     });
   }
 
@@ -289,6 +298,33 @@ export async function getFriendFeedAction(): Promise<FeedEvent[]> {
       meta: { name: h.name, genre: h.genre, hiveId: h.id },
       link: `/hive/${h.id}`,
     });
+  }
+
+  if (followedListIdRows.length > 0) {
+    const followedListBooks = await db.query.readingListBooks.findMany({
+      where: and(
+        inArray(readingListBooks.readingListId, followedListIdRows.map((f) => f.listId)),
+        gt(readingListBooks.addedAt, cutoff),
+      ),
+      with: {
+        readingList: {
+          with: { user: { columns: { id: true, username: true, image: true } } },
+        },
+      },
+      orderBy: [desc(readingListBooks.addedAt)],
+      limit: 10,
+    });
+    for (const book of followedListBooks) {
+      const u = book.readingList.user;
+      events.push({
+        id: `list-book-${book.id}`,
+        type: 'LIST_NEW_BOOK',
+        user: { id: u.id, username: u.username, image: u.image },
+        timestamp: book.addedAt,
+        meta: { listTitle: book.readingList.title, listId: book.readingListId, bookTitle: book.title },
+        link: `/reading-lists/${book.readingListId}`,
+      });
+    }
   }
 
   events.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());

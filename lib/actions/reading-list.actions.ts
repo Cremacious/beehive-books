@@ -4,9 +4,10 @@ import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 
 import { revalidatePath } from 'next/cache';
 import { checkCreateLimit } from '@/lib/premium';
-import { and, eq, max, sql } from 'drizzle-orm';
+import { and, eq, ilike, max, or, sql } from 'drizzle-orm';
+import { insertNotification } from '@/lib/notifications';
 import { db } from '@/db';
-import { readingLists, readingListBooks } from '@/db/schema';
+import { readingLists, readingListBooks, readingListFollows, readingListLikes, books } from '@/db/schema';
 import {
   readingListSchema,
   bookEntrySchema,
@@ -34,13 +35,26 @@ export async function getUserReadingListsAction() {
   });
 }
 
-export async function getReadingListAction(listId: string) {
+export async function getLikedReadingListsAction() {
   const userId = await requireAuth();
+  const likeRows = await db.query.readingListLikes.findMany({
+    where: eq(readingListLikes.userId, userId),
+    with: { list: true },
+  });
+  return likeRows
+    .map((r) => r.list)
+    .filter((l) => l.privacy === 'PUBLIC')
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+}
+
+export async function getReadingListAction(listId: string) {
+  const userId = await getOptionalUserId();
 
   const list = await db.query.readingLists.findFirst({
     where: eq(readingLists.id, listId),
     with: {
       books: { orderBy: (b, { asc }) => [asc(b.order)] },
+      user: { columns: { username: true, image: true } },
     },
   });
 
@@ -49,8 +63,148 @@ export async function getReadingListAction(listId: string) {
   if (list.privacy === 'PRIVATE' && list.userId !== userId) return null;
   if (list.privacy === 'FRIENDS' && list.userId !== userId) return null;
 
-  return { ...list, currentUserId: userId, isOwner: list.userId === userId };
+  const [followRow, likeRow] = userId
+    ? await Promise.all([
+        db.query.readingListFollows.findFirst({
+          where: and(
+            eq(readingListFollows.userId, userId),
+            eq(readingListFollows.listId, listId),
+          ),
+        }),
+        db.query.readingListLikes.findFirst({
+          where: and(
+            eq(readingListLikes.userId, userId),
+            eq(readingListLikes.listId, listId),
+          ),
+        }),
+      ])
+    : [null, null];
+
+  const { user, ...listData } = list;
+  return {
+    ...listData,
+    curator: { username: user?.username ?? null, image: user?.image ?? null },
+    currentUserId: userId,
+    isOwner: list.userId === userId,
+    isFollowing: !!followRow,
+    isLiked: !!likeRow,
+  };
 }
+
+export async function followListAction(listId: string): Promise<ActionResult> {
+  const userId = await requireAuth();
+  try {
+    const existing = await db.query.readingListFollows.findFirst({
+      where: and(
+        eq(readingListFollows.userId, userId),
+        eq(readingListFollows.listId, listId),
+      ),
+    });
+    if (existing) {
+      await db.delete(readingListFollows).where(
+        and(
+          eq(readingListFollows.userId, userId),
+          eq(readingListFollows.listId, listId),
+        ),
+      );
+      await db
+        .update(readingLists)
+        .set({ followerCount: sql`GREATEST(${readingLists.followerCount} - 1, 0)` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Unfollowed.' };
+    } else {
+      await db.insert(readingListFollows).values({ userId, listId });
+      await db
+        .update(readingLists)
+        .set({ followerCount: sql`${readingLists.followerCount} + 1` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Following.' };
+    }
+  } catch {
+    return { success: false, message: 'Failed to update follow.' };
+  }
+}
+
+export async function likeListAction(listId: string): Promise<ActionResult> {
+  const userId = await requireAuth();
+  try {
+    const existing = await db.query.readingListLikes.findFirst({
+      where: and(
+        eq(readingListLikes.userId, userId),
+        eq(readingListLikes.listId, listId),
+      ),
+    });
+    if (existing) {
+      await db.delete(readingListLikes).where(
+        and(
+          eq(readingListLikes.userId, userId),
+          eq(readingListLikes.listId, listId),
+        ),
+      );
+      await db
+        .update(readingLists)
+        .set({ likeCount: sql`GREATEST(${readingLists.likeCount} - 1, 0)` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Unliked.' };
+    } else {
+      await db.insert(readingListLikes).values({ userId, listId });
+      await db
+        .update(readingLists)
+        .set({ likeCount: sql`${readingLists.likeCount} + 1` })
+        .where(eq(readingLists.id, listId));
+      return { success: true, message: 'Liked.' };
+    }
+  } catch {
+    return { success: false, message: 'Failed to update like.' };
+  }
+}
+
+export async function getListFollowStatusAction(
+  listId: string,
+): Promise<{ isFollowing: boolean; isLiked: boolean }> {
+  const userId = await getOptionalUserId();
+  if (!userId) return { isFollowing: false, isLiked: false };
+  const [followRow, likeRow] = await Promise.all([
+    db.query.readingListFollows.findFirst({
+      where: and(
+        eq(readingListFollows.userId, userId),
+        eq(readingListFollows.listId, listId),
+      ),
+    }),
+    db.query.readingListLikes.findFirst({
+      where: and(
+        eq(readingListLikes.userId, userId),
+        eq(readingListLikes.listId, listId),
+      ),
+    }),
+  ]);
+  return { isFollowing: !!followRow, isLiked: !!likeRow };
+}
+
+export async function updateBookCommentaryAction(
+  listId: string,
+  bookId: string,
+  commentary: string,
+  rank?: number,
+): Promise<ActionResult> {
+  await requireListOwner(listId);
+  try {
+    await db
+      .update(readingListBooks)
+      .set({ commentary, ...(rank !== undefined ? { rank } : {}) })
+      .where(
+        and(
+          eq(readingListBooks.id, bookId),
+          eq(readingListBooks.readingListId, listId),
+        ),
+      );
+    revalidatePath(`/reading-lists/${listId}`);
+    return { success: true, message: 'Updated.' };
+  } catch {
+    return { success: false, message: 'Failed to update.' };
+  }
+}
+
 
 export async function createReadingListAction(
   data: ReadingListFormData,
@@ -160,7 +314,7 @@ export async function addBookToListAction(
   listId: string,
   bookData: BookEntryData,
 ): Promise<ActionResult> {
-  await requireListOwner(listId);
+  const { userId: ownerId, list } = await requireListOwner(listId);
   const parsed = bookEntrySchema.safeParse(bookData);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -174,7 +328,9 @@ export async function addBookToListAction(
 
     await db.insert(readingListBooks).values({
       readingListId: listId,
-      ...parsed.data,
+      title: parsed.data.title,
+      author: parsed.data.author,
+      bookId: parsed.data.bookId ?? null,
       order: nextOrder,
     });
     await db
@@ -184,6 +340,22 @@ export async function addBookToListAction(
         updatedAt: new Date(),
       })
       .where(eq(readingLists.id, listId));
+
+    // Notify followers
+    const followers = await db.query.readingListFollows.findMany({
+      where: eq(readingListFollows.listId, listId),
+      columns: { userId: true },
+    });
+    for (const follower of followers) {
+      if (follower.userId === ownerId) continue;
+      void insertNotification({
+        recipientId: follower.userId,
+        actorId: ownerId,
+        type: 'READING_LIST_NEW_BOOK',
+        link: `/reading-lists/${listId}`,
+        metadata: { listTitle: list.title, bookTitle: parsed.data.title },
+      });
+    }
 
     revalidatePath(`/reading-lists/${listId}`);
     return { success: true, message: 'Book added.' };
@@ -315,4 +487,59 @@ export async function setCurrentlyReadingAction(
   } catch {
     return { success: false, message: 'Failed to update currently reading.' };
   }
+}
+
+export async function searchBooksForListAction(query: string): Promise<{
+  id: string;
+  title: string;
+  author: string;
+  authorUsername: string | null;
+  coverUrl: string | null;
+  wordCount: number;
+}[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const rows = await db.query.books.findMany({
+    where: and(
+      or(eq(books.privacy, 'PUBLIC'), eq(books.privacy, 'FRIENDS')),
+      or(ilike(books.title, `%${q}%`), ilike(books.author, `%${q}%`)),
+    ),
+    columns: { id: true, title: true, author: true, coverUrl: true, wordCount: true },
+    with: { user: { columns: { username: true } } },
+    limit: 8,
+  });
+  return rows.map((b) => ({
+    id: b.id,
+    title: b.title,
+    author: b.author,
+    authorUsername: b.user?.username ?? null,
+    coverUrl: b.coverUrl ?? null,
+    wordCount: b.wordCount,
+  }));
+}
+
+export async function getListsFeaturingBookAction(bookId: string): Promise<{
+  id: string;
+  title: string;
+  curatorUsername: string | null;
+  curatorImage: string | null;
+  bookCount: number;
+}[]> {
+  const rows = await db.query.readingListBooks.findMany({
+    where: eq(readingListBooks.bookId, bookId),
+    with: {
+      readingList: {
+        with: { user: { columns: { username: true, image: true } } },
+      },
+    },
+  });
+  return rows
+    .filter((r) => r.readingList.privacy === 'PUBLIC')
+    .map((r) => ({
+      id: r.readingList.id,
+      title: r.readingList.title,
+      curatorUsername: r.readingList.user?.username ?? null,
+      curatorImage: r.readingList.user?.image ?? null,
+      bookCount: r.readingList.bookCount,
+    }));
 }

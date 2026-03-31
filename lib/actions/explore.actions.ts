@@ -1,10 +1,10 @@
 'use server';
 
-import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { getOptionalUserId } from '@/lib/require-auth';
 import { searchLimiter } from '@/lib/rate-limit';
 
 import { unstable_cache } from 'next/cache';
-import { and, desc, eq, gte, ilike, inArray, lt, ne, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, gt, ilike, inArray, lt, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
@@ -60,12 +60,16 @@ function mapBook(b: typeof books.$inferSelect): Book {
     chapterCount: b.chapterCount,
     likeCount: b.likeCount,
     coverUrl: b.coverUrl,
+    tags: (b.tags ?? []) as string[],
+    commentsEnabled: b.commentsEnabled,
+    chapterCommentsEnabled: b.chapterCommentsEnabled,
   };
 }
 
 
 
 const LIMIT = 30;
+const FTS_LIMIT = 50;
 
 function updatedSinceCutoff(windows: string[]): Date | null {
   if (windows.length === 0) return null;
@@ -101,9 +105,12 @@ export async function searchExplorableBooksAction(
   query: string,
   genres: string[] = [],
   categories: string[] = [],
-  statuses: string[] = [],
-  lengths: string[] = [],
-  updatedSince: string[] = [],
+  tags: string[] = [],
+  draftStatuses: string[] = [],
+  wordCountRange: string = '',
+  hasComments: boolean = false,
+  updatedWithin: string = '',
+  sort: 'newest' | 'most_liked' | 'most_chapters' = 'newest',
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -111,21 +118,83 @@ export async function searchExplorableBooksAction(
   if (!success) throw new Error('Too many requests. Please slow down.');
 
   const q = query.trim();
-  const cutoff = updatedSinceCutoff(updatedSince);
+
+  const ftsFilter = q
+    ? sql`to_tsvector('english', coalesce(${books.title}, '') || ' ' || coalesce(${books.author}, '') || ' ' || coalesce(${books.description}, '')) @@ plainto_tsquery('english', ${q})`
+    : undefined;
+
+  const tagFilter =
+    tags.length > 0
+      ? and(...tags.map((t) => sql`${books.tags}::text ilike ${'%"' + t + '"%'}` as ReturnType<typeof sql>))
+      : undefined;
+
+  const draftStatusFilter = draftStatuses.length > 0
+    ? inArray(books.draftStatus, draftStatuses as ('FIRST_DRAFT' | 'SECOND_DRAFT' | 'THIRD_DRAFT' | 'FOURTH_DRAFT' | 'FIFTH_DRAFT' | 'COMPLETED')[])
+    : undefined;
+
+  const wordCountFilter = wordCountRange
+    ? wordCountRange === 'short' ? and(gte(books.wordCount, 0), lt(books.wordCount, 10000))
+    : wordCountRange === 'novella' ? and(gte(books.wordCount, 10000), lt(books.wordCount, 40000))
+    : wordCountRange === 'novel' ? and(gte(books.wordCount, 40000), lt(books.wordCount, 100000))
+    : wordCountRange === 'epic' ? gte(books.wordCount, 100000)
+    : undefined
+    : undefined;
+
+  const commentFilter = hasComments ? gt(books.commentCount, 0) : undefined;
+
+  const updatedWithinFilter = updatedWithin
+    ? updatedWithin === 'week' ? gte(books.updatedAt, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+    : updatedWithin === 'month' ? gte(books.updatedAt, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+    : updatedWithin === 'year' ? gte(books.updatedAt, new Date(Date.now() - 365 * 24 * 60 * 60 * 1000))
+    : undefined
+    : undefined;
+
+  const orderBy = q
+    ? [
+        desc(sql`ts_rank(to_tsvector('english', coalesce(${books.title}, '') || ' ' || coalesce(${books.author}, '') || ' ' || coalesce(${books.description}, '')), plainto_tsquery('english', ${q}))`),
+        desc(books.likeCount),
+      ]
+    : sort === 'most_liked'
+    ? [desc(books.likeCount), desc(books.createdAt)]
+    : sort === 'most_chapters'
+    ? [desc(books.chapterCount), desc(books.createdAt)]
+    : [desc(books.createdAt)];
+
+  if (q) {
+    // FTS: no cursor, cap at FTS_LIMIT
+    const rows = await db.query.books.findMany({
+      where: and(
+        eq(books.explorable, true),
+        eq(books.privacy, 'PUBLIC'),
+        ftsFilter,
+        genres.length > 0 ? inArray(books.genre, genres) : undefined,
+        categories.length > 0 ? inArray(books.category, categories) : undefined,
+        tagFilter,
+        draftStatusFilter,
+        wordCountFilter,
+        commentFilter,
+        updatedWithinFilter,
+      ),
+      orderBy,
+      limit: FTS_LIMIT,
+    });
+    return { books: rows.map(mapBook), nextCursor: null };
+  }
 
   const rows = await db.query.books.findMany({
     where: and(
       eq(books.explorable, true),
       eq(books.privacy, 'PUBLIC'),
-      q ? or(ilike(books.title, `%${q}%`), ilike(books.author, `%${q}%`)) : undefined,
       genres.length > 0 ? inArray(books.genre, genres) : undefined,
       categories.length > 0 ? inArray(books.category, categories) : undefined,
-      statusConditions(statuses),
-      lengthConditions(lengths),
-      cutoff ? gte(books.updatedAt, cutoff) : undefined,
+      tagFilter,
+      draftStatusFilter,
+      wordCountFilter,
+      commentFilter,
+      updatedWithinFilter,
       cursor ? lt(books.createdAt, new Date(cursor)) : undefined,
     ),
-    orderBy: [desc(books.createdAt)],
+    orderBy,
     limit: LIMIT + 1,
   });
 
@@ -138,7 +207,20 @@ export async function searchExplorableBooksAction(
 }
 
 export async function getExplorableTagsAction(): Promise<string[]> {
-  return [];
+  const rows = await db.query.books.findMany({
+    where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+    columns: { tags: true },
+  });
+  const tagCounts = new Map<string, number>();
+  for (const row of rows) {
+    for (const tag of (row.tags as string[])) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...tagCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([tag]) => tag);
 }
 
 
@@ -146,9 +228,10 @@ export async function getExplorableTagsAction(): Promise<string[]> {
 export async function searchExplorableClubsAction(
   query: string,
   tags: string[] = [],
+  sort: 'newest' | 'most_liked' | 'most_members' = 'most_members',
   cursor?: string,
 ): Promise<{ clubs: ClubWithMembership[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
@@ -168,9 +251,14 @@ export async function searchExplorableClubsAction(
       )
     : undefined;
 
+  const clubOrderBy =
+    sort === 'newest'
+      ? [desc(bookClubs.createdAt)]
+      : [desc(bookClubs.memberCount), desc(bookClubs.createdAt)];
+
   const publicPromise = db.query.bookClubs.findMany({
     where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC'), queryFilter, tagFilter, cursorFilter),
-    orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+    orderBy: clubOrderBy,
     limit: LIMIT + 1,
   });
 
@@ -197,30 +285,44 @@ export async function searchExplorableClubsAction(
             tagFilter,
             cursorFilter,
           ),
-          orderBy: [desc(bookClubs.memberCount), desc(bookClubs.createdAt)],
+          orderBy: clubOrderBy,
           limit: LIMIT + 1,
         })
       : Promise.resolve([]),
   ]);
 
-  // Deduplicate, sort by createdAt desc, slice to LIMIT+1
+  // Deduplicate, sort by selected field desc, slice to LIMIT+1
   const seen = new Set<string>();
   const combined = [...publicClubs, ...friendClubs]
     .filter((c) => { if (seen.has(c.id)) return false; seen.add(c.id); return true; })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .sort((a, b) =>
+      sort === 'newest'
+        ? b.createdAt.getTime() - a.createdAt.getTime()
+        : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
 
   const hasMore = combined.length > LIMIT;
   const allClubs = hasMore ? combined.slice(0, LIMIT) : combined;
 
   if (allClubs.length === 0) return { clubs: [], nextCursor: null };
 
-  const myMemberships = await db.query.clubMembers.findMany({
-    where: and(
-      eq(clubMembers.userId, userId),
-      inArray(clubMembers.clubId, allClubs.map((c) => c.id)),
-    ),
-  });
+  const clubIds = allClubs.map((c) => c.id);
+  const [myMemberships, friendMemberships] = await Promise.all([
+    db.query.clubMembers.findMany({
+      where: and(eq(clubMembers.userId, userId), inArray(clubMembers.clubId, clubIds)),
+    }),
+    friendIds.length > 0
+      ? db.query.clubMembers.findMany({
+          where: and(inArray(clubMembers.userId, friendIds), inArray(clubMembers.clubId, clubIds)),
+          columns: { clubId: true },
+        })
+      : Promise.resolve([]),
+  ]);
   const memberMap = new Map(myMemberships.map((m) => [m.clubId, m.role as ClubRole]));
+  const friendCountMap = new Map<string, number>();
+  for (const m of friendMemberships) {
+    friendCountMap.set(m.clubId, (friendCountMap.get(m.clubId) ?? 0) + 1);
+  }
 
   return {
     clubs: allClubs.map((c) => ({
@@ -228,6 +330,7 @@ export async function searchExplorableClubsAction(
       tags: c.tags as string[],
       myRole: memberMap.get(c.id) ?? null,
       isMember: memberMap.has(c.id),
+      friendCount: friendCountMap.get(c.id) ?? 0,
     })),
     nextCursor: hasMore ? allClubs[LIMIT - 1].createdAt.toISOString() : null,
   };
@@ -238,9 +341,10 @@ export async function searchExplorableHivesAction(
   query: string,
   genres: string[] = [],
   tags: string[] = [],
+  sort: 'newest' | 'most_liked' | 'most_members' = 'most_members',
   cursor?: string,
 ): Promise<{ hives: HiveWithMembership[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
@@ -258,9 +362,14 @@ export async function searchExplorableHivesAction(
 
   const genreFilter = genres.length > 0 ? inArray(hives.genre, genres) : undefined;
 
+  const hiveOrderBy =
+    sort === 'newest'
+      ? [desc(hives.createdAt)]
+      : [desc(hives.memberCount), desc(hives.createdAt)];
+
   const publicPromise = db.query.hives.findMany({
     where: and(eq(hives.explorable, true), eq(hives.privacy, 'PUBLIC'), queryFilter, genreFilter, tagFilter, cursorFilter),
-    orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+    orderBy: hiveOrderBy,
     limit: LIMIT + 1,
   });
 
@@ -288,17 +397,21 @@ export async function searchExplorableHivesAction(
             tagFilter,
             cursorFilter,
           ),
-          orderBy: [desc(hives.memberCount), desc(hives.createdAt)],
+          orderBy: hiveOrderBy,
           limit: LIMIT + 1,
         })
       : Promise.resolve([]),
   ]);
 
-  // Deduplicate, sort by createdAt desc, slice to LIMIT+1
+  // Deduplicate, sort by selected field desc, slice to LIMIT+1
   const seen = new Set<string>();
   const combined = [...publicHiveList, ...friendHives]
     .filter((h) => { if (seen.has(h.id)) return false; seen.add(h.id); return true; })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .sort((a, b) =>
+      sort === 'newest'
+        ? b.createdAt.getTime() - a.createdAt.getTime()
+        : (b.memberCount ?? 0) - (a.memberCount ?? 0) || b.createdAt.getTime() - a.createdAt.getTime(),
+    );
 
   const hasMore = combined.length > LIMIT;
   const allHivesList = hasMore ? combined.slice(0, LIMIT) : combined;
@@ -330,7 +443,7 @@ export async function searchExplorablePromptsAction(
   query: string,
   cursor?: string,
 ): Promise<{ prompts: PromptCard[]; nextCursor: string | null }> {
-  const userId = await requireAuth();
+  const userId = await getOptionalUserId();
   const { success } = await searchLimiter.limit(userId ?? 'anon');
   if (!success) throw new Error('Too many requests. Please slow down.');
 
@@ -377,6 +490,7 @@ export async function searchExplorablePromptsAction(
       creator: p.creator as PromptUser,
       myInviteStatus: null,
       myEntryId: myEntryMap.get(p.id) ?? null,
+      tags: (p.tags ?? []) as string[],
     })),
     nextCursor: hasMore ? items[LIMIT - 1].createdAt.toISOString() : null,
   };
@@ -454,6 +568,7 @@ const getCachedHubData = unstable_cache(
         creator: p.creator as PromptUser,
         myInviteStatus: null,
         myEntryId: null,
+        tags: (p.tags ?? []) as string[],
       })),
       readingLists: readingListRows.map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] })),
     };
@@ -468,7 +583,51 @@ export async function getExplorableHubDataAction(): Promise<{
   prompts: PromptCard[];
   readingLists: ReadingList[];
 }> {
-  return getCachedHubData();
+  const [data, userId] = await Promise.all([getCachedHubData(), getOptionalUserId()]);
+
+  if (!userId || data.clubs.length === 0) return data;
+
+  const friendIds = await getFriendIds(userId);
+  if (friendIds.length === 0) return data;
+
+  const clubIds = data.clubs.map((c) => c.id);
+  const friendMemberships = await db.query.clubMembers.findMany({
+    where: and(
+      inArray(clubMembers.userId, friendIds),
+      inArray(clubMembers.clubId, clubIds),
+    ),
+    columns: { clubId: true },
+  });
+
+  const friendCountMap = new Map<string, number>();
+  for (const m of friendMemberships) {
+    friendCountMap.set(m.clubId, (friendCountMap.get(m.clubId) ?? 0) + 1);
+  }
+
+  return {
+    ...data,
+    clubs: data.clubs.map((c) => ({ ...c, friendCount: friendCountMap.get(c.id) ?? 0 })),
+  };
+}
+
+export async function getFriendsReadingAction(): Promise<Book[]> {
+  const userId = await getOptionalUserId();
+  if (!userId) return [];
+
+  const friendIds = await getFriendIds(userId);
+  if (friendIds.length === 0) return [];
+
+  const rows = await db.query.books.findMany({
+    where: and(
+      inArray(books.userId, friendIds),
+      eq(books.privacy, 'PUBLIC'),
+      eq(books.explorable, true),
+    ),
+    orderBy: [desc(books.updatedAt)],
+    limit: 8,
+  });
+
+  return rows.map(mapBook);
 }
 
 const getCachedBooksByGenre = unstable_cache(

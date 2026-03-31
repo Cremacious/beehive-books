@@ -128,20 +128,20 @@ export function SortableChapterRow({
                 role="checkbox"
                 aria-checked={!!isRead}
                 aria-label={isRead ? 'Mark as unread' : 'Mark as read'}
-                className={`p-1.5 rounded-lg transition-all ${
+                className={`p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg transition-all ${
                   isRead
                     ? 'text-[#FFC300] hover:text-[#FFC300]/70 hover:bg-[#FFC300]/10'
-                    : 'text-white/20 hover:text-white/50 hover:bg-white/5'
+                    : 'text-white/35 hover:text-white/60 hover:bg-white/5'
                 }`}
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-5 h-5" />
               </button>
             )}
             <Link
               href={`${basePath}/${bookId}/${chapter.id}`}
               className="hidden sm:block px-3 py-1.5 rounded-lg text-xs text-white border border-[#2a2a2a] hover:border-[#FFC300]/30 hover:text-[#FFC300] transition-all"
             >
-              Read
+              Read Chapter
             </Link>
             {isOwner && (
               <>
@@ -154,18 +154,12 @@ export function SortableChapterRow({
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setShowMenu((v) => !v)}
-                    className="p-1.5 rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
+                    className="p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-yellow-500 hover:text-yellow-400 hover:bg-white/5 transition-all"
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <MoreHorizontal className="w-4 h-4 " />
                   </button>
                   {showMenu && (
                     <div className="absolute right-0 top-full mt-1 z-50 min-w-42 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] shadow-xl py-1 overflow-hidden">
-                      <Link
-                        href={`${basePath}/${bookId}/${chapter.id}`}
-                        className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"
-                      >
-                        Read
-                      </Link>
                       <Link
                         href={`/library/${bookId}/${chapter.id}/edit`}
                         className="sm:hidden w-full text-left px-3 py-2 text-xs text-white hover:bg-white/5 hover:text-white/80 transition-colors flex items-center gap-2"

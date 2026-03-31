@@ -70,7 +70,7 @@ export async function checkCreateLimit(
     const label = RESOURCE_LABELS[resource];
     return isPremium
       ? `You have reached the maximum of ${limit} ${label}.`
-      : `Beta accounts are limited to creating ${limit} ${label}. More features available later.`;
+      : `Free accounts can create up to ${limit} ${label}. Upgrade to Premium for unlimited access.`;
   }
 
   return null;

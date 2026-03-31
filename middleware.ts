@@ -12,7 +12,20 @@ import {
 const intlMiddleware = createMiddleware(routing);
 
 // Public paths WITHOUT locale prefix (next-intl strips it before matching)
-const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password'];
+const PUBLIC_PATHS = [
+  '/',
+  '/sign-in',
+  '/sign-up',
+  '/forgot-password',
+  '/reset-password',
+  '/explore',
+  '/books',
+  '/u',
+  '/terms',
+  '/privacy',
+  '/dmca',
+  '/cookies',
+];
 
 // Known malicious/scanner user-agent fragments
 const BLOCKED_UA_PATTERNS = [
@@ -99,8 +112,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Rate limit page routes (DDoS protection) ──────────────────────────────
-  if (!isDev) {
+  // ── Page route auth guard ─────────────────────────────────────────────────
+  const sessionToken =
+    request.cookies.get('better-auth.session_token') ??
+    request.cookies.get('__Secure-better-auth.session_token');
+
+  // ── Rate limit page routes (unauthenticated only) ──────────────────────────
+  if (!isDev && !sessionToken) {
     const pageResult = await pageLimiter.limit(ip);
     if (!pageResult.success) {
       return new NextResponse('Too many requests', {
@@ -109,11 +127,6 @@ export default async function middleware(request: NextRequest) {
       });
     }
   }
-
-  // ── Page route auth guard ─────────────────────────────────────────────────
-  const sessionToken =
-    request.cookies.get('better-auth.session_token') ??
-    request.cookies.get('__Secure-better-auth.session_token');
 
   const isAuthenticated = !!sessionToken;
   const pathWithoutLocale = stripLocale(pathname);
@@ -126,13 +139,14 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // ── Email verification guard ───────────────────────────────────────────────
-  // Only check protected routes — skip public paths and sign-in itself to avoid loops
+  // ── Session guards: onboarding + email verification ───────────────────────
+  // Fetch the session once and run both checks. Exempt /onboarding itself to
+  // avoid a redirect loop, and public paths / sign-in for the same reason.
   if (
     isAuthenticated &&
     !isPublic(pathname) &&
     pathWithoutLocale !== '/sign-in' &&
-    process.env.REQUIRE_EMAIL_VERIFICATION === 'true'
+    pathWithoutLocale !== '/onboarding'
   ) {
     try {
       const baseUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
@@ -141,8 +155,18 @@ export default async function middleware(request: NextRequest) {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data?.user && data.user.emailVerified === false) {
-          return NextResponse.redirect(new URL('/sign-in', request.url));
+        if (data?.user) {
+          // Redirect to onboarding if profile setup is incomplete
+          if (data.user.onboardingComplete === false) {
+            return NextResponse.redirect(new URL('/onboarding', request.url));
+          }
+          // Redirect unverified users back to sign-in (opt-in via env var)
+          if (
+            process.env.REQUIRE_EMAIL_VERIFICATION === 'true' &&
+            data.user.emailVerified === false
+          ) {
+            return NextResponse.redirect(new URL('/sign-in', request.url));
+          }
         }
       }
     } catch {

@@ -44,6 +44,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       username:           { type: 'string',  required: false, defaultValue: null },
+      bio:                { type: 'string',  required: false, defaultValue: null },
       onboardingComplete: { type: 'boolean', required: false, defaultValue: false },
       premium:            { type: 'boolean', required: false, defaultValue: false },
       role:               { type: 'string',  required: false, defaultValue: 'member' },

@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { bookLikes, books } from '@/db/schema';
 import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { checkActionRateLimit } from '@/lib/check-action-rate-limit';
+import { insertNotification } from '@/lib/notifications';
 import { and, eq, sql } from 'drizzle-orm';
 
 export async function toggleBookLikeAction(bookId: string): Promise<{
@@ -43,6 +44,21 @@ export async function toggleBookLikeAction(bookId: string): Promise<{
       .set({ likeCount: sql`${books.likeCount} + 1` })
       .where(eq(books.id, bookId))
       .returning({ likeCount: books.likeCount });
+
+    const likedBook = await db.query.books.findFirst({
+      where: eq(books.id, bookId),
+      columns: { userId: true, title: true },
+    });
+    if (likedBook && likedBook.userId !== userId) {
+      void insertNotification({
+        recipientId: likedBook.userId,
+        actorId: userId,
+        type: 'BOOK_LIKE',
+        link: `/books/${bookId}`,
+        metadata: { bookId, bookTitle: likedBook.title },
+      });
+    }
+
     return { success: true, liked: true, likeCount: updated?.likeCount ?? 0 };
   }
 }

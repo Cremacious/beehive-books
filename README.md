@@ -1,4 +1,4 @@
-# 🐝 Beehive Books
+# Beehive Books
 
 A social writing platform for authors and readers — write, collaborate, and discover stories.
 

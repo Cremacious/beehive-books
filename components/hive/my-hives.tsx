@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import HiveCard from './hive-card';
 import Pagination from '@/components/shared/pagination';
-import { Button } from '@/components/ui/button';
 import type { HiveWithMembership, HiveRole } from '@/lib/types/hive.types';
 
 type SortOption = 'recent' | 'name' | 'members';
@@ -28,8 +27,15 @@ const PAGE_SIZE = 6;
 
 function HivePlaceholder() {
   return (
-    <div className="rounded-xl border-2 border-dashed border-[#FFC300]/15 bg-[#1a1a1a] h-44 flex items-center justify-center">
-      <Hexagon className="w-8 h-8 text-[#FFC300]/10" />
+    <div className="flex flex-col rounded-xl border border-dashed border-[#2a2a2a] bg-[#141414] overflow-hidden opacity-40 h-44">
+      <div className="flex-1 px-4 pt-4 pb-3 flex flex-col gap-2">
+        <div className="h-3 rounded bg-[#2a2a2a] w-2/3" />
+        <div className="h-2 rounded bg-[#2a2a2a] w-full" />
+        <div className="h-2 rounded bg-[#2a2a2a] w-4/5" />
+      </div>
+      <div className="px-4 pb-4">
+        <div className="h-2 rounded bg-[#2a2a2a] w-1/3" />
+      </div>
     </div>
   );
 }
@@ -82,38 +88,27 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
 
   if (hives.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="grid grid-cols-3 gap-2 mb-8">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div
-              key={i}
-              className="w-14 h-14 rounded-xl border-2 border-dashed border-[#FFC300]/20 bg-[#FFC300]/5 flex items-center justify-center"
-            >
-              <Hexagon
-                className={`w-6 h-6 ${
-                  i % 3 === 1 ? 'text-[#FFC300]/30' : 'text-[#FFC300]/10'
-                }`}
-              />
-            </div>
-          ))}
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-4">
+          <Hexagon className="w-9 h-9 text-white/20" />
         </div>
-
-        <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">
-          Your hive is empty!
-        </h2>
-        <p className="text-white/80 mb-8 max-w-sm">
-          Create your own hive to collaborate on a book, or explore public hives
-          to join.
+        <h2 className="text-xl font-bold text-white mainFont mb-2">No hives yet</h2>
+        <p className="text-sm text-white/80 max-w-sm leading-relaxed mb-6">
+          Hives are collaborative writing spaces. Create one to co-write a book with other authors, beta readers, and editors. Or join an existing hive to contribute.
         </p>
-
         <div className="flex items-center gap-3 flex-wrap justify-center">
-          <Button asChild size="lg">
-            <Link href="/hive/create">
-              <Plus className="w-5 h-5" />
-              Create a Hive
-            </Link>
-          </Button>
-         
+          <Link
+            href="/hive/create"
+            className="px-5 py-2.5 rounded-full bg-[#FFC300] text-black text-sm font-bold hover:bg-[#FFD040] transition-colors"
+          >
+            Create a Hive
+          </Link>
+          <Link
+            href="/explore/hives"
+            className="px-5 py-2.5 rounded-full border border-[#2a2a2a] text-white/70 text-sm font-medium hover:text-white hover:border-white/30 transition-colors"
+          >
+            Explore Hives
+          </Link>
         </div>
       </div>
     );
@@ -131,7 +126,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by name, genre, or tag…"
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/70 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] text-base text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 focus:ring-1 focus:ring-[#FFC300]/20 transition-all"
           />
         </div>
 
@@ -175,11 +170,7 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
               }`}
             >
               {label}
-              <span
-                className={`text-sm ${
-                  roleFilter === value ? 'text-black/60' : 'text-yellow-500'
-                }`}
-              >
+              <span className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[10px] font-bold ${roleFilter === value ? 'bg-black/20 text-black' : 'bg-[#FFC300] text-black'}`}>
                 {count}
               </span>
             </button>
@@ -189,15 +180,8 @@ export default function MyHives({ hives }: { hives: HiveWithMembership[] }) {
 
    
       {displayed.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="w-8 h-8 text-white/80 mb-3" />
-          <p className="text-sm text-white/80 mb-1">
-            {query ? (
-              <>No results for &ldquo;{query}&rdquo;</>
-            ) : (
-              'No hives in this category'
-            )}
-          </p>
+        <div className="py-12 text-center">
+          <p className="text-sm text-white/50">No hives match your filters.</p>
           <button
             onClick={() => { setQuery(''); setRoleFilter('ALL'); }}
             className="text-xs text-[#FFC300]/70 hover:text-[#FFC300] transition-colors mt-2"

@@ -313,14 +313,14 @@ function CreateBuzzForm({
         placeholder="Share something inspiring, funny, or useful…"
         maxLength={1000}
         rows={3}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
       />
 
       <input
         value={mediaUrl}
         onChange={(e) => setMediaUrl(e.target.value)}
         placeholder="Link (optional)"
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
       {error && (

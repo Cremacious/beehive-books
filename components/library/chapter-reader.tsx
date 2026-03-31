@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, BookOpen, ChevronUp } from 'lucide-react';
-import BackButton from '@/components/shared/back-button';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { CommentSection } from '@/components/comments/comment-section';
 import type { getChapterWithContextAction } from '@/lib/actions/book.actions';
+import type { Comment } from '@/lib/types/comment.types';
 
 type ChapterData = Awaited<ReturnType<typeof getChapterWithContextAction>>;
 
@@ -20,25 +20,34 @@ export function ChapterReader({
 
   return (
     <div>
-      <div className="border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between gap-3">
-        <BackButton
-          href={`${basePath}/${bookId}`}
-          label=""
-          className="text-sm shrink-0"
-        />
+      <div className="border-b border-[#2a2a2a] px-4 py-3 grid grid-cols-3 items-center gap-2">
+        {/* Left */}
+        <div className="flex items-center">
+          <Link
+            href={`${basePath}/${bookId}`}
+            className="inline-flex items-center gap-1 text-xs text-white/80 hover:text-yellow-500 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4 text-yellow-500 shrink-0" />
+            <span className="hidden sm:inline">To Book</span>
+          </Link>
+        </div>
 
+        {/* Center — always centered regardless of side widths */}
         <div className="text-center min-w-0">
           <p className="text-xs text-yellow-500 truncate">
-            {chapter.collection ? chapter.collection.name : ``}
+            {chapter.collection ? chapter.collection.name : ''}
           </p>
           <h1 className="text-sm font-semibold text-white truncate leading-tight">
             {chapter.title}
           </h1>
         </div>
 
-        <span className="text-xs text-white shrink-0">
-          {chapter.wordCount.toLocaleString()} words
-        </span>
+        {/* Right */}
+        <div className="flex items-center justify-end">
+          <span className="text-xs text-white/80 shrink-0">
+            {chapter.wordCount.toLocaleString()} words
+          </span>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-10">
@@ -111,11 +120,13 @@ export function ChapterReader({
           )}
         </div>
 
-        <CommentSection
-          chapterId={chapter.id}
-          comments={comments}
-          currentUserId={currentUserId ?? null}
-        />
+        {book.chapterCommentsEnabled && (
+          <CommentSection
+            chapterId={chapter.id}
+            comments={comments as unknown as Comment[]}
+            currentUserId={currentUserId ?? null}
+          />
+        )}
       </div>
     </div>
   );

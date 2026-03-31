@@ -7,8 +7,9 @@ import { ExpandableDescription } from '@/components/shared/expandable-descriptio
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
-import { DRAFT_STATUS_LABELS } from '@/lib/types/books.types';
+import { DRAFT_STATUS_LABELS, type DraftStatus } from '@/lib/types/books.types';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -44,7 +45,7 @@ export default async function BookPage({
     notFound();
   }
 
-  const { chapters, collections, isOwner } = book;
+  const { chapters, collections, isOwner, isPremium } = book;
 
   return (
     <div className="px-4 py-6 md:px-8">
@@ -66,11 +67,7 @@ export default async function BookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <div className="w-full h-full bg-linear-to-br from-[#222] to-[#141414] flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white/15 mainFont">
-                    {book.title[0]?.toUpperCase()}
-                  </span>
-                </div>
+                <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
               )}
             </div>
 
@@ -81,7 +78,7 @@ export default async function BookPage({
                   <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight mainFont">
                     {book.title}
                   </h1>
-                  <p className="text-sm text-white/70 mt-1.5">
+                  <p className="text-sm text-white/80 mt-1.5">
                     by {book.author}
                     {book.user?.username && (
                       <Link
@@ -96,7 +93,7 @@ export default async function BookPage({
 
                 {/* Desktop action buttons */}
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <ShareBookButton bookId={book.id} isOwner={isOwner} />
+                  <ShareBookButton bookId={book.id} isOwner={isOwner} isPremium={isPremium} />
                   {isOwner && (
                     <Link
                       href={`/library/${book.id}/edit`}
@@ -111,20 +108,20 @@ export default async function BookPage({
 
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.genre}
                 </span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.category}
                 </span>
-                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium capitalize">
+                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium capitalize">
                   {book.privacy === 'PRIVATE' && <Lock className="w-3 h-3" />}
                   {book.privacy === 'PUBLIC' && <Globe className="w-3 h-3" />}
                   {book.privacy.toLowerCase()}
                 </span>
                 {book.draftStatus !== 'COMPLETED' && (
                   <span className="text-xs px-2.5 py-1 rounded-full bg-[#FFC300]/10 text-[#FFC300] font-medium border border-[#FFC300]/20">
-                    {DRAFT_STATUS_LABELS[book.draftStatus]}
+                    {DRAFT_STATUS_LABELS[book.draftStatus as DraftStatus]}
                   </span>
                 )}
               </div>
@@ -133,17 +130,17 @@ export default async function BookPage({
 
               {/* Stats row */}
               <div className="flex flex-wrap items-center gap-1 mt-5">
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
@@ -165,6 +162,7 @@ export default async function BookPage({
             <ShareBookButton
               bookId={book.id}
               isOwner={isOwner}
+              isPremium={isPremium}
               size="default"
               className="w-full rounded-full border border-[#2a2a2a] text-white"
             />

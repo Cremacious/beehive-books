@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import BookGrid from '@/components/library/book-grid';
-import { getUserBooksAction } from '@/lib/actions/book.actions';
-
+import FavouritesGrid from '@/components/library/favourites-grid';
+import { getUserBooksAction, getLikedBooksAction } from '@/lib/actions/book.actions';
+import { BadgeCount } from '@/components/ui/badge-count';
+import type { Book } from '@/lib/types/books.types';
 
 export const metadata: Metadata = {
   title: 'My Library',
@@ -11,18 +13,21 @@ export const metadata: Metadata = {
     'Your creative workspace — write, organize, and publish your books and chapters.',
 };
 
-export default async function LibraryPage() {
-  const books = await getUserBooksAction();
+type Props = { searchParams: Promise<{ tab?: string }> };
+
+export default async function LibraryPage({ searchParams }: Props) {
+  const { tab = 'my-books' } = await searchParams;
+
+  const [books, likedBooks] = await Promise.all([
+    getUserBooksAction(),
+    getLikedBooksAction(),
+  ]);
 
   return (
     <div className="px-4 py-6 md:px-8 max-w-6xl mx-auto">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-      
           <h1 className="text-2xl font-bold text-white mainFont">My Library</h1>
-          <p className="text-sm text-white/50 mt-1">
-            {books.length} {books.length === 1 ? 'book' : 'books'}
-          </p>
         </div>
         <Link
           href="/library/create"
@@ -32,7 +37,28 @@ export default async function LibraryPage() {
           New Book
         </Link>
       </div>
-      <BookGrid books={books} />
+
+      <div className="flex items-center gap-1 mb-8 p-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] w-fit">
+        <TabLink href="/library?tab=my-books" active={tab === 'my-books'} label="My Books" count={books.length} />
+        <TabLink href="/library?tab=favourites" active={tab === 'favourites'} label="Favourites" count={likedBooks.length} />
+      </div>
+
+      {tab === 'my-books' && <BookGrid books={books} />}
+      {tab === 'favourites' && <FavouritesGrid books={likedBooks as unknown as Book[]} />}
     </div>
+  );
+}
+
+function TabLink({ href, active, label, count }: { href: string; active: boolean; label: string; count?: number }) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+        active ? 'bg-[#FFC300] text-black' : 'text-white hover:text-white hover:bg-white/5'
+      }`}
+    >
+      {label}
+      {count !== undefined && <BadgeCount count={count} variant={active ? 'active' : 'default'} />}
+    </Link>
   );
 }

@@ -134,7 +134,7 @@ export function NotificationBell({
         className={className}
       >
         <div className="relative inline-flex">
-          <Bell aria-hidden="true" size={24} strokeWidth={isOpen ? 2.5 : 1.75} />
+          <Bell aria-hidden="true" size={24} strokeWidth={isOpen ? 2.5 : 1.75} className={unreadCount > 0 ? 'animate-wiggle' : ''} />
           {loaded && unreadCount > 0 && (
             <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 min-w-4.5 h-4.5 px-0.75 rounded-full bg-[#FFC300] text-black text-[10px] font-bold flex items-center justify-center leading-none">
               {unreadCount > 99 ? '99+' : unreadCount}

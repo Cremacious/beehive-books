@@ -150,7 +150,7 @@ function GroupForm({
         placeholder="Group name…"
         maxLength={100}
         autoFocus
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
       <div className="flex items-center gap-2">
         <span className="text-xs text-white/90">Color:</span>
@@ -265,7 +265,7 @@ function ItemForm({
         placeholder="Title…"
         maxLength={200}
         autoFocus
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
       <textarea
@@ -274,7 +274,7 @@ function ItemForm({
         placeholder="Optional description or notes…"
         maxLength={1000}
         rows={2}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all resize-none"
       />
 
       <div className="flex items-center gap-2">

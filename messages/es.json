@@ -5,7 +5,7 @@
     "library": "Biblioteca",
     "hives": "Colmenas",
     "clubs": "Clubes",
-    "prompts": "Prompts",
+    "prompts": "Sparks",
     "readingLists": "Listas de lectura",
     "friends": "Amigos",
     "profile": "Perfil",
@@ -47,7 +47,7 @@
       "hives": "Colmenas de escritura",
       "clubs": "Clubes de lectura",
       "readingLists": "Listas de lectura",
-      "prompts": "Prompts de escritura"
+      "prompts": "Writing Sparks"
     },
     "sections": {
       "libraryTitle": "Tu biblioteca personal de escritura",

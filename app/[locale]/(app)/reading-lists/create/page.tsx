@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function CreateReadingListPage() {
   return (
-    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto">
+    <div className="px-4 py-6 md:px-8 max-w-2xl mx-auto overflow-x-hidden">
       <BackButton href="/reading-lists" label="Reading Lists" className="mb-6" />
 
 

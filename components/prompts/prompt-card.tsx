@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { FileText, Clock, Trophy } from 'lucide-react';
 import type { PromptCard as PromptCardType, PromptUser } from '@/lib/types/prompt.types';
 
-function formatCountdown(endDate: Date): string {
-  const diff = endDate.getTime() - Date.now();
+function formatCountdown(endDate: Date | string): string {
+  const diff = new Date(endDate).getTime() - Date.now();
   if (diff <= 0) return 'Ended';
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
@@ -58,7 +58,7 @@ export function PromptCard({ prompt }: { prompt: PromptCardType }) {
   return (
     <Link
       href={`/prompts/${prompt.id}`}
-      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#a855f7]/30 hover:bg-[#1e1e1e] transition-all duration-200"
+      className="group flex flex-col rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#a855f7]/30 hover:bg-[#1e1e1e] hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className={`h-0.75 w-full ${isEnded ? 'bg-white/15' : 'bg-[#a855f7]'}`} />
 

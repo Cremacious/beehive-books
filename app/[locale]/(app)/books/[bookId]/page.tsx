@@ -15,10 +15,16 @@ import { Button } from '@/components/ui/button';
 import ChapterList from '@/components/library/chapter-list';
 import { ShareBookButton } from '@/components/library/share-book-button';
 import { CoverImageViewer } from '@/components/library/cover-image-viewer';
+import { GeneratedCover } from '@/components/library/generated-cover';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 import { getBookForViewAction } from '@/lib/actions/book.actions';
 import { getBookReadStatusAction } from '@/lib/actions/reading.actions';
 import { getBookLikeStatusAction } from '@/lib/actions/book-like.actions';
 import { LikeButton } from '@/components/books/like-button';
+import BookComments from '@/components/books/book-comments';
+import { getBookCommentsAction } from '@/lib/actions/book-comments.actions';
+import { getListsFeaturingBookAction } from '@/lib/actions/reading-list.actions';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -47,13 +53,18 @@ export default async function PublicBookPage({
 }) {
   const { bookId } = await params;
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isAuthenticated = !!session?.user?.id;
+
   let book;
   let readChapterIds: string[] = [];
   let likeStatus = { liked: false, likeCount: 0 };
   try {
     [book, readChapterIds, likeStatus] = await Promise.all([
       getBookForViewAction(bookId),
-      getBookReadStatusAction(bookId).catch(() => [] as string[]),
+      isAuthenticated
+        ? getBookReadStatusAction(bookId).catch(() => [] as string[])
+        : Promise.resolve([] as string[]),
       getBookLikeStatusAction(bookId).catch(() => ({
         liked: false,
         likeCount: 0,
@@ -63,11 +74,23 @@ export default async function PublicBookPage({
     notFound();
   }
 
-  const { chapters, collections, isOwner } = book;
+  const [bookCommentsList, featuringLists] = await Promise.all([
+    book!.commentsEnabled
+      ? getBookCommentsAction(bookId).catch(() => [])
+      : Promise.resolve([]),
+    getListsFeaturingBookAction(bookId).catch(() => []),
+  ]);
+
+  const { chapters, collections, isOwner, isPremium } = book;
 
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
+        {isAuthenticated ? (
+          <BackButton href="/library" label="My Library" className="mb-6" />
+        ) : (
+          <BackButton href="/explore" label="Explore" className="mb-6" />
+        )}
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] border-t-2 border-t-[#FFC300]/20 shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
             {/* Cover */}
@@ -83,11 +106,11 @@ export default async function PublicBookPage({
                   <CoverImageViewer src={book.coverUrl} alt={book.title} />
                 </>
               ) : (
-                <div className="w-full h-full bg-linear-to-br from-[#222] to-[#141414] flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white/15 mainFont">
-                    {book.title[0]?.toUpperCase()}
-                  </span>
-                </div>
+                <GeneratedCover
+                  title={book.title}
+                  author={book.author}
+                  bookId={book.id}
+                />
               )}
             </div>
 
@@ -98,7 +121,7 @@ export default async function PublicBookPage({
                   <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight mainFont">
                     {book.title}
                   </h1>
-                  <p className="text-sm text-white/70 mt-1.5">
+                  <p className="text-sm text-white/80 mt-1.5">
                     by {book.author}
                     {book.user?.username && (
                       <Link
@@ -112,7 +135,7 @@ export default async function PublicBookPage({
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <ShareBookButton bookId={book.id} isOwner={isOwner} />
+                  <ShareBookButton bookId={book.id} isOwner={isOwner} isPremium={isPremium} />
                   {isOwner && (
                     <Button asChild size="sm">
                       <Link href={`/library/${book.id}/edit`}>
@@ -126,13 +149,13 @@ export default async function PublicBookPage({
 
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.genre}
                 </span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium">
                   {book.category}
                 </span>
-                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/70 font-medium capitalize">
+                <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#2a2a2a] text-white/80 font-medium capitalize">
                   {book.privacy === 'PRIVATE' && <Lock className="w-3 h-3" />}
                   {book.privacy === 'PUBLIC' && <Globe className="w-3 h-3" />}
                   {book.privacy.toLowerCase()}
@@ -141,48 +164,76 @@ export default async function PublicBookPage({
 
               <ExpandableDescription text={book.description} />
 
-              {/* Stats row */}
-              <div className="flex flex-wrap items-center gap-1 mt-5">
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+              {/* Stats row — desktop: includes LikeButton inline */}
+              <div className="hidden sm:flex flex-wrap items-center gap-1 mt-5">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <FileText className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{chapters.length} chapters</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.wordCount.toLocaleString()} words</span>
                 </div>
                 <span className="text-white/20 mx-1">·</span>
-                <div className="flex items-center gap-1.5 text-sm text-white/70">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
-                <div className="ml-2">
-                  <LikeButton
-                    bookId={book.id}
-                    initialLiked={likeStatus.liked}
-                    initialLikeCount={likeStatus.likeCount}
-                    isAuthenticated
-                  />
+                <span className="text-white/20 mx-1">·</span>
+                <LikeButton
+                  bookId={book.id}
+                  initialLiked={likeStatus.liked}
+                  initialLikeCount={likeStatus.likeCount}
+                  isAuthenticated={isAuthenticated}
+                />
+              </div>
+
+              {/* Stats row — mobile: no LikeButton (shown below) */}
+              <div className="flex sm:hidden flex-wrap items-center gap-1 mt-5">
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
+                  <FileText className="w-4 h-4 text-[#FFC300]/70" />
+                  <span>{chapters.length} chapters</span>
+                </div>
+                <span className="text-white/20 mx-1">·</span>
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
+                  <BookOpen className="w-4 h-4 text-[#FFC300]/70" />
+                  <span>{book.wordCount.toLocaleString()} words</span>
+                </div>
+                <span className="text-white/20 mx-1">·</span>
+                <div className="flex items-center gap-1.5 text-sm text-white/80">
+                  <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
+                  <span>{book.commentCount} comments</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex sm:hidden gap-2 mt-4">
-            {isOwner && (
-              <Button asChild className="flex-1">
-                <Link href={`/library/${book.id}/edit`}>
-                  <Edit />
-                  Edit Book
-                </Link>
-              </Button>
-            )}
-            <ShareBookButton
+          <div className="flex sm:hidden flex-col gap-2 mt-4">
+            <LikeButton
               bookId={book.id}
-              variant="icon"
-              isOwner={isOwner}
+              initialLiked={likeStatus.liked}
+              initialLikeCount={likeStatus.likeCount}
+              isAuthenticated={isAuthenticated}
+              className="w-full justify-center"
             />
+            <div className="flex gap-2">
+              {isOwner && (
+                <Button asChild className="flex-1">
+                  <Link href={`/library/${book.id}/edit`}>
+                    <Edit />
+                    Edit Book
+                  </Link>
+                </Button>
+              )}
+              <ShareBookButton
+                bookId={book.id}
+                isOwner={isOwner}
+                isPremium={isPremium}
+                size="default"
+                className="flex-1"
+              />
+            </div>
           </div>
         </div>
 
@@ -192,8 +243,49 @@ export default async function PublicBookPage({
           collections={collections}
           isOwner={isOwner}
           basePath="/books"
-          readChapterIds={readChapterIds}
+          readChapterIds={isAuthenticated ? readChapterIds : undefined}
         />
+
+        {book!.commentsEnabled && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <BookComments
+              bookId={bookId}
+              initialComments={bookCommentsList}
+              currentUserId={session?.user?.id ?? null}
+              isAuthenticated={isAuthenticated}
+              currentUserUsername={session?.user?.name ?? null}
+              currentUserImage={session?.user?.image ?? null}
+            />
+          </div>
+        )}
+
+        {featuringLists.length > 0 && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+              Appears in lists
+            </h2>
+            <div className="flex flex-col gap-2">
+              {featuringLists.map((list) => (
+                <Link
+                  key={list.id}
+                  href={`/reading-lists/${list.id}`}
+                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors group"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm text-white font-medium truncate group-hover:text-[#FFC300] transition-colors">
+                      {list.title}
+                    </p>
+                    {list.curatorUsername && (
+                      <p className="text-xs text-white/40 truncate">by @{list.curatorUsername}</p>
+                    )}
+                  </div>
+                  <span className="text-xs text-white/30 shrink-0">{list.bookCount} books</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

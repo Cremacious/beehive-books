@@ -5,7 +5,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, FileText, FolderOpen, Loader2, UploadCloud } from 'lucide-react';
+import {
+  AlertTriangle,
+  FileText,
+  FolderOpen,
+  Loader2,
+  UploadCloud,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
@@ -104,13 +110,12 @@ export function ChapterForm({
     }
   }
 
-
   const inputClass =
-    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-2.5 text-sm text-white ' +
-    'placeholder-white/25 focus:outline-none focus:border-[#FFC300]/50 ' +
+    'w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-4 py-3 text-base text-white ' +
+    'placeholder-white/30 focus:outline-none focus:border-[#FFC300]/50 ' +
     'focus:ring-1 focus:ring-[#FFC300]/20 transition-all';
 
-  const errorClass = 'text-xs text-red-400 mt-1';
+  const errorClass = 'text-sm text-white/80';
 
   return (
     <div className="px-4 py-8">
@@ -127,53 +132,65 @@ export function ChapterForm({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-5">
+          <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-6">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
-                Chapter Title <span className="text-red-400">*</span>
+              <label className="text-base font-medium text-white">
+                Chapter Title{' '}
+                <span className="text-white/80 text-sm font-normal">
+                  (required)
+                </span>
               </label>
+              <p className="text-sm text-white/80">
+                The chapter name shown in the table of contents.
+              </p>
               <input
                 {...register('title')}
                 type="text"
                 placeholder="Enter your chapter title…"
                 className={inputClass}
               />
+              <p className="text-sm text-white/80 text-right">
+                {watch('title')?.length ?? 0} / 100
+              </p>
               {errors.title && (
                 <p className={errorClass}>{errors.title.message}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-yellow-500 mainFont">
+              <label className="text-base font-medium text-white">
                 Author&apos;s Notes
-                <span className="ml-2 text-xs text-white/80 font-normal">
+                <span className="ml-2 text-sm text-white/80 font-normal">
                   (optional)
                 </span>
               </label>
+              <p className="text-sm text-white/80">Notes about your chapter.</p>
               <textarea
                 {...register('authorNotes')}
                 rows={isEdit ? 4 : 3}
                 placeholder="Share thoughts, context, or a message to your readers…"
                 className={inputClass + ' resize-y'}
               />
+              <p className="text-sm text-white/80 text-right">
+                {watch('authorNotes')?.length ?? 0} / 500
+              </p>
               {errors.authorNotes && (
                 <p className={errorClass}>{errors.authorNotes.message}</p>
               )}
-              <p className="text-xs text-white">
-                Shown to readers in a highlighted box before the chapter
-                content.
-              </p>
             </div>
 
             {collections.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-yellow-500 mainFont flex items-center gap-1.5">
+                <label className="text-base font-medium text-white flex items-center gap-1.5">
                   <FolderOpen className="w-3.5 h-3.5 text-yellow-500" />
                   Collection
-                  <span className="ml-1 text-xs text-white/80 font-normal">
+                  <span className="ml-1 text-sm text-white/80 font-normal">
                     (optional)
                   </span>
                 </label>
+                <p className="text-sm text-white/80">
+                  Group chapters into parts, acts, or volumes.
+                </p>
                 <select
                   {...register('collectionId')}
                   className={inputClass + ' appearance-none'}
@@ -193,7 +210,10 @@ export function ChapterForm({
             <div className="rounded-xl border border-[#2a2a2a] overflow-hidden flex">
               <button
                 type="button"
-                onClick={() => { setContentMode('write'); setDocxError(''); }}
+                onClick={() => {
+                  setContentMode('write');
+                  setDocxError('');
+                }}
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
                   contentMode === 'write'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
@@ -204,7 +224,10 @@ export function ChapterForm({
               </button>
               <button
                 type="button"
-                onClick={() => { setContentMode('upload'); setDocxError(''); }}
+                onClick={() => {
+                  setContentMode('upload');
+                  setDocxError('');
+                }}
                 className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-[#2a2a2a] ${
                   contentMode === 'upload'
                     ? 'bg-[#FFC300]/10 text-[#FFC300]'
@@ -219,11 +242,14 @@ export function ChapterForm({
           {!isEdit && contentMode === 'upload' && (
             <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] shadow-xl p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-white/80">Upload a .docx file</p>
-                <p className="text-xs text-white/80">
-                  The document content will become the chapter body. If the document starts with a
-                  Heading 1, that text will be suggested as the chapter title (only if you have not
-                  already filled in a title).
+                <p className="text-base font-medium text-white/80">
+                  Upload a .docx file
+                </p>
+                <p className="text-sm text-white/80">
+                  The document content will become the chapter body. If the
+                  document starts with a Heading 1, that text will be suggested
+                  as the chapter title (only if you have not already filled in a
+                  title).
                 </p>
               </div>
 
@@ -233,13 +259,19 @@ export function ChapterForm({
                 ) : docxFileName ? (
                   <>
                     <FileText className="w-6 h-6 text-[#FFC300]/70" />
-                    <span className="text-xs text-white/80">{docxFileName}</span>
-                    <span className="text-[10px] text-white/80">Click to replace</span>
+                    <span className="text-sm text-white/80">
+                      {docxFileName}
+                    </span>
+                    <span className="text-[10px] text-white/80">
+                      Click to replace
+                    </span>
                   </>
                 ) : (
                   <>
                     <UploadCloud className="w-6 h-6 text-white/80" />
-                    <span className="text-xs text-white/80">Click to select a .docx file</span>
+                    <span className="text-sm text-white/80">
+                      Click to select a .docx file
+                    </span>
                     <span className="text-[10px] text-white/80">Max 10 MB</span>
                   </>
                 )}
@@ -253,28 +285,30 @@ export function ChapterForm({
               </label>
 
               {docxError && (
-                <p className="text-xs text-red-400">{docxError}</p>
+                <p className="text-sm text-white/80">{docxError}</p>
               )}
             </div>
           )}
 
           {(isEdit || contentMode === 'write') && (
-            <Controller
-              name="content"
-              control={control}
-              render={({ field }) => (
-                <RichTextEditor
-                  content={field.value ?? ''}
-                  onChange={field.onChange}
-                />
-              )}
-            />
+            <div className="space-y-1.5">
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <RichTextEditor
+                    content={field.value ?? ''}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </div>
           )}
 
           {(serverError || errors.content) && (
-            <div className="flex items-start gap-2 rounded-xl bg-red-950/40 border border-red-800/40 px-4 py-3">
-              <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-red-400">
+            <div className="flex items-start gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+              <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+              <p className="text-sm text-white/80">
                 {serverError || errors.content?.message}
               </p>
             </div>
@@ -306,7 +340,7 @@ export function ChapterForm({
                     {isEdit ? 'Saving…' : 'Creating…'}
                   </>
                 ) : isEdit ? (
-                  'Save Changes'
+                  'Save Chapter'
                 ) : (
                   'Create Chapter'
                 )}

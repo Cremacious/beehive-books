@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTransition, useState } from 'react';
-import { SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, X, ChevronDown, Check } from 'lucide-react';
 
 interface FilterGroup {
   param: string;
@@ -55,12 +55,14 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
   function clearAll() {
     const params = new URLSearchParams(searchParams.toString());
     filterGroups.forEach((g) => params.delete(g.param));
+    params.delete('comments');
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
   }
 
-  const hasAnySelected = filterGroups.some((g) => getSelected(g.param).length > 0);
+  const comments = searchParams.get('comments');
+  const hasAnySelected = filterGroups.some((g) => getSelected(g.param).length > 0) || comments === 'true';
 
   return (
     <aside className="w-full lg:w-56 shrink-0">
@@ -82,6 +84,35 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
         </div>
 
         <div className="space-y-1">
+          {/* Has Comments toggle */}
+          <div className="border-b border-[#2a2a2a]">
+            <button
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                if (comments === 'true') {
+                  params.delete('comments');
+                } else {
+                  params.set('comments', 'true');
+                }
+                startTransition(() => {
+                  router.push(`${pathname}?${params.toString()}`);
+                });
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-sm font-medium transition-all mb-1 ${
+                comments === 'true'
+                  ? 'bg-[#FFC300]/10 border-[#FFC300]/40 text-white'
+                  : 'bg-[#1e1e1e] border-[#2a2a2a] text-white/80 hover:text-white'
+              }`}
+            >
+              <span>Has Comments</span>
+              <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                comments === 'true' ? 'bg-[#FFC300] border-[#FFC300]' : 'border-[#3a3a3a]'
+              }`}>
+                {comments === 'true' && <Check className="w-3 h-3 text-black" />}
+              </div>
+            </button>
+          </div>
+
           {filterGroups.map((group) => {
             const selected = getSelected(group.param);
             const isCollapsed = collapsed[group.param] ?? true;
@@ -142,7 +173,7 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
                               isChecked ? 'text-white' : 'text-white/80'
                             }`}
                           >
-                            {displayLabel}
+                            {group.labels?.[option] ?? option}
                           </span>
                         </label>
                       );

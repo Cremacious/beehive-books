@@ -27,6 +27,8 @@ import {
   Activity,
   Zap,
   GitBranch,
+  Upload,
+  CheckCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useHiveStore } from '@/lib/stores/hive-store';
@@ -137,6 +139,26 @@ const EVENT_CONFIG: Record<
     icon: <UserPlus className="w-4 h-4" />,
     color: 'text-teal-400',
     bg: 'bg-teal-400/10',
+  },
+  CHAPTER_SUBMITTED: {
+    icon: <Upload className="w-3 h-3" />,
+    color: 'text-amber-400',
+    bg: 'bg-amber-400/10',
+  },
+  CHAPTER_SUBMISSION_APPROVED: {
+    icon: <CheckCheck className="w-3 h-3" />,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
+  },
+  CHAPTER_SUGGESTION_SUBMITTED: {
+    icon: <Upload className="w-3 h-3" />,
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-500/10',
+  },
+  CHAPTER_SUGGESTION_ACCEPTED: {
+    icon: <CheckCheck className="w-3 h-3" />,
+    color: 'text-green-400',
+    bg: 'bg-green-400/10',
   },
 };
 
@@ -268,6 +290,34 @@ function eventDescription(event: ActivityEvent): React.ReactNode {
           <span className="font-semibold text-teal-400">
             {String(m.role).charAt(0) + String(m.role).slice(1).toLowerCase()}
           </span>
+        </>
+      );
+    case 'CHAPTER_SUBMITTED':
+      return (
+        <>
+          {name} submitted a chapter —{' '}
+          <span className="font-semibold text-amber-400">{String(m.title)}</span>
+        </>
+      );
+    case 'CHAPTER_SUBMISSION_APPROVED':
+      return (
+        <>
+          {name}&apos;s submission was approved —{' '}
+          <span className="font-semibold text-green-400">{String(m.title)}</span>
+        </>
+      );
+    case 'CHAPTER_SUGGESTION_SUBMITTED':
+      return (
+        <>
+          {name} submitted a chapter suggestion —{' '}
+          <span className="font-semibold text-yellow-500">{String(m.chapterTitle ?? 'a chapter')}</span>
+        </>
+      );
+    case 'CHAPTER_SUGGESTION_ACCEPTED':
+      return (
+        <>
+          {name}&apos;s chapter suggestion was accepted —{' '}
+          <span className="font-semibold text-green-400">{String(m.chapterTitle ?? 'a chapter')}</span>
         </>
       );
     default:

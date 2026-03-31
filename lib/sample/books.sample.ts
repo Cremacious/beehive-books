@@ -22,6 +22,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 6,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
   {
     id: '2',
@@ -39,6 +42,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 7,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
   {
     id: '3',
@@ -56,6 +62,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 24,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
   {
     id: '4',
@@ -73,6 +82,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 3,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
   {
     id: '5',
@@ -90,6 +102,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 18,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
   {
     id: '6',
@@ -107,6 +122,9 @@ export const SAMPLE_BOOKS: Book[] = [
     chapterCount: 9,
     likeCount: 0,
     coverUrl: null,
+    tags: [],
+    commentsEnabled: true,
+    chapterCommentsEnabled: true,
   },
 ];
 

@@ -9,6 +9,8 @@ import { db } from '@/db';
 import { hives, hiveMembers, hiveInvites, hiveJoinRequests, books, users, friendships } from '@/db/schema';
 import { hiveSchema } from '@/lib/validations/hive.schema';
 import { insertNotification } from '@/lib/notifications';
+import { MILESTONES, awardMilestoneIfNew } from '@/lib/milestones';
+import type { MilestoneKey } from '@/lib/milestones';
 import type {
   HiveFormData,
   HiveRole,
@@ -182,10 +184,27 @@ export async function getAllUserHivesAction(): Promise<HiveWithMembership[]> {
     orderBy: (m, { desc }) => [desc(m.joinedAt)],
   });
 
+  // Fetch word counts for hives that are linked to a book
+  const bookIds = memberships
+    .map((m) => m.hive.bookId)
+    .filter((id): id is string => !!id);
+
+  const bookWordCounts: Record<string, number> = {};
+  if (bookIds.length > 0) {
+    const bookRows = await db.query.books.findMany({
+      where: inArray(books.id, bookIds),
+      columns: { id: true, wordCount: true },
+    });
+    for (const b of bookRows) {
+      bookWordCounts[b.id] = b.wordCount;
+    }
+  }
+
   return memberships.map((m) => ({
     ...m.hive,
     myRole: m.role as HiveRole,
     isMember: true,
+    totalWordCount: m.hive.bookId ? (bookWordCounts[m.hive.bookId] ?? 0) : 0,
   }));
 }
 
@@ -932,4 +951,74 @@ export async function completeHiveAction(hiveId: string): Promise<ActionResult> 
   } catch {
     return { success: false, message: 'Failed to complete hive.' };
   }
+}
+
+export type HiveMilestoneEntry = {
+  key: MilestoneKey;
+  label: string;
+  description: string;
+  achievedAt: string;
+  member: { username: string | null; image: string | null };
+};
+
+export async function getHiveMilestonesAction(hiveId: string): Promise<HiveMilestoneEntry[]> {
+  await requireHiveMember(hiveId);
+
+  const hive = await db.query.hives.findFirst({
+    where: eq(hives.id, hiveId),
+    columns: { bookId: true },
+  });
+  if (!hive?.bookId) return [];
+
+  const book = await db.query.books.findFirst({
+    where: eq(books.id, hive.bookId),
+    columns: { milestones: true, userId: true, chapterCount: true, wordCount: true, privacy: true, draftStatus: true },
+  });
+  if (!book) return [];
+
+  // Backfill milestones based on current book state (idempotent — skips already-awarded)
+  await awardMilestoneIfNew(hive.bookId, 'FIRST_WORD');
+  if (book.chapterCount >= 1) await awardMilestoneIfNew(hive.bookId, 'FIRST_CHAPTER');
+  if (book.chapterCount >= 3) await awardMilestoneIfNew(hive.bookId, 'IN_THE_GROOVE');
+  if (book.wordCount > 0) await awardMilestoneIfNew(hive.bookId, 'GETTING_STARTED');
+  if (book.privacy === 'FRIENDS' || book.privacy === 'PUBLIC') {
+    await awardMilestoneIfNew(hive.bookId, 'FRESH_EYES');
+  }
+  if (['SECOND_DRAFT', 'THIRD_DRAFT', 'FOURTH_DRAFT', 'FIFTH_DRAFT', 'COMPLETED'].includes(book.draftStatus)) {
+    await awardMilestoneIfNew(hive.bookId, 'FIRST_DRAFT_DONE');
+  }
+  if (['THIRD_DRAFT', 'FOURTH_DRAFT', 'FIFTH_DRAFT', 'COMPLETED'].includes(book.draftStatus)) {
+    await awardMilestoneIfNew(hive.bookId, 'SECOND_DRAFT');
+  }
+  if (book.draftStatus === 'COMPLETED') {
+    await awardMilestoneIfNew(hive.bookId, 'FINISHED');
+  }
+
+  // Re-fetch milestones after backfill so the page reflects newly awarded ones
+  const refreshed = await db.query.books.findFirst({
+    where: eq(books.id, hive.bookId),
+    columns: { milestones: true },
+  });
+
+  const owner = await db.query.users.findFirst({
+    where: eq(users.id, book.userId),
+    columns: { username: true, image: true },
+  });
+
+  const raw = ((refreshed?.milestones ?? book.milestones) ?? []) as { key: string; achievedAt: string }[];
+  const milestoneMap = new Map(MILESTONES.map((m) => [m.key, m]));
+
+  return raw
+    .filter((r) => milestoneMap.has(r.key as MilestoneKey))
+    .map((r) => {
+      const meta = milestoneMap.get(r.key as MilestoneKey)!;
+      return {
+        key: r.key as MilestoneKey,
+        label: meta.label,
+        description: meta.description,
+        achievedAt: r.achievedAt,
+        member: { username: owner?.username ?? null, image: owner?.image ?? null },
+      };
+    })
+    .sort((a, b) => new Date(a.achievedAt).getTime() - new Date(b.achievedAt).getTime());
 }

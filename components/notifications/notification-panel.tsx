@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Bell,
+  ArrowRight,
   UserPlus,
   UserCheck,
   MessageCircle,
@@ -18,6 +19,7 @@ import {
   Trophy,
   Timer,
   VoteIcon,
+  Upload,
 } from 'lucide-react';
 import { markAllReadAction } from '@/lib/actions/notification.actions';
 import type { NotificationItem, NotificationType } from '@/lib/types/notification.types';
@@ -58,6 +60,18 @@ function messageBody(type: NotificationType, metadata?: Record<string, string>):
     case 'HIVE_BETA_REVIEW':       return 'marked a chapter ready for review';
     case 'HIVE_ACTIVITY':          return `has submitted updates to ${metadata?.hiveName ?? 'the hive'}`;
     case 'HIVE_JOIN_REQUEST':      return 'wants to join your hive';
+    case 'SUBMISSION_APPROVED':    return `approved your chapter submission${metadata?.submissionTitle ? ` — "${metadata.submissionTitle}"` : ''}`;
+    case 'SUBMISSION_REJECTED':    return `Your chapter submission${metadata?.submissionTitle ? ` "${metadata.submissionTitle}"` : ''} was not accepted`;
+    case 'HIVE_SUGGESTION':        return `submitted a chapter suggestion in ${metadata?.hiveName ?? 'the hive'}`;
+    case 'SUGGESTION_ACCEPTED':    return `accepted your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
+    case 'SUGGESTION_REJECTED':    return `did not accept your suggestion for "${metadata?.chapterTitle ?? 'a chapter'}"`;
+    case 'BOOK_LIKE':              return 'liked your book';
+    case 'BOOK_COMMENT':           return `commented on your book${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ''}`;
+    case 'BOOK_COMMENT_REPLY':     return `replied to your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
+    case 'BOOK_COMMENT_LIKE':         return `liked your comment on${metadata?.bookTitle ? ` "${metadata.bookTitle}"` : ' your book'}`;
+    case 'READING_LIST_NEW_BOOK':     return `added "${metadata?.bookTitle}" to their list "${metadata?.listTitle}"`;
+    case 'PROMPT_COMMUNITY_WIN':      return `Your entry won the community vote on "${metadata?.promptTitle}"`;
+    case 'PROMPT_AUTHOR_CHOICE':      return `Your entry was chosen as the creator's pick on "${metadata?.promptTitle}"`;
   }
 }
 
@@ -89,6 +103,18 @@ function getTypeIcon(type: NotificationType): IconCfg {
     case 'HIVE_POLL':            return { Icon: VoteIcon,        bg: 'bg-purple-500/20', fg: 'text-purple-400' };
     case 'HIVE_BETA_REVIEW':     return { Icon: BookOpen,        bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
     case 'HIVE_JOIN_REQUEST':    return { Icon: UserPlus,        bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'SUBMISSION_APPROVED':  return { Icon: Upload,          bg: 'bg-green-500/20',  fg: 'text-green-400'  };
+    case 'SUBMISSION_REJECTED':  return { Icon: Upload,          bg: 'bg-red-500/20',    fg: 'text-red-400'    };
+    case 'BOOK_LIKE':            return { Icon: Heart,           bg: 'bg-rose-500/20',   fg: 'text-rose-400'   };
+    case 'BOOK_COMMENT':         return { Icon: MessageCircle,   bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
+    case 'BOOK_COMMENT_REPLY':   return { Icon: CornerDownRight, bg: 'bg-blue-500/20',   fg: 'text-blue-400'   };
+    case 'BOOK_COMMENT_LIKE':         return { Icon: Heart,      bg: 'bg-rose-500/20',  fg: 'text-rose-400'  };
+    case 'READING_LIST_NEW_BOOK':     return { Icon: BookOpen,   bg: 'bg-sky-500/20',   fg: 'text-sky-400'   };
+    case 'PROMPT_COMMUNITY_WIN':      return { Icon: Trophy,     bg: 'bg-yellow-500/20', fg: 'text-yellow-500' };
+    case 'PROMPT_AUTHOR_CHOICE':      return { Icon: Trophy,     bg: 'bg-yellow-500/20', fg: 'text-yellow-500' };
+    case 'HIVE_SUGGESTION':           return { Icon: Hexagon,    bg: 'bg-yellow-500/20', fg: 'text-[#FFC300]'  };
+    case 'SUGGESTION_ACCEPTED':       return { Icon: Hexagon,    bg: 'bg-green-500/20',  fg: 'text-green-400'  };
+    case 'SUGGESTION_REJECTED':       return { Icon: Hexagon,    bg: 'bg-red-500/20',    fg: 'text-red-400'    };
   }
 }
 
@@ -111,7 +137,7 @@ function NotificationRow({
         onClick={onClose}
         aria-label={`${!isSystem && actorUsername ? actorUsername + ' ' : ''}${messageBody(type, metadata)}${!isRead ? ', unread' : ''}`}
         className={`flex items-start gap-3 px-4 py-3.5 hover:bg-[#FFC300]/5 transition-colors ${
-          !isRead ? 'bg-white/3' : ''
+          !isRead ? 'bg-[#FFC300]/5' : ''
         }`}
       >
         <div aria-hidden="true" className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0 mt-0.5`}>
@@ -128,7 +154,7 @@ function NotificationRow({
             ) : null}
             {messageBody(type, metadata)}
           </p>
-          <p className="text-xs text-white/80 mt-1">{timeAgo(createdAt)}</p>
+          <p className="text-xs text-white/60 mt-1">{timeAgo(createdAt)}</p>
         </div>
 
         {!isRead && (
@@ -158,7 +184,7 @@ export function NotificationPanel({ notifications, onClose }: Props) {
     <section
       role="region"
       aria-label="Notifications"
-      className="w-80 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden"
+      className="w-96 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden"
     >
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#2a2a2a]">
         <div className="flex items-center gap-2">
@@ -183,9 +209,12 @@ export function NotificationPanel({ notifications, onClose }: Props) {
 
       <div role="list" aria-label="Notification list" className="max-h-100 overflow-y-auto divide-y divide-[#2a2a2a]">
         {notifications.length === 0 ? (
-          <div role="status" className="px-4 py-10 text-center">
-            <Bell aria-hidden="true" className="w-8 h-8 text-white/80 mx-auto mb-2" />
-            <p className="text-sm text-white/80">No notifications yet</p>
+          <div role="status" className="px-4 py-12 text-center">
+            <div className="w-12 h-12 rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mx-auto mb-3">
+              <Bell aria-hidden="true" className="w-5 h-5 text-white/70" />
+            </div>
+            <p className="text-sm font-medium text-white/70">All caught up</p>
+            <p className="text-xs text-white/70 mt-1">No new notifications</p>
           </div>
         ) : (
           notifications.map((n) => (
@@ -199,9 +228,9 @@ export function NotificationPanel({ notifications, onClose }: Props) {
           <button
             type="button"
             onClick={() => { router.push('/notifications'); onClose(); }}
-            className="w-full text-center text-sm text-white hover:text-[#FFC300] py-1 transition-colors"
+            className="w-full flex items-center justify-center gap-1 text-xs font-medium text-yellow-500 hover:text-white py-1.5 transition-colors"
           >
-            View all notifications
+            See all <ArrowRight className="w-3 h-3" />
           </button>
         </div>
       )}

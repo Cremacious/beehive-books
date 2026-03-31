@@ -48,6 +48,22 @@ interface HiveWikiProps {
   myRole: HiveRole;
 }
 
+const WIKI_TEMPLATES: Partial<Record<WikiCategory, string>> = {
+  CHARACTER: `<h2>Overview</h2><p></p><h2>Appearance</h2><p></p><h2>Personality</h2><p></p><h2>Backstory</h2><p></p><h2>Relationships</h2><p></p><h2>Notes</h2><p></p>`,
+  LOCATION: `<h2>Description</h2><p></p><h2>Geography</h2><p></p><h2>History</h2><p></p><h2>Notable Residents</h2><p></p><h2>Notes</h2><p></p>`,
+  FACTION: `<h2>Purpose</h2><p></p><h2>Members</h2><p></p><h2>Allegiances</h2><p></p><h2>History</h2><p></p><h2>Notes</h2><p></p>`,
+  TIMELINE: `<h2>Date / Period</h2><p></p><h2>Description</h2><p></p><h2>Participants</h2><p></p><h2>Consequences</h2><p></p><h2>Notes</h2><p></p>`,
+  LORE: `<h2>Overview</h2><p></p><h2>Origins</h2><p></p><h2>Significance</h2><p></p><h2>Notes</h2><p></p>`,
+  ARTIFACT: `<h2>Description</h2><p></p><h2>Origin</h2><p></p><h2>Abilities / Properties</h2><p></p><h2>Current Location</h2><p></p><h2>Notes</h2><p></p>`,
+  BIOLOGY: `<h2>Overview</h2><p></p><h2>Appearance</h2><p></p><h2>Habitat</h2><p></p><h2>Behavior</h2><p></p><h2>Notes</h2><p></p>`,
+  CULTURE: `<h2>Overview</h2><p></p><h2>Traditions</h2><p></p><h2>Values</h2><p></p><h2>Notes</h2><p></p>`,
+  PLOT: `<h2>Summary</h2><p></p><h2>Key Beats</h2><p></p><h2>Characters Involved</h2><p></p><h2>Resolution</h2><p></p><h2>Notes</h2><p></p>`,
+  THEME: `<h2>Overview</h2><p></p><h2>How It Appears</h2><p></p><h2>Key Moments</h2><p></p><h2>Notes</h2><p></p>`,
+  ECONOMY: `<h2>Overview</h2><p></p><h2>Currency System</h2><p></p><h2>Trade & Commerce</h2><p></p><h2>Key Resources</h2><p></p><h2>Economic Powers</h2><p></p><h2>Notes</h2><p></p>`,
+  TERMINOLOGY: `<h2>Term</h2><p></p><h2>Definition</h2><p></p><h2>Etymology</h2><p></p><h2>Usage</h2><p></p><h2>Related Terms</h2><p></p><h2>Notes</h2><p></p>`,
+};
+// LANGUAGE, OTHER → no template (free-form)
+
 const CATEGORIES: {
   value: WikiCategory;
   label: string;
@@ -163,7 +179,7 @@ function EntryForm({
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Entry title…"
         maxLength={200}
-        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+        className="w-full rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -172,7 +188,13 @@ function EntryForm({
             key={value}
             type="button"
             title={tooltip}
-            onClick={() => setCategory(value)}
+            onClick={() => {
+              setCategory(value);
+              if (!initial) {
+                const template = WIKI_TEMPLATES[value];
+                setContent(template ?? '');
+              }
+            }}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
               category === value
                 ? 'border-[#FFC300]/50 bg-[#FFC300]/10 text-[#FFC300]'
@@ -185,8 +207,14 @@ function EntryForm({
         ))}
       </div>
 
+      {!initial && (
+        <p className="text-xs text-white/80">
+          Select a category to load a starter template. You can edit or remove any section.
+        </p>
+      )}
+
       <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden">
-        <RichTextEditor content={content} onChange={setContent} editable />
+        <RichTextEditor key={content === '' ? 'empty' : category} content={content} onChange={setContent} editable />
       </div>
 
       <div className="space-y-2">
@@ -201,7 +229,7 @@ function EntryForm({
               }
             }}
             placeholder="Add tag (Enter to add)…"
-            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+            className="flex-1 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
           />
           <button
             type="button"
@@ -440,7 +468,7 @@ export default function HiveWiki({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search entries…"
-          className="flex-1 min-w-45 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/75 focus:outline-none focus:border-[#FFC300]/40 transition-all"
+          className="flex-1 min-w-45 rounded-xl bg-[#1e1e1e] border border-[#2a2a2a] px-3 py-1.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFC300]/40 transition-all"
         />
         <Button size="sm" onClick={() => setEditorMode({ mode: 'create' })}>
           <Plus className="w-3.5 h-3.5" />
@@ -545,7 +573,7 @@ export default function HiveWiki({
                 </span>
 
                 <div
-                  className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none"
+                  className="text-sm text-white/80 leading-relaxed prose prose-invert prose-sm max-w-none [&_h2]:border-l-2 [&_h2]:border-[#FFC300]/40 [&_h2]:pl-3 [&_h2]:text-white"
                   dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
                 />
 
