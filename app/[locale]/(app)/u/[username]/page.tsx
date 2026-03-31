@@ -66,7 +66,7 @@ export default async function UserProfilePage({ params }: Props) {
     <div className="max-w-6xl mx-auto px-4 py-6 md:px-8">
       <div className="rounded-2xl bg-[#1e1e1e] border border-[#2a2a2a] mb-10 overflow-hidden">
         {/* Banner */}
-        <div className="h-36 relative overflow-hidden bg-gradient-to-br from-[#2d2200] via-[#1e1800] to-[#141414]">
+        <div className="h-36 relative overflow-hidden bg-linear-to-br from-[#2d2200] via-[#1e1800] to-[#141414]">
           <div
             className="absolute inset-0 opacity-[0.06]"
             style={{
@@ -93,7 +93,7 @@ export default async function UserProfilePage({ params }: Props) {
                 </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-2xl font-bold text-[#FFC300]">
+                  <span className="text-2xl font-bold text-[#FFC300] ">
                     {(displayName[0] || '?').toUpperCase()}
                   </span>
                 </div>
