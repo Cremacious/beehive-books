@@ -29,7 +29,7 @@ export function ExploreNav() {
   const ActiveIcon = active.icon;
 
   return (
-    <nav className="border-b border-[#2a2a2a] bg-[#1a1a1a] sticky top-0 z-10">
+    <nav className="border-b border-[#2a2a2a] bg-[#1a1a1a] sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
 
         {/* ── Mobile dropdown ── */}
@@ -49,11 +49,11 @@ export function ExploreNav() {
             <>
               {/* Backdrop */}
               <div
-                className="fixed inset-0 z-10"
+                className="fixed inset-0 z-40"
                 onClick={() => setOpen(false)}
               />
               {/* Dropdown panel */}
-              <div className="absolute left-0 right-0 z-20 mt-1.5 rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-2xl overflow-hidden">
+              <div className="absolute left-0 right-0 z-50 mt-1.5 rounded-xl bg-[#252525] border border-[#2a2a2a] shadow-2xl overflow-hidden">
                 {NAV_ITEMS.map(({ label, href, icon: Icon, exact }) => {
                   const itemActive = isItemActive(pathname, href, exact);
                   return (
