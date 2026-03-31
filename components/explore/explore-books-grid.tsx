@@ -23,6 +23,7 @@ export function ExploreBooksGrid({
 }: ExploreBooksGridProps) {
   const [allBooks, setAllBooks] = useState<Book[]>(initialBooks);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleLoadMore() {
@@ -31,6 +32,7 @@ export function ExploreBooksGrid({
       const result = await searchExplorableBooksAction(query, genres, categories, nextCursor);
       setAllBooks((prev) => [...prev, ...result.books]);
       setNextCursor(result.nextCursor);
+      setHasLoadedMore(true);
     });
   }
 
@@ -54,8 +56,8 @@ export function ExploreBooksGrid({
         ))}
       </div>
 
-      {nextCursor && (
-        <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-8">
+        {nextCursor ? (
           <button
             onClick={handleLoadMore}
             disabled={isPending}
@@ -70,8 +72,10 @@ export function ExploreBooksGrid({
               'Load more'
             )}
           </button>
-        </div>
-      )}
+        ) : hasLoadedMore ? (
+          <p className="text-sm text-white/80">No more books</p>
+        ) : null}
+      </div>
     </>
   );
 }

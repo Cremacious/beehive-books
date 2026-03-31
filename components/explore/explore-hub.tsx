@@ -49,12 +49,16 @@ function BookScrollSection({
   icon,
   seeAllHref,
   books,
+  featured = false,
 }: {
   title: string;
   icon: React.ReactNode;
   seeAllHref: string;
   books: Book[];
+  featured?: boolean;
 }) {
+  const cardWidth = featured ? 'w-40 sm:w-52' : 'w-36 sm:w-44';
+
   return (
     <section className="mb-10">
       <SectionHeader
@@ -63,12 +67,15 @@ function BookScrollSection({
         seeAllHref={seeAllHref}
         linkClassName="flex items-center gap-1 text-sm font-medium text-[#FFC300]/70 hover:text-[#FFC300] transition-colors"
       />
-      <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
-        {books.map((book) => (
-          <div key={book.id} className="shrink-0 w-40 sm:w-45 flex flex-col">
-            <BookCard book={book} basePath="/books" />
-          </div>
-        ))}
+      <div className="relative">
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+          {books.map((book) => (
+            <div key={book.id} className={`shrink-0 ${cardWidth} flex flex-col`}>
+              <BookCard book={book} basePath="/books" />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#1e1e1e] to-transparent" />
       </div>
     </section>
   );
@@ -130,6 +137,7 @@ export function ExploreHub({
           icon={<Star className="w-4 h-4 text-[#FFC300]" />}
           seeAllHref="/explore/books"
           books={featured}
+          featured
         />
       )}
 

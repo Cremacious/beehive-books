@@ -43,6 +43,7 @@ export default async function ExploreBooksPage({
 
         <div className="flex-1 min-w-0">
           <ExploreBooksGrid
+            key={`${q}|${genre}|${category}`}
             initialBooks={books}
             initialNextCursor={nextCursor}
             query={q}
