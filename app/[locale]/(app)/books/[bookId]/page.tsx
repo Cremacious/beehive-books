@@ -9,6 +9,7 @@ import {
   Globe,
   Lock,
 } from 'lucide-react';
+import { FeaturingLists } from '@/components/books/featuring-lists';
 import BackButton from '@/components/shared/back-button';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
 import { Button } from '@/components/ui/button';
@@ -184,6 +185,12 @@ export default async function PublicBookPage({
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
+                {featuringLists.length > 0 && (
+                  <>
+                    <span className="text-white/20 mx-1">·</span>
+                    <FeaturingLists featuringLists={featuringLists} count={featuringLists.length} />
+                  </>
+                )}
                 <span className="text-white/20 mx-1">·</span>
                 <LikeButton
                   bookId={book.id}
@@ -209,6 +216,12 @@ export default async function PublicBookPage({
                   <MessageSquare className="w-4 h-4 text-[#FFC300]/70" />
                   <span>{book.commentCount} comments</span>
                 </div>
+                {featuringLists.length > 0 && (
+                  <>
+                    <span className="text-white/20 mx-1">·</span>
+                    <FeaturingLists featuringLists={featuringLists} count={featuringLists.length} />
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -239,36 +252,6 @@ export default async function PublicBookPage({
               />
             </div>
           </div>
-          {featuringLists.length > 0 && (
-            <div className="mt-8 max-w-2xl ">
-              <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3 mainFont">
-                Appears in lists
-              </h2>
-              <div className="flex flex-col gap-2">
-                {featuringLists.map((list) => (
-                  <Link
-                    key={list.id}
-                    href={`/reading-lists/${list.id}`}
-                    className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors group"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm text-white font-medium truncate group-hover:text-[#FFC300] transition-colors">
-                        {list.title}
-                      </p>
-                      {list.curatorUsername && (
-                        <p className="text-xs text-white/80 truncate">
-                          by {list.curatorUsername}
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-xs text-white/80 shrink-0">
-                      {list.bookCount} books
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <ChapterList
@@ -293,32 +276,6 @@ export default async function PublicBookPage({
           </div>
         )}
 
-        {/* {featuringLists.length > 0 && (
-          <div className="mt-8 max-w-2xl mx-auto">
-            <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
-              Appears in lists
-            </h2>
-            <div className="flex flex-col gap-2">
-              {featuringLists.map((list) => (
-                <Link
-                  key={list.id}
-                  href={`/reading-lists/${list.id}`}
-                  className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#252525] border border-[#2a2a2a] hover:border-[#FFC300]/30 transition-colors group"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm text-white font-medium truncate group-hover:text-[#FFC300] transition-colors">
-                      {list.title}
-                    </p>
-                    {list.curatorUsername && (
-                      <p className="text-xs text-white/40 truncate">by @{list.curatorUsername}</p>
-                    )}
-                  </div>
-                  <span className="text-xs text-white/30 shrink-0">{list.bookCount} books</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   );
