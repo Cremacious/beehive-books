@@ -79,7 +79,7 @@ export default async function UserProfilePage({ params }: Props) {
         <div className="px-5 pb-6 md:px-7 md:pb-7">
           <div className="flex items-end justify-between -mt-12 gap-4">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full ring-4 ring-[#1e1e1e] overflow-hidden bg-[#2a2000] shrink-0">
+            <div className="w-24 h-24 rounded-full ring-4 ring-[#1e1e1e] overflow-hidden bg-[#2a2000] shrink-0 z-80">
               {user.image ? (
                 <div className="relative w-24 h-24 rounded-full overflow-hidden">
                   <Image
@@ -113,18 +113,21 @@ export default async function UserProfilePage({ params }: Props) {
               ) : (
                 <button
                   disabled
-                  className="text-xs px-4 py-2 rounded-full border border-[#2a2a2a] text-white/80 cursor-not-allowed"
+                  className="z-10 text-xs px-4 py-2 rounded-full border border-[#2a2a2a] bg-[#2a2a2a] text-white/80 cursor-not-allowed"
                   title="Follow feature coming soon"
                 >
                   Follow
                 </button>
               )}
+              <div className="z-10">
+
               {friendStatus && (
                 <FriendButton
-                  targetUserId={user.id}
-                  initialStatus={friendStatus}
+                targetUserId={user.id}
+                initialStatus={friendStatus}
                 />
               )}
+              </div>
             </div>
           </div>
 
