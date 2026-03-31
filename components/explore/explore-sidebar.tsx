@@ -8,6 +8,7 @@ interface FilterGroup {
   param: string;
   label: string;
   options: string[];
+  labels?: Record<string, string>;
 }
 
 interface ExploreSidebarProps {
@@ -115,6 +116,7 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
                   <div className="space-y-1 pb-3">
                     {group.options.map((option) => {
                       const isChecked = selected.includes(option);
+                      const displayLabel = group.labels?.[option] ?? option;
                       return (
                         <label
                           key={option}
@@ -140,7 +142,7 @@ export function ExploreSidebar({ filterGroups }: ExploreSidebarProps) {
                               isChecked ? 'text-white' : 'text-white/80'
                             }`}
                           >
-                            {option}
+                            {displayLabel}
                           </span>
                         </label>
                       );

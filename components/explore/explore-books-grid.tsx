@@ -12,6 +12,9 @@ interface ExploreBooksGridProps {
   query: string;
   genres: string[];
   categories: string[];
+  statuses: string[];
+  lengths: string[];
+  updatedSince: string[];
 }
 
 export function ExploreBooksGrid({
@@ -20,6 +23,9 @@ export function ExploreBooksGrid({
   query,
   genres,
   categories,
+  statuses,
+  lengths,
+  updatedSince,
 }: ExploreBooksGridProps) {
   const [allBooks, setAllBooks] = useState<Book[]>(initialBooks);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -29,7 +35,15 @@ export function ExploreBooksGrid({
   function handleLoadMore() {
     if (!nextCursor) return;
     startTransition(async () => {
-      const result = await searchExplorableBooksAction(query, genres, categories, nextCursor);
+      const result = await searchExplorableBooksAction(
+        query,
+        genres,
+        categories,
+        statuses,
+        lengths,
+        updatedSince,
+        nextCursor,
+      );
       setAllBooks((prev) => [...prev, ...result.books]);
       setNextCursor(result.nextCursor);
       setHasLoadedMore(true);
@@ -50,7 +64,7 @@ export function ExploreBooksGrid({
 
   return (
     <>
-      <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
         {allBooks.map((book) => (
           <BookCard key={book.id} book={book} basePath="/books" />
         ))}

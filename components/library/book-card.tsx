@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import type { Book } from '@/lib/types/books.types';
 
 export default function BookCard({
@@ -23,16 +24,12 @@ export default function BookCard({
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-[#1e1e1e] to-[#141414] flex items-center justify-center">
-            <span className="text-4xl font-bold text-white/20 mainFont">
-              {book.title[0]?.toUpperCase()}
-            </span>
-          </div>
+          <GeneratedCover title={book.title} author={book.author} bookId={book.id} />
         )}
       </div>
 
       <div className="flex flex-col flex-1 px-3 pt-2.5 pb-3">
-        <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-[#FFC300] transition-colors mainFont">
+        <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-10 group-hover:text-[#FFC300] transition-colors mainFont">
           {book.title}
         </h3>
         <p className="text-xs text-white/60 truncate mt-0.5">{book.author}</p>

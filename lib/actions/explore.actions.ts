@@ -4,7 +4,7 @@ import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
 import { searchLimiter } from '@/lib/rate-limit';
 
 import { unstable_cache } from 'next/cache';
-import { and, desc, eq, ilike, inArray, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, inArray, lt, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   books,
@@ -67,10 +67,43 @@ function mapBook(b: typeof books.$inferSelect): Book {
 
 const LIMIT = 30;
 
+function updatedSinceCutoff(windows: string[]): Date | null {
+  if (windows.length === 0) return null;
+  const now = Date.now();
+  const ms = { week: 7, month: 30, year: 365 };
+  const days = Math.max(...windows.map((w) => ms[w as keyof typeof ms] ?? 0));
+  return new Date(now - days * 86_400_000);
+}
+
+function lengthConditions(lengths: string[]) {
+  if (lengths.length === 0) return undefined;
+  const conds = lengths.map((l) => {
+    if (l === 'short') return lt(books.wordCount, 10_000);
+    if (l === 'novella') return and(gte(books.wordCount, 10_000), lt(books.wordCount, 40_000));
+    if (l === 'novel') return and(gte(books.wordCount, 40_000), lt(books.wordCount, 100_000));
+    if (l === 'epic') return gte(books.wordCount, 100_000);
+    return undefined;
+  }).filter(Boolean) as NonNullable<ReturnType<typeof lt>>[];
+  return conds.length === 1 ? conds[0] : or(...conds);
+}
+
+function statusConditions(statuses: string[]) {
+  if (statuses.length === 0) return undefined;
+  const conds = statuses.map((s) => {
+    if (s === 'COMPLETE') return eq(books.draftStatus, 'COMPLETED');
+    if (s === 'DRAFTING') return ne(books.draftStatus, 'COMPLETED');
+    return undefined;
+  }).filter(Boolean) as NonNullable<ReturnType<typeof eq>>[];
+  return conds.length === 1 ? conds[0] : or(...conds);
+}
+
 export async function searchExplorableBooksAction(
   query: string,
   genres: string[] = [],
   categories: string[] = [],
+  statuses: string[] = [],
+  lengths: string[] = [],
+  updatedSince: string[] = [],
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -78,6 +111,8 @@ export async function searchExplorableBooksAction(
   if (!success) throw new Error('Too many requests. Please slow down.');
 
   const q = query.trim();
+  const cutoff = updatedSinceCutoff(updatedSince);
+
   const rows = await db.query.books.findMany({
     where: and(
       eq(books.explorable, true),
@@ -85,6 +120,9 @@ export async function searchExplorableBooksAction(
       q ? or(ilike(books.title, `%${q}%`), ilike(books.author, `%${q}%`)) : undefined,
       genres.length > 0 ? inArray(books.genre, genres) : undefined,
       categories.length > 0 ? inArray(books.category, categories) : undefined,
+      statusConditions(statuses),
+      lengthConditions(lengths),
+      cutoff ? gte(books.updatedAt, cutoff) : undefined,
       cursor ? lt(books.createdAt, new Date(cursor)) : undefined,
     ),
     orderBy: [desc(books.createdAt)],
@@ -97,6 +135,10 @@ export async function searchExplorableBooksAction(
     books: items.map(mapBook),
     nextCursor: hasMore ? items[LIMIT - 1].createdAt.toISOString() : null,
   };
+}
+
+export async function getExplorableTagsAction(): Promise<string[]> {
+  return [];
 }
 
 
