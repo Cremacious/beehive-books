@@ -24,6 +24,7 @@ export type Book = {
   wordCount: number;
   commentCount: number;
   chapterCount: number;
+  likeCount: number;
   coverUrl: string | null;
 };
 

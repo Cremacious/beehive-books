@@ -20,6 +20,7 @@ export const SAMPLE_BOOKS: Book[] = [
     wordCount: 45230,
     commentCount: 28,
     chapterCount: 6,
+    likeCount: 0,
     coverUrl: null,
   },
   {
@@ -36,6 +37,7 @@ export const SAMPLE_BOOKS: Book[] = [
     wordCount: 31500,
     commentCount: 14,
     chapterCount: 7,
+    likeCount: 0,
     coverUrl: null,
   },
   {

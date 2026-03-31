@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Users, Hexagon, Lightbulb, List, ArrowRight, Compass } from 'lucide-react';
+import { BookOpen, Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import ClubCard from '@/components/clubs/club-card';
 import HiveCard from '@/components/hive/hive-card';
@@ -19,7 +19,17 @@ interface SectionProps<T> {
   renderItem: (item: T) => React.ReactNode;
 }
 
-function SectionHeader({ title, icon, seeAllHref, linkClassName = "flex items-center gap-1 text-sm text-white/40 hover:text-[#FFC300] transition-colors" }: { title: string; icon: React.ReactNode; seeAllHref: string; linkClassName?: string }) {
+function SectionHeader({
+  title,
+  icon,
+  seeAllHref,
+  linkClassName = 'flex items-center gap-1 text-sm text-white/40 hover:text-[#FFC300] transition-colors',
+}: {
+  title: string;
+  icon: React.ReactNode;
+  seeAllHref: string;
+  linkClassName?: string;
+}) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-base font-bold text-white mainFont flex items-center gap-2">
@@ -34,14 +44,29 @@ function SectionHeader({ title, icon, seeAllHref, linkClassName = "flex items-ce
   );
 }
 
-function ScrollSection<T>({ title, icon, seeAllHref, items, renderItem }: SectionProps<T>) {
+function BookScrollSection({
+  title,
+  icon,
+  seeAllHref,
+  books,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  seeAllHref: string;
+  books: Book[];
+}) {
   return (
     <section className="mb-10">
-      <SectionHeader title={title} icon={icon} seeAllHref={seeAllHref} linkClassName="flex items-center gap-1 text-sm font-medium text-[#FFC300]/70 hover:text-[#FFC300] transition-colors" />
+      <SectionHeader
+        title={title}
+        icon={icon}
+        seeAllHref={seeAllHref}
+        linkClassName="flex items-center gap-1 text-sm font-medium text-[#FFC300]/70 hover:text-[#FFC300] transition-colors"
+      />
       <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
-        {items.map((item, i) => (
-          <div key={i} className="shrink-0 w-40 sm:w-45 flex flex-col">
-            {renderItem(item)}
+        {books.map((book) => (
+          <div key={book.id} className="shrink-0 w-40 sm:w-45 flex flex-col">
+            <BookCard book={book} basePath="/books" />
           </div>
         ))}
       </div>
@@ -61,22 +86,27 @@ function GridSection<T>({ title, icon, seeAllHref, items, renderItem }: SectionP
 }
 
 interface ExploreHubProps {
-  books: Book[];
+  featured: Book[];
+  genreRows: { genre: string; books: Book[] }[];
   clubs: ClubWithMembership[];
   hives: HiveWithMembership[];
   prompts: PromptCardType[];
   readingLists: ReadingList[];
 }
 
-export function ExploreHub({ books, clubs, hives, prompts, readingLists }: ExploreHubProps) {
-  const isEmpty =
-    books.length === 0 &&
-    clubs.length === 0 &&
-    hives.length === 0 &&
-    prompts.length === 0 &&
-    readingLists.length === 0;
+export function ExploreHub({
+  featured,
+  genreRows,
+  clubs,
+  hives,
+  prompts,
+  readingLists,
+}: ExploreHubProps) {
+  const hasBooks = featured.length > 0 || genreRows.length > 0;
+  const hasCommunity =
+    clubs.length > 0 || hives.length > 0 || prompts.length > 0 || readingLists.length > 0;
 
-  if (isEmpty) {
+  if (!hasBooks && !hasCommunity) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-6">
@@ -91,81 +121,76 @@ export function ExploreHub({ books, clubs, hives, prompts, readingLists }: Explo
     );
   }
 
-  const sections: React.ReactNode[] = [];
-
-  if (books.length > 0) {
-    sections.push(
-      <ScrollSection
-        key="books"
-        title="Books"
-        icon={<BookOpen className="w-4 h-4 text-[#FFC300]" />}
-        seeAllHref="/explore/books"
-        items={books}
-        renderItem={(book) => <BookCard book={book} basePath="/books" />}
-      />
-    );
-  }
-
-  if (clubs.length > 0) {
-    sections.push(
-      <GridSection
-        key="clubs"
-        title="Book Clubs"
-        icon={<Users className="w-4 h-4 text-orange-400" />}
-        seeAllHref="/explore/clubs"
-        items={clubs}
-        renderItem={(club) => <ClubCard key={club.id} club={club} />}
-      />
-    );
-  }
-
-  if (hives.length > 0) {
-    sections.push(
-      <GridSection
-        key="hives"
-        title="Writing Hives"
-        icon={<Hexagon className="w-4 h-4 text-[#FFC300]" />}
-        seeAllHref="/explore/hives"
-        items={hives}
-        renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
-      />
-    );
-  }
-
-  if (prompts.length > 0) {
-    sections.push(
-      <GridSection
-        key="prompts"
-        title="Writing Prompts"
-        icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
-        seeAllHref="/explore/prompts"
-        items={prompts}
-        renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
-      />
-    );
-  }
-
-  if (readingLists.length > 0) {
-    sections.push(
-      <GridSection
-        key="reading-lists"
-        title="Reading Lists"
-        icon={<List className="w-4 h-4 text-emerald-400" />}
-        seeAllHref="/explore/reading-lists"
-        items={readingLists}
-        renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
-      />
-    );
-  }
-
   return (
     <div>
-      {sections.map((section, i) => (
-        <div key={i}>
-          {section}
-          {i < sections.length - 1 && <hr className="border-[#e60c0c] mb-10" />}
-        </div>
+      {/* Featured row */}
+      {featured.length > 0 && (
+        <BookScrollSection
+          title="Featured"
+          icon={<Star className="w-4 h-4 text-[#FFC300]" />}
+          seeAllHref="/explore/books"
+          books={featured}
+        />
+      )}
+
+      {/* Genre rows */}
+      {genreRows.map(({ genre, books }) => (
+        <BookScrollSection
+          key={genre}
+          title={genre}
+          icon={<BookOpen className="w-4 h-4 text-[#FFC300]" />}
+          seeAllHref={`/explore/books?genre=${encodeURIComponent(genre)}`}
+          books={books}
+        />
       ))}
+
+      {/* Divider between books and community sections */}
+      {hasBooks && hasCommunity && <hr className="border-[#2a2a2a] mb-10" />}
+
+      {/* Community sections */}
+      {clubs.length > 0 && (
+        <GridSection
+          key="clubs"
+          title="Book Clubs"
+          icon={<Users className="w-4 h-4 text-orange-400" />}
+          seeAllHref="/explore/clubs"
+          items={clubs}
+          renderItem={(club) => <ClubCard key={club.id} club={club} />}
+        />
+      )}
+
+      {hives.length > 0 && (
+        <GridSection
+          key="hives"
+          title="Writing Hives"
+          icon={<Hexagon className="w-4 h-4 text-[#FFC300]" />}
+          seeAllHref="/explore/hives"
+          items={hives}
+          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
+        />
+      )}
+
+      {prompts.length > 0 && (
+        <GridSection
+          key="prompts"
+          title="Writing Prompts"
+          icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
+          seeAllHref="/explore/prompts"
+          items={prompts}
+          renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
+        />
+      )}
+
+      {readingLists.length > 0 && (
+        <GridSection
+          key="reading-lists"
+          title="Reading Lists"
+          icon={<List className="w-4 h-4 text-emerald-400" />}
+          seeAllHref="/explore/reading-lists"
+          items={readingLists}
+          renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
+        />
+      )}
     </div>
   );
 }
