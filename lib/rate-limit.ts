@@ -9,7 +9,7 @@ const redis = new Redis({
 // 5 sign-up attempts per hour per IP
 export const signUpLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, '1 h'),
+  limiter: Ratelimit.slidingWindow(20, '1 h'),
   prefix: 'rl:signup',
 });
 
