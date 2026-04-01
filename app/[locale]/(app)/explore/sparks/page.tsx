@@ -51,10 +51,10 @@ export default async function ExplorePromptsPage({
 
       {!hasActiveFilters && (
         <ExploreCommunityDiscoveryPanel
+          kind="sparks"
           newItems={curatedRows.newSparks}
           popularItems={curatedRows.popular}
           popularLabel="Most Entries"
-          renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
         />
       )}
 

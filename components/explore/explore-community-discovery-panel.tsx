@@ -2,23 +2,34 @@
 
 import { useState } from 'react';
 import { Star, Flame } from 'lucide-react';
+import ClubCard from '@/components/clubs/club-card';
+import HiveCard from '@/components/hive/hive-card';
+import { PromptCard } from '@/components/prompts/prompt-card';
+import ReadingListCard from '@/components/reading-lists/reading-list-card';
+import type { ClubWithMembership } from '@/lib/types/club.types';
+import type { HiveWithMembership } from '@/lib/types/hive.types';
+import type { PromptCard as PromptCardType } from '@/lib/types/prompt.types';
+import type { ReadingList } from '@/lib/types/reading-list.types';
 
 type Tab = 'new' | 'popular';
 
-export function ExploreCommunityDiscoveryPanel<T extends { id: string }>({
-  newItems,
-  popularItems,
-  renderItem,
-  newLabel = 'New',
-  popularLabel = 'Popular',
-}: {
-  newItems: T[];
-  popularItems: T[];
-  renderItem: (item: T) => React.ReactNode;
-  newLabel?: string;
-  popularLabel?: string;
-}) {
+type PanelProps =
+  | { kind: 'clubs'; newItems: ClubWithMembership[]; popularItems: ClubWithMembership[]; popularLabel?: string }
+  | { kind: 'hives'; newItems: HiveWithMembership[]; popularItems: HiveWithMembership[]; popularLabel?: string }
+  | { kind: 'sparks'; newItems: PromptCardType[]; popularItems: PromptCardType[]; popularLabel?: string }
+  | { kind: 'lists'; newItems: ReadingList[]; popularItems: ReadingList[]; popularLabel?: string };
+
+function renderItem(kind: PanelProps['kind'], item: ClubWithMembership | HiveWithMembership | PromptCardType | ReadingList) {
+  if (kind === 'clubs') return <ClubCard key={item.id} club={item as ClubWithMembership} />;
+  if (kind === 'hives') return <HiveCard key={item.id} hive={item as HiveWithMembership} />;
+  if (kind === 'sparks') return <PromptCard key={item.id} prompt={item as PromptCardType} />;
+  return <ReadingListCard key={item.id} list={item as ReadingList} />;
+}
+
+export function ExploreCommunityDiscoveryPanel(props: PanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('popular');
+
+  const { newItems, popularItems, popularLabel = 'Popular' } = props;
 
   if (!newItems.length && !popularItems.length) return null;
 
@@ -29,7 +40,7 @@ export function ExploreCommunityDiscoveryPanel<T extends { id: string }>({
       <div className="flex items-center gap-1 mb-4">
         {([
           { id: 'popular' as Tab, label: popularLabel, Icon: Flame, color: 'text-orange-400' },
-          { id: 'new' as Tab, label: newLabel, Icon: Star, color: 'text-[#FFC300]' },
+          { id: 'new' as Tab, label: 'New', Icon: Star, color: 'text-[#FFC300]' },
         ]).map(({ id, label, Icon, color }) => {
           const isActive = activeTab === id;
           return (
@@ -51,7 +62,7 @@ export function ExploreCommunityDiscoveryPanel<T extends { id: string }>({
 
       {items.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {items.map((item) => renderItem(item))}
+          {items.map((item) => renderItem(props.kind, item))}
         </div>
       ) : (
         <p className="text-xs text-white/40 py-4 text-center">Nothing here yet — check back soon.</p>

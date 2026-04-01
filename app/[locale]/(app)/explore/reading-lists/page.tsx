@@ -51,10 +51,10 @@ export default async function ExploreReadingListsPage({
 
       {!hasActiveFilters && (
         <ExploreCommunityDiscoveryPanel
+          kind="lists"
           newItems={curatedRows.newLists}
           popularItems={curatedRows.popular}
           popularLabel="Most Books"
-          renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
         />
       )}
 

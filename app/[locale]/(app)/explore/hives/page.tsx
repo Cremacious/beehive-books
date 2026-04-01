@@ -60,10 +60,10 @@ export default async function ExploreHivesPage({
 
       {!hasActiveFilters && (
         <ExploreCommunityDiscoveryPanel
+          kind="hives"
           newItems={curatedRows.newHives}
           popularItems={curatedRows.popular}
           popularLabel="Most Members"
-          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
         />
       )}
 

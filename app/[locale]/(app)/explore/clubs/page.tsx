@@ -54,10 +54,10 @@ export default async function ExploreClubsPage({
 
       {!hasActiveFilters && (
         <ExploreCommunityDiscoveryPanel
+          kind="clubs"
           newItems={curatedRows.newClubs}
           popularItems={curatedRows.popular}
           popularLabel="Most Members"
-          renderItem={(club) => <ClubCard key={club.id} club={club} />}
         />
       )}
 
