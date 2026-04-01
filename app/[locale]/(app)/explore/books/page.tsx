@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BookOpen } from 'lucide-react';
-import { searchExplorableBooksAction, getExplorableTagsAction } from '@/lib/actions/explore.actions';
+import { BookOpen, Star, Flame, TrendingUp, ArrowRight } from 'lucide-react';
+import { searchExplorableBooksAction, getExplorableTagsAction, getExplorableBooksPageRowsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
 import { ExploreBooksGrid } from '@/components/explore/explore-books-grid';
@@ -9,6 +9,7 @@ import { ExploreGenreChips } from '@/components/explore/explore-genre-chips';
 import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
 import BookCard from '@/components/library/book-card';
 import { GENRES, CATEGORIES } from '@/lib/config/constants';
+import type { Book } from '@/lib/types/books.types';
 
 export const metadata: Metadata = { title: 'Explore Books' };
 
@@ -52,9 +53,12 @@ export default async function ExploreBooksPage({
     ? (sort as BookSort)
     : 'newest';
 
-  const [{ books, nextCursor }, explorableTags] = await Promise.all([
+  const hasActiveFilters = !!(q || genre || category || tag || status || length || comments || updated);
+
+  const [{ books, nextCursor }, explorableTags, curatedRows] = await Promise.all([
     searchExplorableBooksAction(q, genres, categories, tags, draftStatuses, length, hasComments, updated, sortParam, cursor),
     getExplorableTagsAction(),
+    !hasActiveFilters ? getExplorableBooksPageRowsAction() : Promise.resolve({ newBooks: [], popular: [], trending: [] }),
   ]);
 
   const filterGroups = [
@@ -105,6 +109,43 @@ export default async function ExploreBooksPage({
     { value: 'most_chapters', label: 'Most Chapters' },
   ];
 
+  function BookScrollRow({
+    title,
+    icon,
+    books: rowBooks,
+    seeAllHref,
+  }: {
+    title: string;
+    icon: React.ReactNode;
+    books: Book[];
+    seeAllHref: string;
+  }) {
+    if (!rowBooks.length) return null;
+    return (
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold text-white mainFont flex items-center gap-2">
+            {icon}
+            {title}
+          </h2>
+          <Link href={seeAllHref} className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors">
+            See all <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+        <div className="relative">
+          <div className="flex gap-3 overflow-x-auto pb-3 -mx-4 px-4 md:-mx-8 md:px-8 scrollbar-hide">
+            {rowBooks.map((book) => (
+              <div key={book.id} className="shrink-0 w-32 sm:w-36">
+                <BookCard book={book} basePath="/books" />
+              </div>
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-linear-to-l from-[#1e1e1e] to-transparent" />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -113,6 +154,29 @@ export default async function ExploreBooksPage({
           Books
         </h1>
       </div>
+
+      {!hasActiveFilters && (
+        <>
+          <BookScrollRow
+            title="New"
+            icon={<Star className="w-4 h-4 text-[#FFC300]" />}
+            books={curatedRows.newBooks}
+            seeAllHref="/explore/books?sort=newest"
+          />
+          <BookScrollRow
+            title="Popular"
+            icon={<Flame className="w-4 h-4 text-orange-400" />}
+            books={curatedRows.popular}
+            seeAllHref="/explore/books?sort=most_liked"
+          />
+          <BookScrollRow
+            title="Trending"
+            icon={<TrendingUp className="w-4 h-4 text-emerald-400" />}
+            books={curatedRows.trending}
+            seeAllHref="/explore/books?sort=most_liked&updated=month"
+          />
+        </>
+      )}
 
       <ExploreSearchBar placeholder="Search by title, author, or description..." />
 

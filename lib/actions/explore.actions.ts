@@ -671,3 +671,50 @@ export async function getExplorableBooksByGenreAction(): Promise<{
 }> {
   return getCachedBooksByGenre();
 }
+
+const getCachedBooksPageRows = unstable_cache(
+  async () => {
+    const allBooks = await db.query.books.findMany({
+      where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+    });
+
+    // New: most recently published
+    const newBooks = [...allBooks]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 10)
+      .map(mapBook);
+
+    // Popular: all-time most liked (min 1 like)
+    const popular = [...allBooks]
+      .filter((b) => b.likeCount >= 1)
+      .sort((a, b) => b.likeCount - a.likeCount)
+      .slice(0, 10)
+      .map(mapBook);
+
+    // Trending: adaptive window 7d → 30d → 90d, min 5 results
+    const now = Date.now();
+    let trending: Book[] = [];
+    for (const days of [7, 30, 90]) {
+      const cutoff = new Date(now - days * 24 * 60 * 60 * 1000);
+      const candidates = [...allBooks]
+        .filter((b) => b.likeCount >= 1 && b.updatedAt >= cutoff)
+        .sort((a, b) => b.likeCount - a.likeCount)
+        .slice(0, 10)
+        .map(mapBook);
+      trending = candidates;
+      if (candidates.length >= 5) break;
+    }
+
+    return { newBooks, popular, trending };
+  },
+  ['explore-books-page-rows'],
+  { revalidate: 300 },
+);
+
+export async function getExplorableBooksPageRowsAction(): Promise<{
+  newBooks: Book[];
+  popular: Book[];
+  trending: Book[];
+}> {
+  return getCachedBooksPageRows();
+}
