@@ -53,7 +53,7 @@ export function ExploreDiscoveryPanel({
 
       {/* Book scroll row */}
       {books.length > 0 ? (
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin scrollbar-thumb-[#3a3a3a] scrollbar-track-transparent">
+        <div className="overflow-x-auto pb-2 -mx-4 px- scrollbar-custom">
           <div className="flex gap-3" style={{ width: 'max-content' }}>
             {books.map((book) => (
               <div key={book.id} className="w-28 sm:w-32">
