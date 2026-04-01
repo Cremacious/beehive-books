@@ -31,6 +31,7 @@ import {
   CheckCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GeneratedCover } from '@/components/library/generated-cover';
 import { useHiveStore } from '@/lib/stores/hive-store';
 import { getHiveActivityAction } from '@/lib/actions/hive-activity.actions';
 import type {
@@ -643,8 +644,8 @@ export default function HiveDashboard({
                 className="rounded-lg object-cover shrink-0"
               />
             ) : (
-              <div className="w-20 shrink-0 aspect-2/3 rounded-lg bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-white/80" />
+              <div className="w-20 shrink-0 aspect-2/3 rounded-lg overflow-hidden">
+                <GeneratedCover title={linkedBook?.title ?? ''} bookId={linkedBook?.id ?? ''} />
               </div>
             )}
             <div className="flex-1 min-w-0">

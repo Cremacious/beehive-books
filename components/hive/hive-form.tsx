@@ -260,13 +260,13 @@ export default function HiveForm({
           <label className="block text-base font-medium text-white mainFont mb-1.5">
             Book
           </label>
-          <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
             {BOOK_OPTIONS.map(({ value, label, desc, Icon }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setBookOption(value)}
-                className={`flex flex-col items-start gap-1 p-3 rounded-xl border transition-all text-left ${
+                className={`flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-1 p-3 rounded-xl border transition-all text-left ${
                   bookOption === value
                     ? 'border-[#FFC300]/50 bg-[#FFC300]/8'
                     : 'border-[#2a2a2a] bg-[#252525]'

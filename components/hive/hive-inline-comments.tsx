@@ -827,7 +827,7 @@ export default function HiveInlineComments({
                   <div className="relative">
                     <div
                       ref={chapterRef}
-                      className="relative p-5 prose prose-invert prose-sm max-w-none text-white leading-relaxed max-h-150 overflow-y-auto select-text"
+                      className="relative p-5 prose prose-invert prose-sm max-w-none text-white leading-relaxed max-h-[60vh] xl:max-h-[calc(100vh-12rem)] overflow-y-auto select-text"
                       onMouseUp={handleMouseUp}
                       onClick={() => {
                         if (!window.getSelection()?.toString()) setSelectionPopup(null);

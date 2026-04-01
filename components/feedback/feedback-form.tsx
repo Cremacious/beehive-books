@@ -125,7 +125,7 @@ export default function FeedbackForm() {
             <label className="block text-sm font-medium text-white mb-1">
               Email
             </label>
-            <p className="text-xs text-white/80 mb-2">Optional — include if you want a reply.</p>
+            <p className="text-xs text-white/80 mb-2">Optional. Include if you want a reply.</p>
             <input
               type="email"
               value={email}
