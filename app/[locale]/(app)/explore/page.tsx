@@ -75,7 +75,6 @@ export default async function ExplorePage() {
           featured={featured}
           popular={popular}
           trending={trending}
-          genreRows={genreRows}
           clubs={clubs}
           hives={hives}
           prompts={prompts}

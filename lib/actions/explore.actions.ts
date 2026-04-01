@@ -615,14 +615,14 @@ const getCachedBooksByGenre = unstable_cache(
       .sort((a, b) => b.score - a.score);
 
     const featuredCount = Math.max(8, Math.ceil(scored.length * 0.1));
-    const featured = scored.slice(0, featuredCount).map((s) => mapBook(s.book));
+    const featured = scored.slice(0, featuredCount).map((s) => mapBook(s.book)).slice(0, 6);
 
     // --- Popular ---
     // All-time most liked, at least 1 like
     const popular = [...allBooks]
       .filter((b) => b.likeCount >= 1)
       .sort((a, b) => b.likeCount - a.likeCount)
-      .slice(0, 12)
+      .slice(0, 6)
       .map(mapBook);
 
     // --- Trending ---
@@ -635,7 +635,7 @@ const getCachedBooksByGenre = unstable_cache(
       const candidates = allBooks
         .filter((b) => b.likeCount >= 1 && b.updatedAt >= cutoff)
         .sort((a, b) => b.likeCount - a.likeCount)
-        .slice(0, 12)
+        .slice(0, 6)
         .map(mapBook);
       if (candidates.length >= 5) {
         trending = candidates;

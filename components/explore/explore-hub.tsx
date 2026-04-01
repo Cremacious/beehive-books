@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star, Flame, TrendingUp } from 'lucide-react';
+import { Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star, Flame, TrendingUp } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import ClubCard from '@/components/clubs/club-card';
 import HiveCard from '@/components/hive/hive-card';
@@ -81,7 +81,6 @@ interface ExploreHubProps {
   featured: Book[];
   popular: Book[];
   trending: Book[];
-  genreRows: { genre: string; books: Book[] }[];
   clubs: ClubWithMembership[];
   hives: HiveWithMembership[];
   prompts: PromptCardType[];
@@ -92,33 +91,14 @@ export function ExploreHub({
   featured,
   popular,
   trending,
-  genreRows,
   clubs,
   hives,
   prompts,
   readingLists,
 }: ExploreHubProps) {
-  const hasBooks = featured.length > 0 || genreRows.length > 0;
-  const hasCommunity =
-    clubs.length > 0 || hives.length > 0 || prompts.length > 0 || readingLists.length > 0;
-
-  if (!hasBooks && !hasCommunity) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-6">
-          <Compass className="w-9 h-9 text-white/10" />
-        </div>
-        <h2 className="text-xl font-bold text-white mb-2 mainFont">Nothing to explore yet</h2>
-        <p className="text-sm text-white/70 max-w-sm leading-relaxed">
-          Content appears here when creators mark their books, clubs, and hives as explorable.
-          Check back soon.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div>
+      {/* Featured books */}
       {featured.length > 0 && (
         <BookScrollSection
           title="Featured"
@@ -129,6 +109,29 @@ export function ExploreHub({
         />
       )}
 
+      {/* Book Clubs */}
+      {clubs.length > 0 && (
+        <GridSection
+          title="Book Clubs"
+          icon={<Users className="w-4 h-4 text-orange-400" />}
+          seeAllHref="/explore/clubs"
+          items={clubs.slice(0, 4)}
+          renderItem={(club) => <ClubCard key={club.id} club={club} />}
+        />
+      )}
+
+      {/* Writing Hives */}
+      {hives.length > 0 && (
+        <GridSection
+          title="Writing Hives"
+          icon={<Hexagon className="w-4 h-4 text-[#FFC300]" />}
+          seeAllHref="/explore/hives"
+          items={hives.slice(0, 4)}
+          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
+        />
+      )}
+
+      {/* Popular books */}
       {popular.length > 0 && (
         <BookScrollSection
           title="Popular"
@@ -138,6 +141,18 @@ export function ExploreHub({
         />
       )}
 
+      {/* Writing Sparks */}
+      {prompts.length > 0 && (
+        <GridSection
+          title="Writing Sparks"
+          icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
+          seeAllHref="/explore/sparks"
+          items={prompts.slice(0, 4)}
+          renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
+        />
+      )}
+
+      {/* Trending books */}
       {trending.length > 0 && (
         <BookScrollSection
           title="Trending"
@@ -147,63 +162,29 @@ export function ExploreHub({
         />
       )}
 
-      {/* Genre rows */}
-      {genreRows.map(({ genre, books }) => (
-        <BookScrollSection
-          key={genre}
-          title={genre}
-          icon={<BookOpen className="w-4 h-4 text-[#FFC300]" />}
-          seeAllHref={`/explore/books?genre=${encodeURIComponent(genre)}`}
-          books={books}
-        />
-      ))}
-
-      {/* Divider between books and community sections */}
-      {hasBooks && hasCommunity && <hr className="border-[#2a2a2a] mb-10" />}
-
-      {/* Community sections */}
-      {clubs.length > 0 && (
-        <GridSection
-          key="clubs"
-          title="Book Clubs"
-          icon={<Users className="w-4 h-4 text-orange-400" />}
-          seeAllHref="/explore/clubs"
-          items={clubs}
-          renderItem={(club) => <ClubCard key={club.id} club={club} />}
-        />
-      )}
-
-      {hives.length > 0 && (
-        <GridSection
-          key="hives"
-          title="Writing Hives"
-          icon={<Hexagon className="w-4 h-4 text-[#FFC300]" />}
-          seeAllHref="/explore/hives"
-          items={hives}
-          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
-        />
-      )}
-
-      {prompts.length > 0 && (
-        <GridSection
-          key="prompts"
-          title="Writing Sparks"
-          icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
-          seeAllHref="/explore/sparks"
-          items={prompts}
-          renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
-        />
-      )}
-
+      {/* Reading Lists */}
       {readingLists.length > 0 && (
         <GridSection
-          key="reading-lists"
           title="Reading Lists"
           icon={<List className="w-4 h-4 text-emerald-400" />}
           seeAllHref="/explore/reading-lists"
-          items={readingLists}
+          items={readingLists.slice(0, 4)}
           renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
         />
+      )}
+
+      {/* Empty state */}
+      {!featured.length && !popular.length && !trending.length &&
+       !clubs.length && !hives.length && !prompts.length && !readingLists.length && (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-6">
+            <Compass className="w-9 h-9 text-white/10" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2 mainFont">Nothing to explore yet</h2>
+          <p className="text-sm text-white/70 max-w-sm leading-relaxed">
+            Content appears here when creators mark their books, clubs, and hives as explorable. Check back soon.
+          </p>
+        </div>
       )}
     </div>
   );
