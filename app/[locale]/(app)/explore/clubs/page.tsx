@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Users } from 'lucide-react';
-import { searchExplorableClubsAction } from '@/lib/actions/explore.actions';
+import { searchExplorableClubsAction, getExplorableClubsPageRowsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
+import { ExploreCommunityDiscoveryPanel } from '@/components/explore/explore-community-discovery-panel';
 import ClubCard from '@/components/clubs/club-card';
 
 export const metadata: Metadata = { title: 'Explore Clubs' };
@@ -21,7 +22,12 @@ export default async function ExploreClubsPage({
     ? (sort as ClubSort)
     : 'most_members';
 
-  const { clubs, nextCursor } = await searchExplorableClubsAction(q, tags, sortParam, cursor);
+  const hasActiveFilters = !!(q || tag || cursor);
+
+  const [{ clubs, nextCursor }, curatedRows] = await Promise.all([
+    searchExplorableClubsAction(q, tags, sortParam, cursor),
+    !hasActiveFilters ? getExplorableClubsPageRowsAction() : Promise.resolve({ newClubs: [], popular: [] }),
+  ]);
 
   function buildSortUrl(s: ClubSort) {
     const params = new URLSearchParams();
@@ -39,16 +45,24 @@ export default async function ExploreClubsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
-          <Users className="w-6 h-6 text-orange-400" />
-          Book Clubs
-        </h1>
-      </div>
+      <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
+        <Users className="w-6 h-6 text-orange-400" />
+        Book Clubs
+      </h1>
 
       <ExploreSearchBar placeholder="Search clubs by name, description, or tag..." />
 
+      {!hasActiveFilters && (
+        <ExploreCommunityDiscoveryPanel
+          kind="clubs"
+          newItems={curatedRows.newClubs}
+          popularItems={curatedRows.popular}
+          popularLabel="Most Members"
+        />
+      )}
+
       <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs text-white/80">Sort:</span>
         {sortOptions.map(({ value, label }) => (
           <Link
             key={value}
