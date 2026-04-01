@@ -175,7 +175,7 @@ function SectionHeader({
       {href && (
         <Link
           href={href}
-          className="text-sm text-white hover:text-[#FFC300] transition-colors flex items-center gap-1"
+          className="text-sm text-yellow-500 hover:text-[#FFC300] transition-colors flex items-center gap-1 font-medium"
         >
           See all <ArrowRight className="w-4 h-4" />
         </Link>

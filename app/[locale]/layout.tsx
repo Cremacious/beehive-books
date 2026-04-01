@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: '%s · Beehive Books',
   },
   description:
-    'Beehive Books — write, read, and share stories with your community. Create books, join reading groups, and connect with other writers.',
+    'Beehive Books - write, read, and share stories with your community. Create books, join reading groups, and connect with other writers.',
   openGraph: {
     siteName: 'Beehive Books',
     type: 'website',
@@ -30,6 +30,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!locales.includes(locale as any)) notFound();
 
   const messages = await getMessages();
