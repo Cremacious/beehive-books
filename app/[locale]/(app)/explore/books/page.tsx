@@ -13,7 +13,7 @@ import { GENRES, CATEGORIES } from '@/lib/config/constants';
 
 export const metadata: Metadata = { title: 'Explore Books' };
 
-type BookSort = 'newest' | 'most_liked' | 'most_chapters';
+type BookSort = 'newest' | 'most_liked' | 'most_chapters' | 'trending';
 
 export default async function ExploreBooksPage({
   searchParams,
@@ -49,7 +49,7 @@ export default async function ExploreBooksPage({
   const tags = tag ? tag.split(',').filter(Boolean) : [];
   const draftStatuses = status ? status.split(',').filter(Boolean) : [];
   const hasComments = comments === 'true';
-  const sortParam = (['newest', 'most_liked', 'most_chapters'] as BookSort[]).includes(sort as BookSort)
+  const sortParam = (['newest', 'most_liked', 'most_chapters', 'trending'] as BookSort[]).includes(sort as BookSort)
     ? (sort as BookSort)
     : 'newest';
 
@@ -106,9 +106,10 @@ export default async function ExploreBooksPage({
   }
 
   const sortOptions: { value: BookSort; label: string }[] = [
-    { value: 'newest', label: 'Newest' },
-    { value: 'most_liked', label: 'Most Liked' },
-    { value: 'most_chapters', label: 'Most Chapters' },
+    { value: 'newest',        label: 'Newest'       },
+    { value: 'most_liked',    label: 'Most Liked'   },
+    { value: 'most_chapters', label: 'Most Chapters'},
+    { value: 'trending',      label: 'Trending'     },
   ];
 
   return (

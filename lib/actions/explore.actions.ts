@@ -80,7 +80,7 @@ export async function searchExplorableBooksAction(
   wordCountRange: string = '',
   hasComments: boolean = false,
   updatedWithin: string = '',
-  sort: 'newest' | 'most_liked' | 'most_chapters' = 'newest',
+  sort: 'newest' | 'most_liked' | 'most_chapters' | 'trending' = 'newest',
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -128,6 +128,8 @@ export async function searchExplorableBooksAction(
     ? [desc(books.likeCount), desc(books.createdAt)]
     : sort === 'most_chapters'
     ? [desc(books.chapterCount), desc(books.createdAt)]
+    : sort === 'trending'
+    ? [desc(books.likeCount), desc(books.updatedAt)]
     : [desc(books.createdAt)];
 
   if (q) {
