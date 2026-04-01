@@ -41,6 +41,8 @@ function BookRow({
     if (!showMenu) return;
     function onMouseDown(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        const target = e.target as HTMLElement;
+        if (target.closest('[role="dialog"]')) return;
         setShowMenu(false);
       }
     }
