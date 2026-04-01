@@ -54,7 +54,7 @@ export const readingListBooks = pgTable('reading_list_books', {
   isRead: boolean('is_read').notNull().default(false),
   order: integer('order').notNull().default(0),
   bookId: text('book_id').references(() => books.id, { onDelete: 'set null' }),
-  rank: integer('rank'),
+  rating: text('rating'),
   commentary: text('commentary').default(''),
   addedAt: timestamp('added_at').defaultNow().notNull(),
 });

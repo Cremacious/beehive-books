@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, Circle, Edit, Crown } from 'lucide-react';
+import { CheckCircle2, Circle, Edit } from 'lucide-react';
 import { useReadingListStore } from '@/lib/stores/reading-list-store';
 import { updateBookCommentaryAction } from '@/lib/actions/reading-list.actions';
 import { DeleteDialog } from '@/components/shared/delete-dialog';
@@ -33,7 +33,7 @@ function BookRow({
   const [showMenu, setShowMenu] = useState(false);
   const [editingCommentary, setEditingCommentary] = useState(false);
   const [commentaryDraft, setCommentaryDraft] = useState(book.commentary ?? '');
-  const [rankDraft, setRankDraft] = useState<string>(book.rank != null ? String(book.rank) : '');
+  const [ratingDraft, setRatingDraft] = useState<string>(book.rating ?? '');
   const menuRef = useRef<HTMLDivElement>(null);
   const commentaryRef = useRef<HTMLTextAreaElement>(null);
 
@@ -56,35 +56,29 @@ function BookRow({
 
   const saveCommentary = async () => {
     setEditingCommentary(false);
-    const rankVal = rankDraft.trim() !== '' ? parseInt(rankDraft, 10) : undefined;
-    await updateBookCommentaryAction(listId, book.id, commentaryDraft, rankVal);
+    await updateBookCommentaryAction(listId, book.id, commentaryDraft, ratingDraft.trim() || undefined);
   };
 
-  const saveRank = async () => {
-    const rankVal = rankDraft.trim() !== '' ? parseInt(rankDraft, 10) : undefined;
-    await updateBookCommentaryAction(listId, book.id, commentaryDraft, rankVal);
+  const saveRating = async () => {
+    await updateBookCommentaryAction(listId, book.id, commentaryDraft, ratingDraft.trim() || undefined);
   };
-
-  const displayRank = book.rank ?? null;
 
   return (
     <div className="flex items-start gap-3 py-3.5 border-b border-[#2a2a2a] last:border-0 group">
-      {/* Rank */}
-      <div className="shrink-0 w-8 flex flex-col items-center pt-0.5">
+      {/* Rating */}
+      <div className="shrink-0 w-12 flex flex-col items-center pt-0.5">
         {isOwner ? (
           <input
-            type="number"
-            min={1}
-            value={rankDraft}
-            onChange={(e) => setRankDraft(e.target.value)}
-            onBlur={saveRank}
-            placeholder="#"
-            className="w-8 text-center text-sm font-bold text-yellow-500 bg-transparent border-none outline-none focus:underline placeholder-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="text"
+            value={ratingDraft}
+            onChange={(e) => setRatingDraft(e.target.value)}
+            onBlur={saveRating}
+            placeholder="Rate"
+            maxLength={10}
+            className="w-12 text-center text-xs font-bold text-yellow-500 bg-transparent border-none outline-none focus:underline placeholder-white/30"
           />
-        ) : displayRank === 1 ? (
-          <Crown className="w-4 h-4 text-yellow-500" />
-        ) : displayRank != null ? (
-          <span className="text-sm font-bold text-yellow-500">{displayRank}</span>
+        ) : book.rating ? (
+          <span className="text-xs font-bold text-yellow-500">{book.rating}</span>
         ) : null}
       </div>
 
@@ -260,7 +254,7 @@ export function BookListView({
     <div className="rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] px-4 mb-4">
       {isOwner && (
         <p className="text-xs text-white/80 mb-4 pt-4">
-         Add commentary below each title to explain why you included it. Users can optionally add a rank to their books by clicking # next to title.
+         Add commentary below each title to explain why you included it. Add a rating to any book (e.g. 3/5, 7/10) by clicking the Rate field next to the title.
         </p>
       )}
       {books.map((book) => {

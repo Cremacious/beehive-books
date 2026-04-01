@@ -185,13 +185,13 @@ export async function updateBookCommentaryAction(
   listId: string,
   bookId: string,
   commentary: string,
-  rank?: number,
+  rating?: string,
 ): Promise<ActionResult> {
   await requireListOwner(listId);
   try {
     await db
       .update(readingListBooks)
-      .set({ commentary, ...(rank !== undefined ? { rank } : {}) })
+      .set({ commentary, ...(rating !== undefined ? { rating } : {}) })
       .where(
         and(
           eq(readingListBooks.id, bookId),

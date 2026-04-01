@@ -29,7 +29,7 @@ export type ReadingListBook = {
   isRead: boolean;
   addedAt: Date;
   order: number;
-  rank?: number | null;
+  rating?: string | null;
   commentary?: string | null;
 };
 
