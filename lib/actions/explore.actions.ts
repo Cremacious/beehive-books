@@ -413,6 +413,7 @@ export async function searchExplorableHivesAction(
 
 export async function searchExplorablePromptsAction(
   query: string,
+  sort: 'newest' | 'most_entries' = 'newest',
   cursor?: string,
 ): Promise<{ prompts: PromptCard[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -429,7 +430,7 @@ export async function searchExplorablePromptsAction(
       cursor ? lt(prompts.createdAt, new Date(cursor)) : undefined,
     ),
     with: { creator: { columns: USER_COLUMNS } },
-    orderBy: [desc(prompts.createdAt)],
+    orderBy: sort === 'most_entries' ? [desc(prompts.entryCount), desc(prompts.createdAt)] : [desc(prompts.createdAt)],
     limit: LIMIT + 1,
   });
 
@@ -471,6 +472,7 @@ export async function searchExplorablePromptsAction(
 
 export async function searchExplorableReadingListsAction(
   query: string,
+  sort: 'newest' | 'most_books' = 'newest',
   cursor?: string,
 ): Promise<{ readingLists: ReadingList[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -485,7 +487,7 @@ export async function searchExplorableReadingListsAction(
       q ? ilike(readingLists.title, `%${q}%`) : undefined,
       cursor ? lt(readingLists.updatedAt, new Date(cursor)) : undefined,
     ),
-    orderBy: [desc(readingLists.updatedAt)],
+    orderBy: sort === 'most_books' ? [desc(readingLists.bookCount), desc(readingLists.createdAt)] : [desc(readingLists.updatedAt)],
     limit: LIMIT + 1,
   });
 
@@ -600,6 +602,114 @@ export async function getFriendsReadingAction(): Promise<Book[]> {
   });
 
   return rows.map(mapBook);
+}
+
+// --- Clubs discovery rows ---
+const getCachedClubsPageRows = unstable_cache(
+  async () => {
+    const allClubs = await db.query.bookClubs.findMany({
+      where: and(eq(bookClubs.explorable, true), eq(bookClubs.privacy, 'PUBLIC')),
+    });
+    const newClubs = [...allClubs]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 8)
+      .map((c) => ({ ...c, tags: c.tags as string[], myRole: null, isMember: false }));
+    const popular = [...allClubs]
+      .sort((a, b) => b.memberCount - a.memberCount)
+      .slice(0, 8)
+      .map((c) => ({ ...c, tags: c.tags as string[], myRole: null, isMember: false }));
+    return { newClubs, popular };
+  },
+  ['explore-clubs-page-rows'],
+  { revalidate: 300 },
+);
+export async function getExplorableClubsPageRowsAction() {
+  return getCachedClubsPageRows();
+}
+
+// --- Hives discovery rows ---
+const getCachedHivesPageRows = unstable_cache(
+  async () => {
+    const allHives = await db.query.hives.findMany({
+      where: and(eq(hives.explorable, true), eq(hives.privacy, 'PUBLIC')),
+    });
+    const newHives = [...allHives]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 8)
+      .map((h) => ({ ...h, tags: h.tags as string[], myRole: null, isMember: false }));
+    const popular = [...allHives]
+      .sort((a, b) => b.memberCount - a.memberCount)
+      .slice(0, 8)
+      .map((h) => ({ ...h, tags: h.tags as string[], myRole: null, isMember: false }));
+    return { newHives, popular };
+  },
+  ['explore-hives-page-rows'],
+  { revalidate: 300 },
+);
+export async function getExplorableHivesPageRowsAction() {
+  return getCachedHivesPageRows();
+}
+
+// --- Sparks discovery rows ---
+const getCachedSparksPageRows = unstable_cache(
+  async () => {
+    const allPrompts = await db.query.prompts.findMany({
+      where: and(eq(prompts.explorable, true), eq(prompts.privacy, 'PUBLIC')),
+      with: { creator: { columns: USER_COLUMNS } },
+    });
+    const mapPrompt = (p: typeof allPrompts[0]) => ({
+      id: p.id,
+      title: p.title,
+      description: p.description,
+      endDate: p.endDate,
+      privacy: p.privacy as 'PUBLIC' | 'FRIENDS' | 'PRIVATE',
+      explorable: p.explorable,
+      status: (p.endDate < new Date() ? 'ENDED' : p.status) as 'ACTIVE' | 'ENDED',
+      entryCount: p.entryCount,
+      createdAt: p.createdAt,
+      creator: p.creator as PromptUser,
+      myInviteStatus: null,
+      myEntryId: null,
+      tags: (p.tags ?? []) as string[],
+    });
+    const newSparks = [...allPrompts]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 8)
+      .map(mapPrompt);
+    const popular = [...allPrompts]
+      .sort((a, b) => b.entryCount - a.entryCount)
+      .slice(0, 8)
+      .map(mapPrompt);
+    return { newSparks, popular };
+  },
+  ['explore-sparks-page-rows'],
+  { revalidate: 300 },
+);
+export async function getExplorableSparksPageRowsAction() {
+  return getCachedSparksPageRows();
+}
+
+// --- Reading Lists discovery rows ---
+const getCachedReadingListsPageRows = unstable_cache(
+  async () => {
+    const allLists = await db.query.readingLists.findMany({
+      where: and(eq(readingLists.explorable, true), eq(readingLists.privacy, 'PUBLIC')),
+    });
+    const newLists = [...allLists]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 8)
+      .map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] }));
+    const popular = [...allLists]
+      .sort((a, b) => b.bookCount - a.bookCount)
+      .slice(0, 8)
+      .map((r) => ({ ...r, privacy: r.privacy as ReadingList['privacy'] }));
+    return { newLists, popular };
+  },
+  ['explore-reading-lists-page-rows'],
+  { revalidate: 300 },
+);
+export async function getExplorableReadingListsPageRowsAction() {
+  return getCachedReadingListsPageRows();
 }
 
 const getCachedBooksByGenre = unstable_cache(

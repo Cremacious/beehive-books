@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Hexagon } from 'lucide-react';
-import { searchExplorableHivesAction } from '@/lib/actions/explore.actions';
+import { searchExplorableHivesAction, getExplorableHivesPageRowsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
 import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
+import { ExploreCommunityDiscoveryPanel } from '@/components/explore/explore-community-discovery-panel';
 import HiveCard from '@/components/hive/hive-card';
 import { GENRES } from '@/lib/config/constants';
 
@@ -24,7 +25,12 @@ export default async function ExploreHivesPage({
     ? (sort as HiveSort)
     : 'most_members';
 
-  const { hives, nextCursor } = await searchExplorableHivesAction(q, genres, tags, sortParam, cursor);
+  const hasActiveFilters = !!(q || genre || tag || cursor);
+
+  const [{ hives, nextCursor }, curatedRows] = await Promise.all([
+    searchExplorableHivesAction(q, genres, tags, sortParam, cursor),
+    !hasActiveFilters ? getExplorableHivesPageRowsAction() : Promise.resolve({ newHives: [], popular: [] }),
+  ]);
 
   const filterGroups = [{ param: 'genre', label: 'Genre', options: GENRES }];
 
@@ -45,16 +51,24 @@ export default async function ExploreHivesPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
-          <Hexagon className="w-6 h-6 text-[#FFC300]" />
-          Writing Hives
-        </h1>
-      </div>
+      <h1 className="text-2xl font-bold text-white mainFont flex items-center gap-2">
+        <Hexagon className="w-6 h-6 text-[#FFC300]" />
+        Writing Hives
+      </h1>
 
       <ExploreSearchBar placeholder="Search hives by name, genre, or tags..." />
 
+      {!hasActiveFilters && (
+        <ExploreCommunityDiscoveryPanel
+          newItems={curatedRows.newHives}
+          popularItems={curatedRows.popular}
+          popularLabel="Most Members"
+          renderItem={(hive) => <HiveCard key={hive.id} hive={hive} />}
+        />
+      )}
+
       <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs text-white/80">Sort:</span>
         {sortOptions.map(({ value, label }) => (
           <Link
             key={value}
@@ -80,9 +94,7 @@ export default async function ExploreHivesPage({
                 <Hexagon className="w-8 h-8 text-[#FFC300]/20" />
               </div>
               <h2 className="text-2xl font-bold text-[#FFC300] mb-2 mainFont">No hives found!</h2>
-              <p className="text-white/80 max-w-sm">
-                Try different keywords or clear the filters.
-              </p>
+              <p className="text-white/80 max-w-sm">Try different keywords or clear the filters.</p>
             </div>
           ) : (
             <>
