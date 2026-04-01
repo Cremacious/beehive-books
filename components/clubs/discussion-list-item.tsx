@@ -27,7 +27,7 @@ export default function DiscussionListItem({
   const lastActivity = timeAgo(discussion.updatedAt ?? discussion.createdAt);
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] last:border-b-0 hover:bg-white/5 transition-colors">
+    <Link href={`/clubs/${clubId}/discussions/${discussion.id}`} className="flex items-center gap-3 px-4 py-3 border-b border-[#2a2a2a] last:border-b-0 hover:bg-white/5 transition-colors">
       <div className="shrink-0">
         {author.image ? (
           <Image
@@ -51,12 +51,9 @@ export default function DiscussionListItem({
               Pinned
             </span>
           )}
-          <Link
-            href={`/clubs/${clubId}/discussions/${discussion.id}`}
-            className="text-sm font-semibold text-white hover:text-yellow-500 transition-colors"
-          >
+          <span className="text-sm font-semibold text-white">
             {discussion.title}
-          </Link>
+          </span>
         </div>
         <p className="text-xs text-white/80 mt-0.5">
           {authorName} · {timeAgo(discussion.createdAt)}
@@ -68,6 +65,6 @@ export default function DiscussionListItem({
         <p className="text-xs text-white/80">replies</p>
         <p className="text-xs text-white/80 mt-0.5">{lastActivity}</p>
       </div>
-    </div>
+    </Link>
   );
 }
