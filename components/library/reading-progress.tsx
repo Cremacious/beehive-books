@@ -12,7 +12,7 @@ export function ReadingProgress({
   return (
     <div className="px-5 py-3 border-b border-[#2a2a2a]">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-white/60">Your progress</span>
+        <span className="text-xs text-white/80">Your progress</span>
         <span className="text-xs font-medium text-[#FFC300]">
           {readCount} / {total} chapters &middot; {pct}%
         </span>
@@ -30,6 +30,9 @@ export function ReadingProgress({
           style={{ width: `${pct}%` }}
         />
       </div>
+      <p className="text-xs text-white/80 mt-1.5">
+        Click the checkmark on any chapter to mark it as read.
+      </p>
     </div>
   );
 }
