@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star } from 'lucide-react';
+import { BookOpen, Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star, Flame, TrendingUp } from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import ClubCard from '@/components/clubs/club-card';
 import HiveCard from '@/components/hive/hive-card';
@@ -79,6 +79,8 @@ function GridSection<T>({ title, icon, seeAllHref, items, renderItem }: SectionP
 
 interface ExploreHubProps {
   featured: Book[];
+  popular: Book[];
+  trending: Book[];
   genreRows: { genre: string; books: Book[] }[];
   clubs: ClubWithMembership[];
   hives: HiveWithMembership[];
@@ -88,6 +90,8 @@ interface ExploreHubProps {
 
 export function ExploreHub({
   featured,
+  popular,
+  trending,
   genreRows,
   clubs,
   hives,
@@ -115,14 +119,31 @@ export function ExploreHub({
 
   return (
     <div>
-      {/* Featured row */}
       {featured.length > 0 && (
         <BookScrollSection
           title="Featured"
           icon={<Star className="w-4 h-4 text-[#FFC300]" />}
-          seeAllHref="/explore/books"
+          seeAllHref="/explore/books?sort=most_liked"
           books={featured}
           featured
+        />
+      )}
+
+      {popular.length > 0 && (
+        <BookScrollSection
+          title="Popular"
+          icon={<Flame className="w-4 h-4 text-orange-400" />}
+          seeAllHref="/explore/books?sort=most_liked"
+          books={popular}
+        />
+      )}
+
+      {trending.length > 0 && (
+        <BookScrollSection
+          title="Trending"
+          icon={<TrendingUp className="w-4 h-4 text-emerald-400" />}
+          seeAllHref="/explore/books?sort=most_liked&updated=month"
+          books={trending}
         />
       )}
 
