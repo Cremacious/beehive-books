@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, BookOpen, ChevronUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { CommentSection } from '@/components/comments/comment-section';
 import type { getChapterWithContextAction } from '@/lib/actions/book.actions';
@@ -69,55 +69,66 @@ export function ChapterReader({
           <RichTextEditor content={chapter.content} editable={false} />
         )}
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mt-14 pt-8 border-t border-[#2a2a2a]">
-          {prev ? (
+        <div className="mt-14 pt-8 border-t border-[#2a2a2a]">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {/* Previous */}
+            {prev ? (
+              <Link
+                href={`${basePath}/${bookId}/${prev.id}`}
+                className="group flex items-center gap-3 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all"
+              >
+                <ChevronLeft className="w-5 h-5 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mb-0.5">Previous</p>
+                  <p className="text-sm font-medium text-white group-hover:text-[#FFC300] transition-colors truncate leading-tight">
+                    {prev.title}
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <div />
+            )}
+
+            {/* Back to book — hidden on mobile, center on desktop */}
             <Link
-              href={`${basePath}/${bookId}/${prev.id}`}
-              className="flex items-center gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors"
+              href={`${basePath}/${bookId}`}
+              className="hidden sm:flex group flex-col items-center justify-center gap-1 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all text-center"
             >
-              <ChevronLeft className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs text-yellow-500">Previous</p>
-                {prev.collectionName && (
-                  <p className="text-xs text-white/80 truncate">{prev.collectionName}</p>
-                )}
-                <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
-                  {prev.title}
-                </p>
-              </div>
+              <BookOpen className="w-4 h-4 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors" />
+              <p className="text-xs font-medium text-white/80 group-hover:text-white transition-colors truncate max-w-full">
+                {book.title}
+              </p>
             </Link>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
+
+            {/* Next */}
+            {next ? (
+              <Link
+                href={`${basePath}/${bookId}/${next.id}`}
+                className="group flex items-center justify-end gap-3 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all"
+              >
+                <div className="min-w-0 text-right">
+                  <p className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mb-0.5">Next</p>
+                  <p className="text-sm font-medium text-white group-hover:text-[#FFC300] transition-colors truncate leading-tight">
+                    {next.title}
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors shrink-0" />
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+
+          {/* Mobile: back to book link below nav */}
           <Link
             href={`${basePath}/${bookId}`}
-            className="flex items-center justify-center gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors sm:flex-col sm:gap-1"
+            className="sm:hidden mt-3 flex items-center justify-center gap-2 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all group"
           >
-            <ChevronUp className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors" />
-            <p className="text-xs text-yellow-500">Back To Book</p>
-            <p className="text-sm font-medium text-white group-hover:text-[#FFC300] truncate transition-colors sm:max-w-32 text-center">
+            <BookOpen className="w-4 h-4 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors" />
+            <p className="text-xs font-medium text-white/80 group-hover:text-white transition-colors">
               {book.title}
             </p>
           </Link>
-          {next ? (
-            <Link
-              href={`${basePath}/${bookId}/${next.id}`}
-              className="flex items-center justify-end gap-2 group w-full sm:w-auto rounded-xl border border-[#2a2a2a] px-4 py-3 sm:border-0 sm:px-0 sm:py-0 hover:border-[#FFC300]/20 sm:hover:border-0 transition-colors"
-            >
-              <div className="min-w-0 text-right">
-                <p className="text-xs text-yellow-500">Next</p>
-                {next.collectionName && (
-                  <p className="text-xs text-white/80 truncate">{next.collectionName}</p>
-                )}
-                <p className="text-sm font-medium text-white group-hover:text-white truncate transition-colors">
-                  {next.title}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-white group-hover:text-[#FFC300] transition-colors shrink-0" />
-            </Link>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
         </div>
 
         {book.chapterCommentsEnabled && (
