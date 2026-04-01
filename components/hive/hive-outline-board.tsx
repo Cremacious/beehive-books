@@ -658,11 +658,13 @@ export default function HiveOutlineBoard({
 
     if (activeItem.parentId === targetParentId) return;
 
-    setItems((prev) =>
-      prev.map((i) =>
+    setItems((prev) => {
+      const next = prev.map((i) =>
         i.id === active.id ? { ...i, parentId: targetParentId } : i,
-      ),
-    );
+      );
+      itemsRef.current = next;
+      return next;
+    });
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
