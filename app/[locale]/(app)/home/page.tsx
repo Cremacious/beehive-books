@@ -532,11 +532,7 @@ export default async function UserHomePage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-white/80 mainFont">
-                        {item.bookTitle[0]?.toUpperCase()}
-                      </span>
-                    </div>
+                    <GeneratedCover title={item.bookTitle} bookId={item.bookId} />
                   )}
                 </div>
                 <div className="p-2.5">
