@@ -80,7 +80,7 @@ export async function searchExplorableBooksAction(
   wordCountRange: string = '',
   hasComments: boolean = false,
   updatedWithin: string = '',
-  sort: 'newest' | 'most_liked' | 'most_chapters' = 'newest',
+  sort: 'newest' | 'most_liked' | 'most_chapters' | 'trending' = 'newest',
   cursor?: string,
 ): Promise<{ books: Book[]; nextCursor: string | null }> {
   const userId = await getOptionalUserId();
@@ -128,6 +128,8 @@ export async function searchExplorableBooksAction(
     ? [desc(books.likeCount), desc(books.createdAt)]
     : sort === 'most_chapters'
     ? [desc(books.chapterCount), desc(books.createdAt)]
+    : sort === 'trending'
+    ? [desc(books.likeCount), desc(books.updatedAt)]
     : [desc(books.createdAt)];
 
   if (q) {
@@ -602,15 +604,51 @@ export async function getFriendsReadingAction(): Promise<Book[]> {
 
 const getCachedBooksByGenre = unstable_cache(
   async () => {
-    const rows = await db.query.books.findMany({
+    const allBooks = await db.query.books.findMany({
       where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
-      orderBy: [desc(books.likeCount), desc(books.createdAt)],
     });
 
-    const featured = rows.slice(0, 5).map(mapBook);
+    // --- Featured ---
+    // Composite score: (likeCount * 2) + chapterCount + commentCount
+    // Top 10% of scored books, minimum 1 like required, min 8 results if possible
+    const scored = allBooks
+      .filter((b) => b.likeCount >= 1 && b.chapterCount >= 1)
+      .map((b) => ({ book: b, score: b.likeCount * 2 + b.chapterCount + b.commentCount }))
+      .sort((a, b) => b.score - a.score);
 
+    const featuredCount = Math.max(8, Math.ceil(scored.length * 0.1));
+    const featured = scored.slice(0, featuredCount).map((s) => mapBook(s.book)).slice(0, 6);
+
+    // --- Popular ---
+    // All-time most liked, at least 1 like
+    const popular = [...allBooks]
+      .filter((b) => b.likeCount >= 1)
+      .sort((a, b) => b.likeCount - a.likeCount)
+      .slice(0, 6)
+      .map(mapBook);
+
+    // --- Trending ---
+    // Adaptive time window: try 7d → 30d → 90d until we have 5+ results
+    const now = Date.now();
+    const windows = [7, 30, 90];
+    let trending: Book[] = [];
+    for (const days of windows) {
+      const cutoff = new Date(now - days * 24 * 60 * 60 * 1000);
+      const candidates = allBooks
+        .filter((b) => b.likeCount >= 1 && b.updatedAt >= cutoff)
+        .sort((a, b) => b.likeCount - a.likeCount)
+        .slice(0, 6)
+        .map(mapBook);
+      if (candidates.length >= 5) {
+        trending = candidates;
+        break;
+      }
+      trending = candidates; // use best available even if < 5
+    }
+
+    // --- Genre rows ---
     const genreMap = new Map<string, Book[]>();
-    for (const row of rows) {
+    for (const row of allBooks) {
       const genre = row.genre;
       if (!genreMap.has(genre)) genreMap.set(genre, []);
       const arr = genreMap.get(genre)!;
@@ -621,7 +659,7 @@ const getCachedBooksByGenre = unstable_cache(
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([genre, books]) => ({ genre, books }));
 
-    return { featured, genreRows };
+    return { featured, popular, trending, genreRows };
   },
   ['explore-books-by-genre'],
   { revalidate: 300 },
@@ -629,7 +667,56 @@ const getCachedBooksByGenre = unstable_cache(
 
 export async function getExplorableBooksByGenreAction(): Promise<{
   featured: Book[];
+  popular: Book[];
+  trending: Book[];
   genreRows: { genre: string; books: Book[] }[];
 }> {
   return getCachedBooksByGenre();
+}
+
+const getCachedBooksPageRows = unstable_cache(
+  async () => {
+    const allBooks = await db.query.books.findMany({
+      where: and(eq(books.explorable, true), eq(books.privacy, 'PUBLIC')),
+    });
+
+    // New: most recently published
+    const newBooks = [...allBooks]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 10)
+      .map(mapBook);
+
+    // Popular: all-time most liked (min 1 like)
+    const popular = [...allBooks]
+      .filter((b) => b.likeCount >= 1)
+      .sort((a, b) => b.likeCount - a.likeCount)
+      .slice(0, 10)
+      .map(mapBook);
+
+    // Trending: adaptive window 7d → 30d → 90d, min 5 results
+    const now = Date.now();
+    let trending: Book[] = [];
+    for (const days of [7, 30, 90]) {
+      const cutoff = new Date(now - days * 24 * 60 * 60 * 1000);
+      const candidates = [...allBooks]
+        .filter((b) => b.likeCount >= 1 && b.updatedAt >= cutoff)
+        .sort((a, b) => b.likeCount - a.likeCount)
+        .slice(0, 10)
+        .map(mapBook);
+      trending = candidates;
+      if (candidates.length >= 5) break;
+    }
+
+    return { newBooks, popular, trending };
+  },
+  ['explore-books-page-rows'],
+  { revalidate: 300 },
+);
+
+export async function getExplorableBooksPageRowsAction(): Promise<{
+  newBooks: Book[];
+  popular: Book[];
+  trending: Book[];
+}> {
+  return getCachedBooksPageRows();
 }

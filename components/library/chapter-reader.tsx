@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { CommentSection } from '@/components/comments/comment-section';
@@ -16,20 +19,26 @@ export function ChapterReader({
   data: ChapterData;
   basePath: '/library' | '/books';
 }) {
+  const router = useRouter();
   const { chapter, book, prev, next, comments, currentUserId } = data;
+
+  function goToBook() {
+    sessionStorage.setItem('cameFromChapter', bookId);
+    router.push(`${basePath}/${bookId}`);
+  }
 
   return (
     <div>
       <div className="border-b border-[#2a2a2a] px-4 py-3 grid grid-cols-3 items-center gap-2">
         {/* Left */}
         <div className="flex items-center">
-          <Link
-            href={`${basePath}/${bookId}`}
+          <button
+            onClick={goToBook}
             className="inline-flex items-center gap-1 text-xs text-white/80 hover:text-yellow-500 transition-colors"
           >
             <ChevronLeft className="w-4 h-4 text-yellow-500 shrink-0" />
             <span className="hidden sm:inline">To Book</span>
-          </Link>
+          </button>
         </div>
 
         {/* Center — always centered regardless of side widths */}
@@ -90,15 +99,15 @@ export function ChapterReader({
             )}
 
             {/* Back to book — hidden on mobile, center on desktop */}
-            <Link
-              href={`${basePath}/${bookId}`}
+            <button
+              onClick={goToBook}
               className="hidden sm:flex group flex-col items-center justify-center gap-1 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all text-center"
             >
               <BookOpen className="w-4 h-4 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors" />
               <p className="text-xs font-medium text-white/80 group-hover:text-white transition-colors truncate max-w-full">
                 {book.title}
               </p>
-            </Link>
+            </button>
 
             {/* Next */}
             {next ? (
@@ -120,15 +129,15 @@ export function ChapterReader({
           </div>
 
           {/* Mobile: back to book link below nav */}
-          <Link
-            href={`${basePath}/${bookId}`}
-            className="sm:hidden mt-3 flex items-center justify-center gap-2 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all group"
+          <button
+            onClick={goToBook}
+            className="sm:hidden mt-3 w-full flex items-center justify-center gap-2 rounded-2xl border border-[#2a2a2a] bg-[#1c1c1c] px-4 py-3 hover:border-[#FFC300]/30 hover:bg-[#252525] transition-all group"
           >
             <BookOpen className="w-4 h-4 text-[#FFC300]/60 group-hover:text-[#FFC300] transition-colors" />
             <p className="text-xs font-medium text-white/80 group-hover:text-white transition-colors">
               {book.title}
             </p>
-          </Link>
+          </button>
         </div>
 
         {book.chapterCommentsEnabled && (

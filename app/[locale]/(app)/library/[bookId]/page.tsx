@@ -50,7 +50,7 @@ export default async function BookPage({
   return (
     <div className="px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
-        <BackButton href="/library" label="My Library" className="mb-6" />
+        <BackButton href="/library" label="Back" className="mb-6" />
 
         <div className="rounded-2xl bg-[#252525] border border-[#2a2a2a] border-t-2 border-t-[#FFC300]/20 shadow-xl p-6 md:p-8 mb-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-start">

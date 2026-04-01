@@ -1,18 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { searchExplorableBooksAction, getExplorableTagsAction } from '@/lib/actions/explore.actions';
+import { searchExplorableBooksAction, getExplorableTagsAction, getExplorableBooksPageRowsAction } from '@/lib/actions/explore.actions';
 import { ExploreSearchBar } from '@/components/explore/explore-search-bar';
 import { ExploreSidebar } from '@/components/explore/explore-sidebar';
 import { ExploreBooksGrid } from '@/components/explore/explore-books-grid';
 import { ExploreGenreChips } from '@/components/explore/explore-genre-chips';
 import { ExploreLoadMoreButton } from '@/components/explore/explore-load-more';
+import { ExploreDiscoveryPanel } from '@/components/explore/explore-discovery-panel';
 import BookCard from '@/components/library/book-card';
 import { GENRES, CATEGORIES } from '@/lib/config/constants';
 
 export const metadata: Metadata = { title: 'Explore Books' };
 
-type BookSort = 'newest' | 'most_liked' | 'most_chapters';
+type BookSort = 'newest' | 'most_liked' | 'most_chapters' | 'trending';
 
 export default async function ExploreBooksPage({
   searchParams,
@@ -48,13 +49,18 @@ export default async function ExploreBooksPage({
   const tags = tag ? tag.split(',').filter(Boolean) : [];
   const draftStatuses = status ? status.split(',').filter(Boolean) : [];
   const hasComments = comments === 'true';
-  const sortParam = (['newest', 'most_liked', 'most_chapters'] as BookSort[]).includes(sort as BookSort)
+  const sortParam = (['newest', 'most_liked', 'most_chapters', 'trending'] as BookSort[]).includes(sort as BookSort)
     ? (sort as BookSort)
     : 'newest';
 
-  const [{ books, nextCursor }, explorableTags] = await Promise.all([
+  const hasActiveFilters = !!(q || genre || category || tag || status || length || comments || updated || cursor);
+
+  const [{ books, nextCursor }, explorableTags, curatedRows] = await Promise.all([
     searchExplorableBooksAction(q, genres, categories, tags, draftStatuses, length, hasComments, updated, sortParam, cursor),
     getExplorableTagsAction(),
+    !hasActiveFilters
+      ? getExplorableBooksPageRowsAction()
+      : Promise.resolve({ newBooks: [], popular: [], trending: [] }),
   ]);
 
   const filterGroups = [
@@ -100,9 +106,10 @@ export default async function ExploreBooksPage({
   }
 
   const sortOptions: { value: BookSort; label: string }[] = [
-    { value: 'newest', label: 'Newest' },
-    { value: 'most_liked', label: 'Most Liked' },
-    { value: 'most_chapters', label: 'Most Chapters' },
+    { value: 'newest',        label: 'Newest'       },
+    { value: 'most_liked',    label: 'Most Liked'   },
+    { value: 'most_chapters', label: 'Most Chapters'},
+    { value: 'trending',      label: 'Trending'     },
   ];
 
   return (
@@ -115,6 +122,14 @@ export default async function ExploreBooksPage({
       </div>
 
       <ExploreSearchBar placeholder="Search by title, author, or description..." />
+
+      {!hasActiveFilters && (
+        <ExploreDiscoveryPanel
+          newBooks={curatedRows.newBooks}
+          popular={curatedRows.popular}
+          trending={curatedRows.trending}
+        />
+      )}
 
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-xs text-white/80">Sort:</span>

@@ -46,7 +46,7 @@ function FriendsReadingSection({ books }: { books: Book[] }) {
 }
 
 export default async function ExplorePage() {
-  const [{ clubs, hives, prompts, readingLists }, { featured, genreRows }, friendsBooks] = await Promise.all([
+  const [{ clubs, hives, prompts, readingLists }, { featured, popular, trending, genreRows }, friendsBooks] = await Promise.all([
     getExplorableHubDataAction(),
     getExplorableBooksByGenreAction(),
     getFriendsReadingAction(),
@@ -73,7 +73,8 @@ export default async function ExplorePage() {
         {friendsBooks.length > 0 && <FriendsReadingSection books={friendsBooks} />}
         <ExploreHub
           featured={featured}
-          genreRows={genreRows}
+          popular={popular}
+          trending={trending}
           clubs={clubs}
           hives={hives}
           prompts={prompts}
