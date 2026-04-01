@@ -1,5 +1,16 @@
 import Link from 'next/link';
-import { Users, Hexagon, Lightbulb, List, ArrowRight, Compass, Star, Flame, TrendingUp, BookOpen } from 'lucide-react';
+import {
+  Users,
+  Hexagon,
+  Lightbulb,
+  List,
+  ArrowRight,
+  Compass,
+  Star,
+  Flame,
+  TrendingUp,
+  BookOpen,
+} from 'lucide-react';
 import BookCard from '@/components/library/book-card';
 import ClubCard from '@/components/clubs/club-card';
 import HiveCard from '@/components/hive/hive-card';
@@ -42,7 +53,10 @@ function BookRow({
           {icon}
           {title}
         </h3>
-        <Link href={seeAllHref} className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors">
+        <Link
+          href={seeAllHref}
+          className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors"
+        >
           See all <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
@@ -81,7 +95,10 @@ function CommunityPanel<T>({
           {icon}
           {title}
         </h3>
-        <Link href={seeAllHref} className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors">
+        <Link
+          href={seeAllHref}
+          className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors"
+        >
           See all <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
@@ -101,18 +118,26 @@ export function ExploreHub({
   prompts,
   readingLists,
 }: ExploreHubProps) {
-  const hasBooks = featured.length > 0 || popular.length > 0 || trending.length > 0;
-  const hasCommunity = clubs.length > 0 || hives.length > 0 || prompts.length > 0 || readingLists.length > 0;
+  const hasBooks =
+    featured.length > 0 || popular.length > 0 || trending.length > 0;
+  const hasCommunity =
+    clubs.length > 0 ||
+    hives.length > 0 ||
+    prompts.length > 0 ||
+    readingLists.length > 0;
 
   if (!hasBooks && !hasCommunity) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center mb-6">
+        <div className="w-20 h-20 rounded-2xl  border border-[#2a2a2a] flex items-center justify-center mb-6">
           <Compass className="w-9 h-9 text-white/10" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2 mainFont">Nothing to explore yet</h2>
+        <h2 className="text-xl font-bold text-white mb-2 mainFont">
+          Nothing to explore yet
+        </h2>
         <p className="text-sm text-white/70 max-w-sm leading-relaxed">
-          Content appears here when creators mark their books, clubs, and hives as explorable. Check back soon.
+          Content appears here when creators mark their books, clubs, and hives
+          as explorable. Check back soon.
         </p>
       </div>
     );
@@ -128,7 +153,10 @@ export function ExploreHub({
               <BookOpen className="w-5 h-5 text-[#FFC300]" />
               Books
             </h2>
-            <Link href="/explore/books" className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors">
+            <Link
+              href="/explore/books"
+              className="flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-white transition-colors"
+            >
               Browse all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
@@ -159,7 +187,9 @@ export function ExploreHub({
       {/* Community section — two columns on desktop */}
       {hasCommunity && (
         <section>
-          <h2 className="text-lg font-bold text-white mainFont mb-5">Community</h2>
+          <h2 className="text-lg font-bold text-white mainFont mb-5">
+            Community
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CommunityPanel
               title="Book Clubs"
@@ -180,14 +210,18 @@ export function ExploreHub({
               icon={<Lightbulb className="w-4 h-4 text-purple-400" />}
               seeAllHref="/explore/sparks"
               items={prompts}
-              renderItem={(prompt) => <PromptCard key={prompt.id} prompt={prompt} />}
+              renderItem={(prompt) => (
+                <PromptCard key={prompt.id} prompt={prompt} />
+              )}
             />
             <CommunityPanel
               title="Reading Lists"
               icon={<List className="w-4 h-4 text-emerald-400" />}
               seeAllHref="/explore/reading-lists"
               items={readingLists}
-              renderItem={(list) => <ReadingListCard key={list.id} list={list} />}
+              renderItem={(list) => (
+                <ReadingListCard key={list.id} list={list} />
+              )}
             />
           </div>
         </section>
