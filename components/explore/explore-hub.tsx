@@ -60,7 +60,7 @@ function BookScrollSection({
             </div>
           ))}
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#1e1e1e] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 " />
       </div>
     </section>
   );

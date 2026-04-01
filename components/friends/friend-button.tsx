@@ -48,11 +48,11 @@ export function FriendButton({
         className={
           compact
             ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 bg-[#FFC300] text-black hover:bg-[#e6b000] active:scale-95'
-            : 'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 bg-[#FFC300] text-black hover:bg-[#e6b000] active:scale-95'
+            : 'inline-flex items-center gap-1 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 bg-[#FFC300] text-black hover:bg-[#e6b000] active:scale-95'
         }
         title="Send friend request"
       >
-        <UserPlus className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
+
         <span>{isPending ? 'Sending…' : 'Send Request'}</span>
       </button>
     );
