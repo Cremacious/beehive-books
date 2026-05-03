@@ -31,6 +31,7 @@
 
 # Claude Code local settings
 .claude
+.superpowers/
 
 # debug
 npm-debug.log*
