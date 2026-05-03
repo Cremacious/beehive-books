@@ -19,6 +19,7 @@ const focusRing =
 export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const isAdminActive = pathname.startsWith('/admin');
 
   return (
     <>
@@ -41,81 +42,83 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
         </button>
       </header>
 
-      <div
-        aria-hidden="true"
-        onClick={() => setOpen(false)}
-        className={cn(
-          'fixed inset-0 z-60 bg-black/60 backdrop-blur-[2px] transition-opacity md:hidden',
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
-        )}
-      />
-
-      <div
-        id="v2-mobile-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site navigation"
-        className={cn(
-          'fixed right-0 top-0 z-70 flex h-full w-76 max-w-[86vw] flex-col border-l border-[#2a2a2a] bg-[#181818] paper-grit shadow-2xl transition-transform md:hidden',
-          open ? 'translate-x-0' : 'translate-x-full',
-        )}
-      >
-        <div className="flex items-center justify-between border-b border-[#2a2a2a] px-4 py-4">
-          <Image src={logoImage} alt="Beehive Books" height={32} width={120} />
-          <button
-            type="button"
-            aria-label="Close menu"
+      {open && (
+        <>
+          <div
+            aria-hidden="true"
             onClick={() => setOpen(false)}
-            className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-xl text-[#FFC300] hover:bg-white/5 hover:text-white',
-              focusRing,
-            )}
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
+            className="fixed inset-0 z-60 bg-black/60 backdrop-blur-[2px] md:hidden"
+          />
 
-        <nav aria-label="Main navigation" className="flex-1 px-3 py-4">
-          <ul className="space-y-2">
-            {v2PrimaryNavItems.map(({ href, label, icon: Icon, match }) => {
-              const active = match(pathname);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all',
-                      focusRing,
-                      active
-                        ? 'bg-[#FFC300] text-black paper-stack'
-                        : 'text-white/85 hover:bg-white/5 hover:text-white',
-                    )}
-                  >
-                    <Icon aria-hidden="true" className="h-5 w-5" />
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-            {isAdmin && (
-              <li>
-                <Link
-                  href="/admin"
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/85 hover:bg-white/5 hover:text-white',
-                    focusRing,
-                  )}
-                >
-                  Admin
-                </Link>
-              </li>
-            )}
-          </ul>
-        </nav>
-      </div>
+          <div
+            id="v2-mobile-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+            className="fixed right-0 top-0 z-70 flex h-full w-76 max-w-[86vw] flex-col border-l border-[#2a2a2a] bg-[#181818] paper-grit shadow-2xl md:hidden"
+          >
+            <div className="flex items-center justify-between border-b border-[#2a2a2a] px-4 py-4">
+              <Image src={logoImage} alt="Beehive Books" height={32} width={120} />
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setOpen(false)}
+                className={cn(
+                  'flex h-10 w-10 items-center justify-center rounded-xl text-[#FFC300] hover:bg-white/5 hover:text-white',
+                  focusRing,
+                )}
+              >
+                <X aria-hidden="true" className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav aria-label="Main navigation" className="flex-1 px-3 py-4">
+              <ul className="space-y-2">
+                {v2PrimaryNavItems.map(({ href, label, icon: Icon, match }) => {
+                  const active = match(pathname);
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? 'page' : undefined}
+                        className={cn(
+                          'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all',
+                          focusRing,
+                          active
+                            ? 'bg-[#FFC300] text-black paper-stack'
+                            : 'text-white/85 hover:bg-white/5 hover:text-white',
+                        )}
+                      >
+                        <Icon aria-hidden="true" className="h-5 w-5" />
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
+                {isAdmin && (
+                  <li>
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      aria-current={isAdminActive ? 'page' : undefined}
+                      className={cn(
+                        'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all',
+                        focusRing,
+                        isAdminActive
+                          ? 'bg-[#FFC300] text-black paper-stack'
+                          : 'text-white/85 hover:bg-white/5 hover:text-white',
+                      )}
+                    >
+                      Admin
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </nav>
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -23,6 +23,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
   const avatarUrl = useCurrentUserImage();
   const username = session?.user?.username ?? undefined;
   const profileHref = `/u/${username ?? session?.user?.id ?? ''}`;
+  const isAdminActive = pathname.startsWith('/admin');
 
   return (
     <aside className="hidden md:flex h-full w-20 lg:w-72 shrink-0 flex-col border-r border-[#2a2a2a] bg-[#181818] paper-grit">
@@ -53,6 +54,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
                 <li key={href}>
                   <Link
                     href={href}
+                    aria-label={label}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'flex min-h-11 items-center justify-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all lg:justify-start',
@@ -72,10 +74,12 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
               <li>
                 <Link
                   href="/admin"
+                  aria-label="Admin"
+                  aria-current={isAdminActive ? 'page' : undefined}
                   className={cn(
                     'flex min-h-11 items-center justify-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all lg:justify-start',
                     focusRing,
-                    pathname.startsWith('/admin')
+                    isAdminActive
                       ? 'bg-[#FFC300] text-black paper-stack'
                       : 'text-white/80 hover:bg-white/5 hover:text-white',
                   )}
@@ -91,6 +95,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
         <div className="border-t border-[#2a2a2a] pt-3">
           <Link
             href={profileHref}
+            aria-label={username ? `View ${username}'s profile` : 'View profile'}
             className={cn(
               'mb-2 flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 py-2 text-white/90 hover:bg-white/5 lg:justify-start',
               focusRing,
@@ -115,6 +120,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
           </Link>
           <button
             type="button"
+            aria-label="Sign out"
             onClick={() =>
               signOut({
                 fetchOptions: {
