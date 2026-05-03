@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,7 +19,57 @@ const focusRing =
 export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const isAdminActive = pathname.startsWith('/admin');
+
+  const closeDrawer = () => {
+    setOpen(false);
+    requestAnimationFrame(() => openButtonRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (open) {
+      closeButtonRef.current?.focus();
+    }
+  }, [open]);
+
+  const handleDrawerKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDrawer();
+      return;
+    }
+
+    if (event.key !== 'Tab' || !drawerRef.current) {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      drawerRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (!firstElement || !lastElement) {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  };
 
   return (
     <>
@@ -28,6 +78,7 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
           <Image src={logoImage} alt="Beehive Books" height={32} width={120} priority />
         </Link>
         <button
+          ref={openButtonRef}
           type="button"
           aria-label="Open menu"
           aria-expanded={open}
@@ -46,23 +97,26 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
         <>
           <div
             aria-hidden="true"
-            onClick={() => setOpen(false)}
+            onClick={closeDrawer}
             className="fixed inset-0 z-60 bg-black/60 backdrop-blur-[2px] md:hidden"
           />
 
           <div
+            ref={drawerRef}
             id="v2-mobile-drawer"
             role="dialog"
             aria-modal="true"
             aria-label="Site navigation"
+            onKeyDown={handleDrawerKeyDown}
             className="fixed right-0 top-0 z-70 flex h-full w-76 max-w-[86vw] flex-col border-l border-[#2a2a2a] bg-[#181818] paper-grit shadow-2xl md:hidden"
           >
             <div className="flex items-center justify-between border-b border-[#2a2a2a] px-4 py-4">
               <Image src={logoImage} alt="Beehive Books" height={32} width={120} />
               <button
+                ref={closeButtonRef}
                 type="button"
                 aria-label="Close menu"
-                onClick={() => setOpen(false)}
+                onClick={closeDrawer}
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl text-[#FFC300] hover:bg-white/5 hover:text-white',
                   focusRing,
@@ -80,7 +134,7 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
                     <li key={href}>
                       <Link
                         href={href}
-                        onClick={() => setOpen(false)}
+                        onClick={closeDrawer}
                         aria-current={active ? 'page' : undefined}
                         className={cn(
                           'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all',
@@ -100,7 +154,7 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
                   <li>
                     <Link
                       href="/admin"
-                      onClick={() => setOpen(false)}
+                      onClick={closeDrawer}
                       aria-current={isAdminActive ? 'page' : undefined}
                       className={cn(
                         'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all',
