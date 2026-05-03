@@ -19,12 +19,13 @@ test.describe('v2 shell', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/home');
 
-    await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Studio' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Library' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Community' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Explore' })).toHaveCount(0);
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    await expect(nav).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Home', exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Library', exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Community', exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Explore', exact: true })).toHaveCount(0);
     await expect(page.locator('[data-testid="v2-app-shell"]')).toBeVisible();
   });
 
@@ -55,8 +56,9 @@ test.describe('v2 shell', () => {
     await page.goto('/home');
 
     await page.getByRole('button', { name: 'Open menu' }).click();
-    await expect(page.getByRole('dialog', { name: 'Site navigation' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Studio' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Community' })).toBeVisible();
+    const drawer = page.getByRole('dialog', { name: 'Site navigation' });
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('link', { name: 'Community', exact: true })).toBeVisible();
   });
 });
