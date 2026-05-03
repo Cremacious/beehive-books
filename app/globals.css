@@ -171,3 +171,30 @@ display: none;
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
   background: #FFD040;
 }
+
+@utility paper-grit {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.045) 1px, transparent 0),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(0, 0, 0, 0.035));
+  background-size: 18px 18px, 100% 100%;
+}
+
+@utility paper-stack {
+  border: 1px solid #2a2a2a;
+  border-bottom-color: #111;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 3px 0 rgba(0, 0, 0, 0.32);
+}
+
+@utility paper-stack-hover {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 200ms;
+  &:hover {
+    border-color: rgba(255, 195, 0, 0.35);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 4px 0 rgba(0, 0, 0, 0.38);
+    transform: translateY(-1px);
+  }
+}
