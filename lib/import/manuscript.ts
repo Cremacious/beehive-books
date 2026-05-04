@@ -57,6 +57,10 @@ function normalizeText(value: string) {
   return value.trim().replace(/\s+/g, ' ');
 }
 
+function normalizeMarkdownHeading(value: string) {
+  return value.trim().replace(/^#{1,6}\s+/, '');
+}
+
 function makeId(index: number) {
   return `import-chapter-${index + 1}`;
 }
@@ -153,8 +157,8 @@ export function parsePlainTextManuscript(text: string): ImportParseResult {
   }
 
   for (let i = 0; i < lines.length; i += 1) {
-    const current = lines[i].trim();
-    const next = lines[i + 1]?.trim() ?? '';
+    const current = normalizeMarkdownHeading(lines[i]);
+    const next = normalizeMarkdownHeading(lines[i + 1] ?? '');
     const lineAfterNext = lines[i + 2] ?? '';
 
     if (isChapterHeading(current)) {

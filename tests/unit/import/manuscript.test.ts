@@ -22,6 +22,22 @@ Second body paragraph.
   assert.match(result.chapters[1].content, /Second body paragraph/);
 });
 
+test('plain text parser splits markdown chapter headings', () => {
+  const result = parsePlainTextManuscript(`
+# Chapter 1
+The first markdown chapter.
+
+## Chapter 2: The Door
+The second markdown chapter.
+`);
+
+  assert.equal(result.chapters.length, 2);
+  assert.equal(result.chapters[0].title, 'Chapter 1');
+  assert.match(result.chapters[0].content, /first markdown chapter/);
+  assert.equal(result.chapters[1].title, 'Chapter 2: The Door');
+  assert.match(result.chapters[1].content, /second markdown chapter/);
+});
+
 test('plain text parser supports public-domain roman numeral headings', () => {
   const result = parsePlainTextManuscript(`
 CHAPTER I.
