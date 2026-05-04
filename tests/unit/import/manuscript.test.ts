@@ -54,6 +54,20 @@ Some years ago...
   assert.match(result.chapters[0].content, /Some years ago/);
 });
 
+test('plain text parser does not promote blank-separated body opener into roman numeral titles', () => {
+  const result = parsePlainTextManuscript(`
+CHAPTER I.
+Call me Ishmael
+
+Some years ago...
+`);
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'CHAPTER I.');
+  assert.match(result.chapters[0].content, /Call me Ishmael/);
+  assert.match(result.chapters[0].content, /Some years ago/);
+});
+
 test('parser falls back to one chapter when no heading exists', () => {
   const result = parsePlainTextManuscript('A loose scene with no heading.');
 

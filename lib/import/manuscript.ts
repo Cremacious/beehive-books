@@ -79,6 +79,24 @@ function isPublicDomainRomanHeading(line: string) {
   return /^CHAPTER\s+[IVXLCDM]+\.?$/i.test(line.trim());
 }
 
+function startsWithCommonProseOpener(value: string) {
+  return /^(call|i|it|he|she|they|we|you|there|this|that|the first|a|an)\b/i.test(value.trim());
+}
+
+function isTitleLikeSubtitle(value: string) {
+  const words = value.trim().split(/\s+/).filter(Boolean);
+  const titleCasedWords = words.filter((word) => /^[A-Z][a-z]+(?:['-][A-Z]?[a-z]+)?$/.test(word));
+  const titlePhraseWords = words.filter((word) => (
+    /^[A-Z][a-z]+(?:['-][A-Z]?[a-z]+)?$/.test(word) ||
+    /^(a|an|and|of|the|to|in|on|for|with)$/i.test(word)
+  ));
+
+  return (
+    /[-:']/.test(value) ||
+    (titleCasedWords.length >= 2 && titlePhraseWords.length === words.length)
+  );
+}
+
 function shouldPromoteSubtitle(heading: string, nextLine: string, lineAfterNext: string) {
   const next = nextLine.trim();
   return (
@@ -87,6 +105,8 @@ function shouldPromoteSubtitle(heading: string, nextLine: string, lineAfterNext:
     next.length <= 80 &&
     lineAfterNext.trim().length === 0 &&
     !isChapterHeading(next) &&
+    !startsWithCommonProseOpener(next) &&
+    isTitleLikeSubtitle(next) &&
     !/[.!?]$/.test(next)
   );
 }
