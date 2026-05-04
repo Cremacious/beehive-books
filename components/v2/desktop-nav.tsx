@@ -23,7 +23,9 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
   const avatarUrl = useCurrentUserImage();
   const user = session?.user;
   const username = user?.username ?? undefined;
-  const profileHref = user ? `/u/${username ?? user.id}` : undefined;
+  const profileHref = username ? `/u/${username}` : user ? '/settings' : undefined;
+  const profileLabel = username ? `View ${username}'s profile` : 'Complete profile';
+  const profileText = username ?? 'Complete profile';
   const isAdminActive = pathname.startsWith('/admin');
 
   return (
@@ -97,7 +99,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
           {profileHref ? (
             <Link
               href={profileHref}
-              aria-label={username ? `View ${username}'s profile` : 'View profile'}
+              aria-label={profileLabel}
               className={cn(
                 'mb-2 flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 py-2 text-white/90 hover:bg-white/5 lg:justify-start',
                 focusRing,
@@ -106,7 +108,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
-                  alt={username ?? 'User'}
+                  alt={username ?? user?.name ?? 'User'}
                   width={36}
                   height={36}
                   className="h-9 w-9 rounded-full object-cover ring-2 ring-[#FFC300]/20"
@@ -117,7 +119,7 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
                 </span>
               )}
               <span className="hidden min-w-0 truncate text-sm font-semibold lg:inline">
-                {username ?? 'Profile'}
+                {profileText}
               </span>
             </Link>
           ) : (
