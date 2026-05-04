@@ -5,7 +5,7 @@ import {
   createChapterAction,
   getBookWithChaptersAction,
 } from '@/lib/actions/book.actions';
-import { convertDocxFileToHtml } from '@/lib/actions/docx.actions';
+import { convertDocxFileToHtml } from '@/lib/import/docx';
 import {
   parseHtmlManuscript,
   parsePlainTextManuscript,
@@ -18,7 +18,7 @@ export type ParseManuscriptResult =
 
 export type SaveImportResult =
   | { success: true; createdCount: number }
-  | { success: false; message: string };
+  | { success: false; message: string; createdCount?: number };
 
 type ReviewedChapter = {
   title: string;
@@ -51,7 +51,11 @@ export async function parseManuscriptImportAction(
   formData: FormData,
 ): Promise<ParseManuscriptResult> {
   const bookId = String(formData.get('bookId') ?? '');
-  await getBookWithChaptersAction(bookId);
+  try {
+    await getBookWithChaptersAction(bookId);
+  } catch {
+    return { success: false, message: 'Book not found or unauthorized.' };
+  }
 
   const pastedText = String(formData.get('text') ?? '').trim();
   const file = formData.get('file');
@@ -102,7 +106,11 @@ export async function saveReviewedImportChaptersAction(
   bookId: string,
   reviewedChapters: unknown,
 ): Promise<SaveImportResult> {
-  await getBookWithChaptersAction(bookId);
+  try {
+    await getBookWithChaptersAction(bookId);
+  } catch {
+    return { success: false, message: 'Book not found or unauthorized.' };
+  }
 
   const chapters = sanitizeReviewedChapters(reviewedChapters);
   if (chapters.length === 0) {
@@ -111,6 +119,8 @@ export async function saveReviewedImportChaptersAction(
       message: 'Review at least one chapter with a title and content before saving.',
     };
   }
+
+  let createdCount = 0;
 
   for (const chapter of chapters) {
     const result = await createChapterAction(bookId, {
@@ -121,12 +131,24 @@ export async function saveReviewedImportChaptersAction(
     });
 
     if (!result.success) {
+      if (createdCount > 0) {
+        revalidatePath(`/write/${bookId}`);
+        revalidatePath(`/library/${bookId}`);
+        return {
+          success: false,
+          message: `Saved ${createdCount} ${createdCount === 1 ? 'chapter' : 'chapters'}, then stopped: ${result.message}`,
+          createdCount,
+        };
+      }
+
       return { success: false, message: result.message };
     }
+
+    createdCount += 1;
   }
 
   revalidatePath(`/write/${bookId}`);
   revalidatePath(`/library/${bookId}`);
 
-  return { success: true, createdCount: chapters.length };
+  return { success: true, createdCount };
 }

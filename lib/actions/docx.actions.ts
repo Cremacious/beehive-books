@@ -1,6 +1,7 @@
 'use server';
 
-import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { convertDocxFileToHtml } from '@/lib/import/docx';
+import { requireAuth } from '@/lib/require-auth';
 
 
 export type ParsedChapter = {
@@ -25,13 +26,6 @@ function splitOnH1(html: string): ParsedChapter[] {
     const content = match[2].trim();
     return title ? [{ title, content }] : [];
   });
-}
-
-export async function convertDocxFileToHtml(file: File): Promise<string> {
-  const mammoth = await import('mammoth');
-  const arrayBuffer = await file.arrayBuffer();
-  const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
-  return result.value;
 }
 
 export async function parseDocxAction(formData: FormData): Promise<ParseDocxResult> {
