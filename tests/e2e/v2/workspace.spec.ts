@@ -1,6 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
+import { eq } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
+import { db } from '../../../db';
+import { books } from '../../../db/schema';
 
 const authFile = path.join(__dirname, '../../.auth/user.json');
 
@@ -60,15 +63,9 @@ async function createChapter(page: Page, bookId: string, title: string) {
   return page.url().split('/').pop()!;
 }
 
-async function cleanupBook(page: Page, bookId: string) {
+async function cleanupBook(bookId: string) {
   try {
-    await page.goto(`/library/${bookId}/edit`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 15_000,
-    });
-    await page.getByRole('button', { name: 'Delete Book' }).click({ timeout: 10_000 });
-    await page.getByRole('button', { name: 'Delete' }).last().click({ timeout: 10_000 });
-    await page.waitForURL('/library', { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await db.delete(books).where(eq(books.id, bookId));
   } catch (error) {
     console.warn(`Failed to clean up test book ${bookId}:`, error);
   }
@@ -81,11 +78,11 @@ test.describe('v2 adaptive project workspace', () => {
     test.skip(!fs.existsSync(authFile), 'Auth setup has not run');
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async () => {
     const bookIds = createdBookIds.splice(0);
 
     for (const bookId of bookIds) {
-      await cleanupBook(page, bookId);
+      await cleanupBook(bookId);
     }
   });
 

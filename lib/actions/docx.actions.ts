@@ -1,6 +1,7 @@
 'use server';
 
-import { requireAuth, getOptionalUserId } from '@/lib/require-auth';
+import { convertDocxFileToHtml } from '@/lib/import/docx';
+import { requireAuth } from '@/lib/require-auth';
 
 
 export type ParsedChapter = {
@@ -27,8 +28,16 @@ function splitOnH1(html: string): ParsedChapter[] {
   });
 }
 
+async function getAuthorizedUserId() {
+  try {
+    return await requireAuth();
+  } catch {
+    return null;
+  }
+}
+
 export async function parseDocxAction(formData: FormData): Promise<ParseDocxResult> {
-  const userId = await requireAuth();
+  const userId = await getAuthorizedUserId();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');
@@ -45,10 +54,7 @@ export async function parseDocxAction(formData: FormData): Promise<ParseDocxResu
   }
 
   try {
-    const mammoth = await import('mammoth');
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
-    const html = result.value;
+    const html = await convertDocxFileToHtml(file);
 
     if (!html.trim()) {
       return { success: false, message: 'The document appears to be empty.' };
@@ -72,7 +78,7 @@ export async function parseDocxAction(formData: FormData): Promise<ParseDocxResu
 export async function parseSingleChapterDocxAction(
   formData: FormData,
 ): Promise<ParseSingleChapterResult> {
-  const userId = await requireAuth();
+  const userId = await getAuthorizedUserId();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');
@@ -89,10 +95,7 @@ export async function parseSingleChapterDocxAction(
   }
 
   try {
-    const mammoth = await import('mammoth');
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
-    const html = result.value;
+    const html = await convertDocxFileToHtml(file);
 
     if (!html.trim()) {
       return { success: false, message: 'The document appears to be empty.' };
