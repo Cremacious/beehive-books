@@ -33,6 +33,8 @@ setup('authenticate as test user', async ({ page }) => {
   await page.waitForURL('/home', { timeout: 30_000 });
   await expect(page).toHaveURL('/home');
 
+  await page.evaluate(() => localStorage.setItem('cookie-consent', 'true'));
+
   // Persist cookies + localStorage so other tests can load this state
   await page.context().storageState({ path: authFile });
 });

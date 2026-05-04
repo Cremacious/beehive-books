@@ -194,7 +194,7 @@ test.describe('chapter CRUD and features', () => {
     await page.keyboard.press('Control+a');
     await page.keyboard.type(CHAPTER_CONTENT);
 
-    await page.getByRole('button', { name: 'Save Changes' }).click();
+    await page.getByRole('button', { name: 'Save Chapter' }).click();
     await page.waitForURL(`/library/${bookId}/${chapter1Id}`, {
       timeout: 10_000,
     });
@@ -296,7 +296,7 @@ test.describe('chapter CRUD and features', () => {
       .locator('select')
       .filter({ hasText: /No collection/i });
     await collectionSelect.selectOption({ label: COLLECTION_NAME });
-    await page.getByRole('button', { name: 'Save Changes' }).click();
+    await page.getByRole('button', { name: 'Save Chapter' }).click();
 
     await page.waitForURL(`/library/${bookId}/${chapter1Id}`, {
       timeout: 10_000,
