@@ -138,13 +138,14 @@ export function ProjectWorkspaceShell({ book }: ProjectWorkspaceShellProps) {
           </TactileSurface>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <WorkspaceActionLink
-              href={`/library/${book.id}/create-chapter`}
-              label={latestChapter ? 'New chapter' : 'Write first chapter'}
-              description="Use the existing editor and chapter save flow."
-              icon={FileText}
-              primary={!latestChapter}
-            />
+            {latestChapter && (
+              <WorkspaceActionLink
+                href={`/library/${book.id}/create-chapter`}
+                label="New chapter"
+                description="Use the existing editor and chapter save flow."
+                icon={FileText}
+              />
+            )}
             <WorkspaceActionLink
               href={`/library/${book.id}`}
               label="Table of contents"

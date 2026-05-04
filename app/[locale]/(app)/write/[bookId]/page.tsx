@@ -46,19 +46,6 @@ export default async function ProjectWorkspacePage({
   }
 
   const workspaceBook = toWorkspaceBook(book);
-  const hasNoChapters =
-    workspaceBook.chapterCount === 0 && workspaceBook.chapters.length === 0;
 
-  return (
-    <div className={hasNoChapters ? 'workspace-route-empty-project' : undefined}>
-      {hasNoChapters && (
-        <style>{`
-          .workspace-route-empty-project a.group[href$="/create-chapter"] {
-            display: none;
-          }
-        `}</style>
-      )}
-      <ProjectWorkspaceShell book={workspaceBook} />
-    </div>
-  );
+  return <ProjectWorkspaceShell book={workspaceBook} />;
 }
