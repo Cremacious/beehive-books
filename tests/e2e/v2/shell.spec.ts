@@ -43,7 +43,7 @@ test.describe('v2 shell', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/community');
 
-    await expect(page.getByRole('heading', { name: 'Community' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Community', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Explore Books' })).toHaveAttribute('href', '/explore/books');
     await expect(page.getByRole('link', { name: 'Clubs' })).toHaveAttribute('href', '/clubs');
     await expect(page.getByRole('link', { name: 'Sparks' })).toHaveAttribute('href', '/sparks');

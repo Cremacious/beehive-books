@@ -60,10 +60,7 @@ export default function CommunityPage() {
               <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFC300]/12 text-[#FFC300]">
                 <Icon aria-hidden="true" className="h-5 w-5" />
               </div>
-              <h2
-                role={label === 'Community Hub' ? 'presentation' : undefined}
-                className="text-lg font-bold text-white mainFont"
-              >
+              <h2 className="text-lg font-bold text-white mainFont">
                 {label}
               </h2>
               <p className="mt-2 text-sm leading-6 text-white/70">{description}</p>
