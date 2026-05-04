@@ -21,8 +21,9 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const avatarUrl = useCurrentUserImage();
-  const username = session?.user?.username ?? undefined;
-  const profileHref = `/u/${username ?? session?.user?.id ?? ''}`;
+  const user = session?.user;
+  const username = user?.username ?? undefined;
+  const profileHref = user ? `/u/${username ?? user.id}` : undefined;
   const isAdminActive = pathname.startsWith('/admin');
 
   return (
@@ -93,31 +94,41 @@ export function V2DesktopNav({ isAdmin = false }: V2DesktopNavProps) {
         </nav>
 
         <div className="border-t border-[#2a2a2a] pt-3">
-          <Link
-            href={profileHref}
-            aria-label={username ? `View ${username}'s profile` : 'View profile'}
-            className={cn(
-              'mb-2 flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 py-2 text-white/90 hover:bg-white/5 lg:justify-start',
-              focusRing,
-            )}
-          >
-            {avatarUrl ? (
-              <Image
-                src={avatarUrl}
-                alt={username ?? 'User'}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-[#FFC300]/20"
-              />
-            ) : (
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFC300]/15 text-sm font-bold text-[#FFC300] ring-2 ring-[#FFC300]/20">
-                {username?.[0]?.toUpperCase() ?? '?'}
+          {profileHref ? (
+            <Link
+              href={profileHref}
+              aria-label={username ? `View ${username}'s profile` : 'View profile'}
+              className={cn(
+                'mb-2 flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 py-2 text-white/90 hover:bg-white/5 lg:justify-start',
+                focusRing,
+              )}
+            >
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={username ?? 'User'}
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-full object-cover ring-2 ring-[#FFC300]/20"
+                />
+              ) : (
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFC300]/15 text-sm font-bold text-[#FFC300] ring-2 ring-[#FFC300]/20">
+                  {username?.[0]?.toUpperCase() ?? '?'}
+                </span>
+              )}
+              <span className="hidden min-w-0 truncate text-sm font-semibold lg:inline">
+                {username ?? 'Profile'}
               </span>
-            )}
-            <span className="hidden min-w-0 truncate text-sm font-semibold lg:inline">
-              {username ?? 'Profile'}
-            </span>
-          </Link>
+            </Link>
+          ) : (
+            <div
+              aria-hidden="true"
+              className="mb-2 flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 py-2 lg:justify-start"
+            >
+              <span className="h-9 w-9 rounded-full bg-white/10 ring-2 ring-[#FFC300]/10" />
+              <span className="hidden h-4 w-24 rounded bg-white/10 lg:inline" />
+            </div>
+          )}
           <button
             type="button"
             aria-label="Sign out"
