@@ -61,4 +61,21 @@ test.describe('v2 shell', () => {
     await expect(drawer.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
     await expect(drawer.getByRole('link', { name: 'Community', exact: true })).toBeVisible();
   });
+
+  test('existing library and community routes still load inside v2 shell', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    await page.goto('/library');
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    await expect(page.locator('[data-testid="v2-app-shell"]')).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Library' })).toHaveAttribute('aria-current', 'page');
+
+    await page.goto('/explore/books');
+    await expect(page.locator('[data-testid="v2-app-shell"]')).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Community' })).toHaveAttribute('aria-current', 'page');
+
+    await page.goto('/hive');
+    await expect(page.locator('[data-testid="v2-app-shell"]')).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Studio' })).toHaveAttribute('aria-current', 'page');
+  });
 });
