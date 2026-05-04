@@ -1,7 +1,15 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Edit, BookOpen, FileText, MessageSquare, Globe, Lock } from 'lucide-react';
+import {
+  Edit,
+  BookOpen,
+  FileText,
+  MessageSquare,
+  Globe,
+  Lock,
+  LayoutDashboard,
+} from 'lucide-react';
 import BackButton from '@/components/shared/back-button';
 import { ExpandableDescription } from '@/components/shared/expandable-description';
 import ChapterList from '@/components/library/chapter-list';
@@ -95,13 +103,22 @@ export default async function BookPage({
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
                   <ShareBookButton bookId={book.id} isOwner={isOwner} isPremium={isPremium} />
                   {isOwner && (
-                    <Link
-                      href={`/library/${book.id}/edit`}
-                      className="flex items-center gap-1.5 bg-[#FFC300]/10 border border-[#FFC300]/20 text-[#FFC300] hover:bg-[#FFC300]/20 rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
-                    >
-                      <Edit className="w-4 h-4" />
-                      Edit
-                    </Link>
+                    <>
+                      <Link
+                        href={`/write/${book.id}`}
+                        className="flex items-center gap-1.5 rounded-xl border border-[#FFC300]/30 bg-[#FFC300] px-4 py-2 text-sm font-bold text-black shadow-[0_3px_0_#8f6d00] transition-colors hover:bg-[#FFD040]"
+                      >
+                        <LayoutDashboard className="w-4 h-4" />
+                        Open Studio
+                      </Link>
+                      <Link
+                        href={`/library/${book.id}/edit`}
+                        className="flex items-center gap-1.5 bg-[#FFC300]/10 border border-[#FFC300]/20 text-[#FFC300] hover:bg-[#FFC300]/20 rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                        Edit
+                      </Link>
+                    </>
                   )}
                 </div>
               </div>
@@ -151,13 +168,22 @@ export default async function BookPage({
           {/* Mobile action buttons */}
           <div className="flex sm:hidden flex-col gap-2 mt-5">
             {isOwner && (
-              <Link
-                href={`/library/${book.id}/edit`}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-[#FFC300] text-black text-sm font-bold transition-colors hover:bg-[#FFD040]"
-              >
-                <Edit className="w-4 h-4" />
-                Edit Book
-              </Link>
+              <>
+                <Link
+                  href={`/write/${book.id}`}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-[#FFC300] text-black text-sm font-bold shadow-[0_3px_0_#8f6d00] transition-colors hover:bg-[#FFD040]"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Open Studio
+                </Link>
+                <Link
+                  href={`/library/${book.id}/edit`}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-full border border-[#FFC300]/25 bg-transparent text-[#FFC300] text-sm font-semibold transition-colors hover:bg-[#FFC300]/10"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit Book
+                </Link>
+              </>
             )}
             <ShareBookButton
               bookId={book.id}
