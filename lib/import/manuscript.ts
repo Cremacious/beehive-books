@@ -18,6 +18,7 @@ export type ImportChapterDraft = {
   sourceIndex: number;
   warnings: ImportWarningCode[];
   sourceTitle?: string;
+  generatedTitle?: boolean;
 };
 
 export type ImportParseResult = {
@@ -78,18 +79,25 @@ function isPublicDomainRomanHeading(line: string) {
   return /^CHAPTER\s+[IVXLCDM]+\.?$/i.test(line.trim());
 }
 
-function shouldPromoteSubtitle(heading: string, nextLine: string) {
+function shouldPromoteSubtitle(heading: string, nextLine: string, lineAfterNext: string) {
   const next = nextLine.trim();
   return (
     isPublicDomainRomanHeading(heading) &&
     next.length > 0 &&
     next.length <= 80 &&
+    lineAfterNext.trim().length === 0 &&
     !isChapterHeading(next) &&
     !/[.!?]$/.test(next)
   );
 }
 
-function createDraft(title: string, bodyLines: string[], sourceIndex: number): ImportChapterDraft {
+function createDraft(
+  title: string,
+  bodyLines: string[],
+  sourceIndex: number,
+  options: { generatedTitle?: boolean } = {},
+): ImportChapterDraft {
+  const generatedTitle = options.generatedTitle || !normalizeText(title);
   const normalizedTitle = normalizeText(title) || `Chapter ${sourceIndex + 1}`;
 
   return {
@@ -99,6 +107,7 @@ function createDraft(title: string, bodyLines: string[], sourceIndex: number): I
     sourceIndex,
     warnings: [],
     sourceTitle: normalizedTitle,
+    generatedTitle,
   };
 }
 
@@ -129,11 +138,13 @@ export function parsePlainTextManuscript(text: string): ImportParseResult {
   for (let i = 0; i < lines.length; i += 1) {
     const current = lines[i].trim();
     const next = lines[i + 1]?.trim() ?? '';
+    const lineAfterNext = lines[i + 2] ?? '';
 
     if (isChapterHeading(current)) {
       flush();
-      pendingTitle = shouldPromoteSubtitle(current, next) ? `${current} ${next}` : current;
-      if (shouldPromoteSubtitle(current, next)) i += 1;
+      const promoteSubtitle = shouldPromoteSubtitle(current, next, lineAfterNext);
+      pendingTitle = promoteSubtitle ? `${current} ${next}` : current;
+      if (promoteSubtitle) i += 1;
       continue;
     }
 
@@ -166,19 +177,26 @@ export function parseHtmlManuscript(html: string): ImportParseResult {
     };
   }
 
+  const preHeadingContent = html.slice(0, matches[0].index ?? 0).trim();
   const chapters = matches.map((match, index) => {
     const headingStart = match.index ?? 0;
     const headingEnd = headingStart + match[0].length;
     const nextStart = matches[index + 1]?.index ?? html.length;
-    const title = normalizeText(stripTags(match[0])) || `Chapter ${index + 1}`;
+    const rawTitle = normalizeText(stripTags(match[0]));
+    const generatedTitle = rawTitle.length === 0;
+    const title = rawTitle || `Chapter ${index + 1}`;
+    const content = html.slice(headingEnd, nextStart).trim();
 
     return {
       id: makeId(index),
       title: title.slice(0, MAX_TITLE_LENGTH),
-      content: html.slice(headingEnd, nextStart).trim(),
+      content: index === 0 && preHeadingContent
+        ? `${preHeadingContent}${content ? content : ''}`
+        : content,
       sourceIndex: index,
       warnings: [],
       sourceTitle: title,
+      generatedTitle,
     };
   });
 
@@ -224,7 +242,7 @@ export function analyzeImportChapters(chapters: ImportChapterDraft[]): ImportWar
       });
     }
 
-    if (chapter.title === 'Imported manuscript') {
+    if (chapter.title === 'Imported manuscript' || chapter.generatedTitle) {
       warnings.push({
         code: 'fallback-title',
         chapterId: chapter.id,

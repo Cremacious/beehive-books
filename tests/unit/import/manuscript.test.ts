@@ -41,6 +41,19 @@ Curiouser and curiouser.
   assert.equal(result.chapters[1].title, 'CHAPTER II The Pool of Tears');
 });
 
+test('plain text parser does not promote immediate body prose into roman numeral titles', () => {
+  const result = parsePlainTextManuscript(`
+CHAPTER I.
+Call me Ishmael
+Some years ago...
+`);
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'CHAPTER I.');
+  assert.match(result.chapters[0].content, /Call me Ishmael/);
+  assert.match(result.chapters[0].content, /Some years ago/);
+});
+
 test('parser falls back to one chapter when no heading exists', () => {
   const result = parsePlainTextManuscript('A loose scene with no heading.');
 
@@ -56,6 +69,24 @@ test('html parser splits h1 and h2 headings', () => {
   assert.equal(result.chapters[0].title, 'One');
   assert.equal(result.chapters[0].content, '<p>Body one.</p>');
   assert.equal(result.chapters[1].title, 'Two');
+});
+
+test('html parser preserves content before the first heading', () => {
+  const result = parseHtmlManuscript('<p>Intro before heading.</p><h1>One</h1><p>Body.</p>');
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'One');
+  assert.match(result.chapters[0].content, /Intro before heading/);
+  assert.match(result.chapters[0].content, /Body\./);
+});
+
+test('html parser flags generated titles as fallback titles', () => {
+  const result = parseHtmlManuscript('<h1>   </h1><p>Body.</p>');
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'Chapter 1');
+  assert.ok(result.warnings.some((warning) => warning.code === 'fallback-title'));
+  assert.ok(result.chapters[0].warnings.includes('fallback-title'));
 });
 
 test('analysis flags suspicious titles and empty chapters', () => {
