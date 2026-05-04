@@ -27,6 +27,13 @@ function splitOnH1(html: string): ParsedChapter[] {
   });
 }
 
+export async function convertDocxFileToHtml(file: File): Promise<string> {
+  const mammoth = await import('mammoth');
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
+  return result.value;
+}
+
 export async function parseDocxAction(formData: FormData): Promise<ParseDocxResult> {
   const userId = await requireAuth();
   if (!userId) return { success: false, message: 'Unauthorized.' };
@@ -45,10 +52,7 @@ export async function parseDocxAction(formData: FormData): Promise<ParseDocxResu
   }
 
   try {
-    const mammoth = await import('mammoth');
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
-    const html = result.value;
+    const html = await convertDocxFileToHtml(file);
 
     if (!html.trim()) {
       return { success: false, message: 'The document appears to be empty.' };
@@ -89,10 +93,7 @@ export async function parseSingleChapterDocxAction(
   }
 
   try {
-    const mammoth = await import('mammoth');
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml({ buffer: Buffer.from(arrayBuffer) });
-    const html = result.value;
+    const html = await convertDocxFileToHtml(file);
 
     if (!html.trim()) {
       return { success: false, message: 'The document appears to be empty.' };
