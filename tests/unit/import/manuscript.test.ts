@@ -68,6 +68,33 @@ Some years ago...
   assert.match(result.chapters[0].content, /Some years ago/);
 });
 
+test('plain text parser does not promote apostrophe prose into roman numeral titles', () => {
+  const result = parsePlainTextManuscript(`
+CHAPTER I.
+Now isn't the time
+
+Body begins here.
+`);
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'CHAPTER I.');
+  assert.match(result.chapters[0].content, /Now isn&#39;t the time/);
+  assert.match(result.chapters[0].content, /Body begins here/);
+});
+
+test('plain text parser promotes article-led title-like roman numeral subtitles', () => {
+  const result = parsePlainTextManuscript(`
+CHAPTER I.
+A Scandal in Bohemia
+
+To Sherlock Holmes she is always the woman.
+`);
+
+  assert.equal(result.chapters.length, 1);
+  assert.equal(result.chapters[0].title, 'CHAPTER I. A Scandal in Bohemia');
+  assert.match(result.chapters[0].content, /To Sherlock Holmes/);
+});
+
 test('parser falls back to one chapter when no heading exists', () => {
   const result = parsePlainTextManuscript('A loose scene with no heading.');
 

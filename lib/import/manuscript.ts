@@ -80,7 +80,7 @@ function isPublicDomainRomanHeading(line: string) {
 }
 
 function startsWithCommonProseOpener(value: string) {
-  return /^(call|i|it|he|she|they|we|you|there|this|that|the first|a|an)\b/i.test(value.trim());
+  return /^(call|i|it|he|she|they|we|you|there|this|that|the first)\b/i.test(value.trim());
 }
 
 function isTitleLikeSubtitle(value: string) {
@@ -91,10 +91,7 @@ function isTitleLikeSubtitle(value: string) {
     /^(a|an|and|of|the|to|in|on|for|with)$/i.test(word)
   ));
 
-  return (
-    /[-:']/.test(value) ||
-    (titleCasedWords.length >= 2 && titlePhraseWords.length === words.length)
-  );
+  return titleCasedWords.length >= 2 && titlePhraseWords.length === words.length;
 }
 
 function shouldPromoteSubtitle(heading: string, nextLine: string, lineAfterNext: string) {
