@@ -28,8 +28,16 @@ function splitOnH1(html: string): ParsedChapter[] {
   });
 }
 
+async function getAuthorizedUserId() {
+  try {
+    return await requireAuth();
+  } catch {
+    return null;
+  }
+}
+
 export async function parseDocxAction(formData: FormData): Promise<ParseDocxResult> {
-  const userId = await requireAuth();
+  const userId = await getAuthorizedUserId();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');
@@ -70,7 +78,7 @@ export async function parseDocxAction(formData: FormData): Promise<ParseDocxResu
 export async function parseSingleChapterDocxAction(
   formData: FormData,
 ): Promise<ParseSingleChapterResult> {
-  const userId = await requireAuth();
+  const userId = await getAuthorizedUserId();
   if (!userId) return { success: false, message: 'Unauthorized.' };
 
   const file = formData.get('file');
