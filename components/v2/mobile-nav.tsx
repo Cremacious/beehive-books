@@ -4,7 +4,8 @@ import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, Settings, User, X } from 'lucide-react';
+import { signOut, useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { v2PrimaryNavItems } from '@/lib/v2/navigation';
 import logoImage from '@/public/logo3.png';
@@ -18,10 +19,16 @@ const focusRing =
 
 export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const openButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const user = session?.user;
+  const username = user?.username ?? undefined;
+  const profileHref = username ? `/u/${username}` : user ? '/settings' : undefined;
+  const profileLabel = username ? 'View profile' : 'Complete profile';
+  const profileText = username ? 'Profile' : 'Complete profile';
   const isAdminActive = pathname.startsWith('/admin');
 
   const closeDrawer = () => {
@@ -126,7 +133,7 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
               </button>
             </div>
 
-            <nav aria-label="Main navigation" className="flex-1 px-3 py-4">
+            <nav aria-label="Main navigation" className="flex-1 overflow-y-auto px-3 py-4">
               <ul className="space-y-2">
                 {v2PrimaryNavItems.map(({ href, label, icon: Icon, match }) => {
                   const active = match(pathname);
@@ -170,6 +177,75 @@ export function V2MobileNav({ isAdmin = false }: V2MobileNavProps) {
                 )}
               </ul>
             </nav>
+
+            <div className="border-t border-[#2a2a2a] px-3 pb-6 pt-3">
+              {user ? (
+                <div className="space-y-2">
+                  <Link
+                    href="/settings"
+                    onClick={closeDrawer}
+                    aria-label="Settings"
+                    className={cn(
+                      'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/85 transition-all hover:bg-white/5 hover:text-white',
+                      focusRing,
+                    )}
+                  >
+                    <Settings aria-hidden="true" className="h-5 w-5" />
+                    Settings
+                  </Link>
+                  {profileHref ? (
+                    <Link
+                      href={profileHref}
+                      onClick={closeDrawer}
+                      aria-label={profileLabel}
+                      className={cn(
+                        'flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/85 transition-all hover:bg-white/5 hover:text-white',
+                        focusRing,
+                      )}
+                    >
+                      <User aria-hidden="true" className="h-5 w-5" />
+                      {profileText}
+                    </Link>
+                  ) : (
+                    <div
+                      aria-hidden="true"
+                      className="flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/35"
+                    >
+                      <User aria-hidden="true" className="h-5 w-5" />
+                      Profile
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    aria-label="Sign out"
+                    onClick={() => {
+                      signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            window.location.href = '/';
+                          },
+                        },
+                      });
+                    }}
+                    className={cn(
+                      'flex min-h-12 w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/70 transition-all hover:bg-white/5 hover:text-white',
+                      focusRing,
+                    )}
+                  >
+                    <LogOut aria-hidden="true" className="h-5 w-5" />
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white/35"
+                >
+                  <User aria-hidden="true" className="h-5 w-5" />
+                  Profile
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}

@@ -60,6 +60,11 @@ test.describe('v2 shell', () => {
     await expect(drawer).toBeVisible();
     await expect(drawer.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
     await expect(drawer.getByRole('link', { name: 'Community', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('link', { name: 'Settings', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();
+    await expect(
+      drawer.getByRole('link', { name: /^(Profile|View profile|Complete profile)$/ }),
+    ).toBeVisible();
   });
 
   test('existing library and community routes still load inside v2 shell', async ({ page }) => {
