@@ -123,12 +123,21 @@ export async function saveReviewedImportChaptersAction(
   let createdCount = 0;
 
   for (const chapter of chapters) {
-    const result = await createChapterAction(bookId, {
-      title: chapter.title,
-      content: chapter.content,
-      authorNotes: '',
-      collectionId: null,
-    });
+    const result = await (async () => {
+      try {
+        return await createChapterAction(bookId, {
+          title: chapter.title,
+          content: chapter.content,
+          authorNotes: '',
+          collectionId: null,
+        });
+      } catch {
+        return {
+          success: false as const,
+          message: 'Could not save the next chapter. Please try again.',
+        };
+      }
+    })();
 
     if (!result.success) {
       if (createdCount > 0) {

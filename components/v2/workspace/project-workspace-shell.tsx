@@ -9,6 +9,7 @@ import {
   PencilLine,
   Share2,
   Sparkles,
+  UploadCloud,
   Users,
 } from 'lucide-react';
 import { TactileSurface } from '@/components/v2/tactile-surface';
@@ -146,6 +147,13 @@ export function ProjectWorkspaceShell({ book }: ProjectWorkspaceShellProps) {
                 icon={FileText}
               />
             )}
+            <WorkspaceActionLink
+              href={`/write/${book.id}/import`}
+              label="Import manuscript"
+              description="Bring in .docx, .txt, or .md chapters with a review pass before saving."
+              icon={UploadCloud}
+              primary={!latestChapter}
+            />
             <WorkspaceActionLink
               href={`/library/${book.id}`}
               label="Table of contents"
