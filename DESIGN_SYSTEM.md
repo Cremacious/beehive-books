@@ -110,6 +110,16 @@
 | `rounded-2xl` (16px) | Hero cards, feature panels |
 | `rounded-full` | Avatars, pill badges, circular buttons |
 
+## Tactile Paper Surfaces
+
+v2 uses a subtle stacked-paper feel: thin dark cards, a slightly darker bottom edge, and low-contrast texture on selected surfaces.
+
+- Use `paper-stack` on cards, panels, and important buttons that should feel like stacked sheets.
+- Use `paper-stack-hover` on clickable cards and panels.
+- Use `paper-grit` sparingly on dashboard panels, empty states, and workspace backgrounds.
+- Texture must stay low contrast and must never reduce text readability.
+- The effect should feel handmade and writerly, not grungy, noisy, or skeuomorphic.
+
 ---
 
 ## Borders & Dividers

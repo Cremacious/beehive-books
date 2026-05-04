@@ -3,8 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { DesktopSidebar } from '@/components/nav/desktop-sidebar';
-import { MobileNavbar } from '@/components/nav/mobile-navbar';
+import { V2AppShell } from '@/components/v2/app-shell';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -52,17 +51,5 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const isAdmin = user?.role === 'admin';
 
-  return (
-    <div className="fixed inset-0 overflow-hidden bg-[#141414]">
-      <div className="flex h-full">
-        <DesktopSidebar isAdmin={isAdmin} />
-        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden flex flex-col pt-14 md:pt-3 pb-16 md:pb-3 px-2 md:px-3 mt-2 md:mt-0">
-          <div className="flex-1 w-full bg-[#1e1e1e] rounded-2xl animate-in fade-in duration-200">
-            {children}
-          </div>
-        </main>
-        <MobileNavbar isAdmin={isAdmin} />
-      </div>
-    </div>
-  );
+  return <V2AppShell isAdmin={isAdmin}>{children}</V2AppShell>;
 }
